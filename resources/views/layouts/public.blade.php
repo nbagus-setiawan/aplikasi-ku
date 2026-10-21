@@ -111,20 +111,20 @@
                 <!-- Kolom 1: Profil & Identitas Lembaga (MEDIA RESMI AL-FALAH PUTAK) -->
                 <div class="md:col-span-6 space-y-4">
                     <div class="flex items-center gap-3">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo Pondok Pesantren Al-Falah Putak" class="w-11 h-11 sm:w-12 sm:h-12 object-contain shrink-0 drop-shadow-md">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo Pondok Pesantren Al-Falah Putak" class="w-12 h-12 sm:w-14 sm:h-14 object-contain shrink-0 drop-shadow-md">
                         <div class="leading-tight">
-                            <span class="text-sm sm:text-base md:text-lg font-bold text-white tracking-wide block">
+                            <span class="text-base sm:text-lg md:text-xl font-bold text-white tracking-wide block">
                                 MEDIA RESMI AL-FALAH PUTAK
                             </span>
-                            <span class="text-xs text-emerald-400 font-semibold block">
+                            <span class="text-xs sm:text-sm text-emerald-400 font-semibold block mt-0.5">
                                 Pondok Pesantren Salafiyah Al-Falah Putak, Muara Enim
                             </span>
                         </div>
                     </div>
-                    <p class="text-xs sm:text-sm text-slate-300/90 leading-relaxed max-w-lg">
+                    <p class="text-sm sm:text-base text-slate-300/90 leading-relaxed max-w-lg">
                         Media informasi dan publikasi resmi Pondok Pesantren Salafiyah Al-Falah Putak. Menyajikan warta kegiatan santri, maklumat kelembagaan, serta layanan verifikasi dokumen persuratan resmi.
                     </p>
-                    <div class="pt-1 text-xs text-slate-300 space-y-2">
+                    <div class="pt-1 text-xs sm:text-sm text-slate-300 space-y-2">
                         <p class="flex items-start gap-2.5">
                             <svg class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
                             <span>{{ $pengaturan['alamat'] ?? 'Desa Putak, Kecamatan Gelumbang, Kabupaten Muara Enim, Sumatera Selatan 31171' }}</span>
@@ -138,21 +138,21 @@
 
                 <!-- Kolom 2: Tautan Navigasi Cepat & Akses Login Petugas di Bawah -->
                 <div class="md:col-span-3">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-300 mb-3.5">Navigasi Utama</h4>
-                    <ul class="space-y-2 text-xs sm:text-sm">
+                    <h4 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-emerald-300 mb-4">Navigasi Utama</h4>
+                    <ul class="space-y-2.5 text-sm sm:text-base">
                         <li><a href="{{ url('/') }}" class="hover:text-emerald-400 transition">Beranda Utama</a></li>
-                        <li><a href="{{ url('/pengumuman') }}" class="hover:text-emerald-400 transition">Pengumuman & Warta</a></li>
+                        <li><a href="{{ url('/pengumuman') }}" class="hover:text-emerald-400 transition">Pengumuman &amp; Warta</a></li>
                         <li><a href="{{ url('/verifikasi') }}" class="hover:text-emerald-400 transition">Verifikasi Dokumen</a></li>
                         <!-- Akses Login Petugas di Letakkan di Bawah Saja -->
-                        <li class="pt-2 border-t border-emerald-900/80">
+                        <li class="pt-3 border-t border-emerald-900/80">
                             @auth
-                                <a href="{{ route('dashboard') }}" class="text-emerald-400 hover:text-white transition inline-flex items-center gap-1.5 font-medium text-xs">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                                <a href="{{ route('dashboard') }}" class="text-emerald-400 hover:text-white transition inline-flex items-center gap-1.5 font-bold text-xs sm:text-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                                     <span>Buka Panel Admin &rarr;</span>
                                 </a>
                             @else
-                                <a href="{{ route('login') }}" class="text-slate-400 hover:text-emerald-300 transition inline-flex items-center gap-1.5 font-medium text-xs">
-                                    <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                                <a href="{{ route('login') }}" class="text-slate-400 hover:text-emerald-300 transition inline-flex items-center gap-1.5 font-semibold text-xs sm:text-sm">
+                                    <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
                                     <span>Portal Sekretariat (Login) &rarr;</span>
                                 </a>
                             @endauth
@@ -162,20 +162,20 @@
 
                 <!-- Kolom 3: Layanan Sekretariat -->
                 <div class="md:col-span-3">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-300 mb-3.5">Layanan Sekretariat</h4>
-                    <ul class="space-y-2 text-xs text-slate-300/80 leading-relaxed">
-                        <li>Administrasi & Induk Santri</li>
-                        <li>Legalisir & Pengesahan Surat</li>
-                        <li>Arsip Dokumen & Piagam Ijazah</li>
-                        <li class="pt-1 text-emerald-400 font-semibold">Pelayanan: Sabtu - Kamis (08:00 - 17:00 WIB)</li>
+                    <h4 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-emerald-300 mb-4">Layanan Sekretariat</h4>
+                    <ul class="space-y-2.5 text-xs sm:text-sm text-slate-300/90 leading-relaxed">
+                        <li>Administrasi &amp; Induk Santri</li>
+                        <li>Legalisir &amp; Pengesahan Surat</li>
+                        <li>Arsip Dokumen &amp; Piagam Ijazah</li>
+                        <li class="pt-1.5 text-emerald-400 font-bold">Pelayanan: Sabtu - Kamis (08:00 - 17:00 WIB)</li>
                     </ul>
                 </div>
             </div>
 
             <!-- Hak Cipta Resmi -->
-            <div class="pt-6 sm:pt-8 text-center text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="pt-6 sm:pt-8 text-center text-xs sm:text-sm text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <p>&copy; {{ date('Y') }} MEDIA RESMI AL-FALAH PUTAK &bull; Pondok Pesantren Salafiyah Al-Falah Putak</p>
-                <div class="flex items-center gap-3 text-xs text-slate-400">
+                <div class="flex items-center gap-3 text-xs sm:text-sm text-slate-400">
                     <span class="text-emerald-400/90">Desa Putak, Gelumbang, Muara Enim</span>
                 </div>
             </div>
