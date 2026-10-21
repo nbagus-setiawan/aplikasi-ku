@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\NotifikasiController;
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\ArsipController;
 use App\Http\Controllers\DashboardController;
@@ -22,6 +23,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [PublicController::class, 'beranda'])->name('home');
 Route::get('/pengumuman', [PublicController::class, 'pengumumanIndex'])->name('publik.pengumuman.index');
 Route::get('/pengumuman/{slug}', [PublicController::class, 'pengumumanShow'])->name('publik.pengumuman.show');
+Route::post('/pengumuman/{slug}/like', [PublicController::class, 'likePengumuman'])->name('publik.pengumuman.like');
+Route::post('/pengumuman/{slug}/komentar', [PublicController::class, 'komentarPengumuman'])->name('publik.pengumuman.komentar');
+Route::post('/pengumuman/{slug}/share', [PublicController::class, 'sharePengumuman'])->name('publik.pengumuman.share');
+Route::get('/sitemap.xml', [PublicController::class, 'sitemap'])->name('publik.sitemap');
 
 // Rute Publik: Verifikasi Surat & Tanda Tangan Jarak Jauh (Fase 3)
 Route::get('/verifikasi', [VerifikasiPublikController::class, 'index'])->name('publik.verifikasi.index');
@@ -95,6 +100,11 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::post('/kategori-surat', [KategoriSuratController::class, 'store'])->name('admin.kategori-surat.store');
     Route::put('/kategori-surat/{kategoriSurat}', [KategoriSuratController::class, 'update'])->name('admin.kategori-surat.update');
     Route::delete('/kategori-surat/{kategoriSurat}', [KategoriSuratController::class, 'destroy'])->name('admin.kategori-surat.destroy');
+
+    // Notifikasi Panel Sekretaris (Lonceng Navbar Admin)
+    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('admin.notifikasi.index');
+    Route::patch('/notifikasi/{notifikasi}/baca', [NotifikasiController::class, 'markAsRead'])->name('admin.notifikasi.baca');
+    Route::post('/notifikasi/baca-semua', [NotifikasiController::class, 'markAllRead'])->name('admin.notifikasi.baca-semua');
 });
 
 // Rute Profil & Dashboard Legacy Redirect

@@ -1,12 +1,12 @@
 @php
     $data = $block['data'] ?? [];
-    $judul = $data['judul'] ?? 'Layanan Sekretariat Pondok';
+    $judul = $data['judul'] ?? 'Layanan Pondok';
     $subjudul = $data['subjudul'] ?? 'Pusat informasi, pelayanan persuratan santri, dan verifikasi dokumen resmi Pondok Pesantren Al-Falah Putak';
     $subjudul = str_replace('Al-Falah Putra', 'Al-Falah Putak', $subjudul);
     $alamat = $data['alamat'] ?? ($pengaturan['alamat'] ?? 'Desa Putak, Kecamatan Gelumbang, Kabupaten Muara Enim, Sumatera Selatan 31171');
-    $telepon = $data['telepon'] ?? ($pengaturan['kontak'] ?? '0851-8320-1627');
-    $email = $data['email'] ?? 'sekretariat@alfalahputak.sch.id';
-    $jamKerja = $data['jam_kerja'] ?? 'Sabtu - Kamis: 08:00 - 17:00 WIB (Jumat Libur)';
+    $telepon = $data['telepon'] ?? ($pengaturan['kontak'] ?? '0821-1870-2782');
+    $email = $data['email'] ?? 'pengurusalfalahputra@gmail.com';
+    $jamKerja = $data['jam_kerja'] ?? 'Sabtu - Kamis: 08:00 - 17:00 WIB ';
 @endphp
 
 <section class="py-10 sm:py-14 bg-white">

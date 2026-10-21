@@ -1,2 +1,13 @@
 User-agent: *
-Disallow:
+Allow: /
+Allow: /pengumuman
+Allow: /pengumuman/*
+Allow: /verifikasi
+Allow: /images/
+Allow: /build/
+Allow: /favicon*
+Disallow: /admin/
+Disallow: /login
+Disallow: /tanda-tangan/
+
+Sitemap: https://alfalahputak.sch.id/sitemap.xml

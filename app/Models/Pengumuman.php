@@ -62,4 +62,28 @@ class Pengumuman extends Model
     {
         return $this->tgl_kedaluwarsa ? $this->tgl_kedaluwarsa->format('d-m-Y') : '-';
     }
+
+    public function likes()
+    {
+        return $this->hasMany(PengumumanLike::class);
+    }
+
+    public function komentars()
+    {
+        return $this->hasMany(PengumumanKomentar::class)->where('is_tampil', true)->orderByDesc('created_at');
+    }
+
+    public function shares()
+    {
+        return $this->hasMany(PengumumanShare::class);
+    }
+
+    public function isLikedByIp(?string $ip): bool
+    {
+        if (!$ip) {
+            return false;
+        }
+
+        return $this->likes()->where('ip_address', $ip)->exists();
+    }
 }

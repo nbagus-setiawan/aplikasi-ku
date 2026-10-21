@@ -19,7 +19,7 @@
         @endif
     @empty
         <div class="py-24 text-center">
-            <h1 class="text-3xl font-bold text-gray-800">Selamat Datang di Portal Pondok Pesantren Al-Falah Putra</h1>
+            <h1 class="text-3xl font-bold text-gray-800">Selamat Datang di Portal Pondok Pesantren Al-Falah Putak</h1>
             <p class="text-gray-500 mt-2">Halaman beranda sedang dalam persiapan.</p>
         </div>
     @endforelse

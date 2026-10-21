@@ -5,10 +5,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Beranda') — MEDIA RESMI AL-FALAH PUTAK</title>
+    <title>@yield('title', 'Beranda') — PONDOK PESANTREN AL-FALAH PUTAK</title>
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <!-- Google Site Verification Google Search Console -->
+    <meta name="google-site-verification" content="VkmH3sunnODzVDbLS8PYiE80wRiCRNe72N1aQdDGgtw" />
+
+    <!-- Meta Dasar & SEO Google Indexing -->
+    <meta name="description" content="@yield('meta_description', 'Media Resmi Pondok Pesantren Salafiyah Al-Falah Putak, Gelumbang, Muara Enim, Sumatera Selatan. Menempa insan santri beraqidah Ahlussunnah wal Jamaah melalui kajian kitab salafiyah, tahfidzul Quran, dan pendidikan berjenjang.')">
+    <meta name="keywords" content="Pondok Pesantren Al-Falah Putak, PP Al Falah Putak, Pesantren Al Falah Putak Gelumbang, Pondok Pesantren Muara Enim, Ponpes Al Falah Putak, Pesantren Salafiyah Sumatera Selatan, K.H. Mursyidi, Ny. Hj. Aniswatuzzuhriyah, Media Resmi Al-Falah Putak, Santri Al Falah Putak, Kajian Kitab Kuning, Tahfidzul Quran Putak, Madrasah Diniyah Al Falah, Penerimaan Santri Baru Al Falah Putak, Ponpes Gelumbang">
+    <meta name="author" content="PONDOK PESANTREN AL-FALAH PUTAK">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Identitas Nama Situs untuk Hasil Pencarian Google -->
+    <meta name="application-name" content="PONDOK PESANTREN AL-FALAH PUTAK">
+    <meta name="apple-mobile-web-app-title" content="PONDOK PESANTREN AL-FALAH PUTAK">
+
+    <!-- Favicon Google Search Resmi (Memenuhi Logo, Tanpa Sisa Putih) -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=2">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-32x32.png') }}?v=2">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}?v=2">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon-48x48.png') }}?v=2">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('favicon-96x96.png') }}?v=2">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('favicon-192x192.png') }}?v=2">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v=2">
+
+    <!-- Open Graph (WhatsApp, Facebook) — Thumbnail Besar di Atas (Bukan di Samping) -->
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="PONDOK PESANTREN AL-FALAH PUTAK">
+    <meta property="og:title" content="@yield('title', 'PONDOK PESANTREN AL-FALAH PUTAK')">
+    <meta property="og:description" content="@yield('meta_description', 'Media Resmi Pondok Pesantren Salafiyah Al-Falah Putak, Gelumbang, Muara Enim, Sumatera Selatan. Menempa insan santri beraqidah Ahlussunnah wal Jamaah.')">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="{{ asset('images/thumbail.png') }}?v=2">
+    <meta property="og:image:secure_url" content="{{ asset('images/thumbail.png') }}?v=2">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1600">
+    <meta property="og:image:height" content="837">
+    <meta property="og:image:alt" content="PONDOK PESANTREN AL-FALAH PUTAK">
+
+    <!-- Twitter Card (Large Image di Atas) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', 'PONDOK PESANTREN AL-FALAH PUTAK')">
+    <meta name="twitter:description" content="@yield('meta_description', 'Media Resmi Pondok Pesantren Salafiyah Al-Falah Putak, Gelumbang, Muara Enim, Sumatera Selatan.')">
+    <meta name="twitter:image" content="{{ asset('images/thumbail.png') }}?v=2">
+
+    <!-- Structured Data JSON-LD untuk Google Search & Rich Snippet -->
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@type": "EducationalOrganization",
+        "name": "PONDOK PESANTREN AL-FALAH PUTAK",
+        "alternateName": [
+            "PP Al-Falah Putak",
+            "Pondok Pesantren Salafiyah Al-Falah Putak",
+            "MEDIA RESMI AL-FALAH PUTAK"
+        ],
+        "url": "{{ url('/') }}",
+        "logo": "{{ asset('images/logo-google.png') }}",
+        "image": "{{ asset('images/thumbail.png') }}",
+        "description": "Media Resmi Pondok Pesantren Salafiyah Al-Falah Putak, Gelumbang, Muara Enim, Sumatera Selatan. Menempa generasi santri yang berakhlak mulia, mendalami khazanah kitab salaf, dan berpegang teguh pada Al-Qur'an dan Sunnah.",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Desa Putak",
+            "addressLocality": "Gelumbang",
+            "addressRegion": "Sumatera Selatan",
+            "postalCode": "31171",
+            "addressCountry": "ID"
+        },
+        "founder": [
+            {
+                "@type": "Person",
+                "name": "K.H. Mursyidi"
+            },
+            {
+                "@type": "Person",
+                "name": "Ny. Hj. Aniswatuzzuhriyah"
+            }
+        ],
+        "foundingDate": "2005-03-05",
+        "telephone": "0851-8320-1627"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "PONDOK PESANTREN AL-FALAH PUTAK",
+        "alternateName": "MEDIA RESMI AL-FALAH PUTAK",
+        "url": "{{ url('/') }}"
+    }
+    </script>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">

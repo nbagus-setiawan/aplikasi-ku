@@ -7,7 +7,7 @@
 <section class="bg-emerald-950 text-white py-10 sm:py-14 border-b border-emerald-900/60">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-2.5">
         <span class="inline-block px-3.5 py-1 rounded-full bg-emerald-900/80 border border-emerald-700/60 text-emerald-300 text-xs font-semibold uppercase tracking-wider">
-            Informasi Sekretariat
+            Informasi
         </span>
         <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
             Pengumuman &amp; Warta Pesantren
