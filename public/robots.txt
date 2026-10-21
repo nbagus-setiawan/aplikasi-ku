@@ -10,4 +10,4 @@ Disallow: /admin/
 Disallow: /login
 Disallow: /tanda-tangan/
 
-Sitemap: https://alfalahputak.sch.id/sitemap.xml
+Sitemap: https://ponpesalfalahputak.my.id/sitemap.xml

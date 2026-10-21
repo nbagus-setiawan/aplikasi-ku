@@ -38,18 +38,21 @@
     <meta property="og:title" content="@yield('title', 'PONDOK PESANTREN AL-FALAH PUTAK')">
     <meta property="og:description" content="@yield('meta_description', 'Media Resmi Pondok Pesantren Salafiyah Al-Falah Putak, Gelumbang, Muara Enim, Sumatera Selatan. Menempa insan santri beraqidah Ahlussunnah wal Jamaah.')">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:image" content="{{ asset('images/thumbail.png') }}?v=2">
-    <meta property="og:image:secure_url" content="{{ asset('images/thumbail.png') }}?v=2">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="1600">
-    <meta property="og:image:height" content="837">
+    <meta property="og:image" content="{{ asset('images/thumbnail-wa.jpg') }}?v=3">
+    <meta property="og:image:secure_url" content="{{ asset('images/thumbnail-wa.jpg') }}?v=3">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="628">
     <meta property="og:image:alt" content="PONDOK PESANTREN AL-FALAH PUTAK">
+
+    <!-- Fallback Gambar PNG Terkompresi -->
+    <link rel="image_src" href="{{ asset('images/thumbnail-wa.jpg') }}?v=3">
 
     <!-- Twitter Card (Large Image di Atas) -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="@yield('title', 'PONDOK PESANTREN AL-FALAH PUTAK')">
     <meta name="twitter:description" content="@yield('meta_description', 'Media Resmi Pondok Pesantren Salafiyah Al-Falah Putak, Gelumbang, Muara Enim, Sumatera Selatan.')">
-    <meta name="twitter:image" content="{{ asset('images/thumbail.png') }}?v=2">
+    <meta name="twitter:image" content="{{ asset('images/thumbnail-wa.jpg') }}?v=3">
 
     <!-- Structured Data JSON-LD untuk Google Search & Rich Snippet -->
     <script type="application/ld+json">
@@ -85,7 +88,7 @@
             }
         ],
         "foundingDate": "2005-03-05",
-        "telephone": "0851-8320-1627"
+        "telephone": "0821-1870-2718"
     }
     </script>
     <script type="application/ld+json">
