@@ -103,71 +103,71 @@
                 </div>
 
                 <!-- Rincian Data Surat -->
-                <div class="p-6 sm:p-8 space-y-4 text-xs text-gray-700">
+                <div class="p-5 sm:p-8 space-y-4 text-xs sm:text-sm text-gray-700">
                     <div class="border-b border-gray-100 pb-4 flex flex-wrap items-center justify-between gap-4">
                         <div>
-                            <span class="block text-gray-400 font-semibold uppercase text-[10px] tracking-wider">Nomor Surat</span>
-                            <span class="block text-base font-mono font-bold text-emerald-900 mt-0.5">{{ $surat->no_surat }}</span>
+                            <span class="block text-slate-500 font-semibold uppercase text-xs tracking-wider">Nomor Surat</span>
+                            <span class="block text-base sm:text-lg font-mono font-bold text-emerald-950 mt-0.5">{{ $surat->no_surat }}</span>
                         </div>
                         <div class="flex items-center gap-2.5 bg-emerald-50/70 border border-emerald-200 px-3 py-2 rounded-xl">
                             @if (!empty($qrCodeDataUri))
-                                <img src="{{ $qrCodeDataUri }}" alt="QR Verifikasi" class="w-14 h-14 rounded bg-white p-0.5 border border-emerald-100" />
+                                <img src="{{ $qrCodeDataUri }}" alt="QR Verifikasi" class="w-12 h-12 sm:w-14 sm:h-14 rounded bg-white p-0.5 border border-emerald-100" />
                             @endif
                             <div>
-                                <span class="block text-[10px] font-bold uppercase text-emerald-800">Kode Verifikasi QR:</span>
-                                <span class="font-mono text-sm font-extrabold text-emerald-900">{{ $surat->kode_verifikasi }}</span>
+                                <span class="block text-xs font-bold uppercase text-emerald-800">Kode Verifikasi QR:</span>
+                                <span class="font-mono text-sm sm:text-base font-extrabold text-emerald-950">{{ $surat->kode_verifikasi }}</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-3">
                         <div>
-                            <span class="block text-gray-400 font-semibold uppercase text-[10px] tracking-wider">Tanggal Surat</span>
-                            <span class="block text-sm font-semibold text-gray-800 mt-0.5">{{ $surat->tgl_surat ? $surat->tgl_surat->format('d-m-Y') : '-' }}</span>
+                            <span class="block text-slate-500 font-semibold uppercase text-xs tracking-wider">Tanggal Surat</span>
+                            <span class="block text-xs sm:text-sm font-semibold text-gray-800 mt-0.5">{{ $surat->tgl_surat ? $surat->tgl_surat->format('d-m-Y') : '-' }}</span>
                         </div>
                         <div>
-                            <span class="block text-gray-400 font-semibold uppercase text-[10px] tracking-wider">Jenis Surat</span>
-                            <span class="block text-sm font-semibold text-gray-800 mt-0.5">{{ $surat->kategori->nama ?? 'Surat Keluar' }}</span>
+                            <span class="block text-slate-500 font-semibold uppercase text-xs tracking-wider">Jenis Surat</span>
+                            <span class="block text-xs sm:text-sm font-semibold text-gray-800 mt-0.5">{{ $surat->kategori->nama ?? 'Surat Keluar' }}</span>
                         </div>
                     </div>
 
                     <div class="border-b border-gray-100 pb-3">
-                        <span class="block text-gray-400 font-semibold uppercase text-[10px] tracking-wider">Tujuan Surat</span>
-                        <span class="block text-sm font-semibold text-gray-800 mt-0.5">{{ $surat->tujuan }}</span>
+                        <span class="block text-slate-500 font-semibold uppercase text-xs tracking-wider">Tujuan Surat</span>
+                        <span class="block text-xs sm:text-sm font-semibold text-gray-800 mt-0.5">{{ $surat->tujuan }}</span>
                     </div>
 
                     <div class="border-b border-gray-100 pb-3">
-                        <span class="block text-gray-400 font-semibold uppercase text-[10px] tracking-wider">Perihal</span>
-                        <p class="text-sm font-semibold text-gray-900 mt-0.5 leading-relaxed">{{ $surat->perihal }}</p>
+                        <span class="block text-slate-500 font-semibold uppercase text-xs tracking-wider">Perihal</span>
+                        <p class="text-xs sm:text-sm font-semibold text-gray-900 mt-0.5 leading-relaxed">{{ $surat->perihal }}</p>
                     </div>
 
                     <!-- Daftar Penandatangan Resmi (Jika Dicatat Manual) -->
                     @if (!empty($surat->nama_penandatangan) && $surat->nama_penandatangan !== '-')
                         <div class="border-b border-gray-100 pb-3 space-y-2">
-                            <span class="block text-gray-400 font-semibold uppercase text-[10px] tracking-wider">Penandatangan Resmi Dokumen</span>
+                            <span class="block text-slate-500 font-semibold uppercase text-xs tracking-wider">Penandatangan Resmi Dokumen</span>
                             <div class="grid grid-cols-1 sm:grid-cols-{{ min(3, max(1, $surat->jumlah_penandatangan ?? 1)) }} gap-3">
                                 @php
                                     $ttdList = $surat->tandaTangans->isNotEmpty() ? $surat->tandaTangans : collect([
                                         (object)[
-                                            'nama_penandatangan' => $surat->nama_penandatangan,
-                                            'jabatan_penandatangan' => $surat->jabatan_penandatangan,
-                                            'waktu_ttd' => $surat->tandaTangan?->waktu_ttd,
-                                            'ip_address' => $surat->tandaTangan?->ip_address,
+                                             'nama_penandatangan' => $surat->nama_penandatangan,
+                                             'jabatan_penandatangan' => $surat->jabatan_penandatangan,
+                                             'waktu_ttd' => $surat->tandaTangan?->waktu_ttd,
+                                             'ip_address' => $surat->tandaTangan?->ip_address,
                                         ]
                                     ]);
                                 @endphp
                                 @foreach ($ttdList as $ttdItem)
                                     @if ($ttdItem && $ttdItem->nama_penandatangan !== '-')
                                         <div class="p-3 rounded-xl bg-gray-50 border border-gray-200 space-y-1">
-                                            <span class="block text-xs font-bold text-gray-900">{{ $ttdItem->nama_penandatangan }}</span>
-                                            <span class="block text-[11px] text-gray-500">{{ $ttdItem->jabatan_penandatangan }}</span>
+                                            <span class="block text-xs sm:text-sm font-bold text-gray-900">{{ $ttdItem->nama_penandatangan }}</span>
+                                            <span class="block text-xs text-gray-500">{{ $ttdItem->jabatan_penandatangan }}</span>
                                             @if ($ttdItem->waktu_ttd)
-                                                <div class="text-[10px] text-emerald-800 font-mono mt-1 pt-1 border-t border-emerald-100">
+                                                <div class="text-xs text-emerald-800 font-mono mt-1 pt-1 border-t border-emerald-100">
                                                     ✓ Ditandatangani: <strong>{{ $ttdItem->waktu_ttd->timezone('Asia/Jakarta')->format('d-m-Y H:i:s') }} WIB</strong>
-                                                    <span class="block text-[9px] text-gray-400 font-sans">IP: {{ $ttdItem->ip_address }}</span>
+                                                    <span class="block text-[11px] text-gray-400 font-sans">IP: {{ $ttdItem->ip_address }}</span>
                                                 </div>
                                             @else
-                                                <span class="text-[10px] text-amber-700 font-medium">Tanda Tangan Basah / Fisik</span>
+                                                <span class="text-xs text-amber-700 font-medium">Tanda Tangan Basah / Fisik</span>
                                             @endif
                                         </div>
                                     @endif

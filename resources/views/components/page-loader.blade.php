@@ -105,11 +105,9 @@
 <div id="sap-page-transition" class="no-print" role="status" aria-live="polite">
     <div id="sap-transition-badge">
         <!-- Logo Al-Falah Putra -->
-        <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center p-1.5 shrink-0">
-            <img src="{{ asset('images/logo.png') }}"
-                 alt="Logo"
-                 class="w-full h-full object-contain sap-breathe-logo">
-        </div>
+        <img src="{{ asset('images/logo.png') }}"
+             alt="Logo Al-Falah Putra"
+             class="w-9 h-9 object-contain shrink-0 sap-breathe-logo drop-shadow-sm">
 
         <!-- Teks Informasi & Mini Progress Bar -->
         <div class="flex flex-col">

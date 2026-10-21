@@ -1,23 +1,22 @@
 <aside
     id="sidebar"
     :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen }"
-    class="fixed inset-y-0 left-0 z-50 w-64 md:w-72 bg-emerald-950 text-white transition-transform duration-300 ease-in-out md:translate-x-0 md:sticky md:top-0 md:h-screen flex flex-col justify-between shadow-2xl overflow-hidden flex-shrink-0 border-r border-emerald-900/60"
+    @keydown.window.escape="sidebarOpen = false"
+    class="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] sm:max-w-[300px] lg:max-w-none lg:w-72 bg-emerald-950 text-white transition-transform duration-300 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen flex flex-col justify-between shadow-2xl overflow-hidden flex-shrink-0 border-r border-emerald-900/60"
 >
     <!-- Logo / Identitas Lembaga -->
     <div class="h-20 px-5 flex items-center justify-between border-b border-emerald-900/80 bg-emerald-950 flex-shrink-0">
-        <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group">
-            <div class="w-12 h-12 rounded-2xl bg-white p-1.5 shadow-md shadow-emerald-950/50 flex items-center justify-center shrink-0 border border-emerald-200/40 group-hover:scale-105 transition-transform">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo Pondok Pesantren Al Falah Putra" class="w-full h-full object-contain">
-            </div>
+        <a href="{{ route('dashboard') }}" class="flex items-center gap-3.5 group">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo Pondok Pesantren Al Falah Putra" class="w-11 h-11 object-contain shrink-0 drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)] group-hover:scale-105 transition-transform duration-200">
             <div class="leading-tight">
                 <div class="flex items-center gap-1.5">
-                    <span class="block font-black text-sm md:text-[15px] tracking-wider text-white">AL-FALAH PUTRA</span>
+                    <span class="block font-black text-sm lg:text-[15px] tracking-wider text-white">AL-FALAH PUTRA</span>
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="Sistem Aktif"></span>
                 </div>
                 <span class="block text-[11px] text-emerald-300/90 font-medium tracking-normal mt-0.5">Sekretariat Pesantren</span>
             </div>
         </a>
-        <button @click="sidebarOpen = false" class="md:hidden text-emerald-400 hover:text-white p-1.5 rounded-xl hover:bg-emerald-900 transition-colors focus:outline-none" title="Tutup Menu">
+        <button @click="sidebarOpen = false" class="lg:hidden text-emerald-300 hover:text-white p-2 rounded-xl hover:bg-emerald-900 transition-colors focus:outline-none" title="Tutup Menu">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -25,7 +24,7 @@
     </div>
 
     <!-- Menu Navigasi (Scrollable) -->
-    <nav class="flex-1 p-3.5 md:p-4 space-y-1 text-sm overflow-y-auto no-scrollbar min-h-0">
+    <nav class="flex-1 p-3.5 lg:p-4 space-y-1 text-sm overflow-y-auto custom-scrollbar min-h-0">
         
         <!-- SECTION 1: UTAMA -->
         <div class="px-3 pt-2 pb-1 text-[11px] font-extrabold uppercase tracking-widest text-emerald-400/80 flex items-center gap-2">

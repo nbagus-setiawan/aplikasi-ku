@@ -92,7 +92,7 @@
                         <div class="space-y-3.5">
                             @foreach($terkait as $item)
                                 <article class="space-y-1">
-                                    <span class="text-[11px] font-semibold text-emerald-800 block">
+                                    <span class="text-xs font-semibold text-emerald-800 block">
                                         {{ $item->formatted_tgl_tayang }}
                                     </span>
                                     <h4 class="text-xs sm:text-sm font-bold text-slate-900 hover:text-emerald-800 leading-snug transition">

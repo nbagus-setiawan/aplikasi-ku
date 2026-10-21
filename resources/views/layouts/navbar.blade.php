@@ -1,21 +1,23 @@
-<header class="h-16 bg-white border-b border-gray-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+<header class="h-16 bg-white border-b border-gray-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
     <div class="flex items-center gap-3">
-        <!-- Toggle button mobile -->
+        <!-- Toggle button mobile & tablet -->
         <button
             @click="sidebarOpen = !sidebarOpen"
-            class="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 focus:outline-none"
+            class="lg:hidden p-2 rounded-xl text-gray-600 hover:text-emerald-800 hover:bg-emerald-50 border border-gray-200/80 focus:outline-none transition-colors"
+            title="Buka Menu Navigasi"
+            aria-label="Buka Navigasi"
         >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
         </button>
 
         <!-- Judul / Info Singkat Halaman -->
         <div class="flex items-center gap-3">
-            <span class="text-sm md:text-base font-bold text-gray-800 tracking-tight">
+            <span class="text-sm sm:text-base font-bold text-gray-800 tracking-tight">
                 @yield('title', 'Panel Sekretariat')
             </span>
-            <span class="hidden md:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+            <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
                 Pondok Pesantren Al-Falah Putra
             </span>
         </div>

@@ -94,7 +94,7 @@ class HalamanBlockService
                 'id' => 'hero_1',
                 'type' => 'hero',
                 'data' => [
-                    'badge' => 'Portal Resmi Lembaga Santri Putra',
+                    'badge' => 'MEDIA RESMI AL-FALAH PUTAK',
                     'judul' => 'Pondok Pesantren Al-Falah Putra',
                     'subjudul' => 'Unit Lembaga Pendidikan Santri Putra di Bawah Naungan Pondok Pesantren Al-Falah Putak. Membina Generasi Berakhlak Mulia, Berilmu Luas, dan Berpegang Teguh pada Sunnah Nabi.',
                     'cta_text' => 'Lihat Warta Pengumuman',

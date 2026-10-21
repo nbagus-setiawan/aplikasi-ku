@@ -83,7 +83,7 @@
                                          class="w-full h-full object-cover hover:scale-103 transition duration-300"
                                          style="object-position: {{ $item->posisi_gambar ?? '50% 50%' }};">
                                     @if($item->is_pinned)
-                                        <span class="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-amber-500 text-white text-[11px] font-bold shadow-xs">
+                                        <span class="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-bold shadow-xs">
                                             Disematkan
                                         </span>
                                     @endif
@@ -94,7 +94,7 @@
                                         {{ ucfirst($item->kategori) }}
                                     </span>
                                     @if($item->is_pinned)
-                                        <span class="px-2 py-0.5 rounded bg-amber-400 text-amber-950 text-[10px] font-bold">
+                                        <span class="px-2.5 py-1 rounded-lg bg-amber-400 text-amber-950 text-xs font-bold shadow-xs">
                                             Disematkan
                                         </span>
                                     @endif

@@ -4,9 +4,9 @@
     $subjudul = $data['subjudul'] ?? 'Informasi resmi sekretariat untuk wali santri, asatidz, dan masyarakat';
 @endphp
 
-<section class="py-14 sm:py-20 bg-slate-50/60 border-b border-slate-200/80">
+<section class="py-10 sm:py-16 lg:py-20 bg-slate-50/60 border-b border-slate-200/80">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 gap-3 sm:gap-4">
             <div class="space-y-2">
                 <span class="inline-block text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3.5 py-1.5 rounded-full border border-emerald-100">
                     Warta Sekretariat
@@ -27,9 +27,9 @@
         </div>
 
         @if(isset($pengumumanTerbaru) && $pengumumanTerbaru->count() > 0)
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
                 @foreach($pengumumanTerbaru as $item)
-                    <article class="bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-xs hover:border-emerald-300 hover:shadow-md transition duration-200 flex flex-col justify-between">
+                    <article class="bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-xs hover:border-emerald-300 hover:shadow-md transition duration-200 flex flex-col justify-between h-full">
                         <div>
                             @if($item->gambar)
                                 <div class="h-44 sm:h-48 overflow-hidden bg-slate-100 relative">
@@ -37,7 +37,7 @@
                                          class="w-full h-full object-cover hover:scale-103 transition duration-300"
                                          style="object-position: {{ $item->posisi_gambar ?? '50% 50%' }};">
                                     @if($item->is_pinned)
-                                        <span class="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-amber-500 text-white text-[11px] font-bold shadow-xs">
+                                        <span class="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-bold shadow-xs">
                                             Disematkan
                                         </span>
                                     @endif
@@ -48,7 +48,7 @@
                                         {{ ucfirst($item->kategori) }}
                                     </span>
                                     @if($item->is_pinned)
-                                        <span class="px-2 py-0.5 rounded bg-amber-400 text-amber-950 text-[10px] font-bold">
+                                        <span class="px-2.5 py-1 rounded-lg bg-amber-400 text-amber-950 text-xs font-bold shadow-xs">
                                             Disematkan
                                         </span>
                                     @endif
@@ -56,13 +56,13 @@
                             @endif
 
                             <div class="p-5 sm:p-6">
-                                <div class="flex items-center gap-2 text-xs text-slate-500 mb-2.5">
+                                <div class="flex items-center gap-2 text-xs text-slate-500 mb-2">
                                     <span>{{ $item->formatted_tgl_tayang }}</span>
                                     <span>•</span>
                                     <span class="capitalize text-emerald-800 font-semibold">{{ $item->kategori }}</span>
                                 </div>
 
-                                <h3 class="text-base sm:text-lg font-bold text-slate-900 mb-2 line-clamp-2 hover:text-emerald-800 transition">
+                                <h3 class="text-sm sm:text-base font-bold text-slate-900 mb-2 line-clamp-2 hover:text-emerald-800 transition">
                                     <a href="{{ url('/pengumuman/' . $item->slug) }}">
                                         {{ $item->judul }}
                                     </a>
@@ -85,7 +85,7 @@
             </div>
         @else
             <div class="text-center py-12 bg-white rounded-2xl border border-slate-200/80">
-                <p class="text-slate-500 text-sm font-medium">Belum ada pengumuman publik yang dipublikasikan saat ini.</p>
+                <p class="text-slate-500 text-xs sm:text-sm font-medium">Belum ada pengumuman publik yang dipublikasikan saat ini.</p>
             </div>
         @endif
     </div>

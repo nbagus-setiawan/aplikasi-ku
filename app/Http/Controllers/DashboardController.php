@@ -42,6 +42,40 @@ class DashboardController extends Controller
         $pengaturans = Pengaturan::getAllKeyValues();
         $totalKategoriSurat = KategoriSurat::count();
 
+        // Data Tren 6 Bulan Terakhir untuk Bagan (Chart) Persuratan
+        $chartBulanLabels = [];
+        $chartSuratMasukData = [];
+        $chartSuratKeluarData = [];
+
+        for ($i = 5; $i >= 0; $i--) {
+            $tgl = Carbon::now()->subMonths($i);
+            $chartBulanLabels[] = $tgl->translatedFormat('M y');
+
+            $chartSuratMasukData[] = SuratMasuk::whereYear('tgl_diterima', $tgl->year)
+                ->whereMonth('tgl_diterima', $tgl->month)
+                ->count();
+
+            $chartSuratKeluarData[] = SuratKeluar::whereYear('tgl_surat', $tgl->year)
+                ->whereMonth('tgl_surat', $tgl->month)
+                ->count();
+        }
+
+        // Data Statistik Santri berdasarkan Status
+        $santriStatusData = [
+            'aktif' => $totalSantriAktif,
+            'lulus' => Santri::where('status', 'lulus')->count(),
+            'mutasi' => Santri::where('status', 'mutasi')->count(),
+            'keluar' => Santri::where('status', 'keluar')->count(),
+        ];
+        $totalSantriSemua = array_sum($santriStatusData);
+
+        // Disposisi Surat Masuk
+        $disposisiStatusData = [
+            'baru' => SuratMasuk::where('status_disposisi', 'baru')->count(),
+            'proses' => SuratMasuk::where('status_disposisi', 'proses')->count(),
+            'selesai' => SuratMasuk::where('status_disposisi', 'selesai')->count(),
+        ];
+
         return view('dashboard', compact(
             'totalSantriAktif',
             'suratMasukBulanIni',
@@ -54,7 +88,13 @@ class DashboardController extends Controller
             'suratMasukTerbaru',
             'suratKeluarTerbaru',
             'pengaturans',
-            'totalKategoriSurat'
+            'totalKategoriSurat',
+            'chartBulanLabels',
+            'chartSuratMasukData',
+            'chartSuratKeluarData',
+            'santriStatusData',
+            'totalSantriSemua',
+            'disposisiStatusData'
         ));
     }
 }

@@ -37,16 +37,22 @@
     <body class="font-sans antialiased bg-gray-50 text-gray-900" x-data="{ sidebarOpen: false }">
         <x-page-loader />
 
-        <div class="min-h-screen flex flex-col md:flex-row">
+        <div class="min-h-screen flex flex-col lg:flex-row">
             <!-- Sidebar -->
             @include('layouts.sidebar')
 
-            <!-- Overlay for mobile sidebar -->
+            <!-- Overlay for mobile and tablet sidebar -->
             <div
                 x-show="sidebarOpen"
                 @click="sidebarOpen = false"
                 x-cloak
-                class="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-xs transition-opacity"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fixed inset-0 bg-slate-950/60 z-40 lg:hidden backdrop-blur-xs"
             ></div>
 
             <!-- Main Content Area -->
@@ -129,9 +135,24 @@
                     @endisset
                 </main>
 
-                <!-- Footer -->
-                <footer class="bg-white border-t border-gray-200 py-3.5 text-center text-xs md:text-sm text-gray-500">
-                    &copy; {{ date('Y') }} {{ \App\Models\Pengaturan::get('nama_situs', 'SAP | SEKRETARIS AL-FALAH PUTRA') }} &mdash; Pondok Pesantren Al Falah Putra
+                <!-- Footer Bersih & Responsif -->
+                <footer class="bg-white border-t border-gray-200/80 px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 mt-auto">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left text-xs text-gray-500">
+                        <div class="flex items-center gap-1.5 flex-wrap justify-center sm:justify-start">
+                            <span>&copy; {{ date('Y') }}</span>
+                            <span class="font-bold text-gray-800">SAP Al-Falah Putra</span>
+                            <span class="text-gray-300 hidden sm:inline">&bull;</span>
+                            <span class="text-gray-500">Pondok Pesantren Al-Falah Putak</span>
+                        </div>
+                        <div class="flex items-center gap-2.5 text-[11px] text-gray-400 font-mono">
+                            <span>v1.0 Produksi</span>
+                            <span>&bull;</span>
+                            <span class="inline-flex items-center gap-1 text-emerald-600 font-semibold">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Sistem Aktif
+                            </span>
+                        </div>
+                    </div>
                 </footer>
             </div>
         </div>
