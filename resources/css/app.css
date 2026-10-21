@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    /* Skala font dasar agar nyaman dan tidak kekecilan di layar desktop/laptop */
+    @media (min-width: 1024px) {
+        html {
+            font-size: 16.5px;
+        }
+    }
+    @media (min-width: 1280px) {
+        html {
+            font-size: 17px;
+        }
+    }
+}
