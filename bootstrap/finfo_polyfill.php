@@ -191,3 +191,25 @@ if (!function_exists('mime_content_type')) {
         return $result !== false ? $result : 'application/octet-stream';
     }
 }
+
+if (!function_exists('mb_strimwidth')) {
+    function mb_strimwidth(string $string, int $start, int $width, string $trim_marker = '', ?string $encoding = null): string
+    {
+        $encoding = $encoding ?? 'UTF-8';
+        if (function_exists('mb_substr')) {
+            return mb_substr($string, $start, $width, $encoding) . $trim_marker;
+        }
+        return substr($string, $start, $width) . $trim_marker;
+    }
+}
+
+if (!function_exists('mb_strwidth')) {
+    function mb_strwidth(string $string, ?string $encoding = null): int
+    {
+        if (function_exists('mb_strlen')) {
+            return mb_strlen($string, $encoding ?? 'UTF-8');
+        }
+        return strlen($string);
+    }
+}
+
