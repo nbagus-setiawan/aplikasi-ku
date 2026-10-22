@@ -42,24 +42,56 @@ class SuratKeluarController extends Controller
             'file_surat.mimes' => 'File surat harus berformat Word (.docx / .doc).',
         ]);
 
-        $parsed = $this->docxParserService->parseUploadedDocument($request->file('file_surat'));
+        try {
+            $parsed = $this->docxParserService->parseUploadedDocument($request->file('file_surat'));
 
-        // Buat saran nomor surat otomatis bila di dalam Word nomornya kosong atau belum lengkap
-        $kodeJenis = $parsed['kode_jenis'] ?: 'SPm.01';
-        $tglSurat = $parsed['tgl_surat'] ?: date('Y-m-d');
-        $pengaturan = Pengaturan::getAllKeyValues();
-        $lembaga = $pengaturan['kode_lembaga'] ?? 'AF-PA';
-        $bulanRomawi = $this->nomorSuratService->toRomanMonth((int) date('n', strtotime($tglSurat)));
-        $tahun = date('Y', strtotime($tglSurat));
-        $urutBerikutnya = str_pad((string) (SuratKeluar::whereYear('tgl_surat', $tahun)->withTrashed()->count() + 1), 3, '0', STR_PAD_LEFT);
-        $saranNomor = "{$urutBerikutnya}/{$kodeJenis}/{$lembaga}/{$bulanRomawi}/{$tahun}";
+            // Buat saran nomor surat otomatis bila di dalam Word nomornya kosong atau belum lengkap
+            $kodeJenis = $parsed['kode_jenis'] ?: 'SPm.01';
+            $tglSurat = $parsed['tgl_surat'] ?: date('Y-m-d');
+            $pengaturan = Pengaturan::getAllKeyValues();
+            $lembaga = $pengaturan['kode_lembaga'] ?? 'AF-PA';
+            $bulanRomawi = $this->nomorSuratService->toRomanMonth((int) date('n', strtotime($tglSurat)));
+            $tahun = date('Y', strtotime($tglSurat));
+            $urutBerikutnya = str_pad((string) (SuratKeluar::whereYear('tgl_surat', $tahun)->withTrashed()->count() + 1), 3, '0', STR_PAD_LEFT);
+            $saranNomor = "{$urutBerikutnya}/{$kodeJenis}/{$lembaga}/{$bulanRomawi}/{$tahun}";
 
-        return response()->json([
-            'success' => true,
-            'data' => array_merge($parsed, [
-                'saran_no_surat' => $saranNomor,
-            ]),
-        ]);
+            return response()->json([
+                'success' => true,
+                'data' => array_merge($parsed, [
+                    'saran_no_surat' => $saranNomor,
+                ]),
+            ]);
+        } catch (\Throwable $e) {
+            \Log::warning('Gagal parse otomatis file Word: ' . $e->getMessage(), ['exception' => $e]);
+
+            // Fallback aman agar proses upload tidak gagal server error
+            $fileName = pathinfo($request->file('file_surat')->getClientOriginalName(), PATHINFO_FILENAME);
+            $tglSurat = date('Y-m-d');
+            $pengaturan = Pengaturan::getAllKeyValues();
+            $lembaga = $pengaturan['kode_lembaga'] ?? 'AF-PA';
+            $bulanRomawi = $this->nomorSuratService->toRomanMonth((int) date('n'));
+            $tahun = date('Y');
+            $urutBerikutnya = str_pad((string) (SuratKeluar::whereYear('tgl_surat', $tahun)->withTrashed()->count() + 1), 3, '0', STR_PAD_LEFT);
+            $saranNomor = "{$urutBerikutnya}/SPm.01/{$lembaga}/{$bulanRomawi}/{$tahun}";
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'no_surat' => '',
+                    'is_nomor_lengkap' => false,
+                    'kode_jenis' => 'SPm.01',
+                    'lampiran_teks' => '-',
+                    'ada_lampiran' => false,
+                    'perihal' => $fileName,
+                    'tujuan' => 'Penerima Surat',
+                    'pengirim' => 'Instansi Pengirim',
+                    'tgl_surat' => $tglSurat,
+                    'tempat_surat' => 'Putak',
+                    'isi_html' => '<p>' . e($fileName) . '</p>',
+                    'saran_no_surat' => $saranNomor,
+                ],
+            ]);
+        }
     }
 
     /**
@@ -136,7 +168,12 @@ class SuratKeluarController extends Controller
 
         if ($request->hasFile('file_surat_asli')) {
             $uploadedWord = $request->file('file_surat_asli');
-            $parsedDocx = $this->docxParserService->parseUploadedDocument($uploadedWord);
+            try {
+                $parsedDocx = $this->docxParserService->parseUploadedDocument($uploadedWord);
+            } catch (\Throwable $e) {
+                \Log::warning('Gagal parse dokumen Word saat store: ' . $e->getMessage());
+            }
+            Storage::disk('public')->makeDirectory('surat-keluar-word');
             $fileSuratAsliPath = $uploadedWord->store('surat-keluar-word', 'public');
         }
 
@@ -312,14 +349,21 @@ class SuratKeluarController extends Controller
 
         // Jika diunggah dari Word (.docx), simpan asli Word + sisipkan QR & Kode Verifikasi tanpa mengubah format/tampilan Word
         if ($fileSuratAsliPath) {
-            $absPath = storage_path('app/public/' . $fileSuratAsliPath);
-            $hasilWordQr = $this->docxParserService->processOriginalWordWithQr($suratKeluar, $absPath);
-            $suratKeluar->file_surat_asli = $hasilWordQr['file_word_qr'] ?? $fileSuratAsliPath;
-            $suratKeluar->file_final = $hasilWordQr['file_tampilan'] ?? $suratKeluar->file_surat_asli;
-            $suratKeluar->save();
+            try {
+                $absPath = storage_path('app/public/' . $fileSuratAsliPath);
+                $hasilWordQr = $this->docxParserService->processOriginalWordWithQr($suratKeluar, $absPath);
+                $suratKeluar->file_surat_asli = $hasilWordQr['file_word_qr'] ?? $fileSuratAsliPath;
+                $suratKeluar->file_final = $hasilWordQr['file_tampilan'] ?? $suratKeluar->file_surat_asli;
+                $suratKeluar->save();
+            } catch (\Throwable $e) {
+                \Log::warning('Gagal menyisipkan QR ke Word: ' . $e->getMessage(), ['exception' => $e]);
+                $suratKeluar->file_surat_asli = $fileSuratAsliPath;
+                $suratKeluar->file_final = $fileSuratAsliPath;
+                $suratKeluar->save();
+            }
 
             return redirect()->route('admin.surat-keluar.index')
-                ->with('success', "Dokumen surat keluar ({$noSurat} - {$perihal}) berhasil disimpan asli beserta QR Code & Kode Verifikasi.");
+                ->with('success', "Dokumen surat keluar ({$noSurat} - {$perihal}) berhasil disimpan.");
         }
 
         // Jika dibuat manual (tanpa upload Word) dan sudah final / terkirim
