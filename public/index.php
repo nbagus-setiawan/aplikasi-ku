@@ -10,6 +10,9 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
     require $maintenance;
 }
 
+// Polyfill php_fileinfo jika tidak tersedia di server hosting
+require_once __DIR__.'/../bootstrap/finfo_polyfill.php';
+
 // Register the Composer autoloader...
 require __DIR__.'/../vendor/autoload.php';
 
