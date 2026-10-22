@@ -42,6 +42,11 @@
                 notifikasis: [],
                 loading: false,
 
+                // Mode Seleksi / Pilih untuk Hapus
+                selectMode: false,
+                selectedIds: [],
+                deleteLoading: false,
+
                 // Modal Pop-Up Pratinjau Pesan
                 previewOpen: false,
                 activeNotif: null,
@@ -106,6 +111,108 @@
                     }
                 },
 
+                toggleSelect(id) {
+                    const idx = this.selectedIds.indexOf(id);
+                    if (idx > -1) {
+                        this.selectedIds.splice(idx, 1);
+                    } else {
+                        this.selectedIds.push(id);
+                    }
+                },
+
+                toggleSelectAll() {
+                    if (this.selectedIds.length === this.notifikasis.length) {
+                        this.selectedIds = [];
+                    } else {
+                        this.selectedIds = this.notifikasis.map(n => n.id);
+                    }
+                },
+
+                async deleteSingle(item, event) {
+                    if (event) event.stopPropagation();
+                    if (!confirm('Hapus notifikasi ini?')) return;
+                    this.deleteLoading = true;
+                    try {
+                        const res = await fetch(`/admin/notifikasi/${item.id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            this.notifikasis = this.notifikasis.filter(n => n.id !== item.id);
+                            this.unreadCount = data.unread_count;
+                            this.selectedIds = this.selectedIds.filter(id => id !== item.id);
+                            if (this.previewOpen && this.activeNotif?.id === item.id) {
+                                this.previewOpen = false;
+                                this.activeNotif = null;
+                            }
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    } finally {
+                        this.deleteLoading = false;
+                    }
+                },
+
+                async deleteBatch() {
+                    if (this.selectedIds.length === 0) return;
+                    if (!confirm(`Hapus ${this.selectedIds.length} notifikasi yang dipilih?`)) return;
+                    this.deleteLoading = true;
+                    try {
+                        const res = await fetch('{{ route('admin.notifikasi.hapus-banyak') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({ ids: this.selectedIds })
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            this.notifikasis = this.notifikasis.filter(n => !this.selectedIds.includes(n.id));
+                            this.unreadCount = data.unread_count;
+                            this.selectedIds = [];
+                            this.selectMode = false;
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    } finally {
+                        this.deleteLoading = false;
+                    }
+                },
+
+                async deleteAll() {
+                    if (this.notifikasis.length === 0) return;
+                    if (!confirm('Yakin ingin menghapus seluruh notifikasi?')) return;
+                    this.deleteLoading = true;
+                    try {
+                        const res = await fetch('{{ route('admin.notifikasi.hapus-semua') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            this.notifikasis = [];
+                            this.unreadCount = 0;
+                            this.selectedIds = [];
+                            this.selectMode = false;
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    } finally {
+                        this.deleteLoading = false;
+                    }
+                },
+
                 init() {
                     this.fetchNotif();
                     // Polling data notifikasi setiap 25 detik
@@ -140,20 +247,66 @@
                 style="display: none;">
 
                 <!-- Header Dropdown -->
-                <div class="px-4 py-2.5 border-b border-gray-100 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-bold text-gray-900">Notifikasi Publik</span>
-                        <template x-if="unreadCount > 0">
-                            <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-100 text-rose-700"
-                                  x-text="unreadCount + ' Baru'"></span>
-                        </template>
-                    </div>
-                    <template x-if="unreadCount > 0">
-                        <button
-                            @click="markAllRead()"
-                            class="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 hover:underline">
-                            Tandai Semua Dibaca
-                        </button>
+                <div class="px-4 py-2.5 border-b border-gray-100 flex items-center justify-between gap-2 bg-gray-50/60">
+                    <!-- Tampilan Mode Normal -->
+                    <template x-if="!selectMode">
+                        <div class="flex items-center justify-between w-full">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold text-gray-900">Notifikasi Publik</span>
+                                <template x-if="unreadCount > 0">
+                                    <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-100 text-rose-700"
+                                          x-text="unreadCount + ' Baru'"></span>
+                                </template>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <template x-if="unreadCount > 0">
+                                    <button
+                                        @click="markAllRead()"
+                                        class="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 hover:underline">
+                                        Tandai Dibaca
+                                    </button>
+                                </template>
+                                <template x-if="notifikasis.length > 0">
+                                    <button
+                                        type="button"
+                                        @click="selectMode = true; selectedIds = []"
+                                        class="inline-flex items-center gap-1 text-[11px] font-bold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 transition shadow-2xs">
+                                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                                        <span>Pilih</span>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Tampilan Mode Seleksi / Pilih Hapus -->
+                    <template x-if="selectMode">
+                        <div class="flex items-center justify-between w-full">
+                            <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
+                                <input
+                                    type="checkbox"
+                                    :checked="selectedIds.length === notifikasis.length && notifikasis.length > 0"
+                                    @change="toggleSelectAll()"
+                                    class="w-4 h-4 rounded text-rose-600 focus:ring-rose-500 border-gray-300">
+                                <span>Pilih Semua (<span x-text="selectedIds.length"></span>)</span>
+                            </label>
+                            <div class="flex items-center gap-1.5">
+                                <button
+                                    type="button"
+                                    @click="deleteBatch()"
+                                    :disabled="selectedIds.length === 0 || deleteLoading"
+                                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 disabled:opacity-40 transition shadow-2xs">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    <span x-text="'Hapus (' + selectedIds.length + ')'"></span>
+                                </button>
+                                <button
+                                    type="button"
+                                    @click="selectMode = false; selectedIds = []"
+                                    class="px-2 py-1 rounded-lg text-xs font-semibold text-slate-600 bg-white hover:bg-slate-100 border border-slate-200 transition">
+                                    Batal
+                                </button>
+                            </div>
+                        </div>
                     </template>
                 </div>
 
@@ -170,9 +323,23 @@
 
                     <template x-for="item in notifikasis" :key="item.id">
                         <div
-                            @click="openPreview(item)"
-                            class="p-3.5 hover:bg-gray-50 transition cursor-pointer flex items-start gap-3 relative group"
-                            :class="!item.is_dibaca ? 'bg-emerald-50/40' : ''">
+                            @click="selectMode ? toggleSelect(item.id) : openPreview(item)"
+                            class="p-3 hover:bg-gray-50 transition cursor-pointer flex items-start gap-2.5 relative group"
+                            :class="{
+                                'bg-emerald-50/40': !item.is_dibaca && !selectedIds.includes(item.id),
+                                'bg-rose-50/60 ring-1 ring-inset ring-rose-200': selectMode && selectedIds.includes(item.id)
+                            }">
+
+                            <!-- Checkbox Seleksi -->
+                            <template x-if="selectMode">
+                                <div class="shrink-0 pt-1.5" @click.stop="toggleSelect(item.id)">
+                                    <input
+                                        type="checkbox"
+                                        :value="item.id"
+                                        :checked="selectedIds.includes(item.id)"
+                                        class="w-4 h-4 rounded text-rose-600 focus:ring-rose-500 border-gray-300 pointer-events-none">
+                                </div>
+                            </template>
 
                             <!-- Ikon Tipe -->
                             <div class="w-8 h-8 rounded-xl shrink-0 flex items-center justify-center text-sm shadow-xs mt-0.5"
@@ -189,24 +356,50 @@
                             </div>
 
                             <!-- Konten Ringkas -->
-                            <div class="flex-1 min-w-0 pr-4">
+                            <div class="flex-1 min-w-0 pr-1">
                                 <div class="flex items-center justify-between gap-1 mb-0.5">
                                     <h4 class="text-xs font-bold text-gray-900 truncate" x-text="item.judul"></h4>
                                 </div>
                                 <p class="text-xs text-gray-600 line-clamp-2 leading-relaxed" x-text="item.pesan_singkat"></p>
                                 <div class="flex items-center justify-between mt-1.5">
                                     <span class="text-[10px] text-gray-400" x-text="item.waktu"></span>
-                                    <span class="text-[10px] text-emerald-700 font-semibold group-hover:underline">Lihat Pratinjau →</span>
+                                    <template x-if="!selectMode">
+                                        <span class="text-[10px] text-emerald-700 font-semibold group-hover:underline">Buka →</span>
+                                    </template>
                                 </div>
                             </div>
 
-                            <!-- Titik Penanda Belum Dibaca -->
-                            <template x-if="!item.is_dibaca">
-                                <span class="absolute top-4 right-3 w-2 h-2 rounded-full bg-rose-600"></span>
+                            <!-- Indikator Belum Dibaca & Tombol Hapus Satuan Cepat -->
+                            <template x-if="!selectMode">
+                                <div class="shrink-0 flex items-center gap-1 pt-0.5">
+                                    <template x-if="!item.is_dibaca">
+                                        <span class="w-2 h-2 rounded-full bg-rose-600 block"></span>
+                                    </template>
+                                    <button
+                                        type="button"
+                                        @click="deleteSingle(item, $event)"
+                                        title="Hapus notifikasi ini"
+                                        class="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition opacity-80 sm:opacity-0 group-hover:opacity-100">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </div>
                             </template>
                         </div>
                     </template>
                 </div>
+
+                <!-- Footer Dropdown Ringkasan -->
+                <template x-if="notifikasis.length > 0 && !selectMode">
+                    <div class="px-4 py-2 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between text-[11px]">
+                        <span class="text-gray-500">Total: <b x-text="notifikasis.length"></b> notifikasi</span>
+                        <button
+                            type="button"
+                            @click="deleteAll()"
+                            class="text-rose-600 hover:text-rose-800 font-semibold hover:underline">
+                            Bersihkan Semua
+                        </button>
+                    </div>
+                </template>
             </div>
 
             <!-- MODAL POP-UP PRATINJAU PESAN LENGKAP -->
@@ -287,21 +480,31 @@
                         </div>
 
                         <!-- Footer Modal Pratinjau -->
-                        <div class="flex items-center justify-between gap-3 pt-3 border-t border-gray-100">
-                            <template x-if="activeNotif?.link">
-                                <a :href="activeNotif.link"
-                                   target="_blank"
-                                   class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                                    <span>Buka Halaman Terkait</span>
-                                </a>
-                            </template>
+                        <div class="flex items-center justify-between gap-2.5 pt-3 border-t border-gray-100 flex-wrap">
                             <button
                                 type="button"
-                                @click="previewOpen = false"
-                                class="ml-auto px-5 py-2 rounded-xl text-xs font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 transition">
-                                Tutup
+                                @click="deleteSingle(activeNotif)"
+                                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 border border-rose-200 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                <span>Hapus</span>
                             </button>
+
+                            <div class="flex items-center gap-2 ml-auto">
+                                <template x-if="activeNotif?.link">
+                                    <a :href="activeNotif.link"
+                                       target="_blank"
+                                       class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                        <span>Buka Halaman</span>
+                                    </a>
+                                </template>
+                                <button
+                                    type="button"
+                                    @click="previewOpen = false"
+                                    class="px-5 py-2 rounded-xl text-xs font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 transition">
+                                    Tutup
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

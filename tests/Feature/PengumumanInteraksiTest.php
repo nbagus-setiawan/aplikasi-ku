@@ -231,4 +231,74 @@ class PengumumanInteraksiTest extends TestCase
 
         $this->assertEquals(0, Notifikasi::belumDibaca()->count());
     }
+
+    public function test_admin_dapat_menghapus_satu_notifikasi(): void
+    {
+        $notif = Notifikasi::create([
+            'judul' => 'Suka Baru',
+            'pesan' => 'Pesan suka baru',
+            'tipe' => 'like',
+            'is_dibaca' => false,
+        ]);
+
+        $response = $this->actingAs($this->admin)->deleteJson(route('admin.notifikasi.destroy', $notif->id));
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Notifikasi berhasil dihapus.',
+            ]);
+
+        $this->assertDatabaseMissing('notifikasis', [
+            'id' => $notif->id,
+        ]);
+    }
+
+    public function test_admin_dapat_menghapus_banyak_notifikasi_terpilih(): void
+    {
+        $notif1 = Notifikasi::create([
+            'judul' => 'Notif 1',
+            'pesan' => 'Pesan 1',
+            'tipe' => 'like',
+        ]);
+        $notif2 = Notifikasi::create([
+            'judul' => 'Notif 2',
+            'pesan' => 'Pesan 2',
+            'tipe' => 'komentar',
+        ]);
+        $notif3 = Notifikasi::create([
+            'judul' => 'Notif 3',
+            'pesan' => 'Pesan 3',
+            'tipe' => 'share',
+        ]);
+
+        $response = $this->actingAs($this->admin)->postJson(route('admin.notifikasi.hapus-banyak'), [
+            'ids' => [$notif1->id, $notif2->id],
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+            ]);
+
+        $this->assertDatabaseMissing('notifikasis', ['id' => $notif1->id]);
+        $this->assertDatabaseMissing('notifikasis', ['id' => $notif2->id]);
+        $this->assertDatabaseHas('notifikasis', ['id' => $notif3->id]);
+    }
+
+    public function test_admin_dapat_membersihkan_seluruh_notifikasi(): void
+    {
+        Notifikasi::create(['judul' => 'N1', 'pesan' => 'P1', 'tipe' => 'like']);
+        Notifikasi::create(['judul' => 'N2', 'pesan' => 'P2', 'tipe' => 'komentar']);
+
+        $response = $this->actingAs($this->admin)->postJson(route('admin.notifikasi.hapus-semua'));
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'unread_count' => 0,
+            ]);
+
+        $this->assertEquals(0, Notifikasi::count());
+    }
 }

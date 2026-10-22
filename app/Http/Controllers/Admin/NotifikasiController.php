@@ -85,4 +85,56 @@ class NotifikasiController extends Controller
             'message' => 'Semua notifikasi telah ditandai sebagai dibaca.',
         ]);
     }
+
+    /**
+     * Hapus satu notifikasi.
+     */
+    public function destroy(Notifikasi $notifikasi): JsonResponse
+    {
+        $notifikasi->delete();
+
+        $unreadCount = Notifikasi::belumDibaca()->count();
+
+        return response()->json([
+            'success' => true,
+            'unread_count' => $unreadCount,
+            'message' => 'Notifikasi berhasil dihapus.',
+        ]);
+    }
+
+    /**
+     * Hapus banyak notifikasi sekaligus (batch delete).
+     */
+    public function destroyBatch(Request $request): JsonResponse
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:notifikasis,id',
+        ]);
+
+        $ids = $request->input('ids', []);
+        Notifikasi::whereIn('id', $ids)->delete();
+
+        $unreadCount = Notifikasi::belumDibaca()->count();
+
+        return response()->json([
+            'success' => true,
+            'unread_count' => $unreadCount,
+            'message' => count($ids) . ' notifikasi berhasil dihapus.',
+        ]);
+    }
+
+    /**
+     * Bersihkan seluruh notifikasi.
+     */
+    public function destroyAll(): JsonResponse
+    {
+        Notifikasi::query()->delete();
+
+        return response()->json([
+            'success' => true,
+            'unread_count' => 0,
+            'message' => 'Semua notifikasi berhasil dibersihkan.',
+        ]);
+    }
 }

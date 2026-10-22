@@ -93,6 +93,12 @@
                         'waktu' => $k->created_at->diffForHumans()
                     ])->values()),
 
+                    // Batasan Komentar: Hanya Tampilkan 3 Terbaru secara Default
+                    showAllKomentar: false,
+                    get displayedKomentars() {
+                        return this.showAllKomentar ? this.komentars : this.komentars.slice(0, 3);
+                    },
+
                     async toggleLike() {
                         if (this.likeLoading) return;
                         this.likeLoading = true;
@@ -346,16 +352,21 @@
                         </div>
                     </div>
 
-                    <!-- SECTION DAFTAR KOMENTAR & DOA -->
-                    <div class="pt-8 border-t border-slate-200/80 space-y-5">
+                    <!-- SECTION DAFTAR KOMENTAR & DOA (Hanya 3 Terbaru) -->
+                    <div class="pt-8 border-t border-slate-200/80 space-y-4">
                         <div class="flex items-center justify-between flex-wrap gap-3">
                             <div class="flex items-center gap-2">
                                 <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm">
                                     💬
                                 </div>
-                                <h3 class="text-base sm:text-lg font-bold text-slate-900">
-                                    Komentar & Doa (<span x-text="komentarsCount"></span>)
-                                </h3>
+                                <div>
+                                    <h3 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">
+                                        Komentar & Doa Terbaru (<span x-text="komentarsCount"></span>)
+                                    </h3>
+                                    <template x-if="komentars.length > 3 && !showAllKomentar">
+                                        <p class="text-[11px] text-slate-400">Menampilkan 3 komentar terbaru</p>
+                                    </template>
+                                </div>
                             </div>
                             <button
                                 @click="modalKomentarOpen = true"
@@ -365,7 +376,7 @@
                             </button>
                         </div>
 
-                        <!-- Daftar Komentar (Realtime, Bersih & Nyaman di HP) -->
+                        <!-- Daftar Komentar (Realtime, Hanya 3 Terbaru secara Default) -->
                         <div class="space-y-3">
                             <template x-if="komentars.length === 0">
                                 <div class="text-center py-7 px-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
@@ -376,17 +387,30 @@
                                 </div>
                             </template>
 
-                            <template x-for="item in komentars" :key="item.id">
-                                <div class="p-4 rounded-2xl bg-slate-50/90 border border-slate-200/70 space-y-1.5 transition">
+                            <template x-for="item in displayedKomentars" :key="item.id">
+                                <div class="p-3.5 sm:p-4 rounded-2xl bg-slate-50/90 border border-slate-200/70 space-y-1.5 transition">
                                     <div class="flex items-center justify-between">
                                         <div class="flex items-center gap-2.5">
-                                            <div class="w-7 h-7 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs uppercase"
+                                            <div class="w-7 h-7 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs uppercase shrink-0"
                                                  x-text="item.inisial"></div>
                                             <span class="text-xs sm:text-sm font-bold text-slate-800" x-text="item.nama"></span>
                                         </div>
                                         <span class="text-[11px] text-slate-400 font-medium" x-text="item.waktu"></span>
                                     </div>
                                     <p class="text-xs sm:text-sm text-slate-700 leading-relaxed pl-9 whitespace-pre-line" x-text="item.isi"></p>
+                                </div>
+                            </template>
+
+                            <!-- Tombol Selengkapnya Jika Lebih dari 3 Komentar -->
+                            <template x-if="komentars.length > 3">
+                                <div class="text-center pt-2">
+                                    <button
+                                        type="button"
+                                        @click="showAllKomentar = !showAllKomentar"
+                                        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 transition border border-emerald-200/80 shadow-2xs">
+                                        <span x-text="showAllKomentar ? 'Tampilkan 3 Komentar Saja' : 'Lihat Semua Komentar (' + komentars.length + ')'"></span>
+                                        <svg class="w-3.5 h-3.5 transition-transform" :class="showAllKomentar ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
                                 </div>
                             </template>
                         </div>

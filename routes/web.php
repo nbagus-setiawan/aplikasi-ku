@@ -106,6 +106,9 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('admin.notifikasi.index');
     Route::patch('/notifikasi/{notifikasi}/baca', [NotifikasiController::class, 'markAsRead'])->name('admin.notifikasi.baca');
     Route::post('/notifikasi/baca-semua', [NotifikasiController::class, 'markAllRead'])->name('admin.notifikasi.baca-semua');
+    Route::delete('/notifikasi/{notifikasi}', [NotifikasiController::class, 'destroy'])->name('admin.notifikasi.destroy');
+    Route::post('/notifikasi/hapus-banyak', [NotifikasiController::class, 'destroyBatch'])->name('admin.notifikasi.hapus-banyak');
+    Route::post('/notifikasi/hapus-semua', [NotifikasiController::class, 'destroyAll'])->name('admin.notifikasi.hapus-semua');
 });
 
 // Rute Profil & Dashboard Legacy Redirect
