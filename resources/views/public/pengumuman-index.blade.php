@@ -23,30 +23,37 @@
 <section class="py-6 sm:py-10 bg-slate-50 min-h-[600px]">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 space-y-6">
 
-        <!-- Area Pencarian & Filter Kategori yang Ringkas & Simple (Tidak Memenuhi Tempat) -->
-        <div class="space-y-3">
-            <form action="{{ url('/pengumuman') }}" method="GET" class="max-w-xl mx-auto">
+        <!-- Area Pencarian & Filter Kategori yang Ringkas & Rapi -->
+        <div class="space-y-4 max-w-xl mx-auto">
+            <form action="{{ url('/pengumuman') }}" method="GET" class="w-full">
                 @if(request('kategori'))
                     <input type="hidden" name="kategori" value="{{ request('kategori') }}">
                 @endif
-                <div class="relative flex items-center">
+                <div class="relative w-full flex items-center">
+                    <!-- Icon Search di Kiri -->
+                    <div style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); pointer-events: none;" class="text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+
+                    <!-- Input Search -->
                     <input type="text"
                            name="q"
                            value="{{ request('q') }}"
                            placeholder="Cari warta pesantren..."
-                           class="w-full pl-10 pr-24 py-2.5 sm:py-3 rounded-full border border-slate-300 bg-white shadow-xs focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-sm">
-                    <svg class="w-4 h-4 text-slate-400 absolute left-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                    <div class="absolute right-1.5 flex items-center gap-1">
+                           class="w-full pl-10 pr-24 py-2.5 sm:py-3 rounded-full border border-slate-300 bg-white shadow-xs focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-sm placeholder:text-slate-400">
+
+                    <!-- Tombol Aksi di Kanan -->
+                    <div style="position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 4px;">
                         @if(request('q'))
                             <a href="{{ url('/pengumuman' . (request('kategori') ? '?kategori=' . request('kategori') : '')) }}"
-                               class="text-xs text-slate-400 hover:text-slate-600 px-2 py-1" title="Hapus pencarian">
-                               ✕
+                               class="text-xs text-slate-400 hover:text-slate-600 px-1.5 py-1" title="Hapus pencarian">
+                                ✕
                             </a>
                         @endif
                         <button type="submit"
-                                class="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 transition">
+                                class="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 transition shadow-2xs whitespace-nowrap">
                             Cari
                         </button>
                     </div>
@@ -54,14 +61,14 @@
             </form>
 
             <!-- Kategori Tabs (Pills Horizontal Rapi & Mudah Dipilih di HP) -->
-            <div class="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto py-1 no-scrollbar text-xs">
+            <div class="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
                 <a href="{{ url('/pengumuman' . (request('q') ? '?q=' . urlencode(request('q')) : '')) }}"
-                   class="px-3.5 py-1.5 rounded-full font-semibold whitespace-nowrap transition {{ !request('kategori') ? 'bg-emerald-800 text-white shadow-xs' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200' }}">
+                   class="px-4 py-1.5 rounded-full font-semibold whitespace-nowrap transition shadow-2xs {{ !request('kategori') ? 'bg-emerald-800 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200' }}">
                     Semua
                 </a>
                 @foreach(['umum' => 'Umum', 'santri' => 'Santri', 'wali' => 'Wali Santri', 'akademik' => 'Akademik'] as $slug => $label)
                     <a href="{{ url('/pengumuman?kategori=' . $slug . (request('q') ? '&q=' . urlencode(request('q')) : '')) }}"
-                       class="px-3.5 py-1.5 rounded-full font-semibold whitespace-nowrap transition {{ request('kategori') === $slug ? 'bg-emerald-800 text-white shadow-xs' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200' }}">
+                       class="px-4 py-1.5 rounded-full font-semibold whitespace-nowrap transition shadow-2xs {{ request('kategori') === $slug ? 'bg-emerald-800 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200' }}">
                         {{ $label }}
                     </a>
                 @endforeach
