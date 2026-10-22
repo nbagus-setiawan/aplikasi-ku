@@ -194,12 +194,25 @@
                         </div>
                     @endif
 
-                    @if ($surat->file_final || $surat->file_surat_asli)
-                        @php
-                            $tampilanPath = $surat->file_final ?: $surat->file_surat_asli;
-                            $extTampilan = strtolower(pathinfo($tampilanPath, PATHINFO_EXTENSION));
-                            $isGambarAsli = in_array($extTampilan, ['png', 'jpg', 'jpeg', 'webp'], true);
-                        @endphp
+                    @php
+                        $tampilanPath = $surat->file_final;
+                        $extTampilan = $tampilanPath ? strtolower(pathinfo($tampilanPath, PATHINFO_EXTENSION)) : '';
+                        if (empty($tampilanPath) || $extTampilan === 'docx') {
+                            $matchingPngs = glob(storage_path('app/public/surat-keluar/dokumen-' . $surat->id . '-*.png')) ?: [];
+                            if (! empty($matchingPngs)) {
+                                $tampilanPath = 'surat-keluar/' . basename($matchingPngs[0]);
+                                $extTampilan = 'png';
+                            } else {
+                                $matchingPdfs = glob(storage_path('app/public/surat-keluar/asli-pdf-' . $surat->id . '-*.pdf')) ?: [];
+                                if (! empty($matchingPdfs)) {
+                                    $tampilanPath = 'surat-keluar/' . basename($matchingPdfs[0]);
+                                    $extTampilan = 'pdf';
+                                }
+                            }
+                        }
+                        $isGambarAsli = in_array($extTampilan, ['png', 'jpg', 'jpeg', 'webp'], true);
+                    @endphp
+                    @if ($tampilanPath && ($isGambarAsli || $extTampilan === 'pdf'))
                         <div class="pt-3 space-y-3">
                             <div class="flex items-center justify-between">
                                 <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-900">📄 Dokumen Surat Asli Resmi (Ber-QR Code)</span>

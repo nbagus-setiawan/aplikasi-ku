@@ -596,6 +596,34 @@ class SuratKeluarController extends Controller
         }
 
         // 2. FORMAT PDF RESMI BER-QR CODE DAN KODE VERIFIKASI
+        // Jika berkas asli diunggah dari Word, utamakan PDF hasil konversi langsung dari dokumen Word aslinya
+        $pdfBinary = null;
+
+        if (! empty($suratKeluar->file_final) && str_ends_with(strtolower($suratKeluar->file_final), '.pdf') && Storage::disk('public')->exists($suratKeluar->file_final)) {
+            $pdfBinary = Storage::disk('public')->get($suratKeluar->file_final);
+        } elseif (! empty($suratKeluar->file_surat_asli) && Storage::disk('public')->exists($suratKeluar->file_surat_asli)) {
+            $matchingPdfs = glob(storage_path('app/public/surat-keluar/asli-pdf-' . $suratKeluar->id . '-*.pdf')) ?: [];
+            if (! empty($matchingPdfs) && is_file($matchingPdfs[0])) {
+                $pdfBinary = file_get_contents($matchingPdfs[0]);
+            } else {
+                $absDocx = storage_path('app/public/' . $suratKeluar->file_surat_asli);
+                $pdfBinary = $this->docxParserService->convertDocxToPdf($absDocx);
+                if ($pdfBinary) {
+                    $savedPdfRel = 'surat-keluar/asli-pdf-' . $suratKeluar->id . '-' . Str::random(4) . '.pdf';
+                    Storage::disk('public')->put($savedPdfRel, $pdfBinary);
+                }
+            }
+        }
+
+        if ($pdfBinary) {
+            $disposition = $isDownload ? 'attachment' : 'inline';
+            return response($pdfBinary, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => $disposition . '; filename="surat-' . $slugNo . '.pdf"',
+            ]);
+        }
+
+        // Fallback untuk surat yang dibuat lewat formulir teks biasa (tanpa unggah Word):
         $pdf = $this->tandaTanganService->renderPdf($suratKeluar);
 
         if ($isDownload || $request->query('format') === 'pdf') {

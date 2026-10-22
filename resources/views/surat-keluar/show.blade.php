@@ -232,10 +232,25 @@
                 <!-- PRATINJAU DOKUMEN SURAT RESMI (BER-QR CODE DAN KODE VERIFIKASI) -->
                 @php
                     $tampilanGambar = null;
+                    $tampilanPdf = null;
                     if (!empty($suratKeluar->file_final)) {
                         $extFin = strtolower(pathinfo($suratKeluar->file_final, PATHINFO_EXTENSION));
                         if (in_array($extFin, ['png', 'jpg', 'jpeg', 'webp'], true) && Storage::disk('public')->exists($suratKeluar->file_final)) {
                             $tampilanGambar = asset('storage/' . $suratKeluar->file_final);
+                        } elseif ($extFin === 'pdf' && Storage::disk('public')->exists($suratKeluar->file_final)) {
+                            $tampilanPdf = asset('storage/' . $suratKeluar->file_final);
+                        }
+                    }
+
+                    if (! $tampilanGambar && ! $tampilanPdf && ! empty($suratKeluar->file_surat_asli)) {
+                        $matchingPngs = glob(storage_path('app/public/surat-keluar/dokumen-' . $suratKeluar->id . '-*.png')) ?: [];
+                        if (! empty($matchingPngs)) {
+                            $tampilanGambar = asset('storage/surat-keluar/' . basename($matchingPngs[0]));
+                        } else {
+                            $matchingPdfs = glob(storage_path('app/public/surat-keluar/asli-pdf-' . $suratKeluar->id . '-*.pdf')) ?: [];
+                            if (! empty($matchingPdfs)) {
+                                $tampilanPdf = asset('storage/surat-keluar/' . basename($matchingPdfs[0]));
+                            }
                         }
                     }
                 @endphp
@@ -279,6 +294,12 @@
                         @if ($tampilanGambar)
                             <div class="w-full max-w-3xl bg-white p-3 rounded-2xl shadow-md border border-slate-200">
                                 <img src="{{ $tampilanGambar }}" alt="Dokumen Surat Resmi {{ $suratKeluar->no_surat }}" class="w-full h-auto rounded-xl mx-auto shadow-xs" />
+                            </div>
+                        @elseif ($tampilanPdf)
+                            <div class="w-full max-w-3xl bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+                                <iframe src="{{ $tampilanPdf }}#toolbar=0"
+                                        class="w-full h-[850px] border-0"
+                                        title="Dokumen Lembar Surat Resmi {{ $suratKeluar->no_surat }}"></iframe>
                             </div>
                         @else
                             <div class="w-full max-w-3xl bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">

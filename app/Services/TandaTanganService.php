@@ -14,11 +14,20 @@ use Illuminate\Support\Str;
 class TandaTanganService
 {
     /**
-     * Hasilkan data URI SVG QR Code untuk tautan verifikasi.
+     * Hasilkan data URI PNG QR Code untuk tautan verifikasi (didukung penuh oleh Dompdf dan HTML).
      */
     public function generateQrCode(string $url): string
     {
-        return (new QRCode)->render($url);
+        try {
+            $options = new \chillerlan\QRCode\QROptions();
+            $options->outputInterface = \chillerlan\QRCode\Output\QRGdImagePNG::class;
+            $options->imageBase64 = true;
+            $options->scale = 5;
+
+            return (new QRCode($options))->render($url);
+        } catch (\Throwable $e) {
+            return (new QRCode)->render($url);
+        }
     }
 
     /**

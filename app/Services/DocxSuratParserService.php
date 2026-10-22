@@ -450,15 +450,18 @@ class DocxSuratParserService
     public function generateQrPngFile(string $url, string $targetPngPath): bool
     {
         try {
-            $options = new QROptions([
-                'outputInterface' => \chillerlan\QRCode\Output\QRGdImagePNG::class,
-                'scale' => 6,
-                'outputBase64' => false,
-                'imageTransparent' => false,
-            ]);
-            $pngData = (new QRCode($options))->render($url);
-            if (is_string($pngData) && strlen($pngData) > 0) {
-                file_put_contents($targetPngPath, $pngData);
+            $options = new QROptions();
+            $options->outputInterface = \chillerlan\QRCode\Output\QRGdImagePNG::class;
+            $options->scale = 5;
+            $options->imageBase64 = false;
+            $raw = (new QRCode($options))->render($url);
+
+            if (is_string($raw) && str_starts_with($raw, 'data:')) {
+                $raw = base64_decode(explode(',', $raw, 2)[1] ?? '');
+            }
+
+            if (is_string($raw) && strlen($raw) > 0) {
+                file_put_contents($targetPngPath, $raw);
             }
         } catch (\Throwable $e) {
             // Lanjut ke fallback matrix GD di bawah
@@ -477,7 +480,7 @@ class DocxSuratParserService
             $qr->addByteSegment($url);
             $matrix = $qr->getQRMatrix();
             $size = $matrix->getSize();
-            $scale = 6;
+            $scale = 5;
             $imgSize = $size * $scale;
 
             $im = imagecreatetruecolor($imgSize, $imgSize);
@@ -510,6 +513,81 @@ class DocxSuratParserService
     }
 
     /**
+     * Buat badge verifikasi resmi berupa file gambar PNG yang memuat:
+     * - QR Code resmi
+     * - Kotak berbingkai rapi warna hijau emerald
+     * - Teks tebal "Kode: [KODE_VERIFIKASI]"
+     * - Label resmi "PP. AL-FALAH PUTAK"
+     */
+    public function generateQrBadgePng(string $url, string $kodeVerifikasi, string $targetPngPath): bool
+    {
+        $qrTemp = $targetPngPath . '.qr_tmp.png';
+        $ok = $this->generateQrPngFile($url, $qrTemp);
+        if (! $ok || ! is_file($qrTemp)) {
+            return false;
+        }
+
+        if (! function_exists('imagecreatefrompng')) {
+            rename($qrTemp, $targetPngPath);
+            return is_file($targetPngPath);
+        }
+
+        $qrImg = @imagecreatefrompng($qrTemp);
+        @unlink($qrTemp);
+        if (! $qrImg) {
+            return false;
+        }
+
+        $qrW = imagesx($qrImg);
+        $qrH = imagesy($qrImg);
+
+        $padX = 14;
+        $padTop = 14;
+        $padBottom = 12;
+        $textHeight = 36;
+        $badgeW = $qrW + ($padX * 2);
+        $badgeH = $qrH + $padTop + $padBottom + $textHeight;
+
+        $badge = imagecreatetruecolor($badgeW, $badgeH);
+        $white = imagecolorallocate($badge, 255, 255, 255);
+        $emerald = imagecolorallocate($badge, 16, 185, 129);
+        $dark = imagecolorallocate($badge, 15, 23, 42);
+        $greenText = imagecolorallocate($badge, 4, 120, 87);
+
+        // Latar putih bersih
+        imagefilledrectangle($badge, 0, 0, $badgeW - 1, $badgeH - 1, $white);
+
+        // Garis batas luar emerald ganda rapi
+        imagerectangle($badge, 0, 0, $badgeW - 1, $badgeH - 1, $emerald);
+        imagerectangle($badge, 1, 1, $badgeW - 2, $badgeH - 2, $emerald);
+
+        // Salin QR Code di tengah
+        imagecopy($badge, $qrImg, $padX, $padTop, 0, 0, $qrW, $qrH);
+        imagedestroy($qrImg);
+
+        // Teks Kode Verifikasi
+        $labelKode = 'Kode: ' . strtoupper($kodeVerifikasi);
+        $font = 3;
+        $fontW = imagefontwidth($font);
+        $textX = max(4, (int) (($badgeW - (strlen($labelKode) * $fontW)) / 2));
+        $textY = $padTop + $qrH + 6;
+        imagestring($badge, $font, $textX, $textY, $labelKode, $dark);
+
+        // Subteks pesantren
+        $labelSub = 'PP. AL-FALAH PUTAK';
+        $fontSub = 2;
+        $fontSubW = imagefontwidth($fontSub);
+        $subX = max(4, (int) (($badgeW - (strlen($labelSub) * $fontSub)) / 2));
+        $subY = $textY + 16;
+        imagestring($badge, $fontSub, $subX, $subY, $labelSub, $greenText);
+
+        imagepng($badge, $targetPngPath);
+        imagedestroy($badge);
+
+        return is_file($targetPngPath) && filesize($targetPngPath) > 0;
+    }
+
+    /**
      * Pastikan surat keluar yang berasal dari upload Word sudah memiliki gambar tampilan ber-QR dan file Word ber-QR.
      */
     public function ensureWordQrProcessed(SuratKeluar $suratKeluar): void
@@ -518,16 +596,14 @@ class DocxSuratParserService
             return;
         }
 
-        // Jika sudah ada berkas Word yang mengandung kode verifikasi atau word-qr
+        // Jika sudah ada berkas Word yang mengandung word-qr dan tampilan sudah ada
         $hasQrWord = str_contains($suratKeluar->file_surat_asli, 'word-qr-')
             && Storage::disk('public')->exists($suratKeluar->file_surat_asli);
+        $hasFinalDisplay = ! empty($suratKeluar->file_final)
+            && Storage::disk('public')->exists($suratKeluar->file_final)
+            && ! str_ends_with(strtolower($suratKeluar->file_final), '.docx');
 
-        if ($hasQrWord) {
-            // Pastikan file_final bukan .docx
-            if (! empty($suratKeluar->file_final) && str_ends_with(strtolower($suratKeluar->file_final), '.docx')) {
-                $suratKeluar->file_final = null;
-                $suratKeluar->save();
-            }
+        if ($hasQrWord && $hasFinalDisplay) {
             return;
         }
 
@@ -544,9 +620,9 @@ class DocxSuratParserService
             $updated = true;
         }
 
-        // HANYA simpan file_final jika berkas bertipe gambar (.png/.jpg) atau pdf
-        if (! empty($hasil['file_tampilan']) && ! str_ends_with(strtolower($hasil['file_tampilan']), '.docx')) {
-            $suratKeluar->file_final = $hasil['file_tampilan'];
+        $finalTarget = $hasil['file_tampilan'] ?? $hasil['file_pdf'] ?? null;
+        if (! empty($finalTarget) && ! str_ends_with(strtolower($finalTarget), '.docx')) {
+            $suratKeluar->file_final = $finalTarget;
             $updated = true;
         } elseif (! empty($suratKeluar->file_final) && str_ends_with(strtolower($suratKeluar->file_final), '.docx')) {
             $suratKeluar->file_final = null;
@@ -652,9 +728,9 @@ class DocxSuratParserService
                     // Penandatangan
                     '<w:p><w:pPr><w:spacing w:before="240" w:after="40"/><w:ind w:left="5000"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:sz w:val="22"/></w:rPr><w:t>' . htmlspecialchars($jabatanPenandatangan, ENT_XML1, 'UTF-8') . '</w:t></w:r></w:p>' .
                     '<w:p><w:pPr><w:spacing w:before="720" w:after="40"/><w:ind w:left="5000"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:b/><w:u w:val="single"/><w:sz w:val="22"/></w:rPr><w:t>' . htmlspecialchars($namaPenandatangan, ENT_XML1, 'UTF-8') . '</w:t></w:r></w:p>' .
-                    // QR Code & Kode Verifikasi di Kiri Bawah
+                    // QR Code & Kode Verifikasi di Kanan Bawah
                     '<w:p>' .
-                        '<w:pPr><w:jc w:val="left"/><w:spacing w:before="240" w:after="0"/></w:pPr>' .
+                        '<w:pPr><w:jc w:val="right"/><w:spacing w:before="240" w:after="0"/></w:pPr>' .
                         '<w:r>' .
                             '<w:drawing>' .
                                 '<wp:inline distT="0" distB="0" distL="0" distR="0">' .
@@ -683,7 +759,7 @@ class DocxSuratParserService
                         '</w:r>' .
                     '</w:p>' .
                     '<w:p>' .
-                        '<w:pPr><w:jc w:val="left"/><w:spacing w:before="0" w:after="0"/></w:pPr>' .
+                        '<w:pPr><w:jc w:val="right"/><w:spacing w:before="0" w:after="0"/></w:pPr>' .
                         '<w:r>' .
                             '<w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:sz w:val="16"/><w:b/></w:rPr>' .
                             '<w:t>Kode Verifikasi: ' . $kodeEscaped . '</w:t>' .
@@ -747,7 +823,7 @@ class DocxSuratParserService
     public function processOriginalWordWithQr(SuratKeluar $suratKeluar, string $sourceAbsolutePath): array
     {
         if (! is_file($sourceAbsolutePath)) {
-            return ['file_word_qr' => null, 'file_tampilan' => null];
+            return ['file_word_qr' => null, 'file_tampilan' => null, 'file_pdf' => null];
         }
 
         // Gunakan /tmp agar path bebas dari spasi atau karakter '|' saat dipanggil oleh LibreOffice & pdftoppm
@@ -759,27 +835,29 @@ class DocxSuratParserService
         try {
             $ext = strtolower(pathinfo($sourceAbsolutePath, PATHINFO_EXTENSION));
             $verifikasiUrl = url('/verifikasi/' . $suratKeluar->kode_verifikasi);
-            $qrPngPath = $tempDir . '/qr.png';
-            $this->generateQrPngFile($verifikasiUrl, $qrPngPath);
-
-            // Render tampilan asli dari dokumen sumber terlebih dahulu (jika ada tool eksternal)
-            $savedImageRel = $this->renderWordAsOriginalImage($sourceAbsolutePath, $qrPngPath, $suratKeluar, $tempDir);
+            $badgePngPath = $tempDir . '/qr_verifikasi.png';
+            $this->generateQrBadgePng($verifikasiUrl, $suratKeluar->kode_verifikasi, $badgePngPath);
 
             $workingDocx = $tempDir . '/surat_ber_qr.docx';
             copy($sourceAbsolutePath, $workingDocx);
 
             $savedWordQrRel = null;
-            if ($ext === 'docx' && is_file($qrPngPath)) {
-                $injected = $this->injectQrIntoDocx($workingDocx, $qrPngPath, $suratKeluar->kode_verifikasi, $suratKeluar->no_surat);
+            if ($ext === 'docx' && is_file($badgePngPath)) {
+                $injected = $this->injectQrIntoDocx($workingDocx, $badgePngPath, $suratKeluar->kode_verifikasi, $suratKeluar->no_surat);
                 if ($injected) {
                     $savedWordQrRel = 'surat-keluar/word-qr-' . ($suratKeluar->id ?: time()) . '-' . Str::random(4) . '.docx';
                     Storage::disk('public')->put($savedWordQrRel, file_get_contents($workingDocx));
                 }
             }
 
+            // Render PDF dan gambar tampilan asli dari dokumen Word yang sudah dibubuhi QR Code
+            $targetDocForRender = ($savedWordQrRel && is_file($workingDocx)) ? $workingDocx : $sourceAbsolutePath;
+            $renderResult = $this->renderWordAsOriginalDocument($targetDocForRender, $badgePngPath, $suratKeluar, $tempDir);
+
             return [
                 'file_word_qr' => $savedWordQrRel,
-                'file_tampilan' => $savedImageRel,
+                'file_tampilan' => $renderResult['image'] ?? null,
+                'file_pdf' => $renderResult['pdf'] ?? null,
             ];
         } finally {
             $this->cleanupDirectory($tempDir);
@@ -893,6 +971,7 @@ class DocxSuratParserService
 
     /**
      * Tambahkan blok QR dan teks Kode Verifikasi ke dalam document.xml
+     * Menggunakan wp:anchor menempel di pojok kanan bawah margin dokumen tanpa memicu halaman baru.
      */
     protected function appendQrToDocumentXml(string $docXml, string $kodeVerifikasi): string
     {
@@ -904,64 +983,79 @@ class DocxSuratParserService
         ];
         foreach ($nsAdd as $prefix => $attr) {
             if (! str_contains($docXml, $prefix)) {
-                $docXml = preg_replace('/<w:document\s+/', '<w:document ' . $attr . ' ', $docXml, 1);
+                $docXml = preg_replace('/<w:document\\s+/', '<w:document ' . $attr . ' ', $docXml, 1);
             }
         }
 
-        $kodeEscaped = htmlspecialchars($kodeVerifikasi, ENT_XML1, 'UTF-8');
-        $qrPara = '<w:p>' .
-            '<w:pPr><w:jc w:val="left"/><w:spacing w:before="60" w:after="0"/></w:pPr>' .
-            '<w:r>' .
-                '<w:drawing>' .
-                    '<wp:inline distT="0" distB="0" distL="0" distR="0">' .
-                        '<wp:extent cx="720000" cy="720000"/>' .
-                        '<wp:docPr id="9991" name="QR Verifikasi"/>' .
-                        '<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">' .
-                            '<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">' .
-                                '<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">' .
-                                    '<pic:nvPicPr>' .
-                                        '<pic:cNvPr id="9991" name="qr_verifikasi.png"/>' .
-                                        '<pic:cNvPicPr/>' .
-                                    '</pic:nvPicPr>' .
-                                    '<pic:blipFill>' .
-                                        '<a:blip r:embed="rIdQrVerif99"/>' .
-                                        '<a:stretch><a:fillRect/></a:stretch>' .
-                                    '</pic:blipFill>' .
-                                    '<pic:spPr>' .
-                                        '<a:xfrm><a:off x="0" y="0"/><a:ext cx="720000" cy="720000"/></a:xfrm>' .
-                                        '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>' .
-                                    '</pic:spPr>' .
-                                '</pic:pic>' .
-                            '</a:graphicData>' .
-                        '</a:graphic>' .
-                    '</wp:inline>' .
-                '</w:drawing>' .
-            '</w:r>' .
-        '</w:p>' .
-        '<w:p>' .
-            '<w:pPr><w:jc w:val="left"/><w:spacing w:before="0" w:after="0"/></w:pPr>' .
-            '<w:r>' .
-                '<w:rPr><w:sz w:val="16"/><w:b/></w:rPr>' .
-                '<w:t>Kode Verifikasi: ' . $kodeEscaped . '</w:t>' .
-            '</w:r>' .
-        '</w:p>';
+        // Anchor drawing menempel di pojok kanan bawah margin dokumen (wrapNone, allowOverlap)
+        $anchorDrawing = '<w:r>' .
+            '<w:drawing>' .
+                '<wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="251658240" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1">' .
+                    '<wp:simplePos x="0" y="0"/>' .
+                    '<wp:positionH relativeFrom="margin">' .
+                        '<wp:align>right</wp:align>' .
+                    '</wp:positionH>' .
+                    '<wp:positionV relativeFrom="margin">' .
+                        '<wp:align>bottom</wp:align>' .
+                    '</wp:positionV>' .
+                    '<wp:extent cx="1216000" cy="1463000"/>' .
+                    '<wp:effectExtent l="0" t="0" r="0" b="0"/>' .
+                    '<wp:wrapNone/>' .
+                    '<wp:docPr id="9991" name="QR Verifikasi Resmi"/>' .
+                    '<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">' .
+                        '<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">' .
+                            '<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">' .
+                                '<pic:nvPicPr>' .
+                                    '<pic:cNvPr id="9991" name="qr_verifikasi.png"/>' .
+                                    '<pic:cNvPicPr/>' .
+                                '</pic:nvPicPr>' .
+                                '<pic:blipFill>' .
+                                    '<a:blip r:embed="rIdQrVerif99"/>' .
+                                    '<a:stretch><a:fillRect/></a:stretch>' .
+                                '</pic:blipFill>' .
+                                '<pic:spPr>' .
+                                    '<a:xfrm><a:off x="0" y="0"/><a:ext cx="1216000" cy="1463000"/></a:xfrm>' .
+                                    '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>' .
+                                '</pic:spPr>' .
+                            '</pic:pic>' .
+                        '</a:graphicData>' .
+                    '</a:graphic>' .
+                '</wp:anchor>' .
+            '</w:drawing>' .
+        '</w:r>';
 
+        // Sisipkan ke dalam </w:p> terakhir sebelum <w:sectPr agar tidak membuat halaman baru
         if (str_contains($docXml, '<w:sectPr')) {
-            $idx = strrpos($docXml, '<w:sectPr');
-            return substr($docXml, 0, $idx) . $qrPara . substr($docXml, $idx);
+            $sectIdx = strrpos($docXml, '<w:sectPr');
+            $pIdx = strrpos(substr($docXml, 0, $sectIdx), '</w:p>');
+            if ($pIdx !== false) {
+                return substr($docXml, 0, $pIdx) . $anchorDrawing . substr($docXml, $pIdx);
+            }
+            return substr($docXml, 0, $sectIdx) . '<w:p>' . $anchorDrawing . '</w:p>' . substr($docXml, $sectIdx);
         }
 
-        return str_replace('</w:body>', $qrPara . '</w:body>', $docXml);
+        if (str_contains($docXml, '</w:body>')) {
+            $bodyIdx = strrpos($docXml, '</w:body>');
+            $pIdx = strrpos(substr($docXml, 0, $bodyIdx), '</w:p>');
+            if ($pIdx !== false) {
+                return substr($docXml, 0, $pIdx) . $anchorDrawing . substr($docXml, $pIdx);
+            }
+            return str_replace('</w:body>', '<w:p>' . $anchorDrawing . '</w:p></w:body>', $docXml);
+        }
+
+        return $docXml;
     }
 
     /**
-     * Render tampilan asli Word menjadi gambar PNG beresolusi tinggi (seperti foto dokumen Word aslinya,
-     * lengkap dari header sampai footer + QR & Kode Verifikasi).
+     * Render dokumen Word asli menjadi PDF resmi dan gambar PNG pratinjau (beresolusi tinggi,
+     * mempertahankan 100% tata letak dokumen Word asli dan menyertakan QR Code & Kode Verifikasi di kanan bawah).
+     *
+     * @return array{image: ?string, pdf: ?string}
      */
-    protected function renderWordAsOriginalImage(string $sourcePath, string $qrPngPath, SuratKeluar $suratKeluar, string $tempDir): ?string
+    protected function renderWordAsOriginalDocument(string $sourcePath, string $badgePngPath, SuratKeluar $suratKeluar, string $tempDir): array
     {
         if (! function_exists('exec')) {
-            return null;
+            return ['image' => null, 'pdf' => null];
         }
 
         $ext = strtolower(pathinfo($sourcePath, PATHINFO_EXTENSION));
@@ -979,8 +1073,12 @@ class DocxSuratParserService
 
         $pdfCandidate = $tempDir . '/input_asli.pdf';
         if (! is_file($pdfCandidate)) {
-            return null;
+            return ['image' => null, 'pdf' => null];
         }
+
+        // Simpan berkas PDF hasil konversi Word asli yang memuat QR code
+        $savedPdfRel = 'surat-keluar/asli-pdf-' . ($suratKeluar->id ?: time()) . '-' . Str::random(4) . '.pdf';
+        Storage::disk('public')->put($savedPdfRel, file_get_contents($pdfCandidate));
 
         // Ubah PDF hasil render Word asli menjadi gambar PNG (150 DPI) menggunakan pdftoppm
         $imgPrefix = $tempDir . '/page';
@@ -990,52 +1088,78 @@ class DocxSuratParserService
         $pages = glob($tempDir . '/page*.png') ?: [];
         sort($pages);
         if (empty($pages)) {
-            return null;
+            return ['image' => null, 'pdf' => $savedPdfRel];
         }
 
         $page1Path = $pages[0];
 
-        // Tempelkan QR Code & Kode Verifikasi secara jelas di pojok kiri bawah halaman dokumen asli
-        // (agar tidak menabrak tanda tangan yang umumnya di kanan bawah, serta selalu tampak jelas)
-        if (function_exists('imagecreatefrompng') && is_file($qrPngPath)) {
+        // Sebagai proteksi ganda: pastikan badge QR Code tampak jelas di pojok kanan bawah
+        if (function_exists('imagecreatefrompng') && is_file($badgePngPath)) {
             $docImg = @imagecreatefrompng($page1Path);
-            $qrImg = @imagecreatefrompng($qrPngPath);
-            if ($docImg && $qrImg) {
+            $badgeImg = @imagecreatefrompng($badgePngPath);
+            if ($docImg && $badgeImg) {
                 $docW = imagesx($docImg);
                 $docH = imagesy($docImg);
-                $qrW = imagesx($qrImg);
-                $qrH = imagesy($qrImg);
+                $bW = imagesx($badgeImg);
+                $bH = imagesy($badgeImg);
 
-                $targetQrSize = (int) round($docW * 0.115);
-                $destX = (int) round($docW * 0.065);
-                $destY = $docH - $targetQrSize - (int) round($docH * 0.065);
+                // Ukuran badge sekitar 16% lebar halaman
+                $targetW = (int) round($docW * 0.16);
+                $targetH = (int) round(($targetW / $bW) * $bH);
 
-                $white = imagecolorallocate($docImg, 255, 255, 255);
-                $borderCol = imagecolorallocate($docImg, 16, 185, 129);
-                $black = imagecolorallocate($docImg, 15, 23, 42);
+                $marginRight = (int) round($docW * 0.05);
+                $marginBottom = (int) round($docH * 0.05);
 
-                $boxX1 = $destX - 10;
-                $boxY1 = $destY - 10;
-                $boxX2 = $destX + $targetQrSize + 28;
-                $boxY2 = $destY + $targetQrSize + 30;
+                $destX = $docW - $targetW - $marginRight;
+                $destY = $docH - $targetH - $marginBottom;
 
-                imagefilledrectangle($docImg, $boxX1, $boxY1, $boxX2, $boxY2, $white);
-                imagerectangle($docImg, $boxX1, $boxY1, $boxX2, $boxY2, $borderCol);
-
-                imagecopyresampled($docImg, $qrImg, $destX + 8, $destY, 0, 0, $targetQrSize, $targetQrSize, $qrW, $qrH);
-                $label = 'Kode: ' . $suratKeluar->kode_verifikasi;
-                imagestring($docImg, 3, $destX + 2, $destY + $targetQrSize + 7, $label, $black);
-
+                imagecopyresampled($docImg, $badgeImg, $destX, $destY, 0, 0, $targetW, $targetH, $bW, $bH);
                 imagepng($docImg, $page1Path);
                 imagedestroy($docImg);
-                imagedestroy($qrImg);
+                imagedestroy($badgeImg);
             }
         }
 
-        $storageRel = 'surat-keluar/dokumen-' . ($suratKeluar->id ?: time()) . '-' . time() . '.png';
-        Storage::disk('public')->put($storageRel, file_get_contents($page1Path));
+        $savedImageRel = 'surat-keluar/dokumen-' . ($suratKeluar->id ?: time()) . '-' . Str::random(4) . '.png';
+        Storage::disk('public')->put($savedImageRel, file_get_contents($page1Path));
 
-        return $storageRel;
+        return [
+            'image' => $savedImageRel,
+            'pdf' => $savedPdfRel,
+        ];
+    }
+
+    /**
+     * Konversi file docx menjadi konten binary PDF langsung menggunakan LibreOffice.
+     */
+    public function convertDocxToPdf(string $docxAbsolutePath): ?string
+    {
+        if (! function_exists('exec') || ! is_file($docxAbsolutePath)) {
+            return null;
+        }
+
+        $tempDir = rtrim(sys_get_temp_dir(), '/') . '/sap-lo-pdf-' . Str::random(8);
+        @mkdir($tempDir, 0775, true);
+
+        try {
+            $userProfileDir = $tempDir . '/lo-profile';
+            $cmd = sprintf(
+                'soffice -env:UserInstallation=file://%s --headless --convert-to pdf --outdir %s %s 2>&1',
+                $userProfileDir,
+                escapeshellarg($tempDir),
+                escapeshellarg($docxAbsolutePath)
+            );
+            @\exec($cmd, $out, $code);
+
+            $pdfFiles = glob($tempDir . '/*.pdf') ?: [];
+            if (! empty($pdfFiles) && is_file($pdfFiles[0])) {
+                return file_get_contents($pdfFiles[0]);
+            }
+
+            return null;
+        } finally {
+            $this->cleanupDirectory($tempDir);
+        }
     }
 
     protected function cleanupDirectory(string $dir): void
