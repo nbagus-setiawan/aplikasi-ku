@@ -56,6 +56,7 @@ class SantriRequest extends FormRequest
             'nama.required' => 'Nama lengkap santri wajib diisi.',
             'status.required' => 'Status santri wajib dipilih.',
             'status.in' => 'Status santri tidak valid.',
+            'foto.uploaded' => 'Ukuran foto terlalu besar melebihi batas upload server. Silakan gunakan foto yang lebih kecil atau kompres terlebih dahulu.',
             'foto.extensions' => 'File foto harus berupa gambar (JPG, JPEG, PNG, WEBP).',
             'foto.max' => 'Ukuran foto maksimal 5 MB.',
         ];

@@ -41,6 +41,7 @@ class PengurusRequest extends FormRequest
         return [
             'nama.required' => 'Nama pengurus wajib diisi.',
             'jabatan.required' => 'Jabatan pengurus wajib diisi.',
+            'foto.uploaded' => 'Ukuran foto terlalu besar melebihi batas upload server. Silakan gunakan foto yang lebih kecil atau kompres terlebih dahulu.',
             'foto.extensions' => 'Format foto harus berupa JPG, JPEG, PNG, atau WEBP.',
             'foto.max' => 'Ukuran foto maksimal 5 MB.',
         ];

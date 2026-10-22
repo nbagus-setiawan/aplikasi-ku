@@ -81,6 +81,12 @@
                 onFileChange(e) {
                     const file = e.target.files[0];
                     if (file) {
+                        if (file.size > 5 * 1024 * 1024) {
+                            alert('Ukuran foto terlalu besar (' + (file.size / (1024 * 1024)).toFixed(1) + ' MB). Maksimal ukuran yang diizinkan adalah 5 MB. Silakan pilih foto lain atau kompres terlebih dahulu.');
+                            e.target.value = '';
+                            this.previewUrl = null;
+                            return;
+                        }
                         this.previewUrl = URL.createObjectURL(file);
                     }
                 }
