@@ -95,7 +95,7 @@
                     <label for="gambar" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
                         Foto / Thumbnail Warta (Ganti Berkas)
                     </label>
-                    <input type="file" name="gambar" id="gambar" accept="image/jpeg,image/png,image/jpg,image/webp"
+                    <input type="file" name="gambar" id="gambar" accept="image/*"
                            @change="onFileChange($event)"
                            class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 bg-white border border-gray-300 rounded-xl cursor-pointer">
                     <p class="text-xs text-gray-500 mt-1.5 flex items-center gap-1">
