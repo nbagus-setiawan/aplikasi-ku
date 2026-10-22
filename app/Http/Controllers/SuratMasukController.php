@@ -111,7 +111,8 @@ class SuratMasukController extends Controller
         if ($request->hasFile('file_surat_asli')) {
             $uploadedMain = $request->file('file_surat_asli');
             $parsedDocx = $this->docxParserService->parseUploadedDocument($uploadedMain);
-            $fileSuratAsliPath = $uploadedMain->store('surat-masuk', 'public');
+            $ext = strtolower($uploadedMain->getClientOriginalExtension()) ?: 'docx';
+            $fileSuratAsliPath = $uploadedMain->storeAs('surat-masuk', \Illuminate\Support\Str::uuid() . '.' . $ext, 'public');
 
             $absPath = storage_path('app/public/' . $fileSuratAsliPath);
             $renderedPng = $this->docxParserService->renderWordToOriginalPng($absPath);
@@ -119,9 +120,13 @@ class SuratMasukController extends Controller
         }
 
         if ($request->hasFile('file_lampiran')) {
-            $fileLampiranPath = $request->file('file_lampiran')->store('surat-masuk-lampiran', 'public');
+            $fLampiran = $request->file('file_lampiran');
+            $extLampiran = strtolower($fLampiran->getClientOriginalExtension()) ?: 'pdf';
+            $fileLampiranPath = $fLampiran->storeAs('surat-masuk-lampiran', \Illuminate\Support\Str::uuid() . '.' . $extLampiran, 'public');
         } elseif ($request->hasFile('file')) {
-            $uploadedFile = $request->file('file')->store('surat-masuk', 'public');
+            $fFile = $request->file('file');
+            $extFile = strtolower($fFile->getClientOriginalExtension()) ?: 'pdf';
+            $uploadedFile = $fFile->storeAs('surat-masuk', \Illuminate\Support\Str::uuid() . '.' . $extFile, 'public');
             if ($fileSuratAsliPath) {
                 $fileLampiranPath = $uploadedFile;
             } else {
@@ -204,7 +209,8 @@ class SuratMasukController extends Controller
                 Storage::disk('public')->delete($suratMasuk->file_surat_asli);
             }
             $uploadedMain = $request->file('file_surat_asli');
-            $fileSuratAsliPath = $uploadedMain->store('surat-masuk', 'public');
+            $ext = strtolower($uploadedMain->getClientOriginalExtension()) ?: 'docx';
+            $fileSuratAsliPath = $uploadedMain->storeAs('surat-masuk', \Illuminate\Support\Str::uuid() . '.' . $ext, 'public');
             $validated['file_surat_asli'] = $fileSuratAsliPath;
 
             $absPath = storage_path('app/public/' . $fileSuratAsliPath);
@@ -214,14 +220,18 @@ class SuratMasukController extends Controller
             if ($suratMasuk->file && Storage::disk('public')->exists($suratMasuk->file)) {
                 Storage::disk('public')->delete($suratMasuk->file);
             }
-            $validated['file'] = $request->file('file')->store('surat-masuk', 'public');
+            $fFile = $request->file('file');
+            $extFile = strtolower($fFile->getClientOriginalExtension()) ?: 'pdf';
+            $validated['file'] = $fFile->storeAs('surat-masuk', \Illuminate\Support\Str::uuid() . '.' . $extFile, 'public');
         }
 
         if ($request->hasFile('file_lampiran')) {
             if ($suratMasuk->file_lampiran && Storage::disk('public')->exists($suratMasuk->file_lampiran)) {
                 Storage::disk('public')->delete($suratMasuk->file_lampiran);
             }
-            $validated['file_lampiran'] = $request->file('file_lampiran')->store('surat-masuk-lampiran', 'public');
+            $fLampiran = $request->file('file_lampiran');
+            $extLampiran = strtolower($fLampiran->getClientOriginalExtension()) ?: 'pdf';
+            $validated['file_lampiran'] = $fLampiran->storeAs('surat-masuk-lampiran', \Illuminate\Support\Str::uuid() . '.' . $extLampiran, 'public');
         }
 
         $suratMasuk->update($validated);

@@ -25,7 +25,7 @@ class PengurusRequest extends FormRequest
             'nama' => ['required', 'string', 'max:255'],
             'jabatan' => ['required', 'string', 'max:255'],
             'divisi' => ['nullable', 'string', 'max:255'],
-            'foto' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'foto' => ['nullable', 'file', 'extensions:jpeg,png,jpg,webp', 'max:5120'],
             'no_hp' => ['nullable', 'string', 'max:50'],
             'periode_mulai' => ['nullable', 'string', 'max:20'],
             'periode_selesai' => ['nullable', 'string', 'max:20'],
@@ -41,8 +41,7 @@ class PengurusRequest extends FormRequest
         return [
             'nama.required' => 'Nama pengurus wajib diisi.',
             'jabatan.required' => 'Jabatan pengurus wajib diisi.',
-            'foto.image' => 'File foto harus berupa gambar.',
-            'foto.mimes' => 'Format foto harus berupa JPG, JPEG, PNG, atau WEBP.',
+            'foto.extensions' => 'Format foto harus berupa JPG, JPEG, PNG, atau WEBP.',
             'foto.max' => 'Ukuran foto maksimal 5 MB.',
         ];
     }

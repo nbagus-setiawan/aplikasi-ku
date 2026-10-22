@@ -77,7 +77,10 @@ class SantriController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('foto')) {
-            $data['foto'] = $request->file('foto')->store('foto-santri', 'public');
+            $foto = $request->file('foto');
+            $ext = strtolower($foto->getClientOriginalExtension()) ?: 'jpg';
+            $filename = \Illuminate\Support\Str::uuid() . '.' . $ext;
+            $data['foto'] = $foto->storeAs('foto-santri', $filename, 'public');
         }
 
         Santri::create($data);
@@ -114,7 +117,10 @@ class SantriController extends Controller
             if ($santri->foto && Storage::disk('public')->exists($santri->foto)) {
                 Storage::disk('public')->delete($santri->foto);
             }
-            $data['foto'] = $request->file('foto')->store('foto-santri', 'public');
+            $foto = $request->file('foto');
+            $ext = strtolower($foto->getClientOriginalExtension()) ?: 'jpg';
+            $filename = \Illuminate\Support\Str::uuid() . '.' . $ext;
+            $data['foto'] = $foto->storeAs('foto-santri', $filename, 'public');
         }
 
         $santri->update($data);

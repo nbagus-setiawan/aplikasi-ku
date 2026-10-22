@@ -73,7 +73,10 @@ class PengurusController extends Controller
         $data['is_aktif'] = $request->boolean('is_aktif', true);
 
         if ($request->hasFile('foto')) {
-            $data['foto'] = $request->file('foto')->store('foto-pengurus', 'public');
+            $foto = $request->file('foto');
+            $ext = strtolower($foto->getClientOriginalExtension()) ?: 'jpg';
+            $filename = \Illuminate\Support\Str::uuid() . '.' . $ext;
+            $data['foto'] = $foto->storeAs('foto-pengurus', $filename, 'public');
         }
 
         Pengurus::create($data);
@@ -95,7 +98,10 @@ class PengurusController extends Controller
             if ($pengurus->foto && Storage::disk('public')->exists($pengurus->foto)) {
                 Storage::disk('public')->delete($pengurus->foto);
             }
-            $data['foto'] = $request->file('foto')->store('foto-pengurus', 'public');
+            $foto = $request->file('foto');
+            $ext = strtolower($foto->getClientOriginalExtension()) ?: 'jpg';
+            $filename = \Illuminate\Support\Str::uuid() . '.' . $ext;
+            $data['foto'] = $foto->storeAs('foto-pengurus', $filename, 'public');
         }
 
         $pengurus->update($data);

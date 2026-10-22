@@ -41,7 +41,7 @@ class SantriRequest extends FormRequest
             'kelas' => ['nullable', 'string', 'max:100'],
             'tahun_masuk' => ['nullable', 'string', 'max:10'],
             'status' => ['required', 'string', Rule::in(['aktif', 'lulus', 'keluar', 'pindah'])],
-            'foto' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'], // maks 5MB
+            'foto' => ['nullable', 'file', 'extensions:jpeg,png,jpg,webp', 'max:5120'], // maks 5MB
         ];
     }
 
@@ -56,7 +56,7 @@ class SantriRequest extends FormRequest
             'nama.required' => 'Nama lengkap santri wajib diisi.',
             'status.required' => 'Status santri wajib dipilih.',
             'status.in' => 'Status santri tidak valid.',
-            'foto.image' => 'File foto harus berupa gambar.',
+            'foto.extensions' => 'File foto harus berupa gambar (JPG, JPEG, PNG, WEBP).',
             'foto.max' => 'Ukuran foto maksimal 5 MB.',
         ];
     }

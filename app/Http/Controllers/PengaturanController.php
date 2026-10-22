@@ -40,7 +40,7 @@ class PengaturanController extends Controller
             'kop_nama' => ['nullable', 'string', 'max:255'],
             'kop_alamat' => ['nullable', 'string', 'max:500'],
             'kop_kontak' => ['nullable', 'string', 'max:255'],
-            'kop_gambar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'kop_gambar' => ['nullable', 'file', 'extensions:jpeg,png,jpg,webp', 'max:5120'],
             'footer_teks' => ['nullable', 'string', 'max:500'],
             'warna_tema' => ['nullable', 'string', 'max:20'],
             'telepon' => ['nullable', 'string', 'max:50'],
@@ -49,16 +49,16 @@ class PengaturanController extends Controller
             'ukuran_kertas' => ['nullable', 'in:a4,f4'],
             'orientasi_kertas' => ['nullable', 'in:portrait'],
             'margin_kertas' => ['nullable', 'string', 'max:50'],
-            'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,svg', 'max:5120'],
+            'logo' => ['nullable', 'file', 'extensions:jpeg,png,jpg,webp,svg', 'max:5120'],
         ], [
             'nama_situs.required' => 'Nama situs wajib diisi.',
             'nama_lembaga.required' => 'Nama lembaga wajib diisi.',
             'kode_lembaga.required' => 'Kode lembaga wajib diisi.',
             'pola_nomor_surat.required' => 'Pola nomor surat wajib diisi.',
             'email.email' => 'Format email tidak valid.',
-            'logo.image' => 'File logo harus berupa gambar.',
+            'logo.extensions' => 'File logo harus berupa gambar (JPG, JPEG, PNG, WEBP, SVG).',
             'logo.max' => 'Ukuran file logo maksimal 5 MB.',
-            'kop_gambar.image' => 'File gambar kop harus berupa format gambar (PNG/JPG).',
+            'kop_gambar.extensions' => 'File gambar kop harus berupa format gambar (PNG/JPG/WEBP).',
             'kop_gambar.max' => 'Ukuran file gambar kop maksimal 5 MB.',
         ]);
 
@@ -74,7 +74,10 @@ class PengaturanController extends Controller
             if ($oldLogo && Storage::disk('public')->exists($oldLogo)) {
                 Storage::disk('public')->delete($oldLogo);
             }
-            $logoPath = $request->file('logo')->store('pengaturan', 'public');
+            $logoFile = $request->file('logo');
+            $logoExt = strtolower($logoFile->getClientOriginalExtension()) ?: 'png';
+            $logoName = \Illuminate\Support\Str::uuid() . '.' . $logoExt;
+            $logoPath = $logoFile->storeAs('pengaturan', $logoName, 'public');
             Pengaturan::set('logo', $logoPath);
         }
 
@@ -83,7 +86,10 @@ class PengaturanController extends Controller
             if ($oldKop && Storage::disk('public')->exists($oldKop)) {
                 Storage::disk('public')->delete($oldKop);
             }
-            $kopPath = $request->file('kop_gambar')->store('pengaturan', 'public');
+            $kopFile = $request->file('kop_gambar');
+            $kopExt = strtolower($kopFile->getClientOriginalExtension()) ?: 'png';
+            $kopName = \Illuminate\Support\Str::uuid() . '.' . $kopExt;
+            $kopPath = $kopFile->storeAs('pengaturan', $kopName, 'public');
             Pengaturan::set('kop_gambar', $kopPath);
             Pengaturan::set('kop_tipe', 'gambar');
         } elseif ($request->input('hapus_kop_gambar') === '1') {

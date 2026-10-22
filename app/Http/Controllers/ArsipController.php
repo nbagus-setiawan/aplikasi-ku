@@ -65,7 +65,9 @@ class ArsipController extends Controller
     {
         $validated = $request->validated();
 
-        $filePath = $request->file('file')->store('arsip', 'public');
+        $file = $request->file('file');
+        $ext = strtolower($file->getClientOriginalExtension()) ?: 'pdf';
+        $filePath = $file->storeAs('arsip', \Illuminate\Support\Str::uuid() . '.' . $ext, 'public');
         $validated['file'] = $filePath;
         $validated['user_id'] = auth()->id();
 
@@ -107,7 +109,9 @@ class ArsipController extends Controller
             if ($arsip->file && Storage::disk('public')->exists($arsip->file)) {
                 Storage::disk('public')->delete($arsip->file);
             }
-            $validated['file'] = $request->file('file')->store('arsip', 'public');
+            $file = $request->file('file');
+            $ext = strtolower($file->getClientOriginalExtension()) ?: 'pdf';
+            $validated['file'] = $file->storeAs('arsip', \Illuminate\Support\Str::uuid() . '.' . $ext, 'public');
         }
 
         $arsip->update($validated);
