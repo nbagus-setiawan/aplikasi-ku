@@ -7,16 +7,17 @@
 
     @php
         $namaSitus = 'PONDOK PESANTREN AL-FALAH PUTAK';
+        $namaSitusPendek = 'PON-PES AL FALAH PUTAK'; // Nama situs yang tampil di atas URL pada hasil Google
         $judulHalaman = trim(html_entity_decode($__env->yieldContent('title'), ENT_QUOTES, 'UTF-8'));
         $isBeranda = request()->is('/') || $judulHalaman === '' || $judulHalaman === 'Beranda';
-        $judulLengkap = $isBeranda
-            ? $namaSitus . ' — Pesantren Salafiyah di Putak, Gelumbang, Muara Enim'
-            : $judulHalaman . ' — ' . $namaSitus;
-        $judulOg = $isBeranda ? $namaSitus : $judulHalaman;
+        $judulDepan = $isBeranda ? 'HOME' : mb_strtoupper($judulHalaman, 'UTF-8');
+        $judulLengkap = $judulDepan . ' | ' . $namaSitus;
+        $judulOg = $judulLengkap;
         $deskripsiDefault = 'Website resmi Pondok Pesantren Salafiyah Al-Falah Putak, Desa Putak, Kec. Gelumbang, Kab. Muara Enim, Sumatera Selatan. Pendidikan kitab kuning, tahfidzul Qur\'an, dan pembinaan akhlak santri berhaluan Ahlussunnah wal Jamaah.';
         $deskripsi = trim(html_entity_decode($__env->yieldContent('meta_description'), ENT_QUOTES, 'UTF-8')) ?: $deskripsiDefault;
         $gambarOg = asset('images/og-alfalah-putak.jpg');
-        $urlKanonik = $isBeranda ? url('/') . '/' : url()->current();
+        $urlBeranda = url('/') . '/';
+        $urlKanonik = $isBeranda ? $urlBeranda : url()->current();
     @endphp
 
     <title>{{ $judulLengkap }}</title>
@@ -33,8 +34,8 @@
     <link rel="canonical" href="{{ $urlKanonik }}">
 
     <!-- Identitas Nama Situs untuk Hasil Pencarian Google -->
-    <meta name="application-name" content="{{ $namaSitus }}">
-    <meta name="apple-mobile-web-app-title" content="{{ $namaSitus }}">
+    <meta name="application-name" content="{{ $namaSitusPendek }}">
+    <meta name="apple-mobile-web-app-title" content="{{ $namaSitusPendek }}">
     <meta name="theme-color" content="#064e3b">
 
     <!-- Favicon Google Search Resmi (Memenuhi Logo, Tanpa Sisa Putih) -->
@@ -49,7 +50,7 @@
     <!-- Open Graph (WhatsApp, Facebook) — gambar lebar 1200x630, < 300 KB -->
     <meta property="og:locale" content="id_ID">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="{{ $namaSitus }}">
+    <meta property="og:site_name" content="{{ $namaSitusPendek }}">
     <meta property="og:title" content="{{ $judulOg }}">
     <meta property="og:description" content="{{ $deskripsi }}">
     <meta property="og:url" content="{{ $urlKanonik }}">
@@ -78,8 +79,8 @@
             "Pondok Pesantren Salafiyah Al-Falah Putak",
             "MEDIA RESMI AL-FALAH PUTAK"
         ],
-        "url": "{{ url('/') }}",
-        "logo": "{{ asset('images/logo-google.png') }}",
+        "url": "{{ $urlBeranda }}",
+        "logo": "{{ asset('favicon-192x192.png') }}",
         "image": "{{ $gambarOg }}",
         "description": "Media Resmi Pondok Pesantren Salafiyah Al-Falah Putak, Gelumbang, Muara Enim, Sumatera Selatan. Menempa generasi santri yang berakhlak mulia, mendalami khazanah kitab salaf, dan berpegang teguh pada Al-Qur'an dan Sunnah.",
         "address": {
@@ -108,9 +109,9 @@
     {
         "@@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "PONDOK PESANTREN AL-FALAH PUTAK",
-        "alternateName": "MEDIA RESMI AL-FALAH PUTAK",
-        "url": "{{ url('/') }}"
+        "name": "{{ $namaSitusPendek }}",
+        "alternateName": ["{{ $namaSitus }}", "Ponpes Al Falah Putak"],
+        "url": "{{ $urlBeranda }}"
     }
     </script>
 
