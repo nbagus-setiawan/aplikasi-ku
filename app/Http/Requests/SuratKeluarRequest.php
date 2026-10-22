@@ -22,7 +22,7 @@ class SuratKeluarRequest extends FormRequest
         $hasWordFile = $this->hasFile('file_surat_asli');
 
         return [
-            'file_surat_asli' => ['nullable', 'file', 'mimes:docx,doc,pdf,html,htm,txt', 'max:5120'],
+            'file_surat_asli' => ['nullable', 'file', 'extensions:docx,doc,pdf,html,htm,txt', 'max:10240'],
             'no_surat_manual' => ['nullable', 'string', 'max:150'],
             'tgl_surat' => [$hasWordFile ? 'nullable' : 'required', 'date'],
             'tempat_surat' => ['nullable', 'string', 'max:100'],
@@ -42,7 +42,7 @@ class SuratKeluarRequest extends FormRequest
             'isi' => [$hasWordFile ? 'nullable' : 'required', 'string'],
             'nama_penandatangan' => [$hasWordFile ? 'nullable' : 'required', 'string', 'max:255'],
             'jabatan_penandatangan' => [$hasWordFile ? 'nullable' : 'required', 'string', 'max:255'],
-            'file' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:5120'],
+            'file' => ['nullable', 'file', 'extensions:pdf,jpg,jpeg,png,doc,docx', 'max:10240'],
             'status' => ['nullable', 'in:draft,final,terkirim'],
             'aksi_simpan' => ['nullable', 'in:draft,cetak,siap_kirim,terbitkan_word'],
             'kode_verifikasi' => [

@@ -75,7 +75,9 @@ class PengumumanController extends Controller
             // Handle upload gambar jika ada
             if ($request->hasFile('gambar')) {
                 Storage::disk('public')->makeDirectory('pengumuman');
-                $path = $request->file('gambar')->store('pengumuman', 'public');
+                $ext = strtolower($request->file('gambar')->getClientOriginalExtension()) ?: 'jpg';
+                $fileName = Str::random(40) . '.' . $ext;
+                $path = $request->file('gambar')->storeAs('pengumuman', $fileName, 'public');
                 $data['gambar'] = $path;
             }
 
@@ -134,7 +136,10 @@ class PengumumanController extends Controller
             if ($pengumuman->gambar && Storage::disk('public')->exists($pengumuman->gambar)) {
                 Storage::disk('public')->delete($pengumuman->gambar);
             }
-            $data['gambar'] = $request->file('gambar')->store('pengumuman', 'public');
+            Storage::disk('public')->makeDirectory('pengumuman');
+            $ext = strtolower($request->file('gambar')->getClientOriginalExtension()) ?: 'jpg';
+            $fileName = Str::random(40) . '.' . $ext;
+            $data['gambar'] = $request->file('gambar')->storeAs('pengumuman', $fileName, 'public');
         }
 
         $pengumuman->update($data);

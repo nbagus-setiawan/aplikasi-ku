@@ -36,10 +36,10 @@ class SuratKeluarController extends Controller
     public function parseDocx(Request $request): JsonResponse
     {
         $request->validate([
-            'file_surat' => ['required', 'file', 'mimes:docx,doc,html,htm,txt', 'max:5120'],
+            'file_surat' => ['required', 'file', 'extensions:docx,doc,html,htm,txt', 'max:10240'],
         ], [
             'file_surat.required' => 'Silakan pilih file surat Word (.docx) terlebih dahulu.',
-            'file_surat.mimes' => 'File surat harus berformat Word (.docx / .doc).',
+            'file_surat.extensions' => 'File surat harus berformat Word (.docx / .doc).',
         ]);
 
         try {
@@ -174,7 +174,9 @@ class SuratKeluarController extends Controller
                 \Log::warning('Gagal parse dokumen Word saat store: ' . $e->getMessage());
             }
             Storage::disk('public')->makeDirectory('surat-keluar-word');
-            $fileSuratAsliPath = $uploadedWord->store('surat-keluar-word', 'public');
+            $ext = strtolower($uploadedWord->getClientOriginalExtension()) ?: 'docx';
+            $fileName = Str::random(40) . '.' . $ext;
+            $fileSuratAsliPath = $uploadedWord->storeAs('surat-keluar-word', $fileName, 'public');
         }
 
         $tglSurat = $validated['tgl_surat'] ?? ($parsedDocx['tgl_surat'] ?? date('Y-m-d'));
@@ -215,7 +217,10 @@ class SuratKeluarController extends Controller
 
         $filePath = null;
         if ($request->hasFile('file')) {
-            $filePath = $request->file('file')->store('surat-keluar', 'public');
+            Storage::disk('public')->makeDirectory('surat-keluar');
+            $ext = strtolower($request->file('file')->getClientOriginalExtension()) ?: 'pdf';
+            $fileName = Str::random(40) . '.' . $ext;
+            $filePath = $request->file('file')->storeAs('surat-keluar', $fileName, 'public');
         }
 
         $kodeVerifikasi = !empty($validated['kode_verifikasi'])

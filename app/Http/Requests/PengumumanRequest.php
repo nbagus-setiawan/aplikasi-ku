@@ -29,7 +29,7 @@ class PengumumanRequest extends FormRequest
             'slug' => ['nullable', 'string', 'max:255', Rule::unique('pengumumans', 'slug')->ignore($pengumumanId)],
             'kategori' => ['required', 'string', 'max:50'],
             'isi' => ['required', 'string'],
-            'gambar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'gambar' => ['nullable', 'file', 'extensions:jpeg,png,jpg,webp', 'max:10240'],
             'posisi_gambar' => ['nullable', 'string', 'max:50'],
             'tgl_tayang' => ['required', 'date'],
             'tgl_kedaluwarsa' => ['nullable', 'date', 'after_or_equal:tgl_tayang'],
