@@ -7,7 +7,7 @@ Sumber kebutuhan lengkap: `docs/PRD.md`. Baca file itu sebelum mengerjakan apa p
 
 1. Sebelum menulis kode, buat rencana singkat dan tunggu persetujuan.
 2. Kerjakan **satu fase per permintaan**. Jangan mengerjakan fase berikutnya sebelum diminta.
-3. Setelah selesai, jalankan test dan `php artisan migrate:fresh --seed`, lalu laporkan hasilnya.
+3. Setelah selesai, jalankan test (`php artisan test`), lalu laporkan hasilnya. **DILARANG menjalankan `php artisan migrate:fresh` atau perintah reset database lainnya secara otomatis tanpa permintaan eksplisit dari pengguna.**
 4. Jika PRD tidak jelas atau bertentangan dengan permintaan, **tanya dulu**, jangan menebak.
 5. Jangan menambah fitur di luar PRD. Jangan mengganti stack tanpa izin.
 
@@ -87,10 +87,11 @@ Selesai jika: sekretaris bisa mengubah beranda tanpa kode dan HTML tersanitasi.
 
 **Fase 6 — Laporan dan penyelesaian**
 Rekap surat, agenda, santri per periode (PDF), perapian antarmuka, uji menyeluruh, dokumentasi instalasi di `README.md`.
-Selesai jika: seluruh test lulus dan `migrate:fresh --seed` berjalan bersih.
+Selesai jika: seluruh test lulus.
 
 ## Larangan
 
+- DILARANG menjalankan perintah yang mereset/menghapus database (seperti `migrate:fresh`, `db:wipe`) tanpa instruksi langsung dari pengguna.
 - Jangan membuat peran, fitur keuangan/SPP, absensi, portal wali, atau integrasi WhatsApp.
 - Jangan memakai layanan berbayar atau API pihak ketiga berbayar.
 - Jangan mengubah format nomor surat tanpa izin.
