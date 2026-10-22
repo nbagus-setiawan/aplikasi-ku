@@ -220,4 +220,102 @@ class PengumumanTest extends TestCase
         $responseSlug = $this->get('/p/' . $pengumuman->slug);
         $responseSlug->assertRedirect(route('publik.pengumuman.show', $pengumuman->slug));
     }
+
+    public function test_user_publik_bisa_memberikan_like_dan_membatalkan_like_secara_dinamis()
+    {
+        $pengumuman = Pengumuman::create([
+            'judul' => 'Maklumat Pengajian Akbar',
+            'slug' => 'maklumat-pengajian-akbar',
+            'kategori' => 'umum',
+            'isi' => 'Mengharap kehadiran kaum muslimin',
+            'tgl_tayang' => Carbon::today()->toDateString(),
+            'status' => 'terbit',
+            'user_id' => $this->user->id,
+        ]);
+
+        // Like pertama kali -> bertambah
+        $res1 = $this->postJson(route('publik.pengumuman.like', $pengumuman->slug));
+        $res1->assertOk()
+            ->assertJson([
+                'success' => true,
+                'liked' => true,
+                'likes_count' => 1,
+            ]);
+        $this->assertDatabaseHas('pengumuman_likes', [
+            'pengumuman_id' => $pengumuman->id,
+        ]);
+
+        // Like kedua kali dari IP yang sama -> toggle batal suka (unlike)
+        $res2 = $this->postJson(route('publik.pengumuman.like', $pengumuman->slug));
+        $res2->assertOk()
+            ->assertJson([
+                'success' => true,
+                'liked' => false,
+                'likes_count' => 0,
+            ]);
+        $this->assertDatabaseMissing('pengumuman_likes', [
+            'pengumuman_id' => $pengumuman->id,
+        ]);
+    }
+
+    public function test_user_publik_bisa_mengirimkan_komentar_dan_tersimpan_di_database()
+    {
+        $pengumuman = Pengumuman::create([
+            'judul' => 'Peringatan Haul Akbar',
+            'slug' => 'peringatan-haul-akbar',
+            'kategori' => 'umum',
+            'isi' => 'Acara haul tahunan pondok',
+            'tgl_tayang' => Carbon::today()->toDateString(),
+            'status' => 'terbit',
+            'user_id' => $this->user->id,
+        ]);
+
+        $res = $this->postJson(route('publik.pengumuman.komentar', $pengumuman->slug), [
+            'nama' => 'Wali Santri Ahmad',
+            'isi' => 'Semoga acara berjalan lancar dan penuh berkah. Aamiin.',
+        ]);
+
+        $res->assertOk()
+            ->assertJson([
+                'success' => true,
+                'komentars_count' => 1,
+                'komentar' => [
+                    'nama' => 'Wali Santri Ahmad',
+                ],
+            ]);
+
+        $this->assertDatabaseHas('pengumuman_komentars', [
+            'pengumuman_id' => $pengumuman->id,
+            'nama' => 'Wali Santri Ahmad',
+            'is_tampil' => true,
+        ]);
+    }
+
+    public function test_user_publik_bisa_mencatat_aktivitas_share_secara_dinamis()
+    {
+        $pengumuman = Pengumuman::create([
+            'judul' => 'Kajian Rutin Malam Jumat',
+            'slug' => 'kajian-rutin-malam-jumat',
+            'kategori' => 'umum',
+            'isi' => 'Kajian kitab kuning',
+            'tgl_tayang' => Carbon::today()->toDateString(),
+            'status' => 'terbit',
+            'user_id' => $this->user->id,
+        ]);
+
+        $res = $this->postJson(route('publik.pengumuman.share', $pengumuman->slug), [
+            'platform' => 'whatsapp',
+        ]);
+
+        $res->assertOk()
+            ->assertJson([
+                'success' => true,
+                'shares_count' => 1,
+            ]);
+
+        $this->assertDatabaseHas('pengumuman_shares', [
+            'pengumuman_id' => $pengumuman->id,
+            'platform' => 'whatsapp',
+        ]);
+    }
 }

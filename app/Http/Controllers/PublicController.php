@@ -54,7 +54,8 @@ class PublicController extends Controller
      */
     public function pengumumanIndex(Request $request)
     {
-        $query = Pengumuman::terbitPublik();
+        $query = Pengumuman::terbitPublik()
+            ->withCount(['likes', 'komentars', 'shares']);
 
         if ($request->filled('q')) {
             $q = $request->q;
@@ -241,7 +242,7 @@ class PublicController extends Controller
         $pengumuman = Pengumuman::terbitPublik()->where('slug', $slug)->firstOrFail();
 
         $platform = $request->input('platform', 'whatsapp');
-        $validPlatforms = ['whatsapp', 'facebook', 'twitter', 'telegram', 'salin_tautan'];
+        $validPlatforms = ['whatsapp', 'instagram', 'facebook', 'twitter', 'telegram', 'salin_tautan'];
         if (!in_array($platform, $validPlatforms)) {
             $platform = 'whatsapp';
         }
@@ -254,6 +255,7 @@ class PublicController extends Controller
 
         $labelPlatform = match ($platform) {
             'whatsapp' => 'WhatsApp',
+            'instagram' => 'Instagram',
             'facebook' => 'Facebook',
             'twitter' => 'Twitter / X',
             'telegram' => 'Telegram',

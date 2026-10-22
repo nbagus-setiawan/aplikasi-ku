@@ -135,16 +135,30 @@
                             <div class="flex items-center justify-between pt-3">
                                 <a href="{{ url('/pengumuman/' . $item->slug) }}"
                                    class="inline-flex items-center text-xs sm:text-sm font-bold text-emerald-800 hover:text-emerald-900 group/link">
-                                    <span>Baca Selengkapnya</span>
-                                    <svg class="w-3.5 h-3.5 ml-1.5 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                    <span>Baca</span>
+                                    <svg class="w-3.5 h-3.5 ml-1 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                                 </a>
 
-                                <!-- Tautan Singkat Berbagi -->
-                                <a href="{{ url('/p/' . $item->id) }}"
-                                   title="Tautan Singkat"
-                                   class="text-[11px] font-mono text-slate-400 hover:text-emerald-700 bg-slate-50 px-2 py-1 rounded-md border border-slate-200">
-                                    /p/{{ $item->id }}
-                                </a>
+                                <!-- Indikator Like, Komentar, Share Nyata (Dinamis dari Database) -->
+                                <div class="flex items-center gap-2.5 text-xs text-slate-500 font-medium">
+                                    <span class="inline-flex items-center gap-1 hover:text-rose-600 transition" title="Disukai {{ $item->likes_count }} kali">
+                                        <svg class="w-3.5 h-3.5 text-rose-500 fill-rose-500" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                        <span>{{ $item->likes_count }}</span>
+                                    </span>
+                                    <span class="inline-flex items-center gap-1 hover:text-emerald-700 transition" title="{{ $item->komentars_count }} Komentar">
+                                        <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                        <span>{{ $item->komentars_count }}</span>
+                                    </span>
+                                    <span class="inline-flex items-center gap-1 hover:text-sky-600 transition" title="Dibagikan {{ $item->shares_count }} kali">
+                                        <svg class="w-3.5 h-3.5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                                        <span>{{ $item->shares_count }}</span>
+                                    </span>
+                                    <a href="{{ url('/p/' . $item->id) }}"
+                                       title="Tautan Singkat"
+                                       class="text-[10px] font-mono text-slate-400 hover:text-emerald-700 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200">
+                                        /p/{{ $item->id }}
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </article>
