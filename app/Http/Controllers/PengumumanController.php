@@ -132,7 +132,12 @@ class PengumumanController extends Controller
 
         $data['is_pinned'] = $request->boolean('is_pinned');
 
-        if ($request->hasFile('gambar')) {
+        if ($request->boolean('hapus_gambar')) {
+            if ($pengumuman->gambar && Storage::disk('public')->exists($pengumuman->gambar)) {
+                Storage::disk('public')->delete($pengumuman->gambar);
+            }
+            $data['gambar'] = null;
+        } elseif ($request->hasFile('gambar')) {
             if ($pengumuman->gambar && Storage::disk('public')->exists($pengumuman->gambar)) {
                 Storage::disk('public')->delete($pengumuman->gambar);
             }
