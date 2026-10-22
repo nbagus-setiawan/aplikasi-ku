@@ -10,6 +10,7 @@ Sumber kebutuhan lengkap: `docs/PRD.md`. Baca file itu sebelum mengerjakan apa p
 3. Setelah selesai, jalankan test (`php artisan test`), lalu laporkan hasilnya. **DILARANG menjalankan `php artisan migrate:fresh` atau perintah reset database lainnya secara otomatis tanpa permintaan eksplisit dari pengguna.**
 4. Jika PRD tidak jelas atau bertentangan dengan permintaan, **tanya dulu**, jangan menebak.
 5. Jangan menambah fitur di luar PRD. Jangan mengganti stack tanpa izin.
+6. Setiap perubahan kode yang telah selesai dan lulus uji wajib langsung dilakukan `git add .`, `git commit -m "..."`, dan `git push` ke repositori.
 
 ## Stack
 
