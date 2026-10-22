@@ -79,22 +79,24 @@ class DocxSuratParserService
             }
         }
 
-        // Fallback 1: gunakan unzip -p (bawaan Linux)
-        $cmd = sprintf('unzip -p %s %s 2>/dev/null', escapeshellarg($realPath), escapeshellarg($entryName));
-        $xml = @shell_exec($cmd);
-        if (is_string($xml) && (str_contains($xml, '<w:document') || str_contains($xml, '<w:hdr'))) {
-            return $xml;
-        }
+        if (function_exists('shell_exec')) {
+            // Fallback 1: gunakan unzip -p (bawaan Linux)
+            $cmd = sprintf('unzip -p %s %s 2>/dev/null', escapeshellarg($realPath), escapeshellarg($entryName));
+            $xml = @\shell_exec($cmd);
+            if (is_string($xml) && (str_contains($xml, '<w:document') || str_contains($xml, '<w:hdr'))) {
+                return $xml;
+            }
 
-        // Fallback 2: gunakan python3 zipfile
-        $pyCmd = sprintf(
-            'python3 -c "import zipfile, sys; z=zipfile.ZipFile(sys.argv[1]); sys.stdout.buffer.write(z.read(sys.argv[2]))" %s %s 2>/dev/null',
-            escapeshellarg($realPath),
-            escapeshellarg($entryName)
-        );
-        $xmlPy = @shell_exec($pyCmd);
-        if (is_string($xmlPy) && (str_contains($xmlPy, '<w:document') || str_contains($xmlPy, '<w:hdr'))) {
-            return $xmlPy;
+            // Fallback 2: gunakan python3 zipfile
+            $pyCmd = sprintf(
+                'python3 -c "import zipfile, sys; z=zipfile.ZipFile(sys.argv[1]); sys.stdout.buffer.write(z.read(sys.argv[2]))" %s %s 2>/dev/null',
+                escapeshellarg($realPath),
+                escapeshellarg($entryName)
+            );
+            $xmlPy = @\shell_exec($pyCmd);
+            if (is_string($xmlPy) && (str_contains($xmlPy, '<w:document') || str_contains($xmlPy, '<w:hdr'))) {
+                return $xmlPy;
+            }
         }
 
         return null;
@@ -171,8 +173,8 @@ class DocxSuratParserService
             }
         }
 
-        if ($ext === 'pdf') {
-            $pdfTxt = @shell_exec(sprintf('pdftotext -layout %s - 2>/dev/null', escapeshellarg($realPath)));
+        if ($ext === 'pdf' && function_exists('shell_exec')) {
+            $pdfTxt = @\shell_exec(sprintf('pdftotext -layout %s - 2>/dev/null', escapeshellarg($realPath)));
             if (is_string($pdfTxt) && trim($pdfTxt) !== '') {
                 foreach (preg_split('/\r\n|\r|\n/', $pdfTxt) as $line) {
                     $clean = trim(preg_replace('/\s+/u', ' ', $line));
@@ -349,7 +351,7 @@ class DocxSuratParserService
         }
 
         $ext = strtolower(pathinfo($sourcePath, PATHINFO_EXTENSION));
-        if (! in_array($ext, ['docx', 'doc'], true)) {
+        if (! in_array($ext, ['docx', 'doc'], true) || ! function_exists('exec')) {
             return null;
         }
 
@@ -369,7 +371,7 @@ class DocxSuratParserService
                 escapeshellarg($tempDir),
                 escapeshellarg($inputDoc)
             );
-            @exec($cmd, $out, $code);
+            @\exec($cmd, $out, $code);
 
             $pdfCandidate = $tempDir . '/input_asli.pdf';
             if (! is_file($pdfCandidate)) {
@@ -378,7 +380,7 @@ class DocxSuratParserService
 
             $imgPrefix = $tempDir . '/page';
             $ppmCmd = sprintf('pdftoppm -png -r 150 %s %s 2>&1', escapeshellarg($pdfCandidate), escapeshellarg($imgPrefix));
-            @exec($ppmCmd, $ppmOut, $ppmCode);
+            @\exec($ppmCmd, $ppmOut, $ppmCode);
 
             $pages = glob($tempDir . '/page*.png') ?: [];
             sort($pages);
@@ -596,133 +598,103 @@ class DocxSuratParserService
 
     /**
      * Sisipkan QR Code PNG dan teks Kode Verifikasi langsung ke dalam file .docx asli
-     * tanpa mengubah header, isi, tabel, maupun footer asli.
+     * menggunakan PHP ZipArchive murni (tanpa python, tanpa exec/shell).
      */
     protected function injectQrIntoDocx(string $docxPath, string $qrPngPath, string $kodeVerifikasi, string $noSurat): bool
     {
-        $pyScript = <<<'PY'
-import sys, zipfile, os, shutil
-
-docx_path, qr_png_path, kode_verif, no_surat = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
-extract_dir = docx_path + "_extracted"
-os.makedirs(extract_dir, exist_ok=True)
-
-with zipfile.ZipFile(docx_path, 'r') as z:
-    z.extractall(extract_dir)
-
-# 1. Salin gambar QR ke word/media/qr_verifikasi.png
-media_dir = os.path.join(extract_dir, "word", "media")
-os.makedirs(media_dir, exist_ok=True)
-shutil.copyfile(qr_png_path, os.path.join(media_dir, "qr_verifikasi.png"))
-
-# 2. Pastikan [Content_Types].xml mendukung png
-ct_path = os.path.join(extract_dir, "[Content_Types].xml")
-if os.path.isfile(ct_path):
-    with open(ct_path, "r", encoding="utf-8") as f:
-        ct = f.read()
-    if 'Extension="png"' not in ct:
-        ct = ct.replace("</Types>", '<Default Extension="png" ContentType="image/png"/></Types>')
-        with open(ct_path, "w", encoding="utf-8") as f:
-            f.write(ct)
-
-# 3. Tambahkan relationship rIdQrVerif99 di word/_rels/document.xml.rels
-rels_path = os.path.join(extract_dir, "word", "_rels", "document.xml.rels")
-if os.path.isfile(rels_path):
-    with open(rels_path, "r", encoding="utf-8") as f:
-        rels = f.read()
-    rel_tag = '<Relationship Id="rIdQrVerif99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/qr_verifikasi.png"/>'
-    if "rIdQrVerif99" not in rels:
-        rels = rels.replace("</Relationships>", rel_tag + "</Relationships>")
-        with open(rels_path, "w", encoding="utf-8") as f:
-            f.write(rels)
-
-# 4. Tambahkan blok QR & Kode Verifikasi sebelum <w:sectPr atau </w:body>
-doc_path = os.path.join(extract_dir, "word", "document.xml")
-if os.path.isfile(doc_path):
-    with open(doc_path, "r", encoding="utf-8") as f:
-        doc = f.read()
-
-    if "rIdQrVerif99" not in doc:
-        ns_add = {
-            'xmlns:r=': 'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"',
-            'xmlns:wp=': 'xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"',
-            'xmlns:a=': 'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"',
-            'xmlns:pic=': 'xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"',
+        if (! class_exists(\ZipArchive::class) || ! is_file($docxPath) || ! is_file($qrPngPath)) {
+            return false;
         }
-        for k, v in ns_add.items():
-            if k not in doc:
-                doc = doc.replace("<w:document ", "<w:document " + v + " ", 1)
 
-        qr_Para = f'''<w:p>
-            <w:pPr><w:jc w:val="left"/><w:spacing w:before="40" w:after="0"/></w:pPr>
-            <w:r>
-                <w:drawing>
-                    <wp:inline distT="0" distB="0" distL="0" distR="0">
-                        <wp:extent cx="680000" cy="680000"/>
-                        <wp:docPr id="9991" name="QR Verifikasi"/>
-                        <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
-                            <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
-                                <pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
-                                    <pic:nvPicPr>
-                                        <pic:cNvPr id="9991" name="qr_verifikasi.png"/>
-                                        <pic:cNvPicPr/>
-                                    </pic:nvPicPr>
-                                    <pic:blipFill>
-                                        <a:blip r:embed="rIdQrVerif99"/>
-                                        <a:stretch><a:fillRect/></a:stretch>
-                                    </pic:blipFill>
-                                    <pic:spPr>
-                                        <a:xfrm><a:off x="0" y="0"/><a:ext cx="680000" cy="680000"/></a:xfrm>
-                                        <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
-                                    </pic:spPr>
-                                </pic:pic>
-                            </a:graphicData>
-                        </a:graphic>
-                    </wp:inline>
-                </w:drawing>
-            </w:r>
-        </w:p>
-        <w:p>
-            <w:pPr><w:jc w:val="left"/><w:spacing w:before="0" w:after="0"/></w:pPr>
-            <w:r>
-                <w:rPr><w:sz w:val="16"/><w:b/></w:rPr>
-                <w:t>Kode Verifikasi: {kode_verif}</w:t>
-            </w:r>
-        </w:p>'''
+        $zip = new \ZipArchive();
+        if ($zip->open($docxPath) !== true) {
+            return false;
+        }
 
-        if "<w:sectPr" in doc:
-            idx = doc.rfind("<w:sectPr")
-            doc = doc[:idx] + qr_Para + doc[idx:]
-        else:
-            doc = doc.replace("</w:body>", qr_Para + "</w:body>")
+        // 1. Salin gambar QR ke word/media/qr_verifikasi.png
+        $zip->addFile($qrPngPath, 'word/media/qr_verifikasi.png');
 
-        with open(doc_path, "w", encoding="utf-8") as f:
-            f.write(doc)
+        // 2. Pastikan [Content_Types].xml mendukung png
+        $ctXml = $zip->getFromName('[Content_Types].xml');
+        if ($ctXml !== false && ! str_contains($ctXml, 'Extension="png"')) {
+            $ctXml = str_replace('</Types>', '<Default Extension="png" ContentType="image/png"/></Types>', $ctXml);
+            $zip->addFromString('[Content_Types].xml', $ctXml);
+        }
 
-with zipfile.ZipFile(docx_path, 'w', zipfile.ZIP_DEFLATED) as zf:
-    for root, dirs, files in os.walk(extract_dir):
-        for file in files:
-            full_p = os.path.join(root, file)
-            rel_p = os.path.relpath(full_p, extract_dir)
-            zf.write(full_p, rel_p)
+        // 3. Tambahkan relationship rIdQrVerif99 di word/_rels/document.xml.rels
+        $relsXml = $zip->getFromName('word/_rels/document.xml.rels');
+        if ($relsXml !== false && ! str_contains($relsXml, 'rIdQrVerif99')) {
+            $relTag = '<Relationship Id="rIdQrVerif99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/qr_verifikasi.png"/>';
+            $relsXml = str_replace('</Relationships>', $relTag . '</Relationships>', $relsXml);
+            $zip->addFromString('word/_rels/document.xml.rels', $relsXml);
+        }
 
-shutil.rmtree(extract_dir, ignore_errors=True)
-PY;
+        // 4. Tambahkan blok QR & Kode Verifikasi ke word/document.xml
+        $docXml = $zip->getFromName('word/document.xml');
+        if ($docXml !== false && ! str_contains($docXml, 'rIdQrVerif99')) {
+            $nsAdd = [
+                'xmlns:r=' => 'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"',
+                'xmlns:wp=' => 'xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"',
+                'xmlns:a=' => 'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"',
+                'xmlns:pic=' => 'xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"',
+            ];
+            foreach ($nsAdd as $prefix => $attr) {
+                if (! str_contains($docXml, $prefix)) {
+                    $docXml = preg_replace('/<w:document\s+/', '<w:document ' . $attr . ' ', $docXml, 1);
+                }
+            }
 
-        $scriptFile = dirname($docxPath) . '/inject_qr.py';
-        file_put_contents($scriptFile, $pyScript);
+            $kodeEscaped = htmlspecialchars($kodeVerifikasi, ENT_XML1, 'UTF-8');
+            $qrPara = '<w:p>' .
+                '<w:pPr><w:jc w:val="left"/><w:spacing w:before="40" w:after="0"/></w:pPr>' .
+                '<w:r>' .
+                    '<w:drawing>' .
+                        '<wp:inline distT="0" distB="0" distL="0" distR="0">' .
+                            '<wp:extent cx="680000" cy="680000"/>' .
+                            '<wp:docPr id="9991" name="QR Verifikasi"/>' .
+                            '<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">' .
+                                '<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">' .
+                                    '<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">' .
+                                        '<pic:nvPicPr>' .
+                                            '<pic:cNvPr id="9991" name="qr_verifikasi.png"/>' .
+                                            '<pic:cNvPicPr/>' .
+                                        '</pic:nvPicPr>' .
+                                        '<pic:blipFill>' .
+                                            '<a:blip r:embed="rIdQrVerif99"/>' .
+                                            '<a:stretch><a:fillRect/></a:stretch>' .
+                                        '</pic:blipFill>' .
+                                        '<pic:spPr>' .
+                                            '<a:xfrm><a:off x="0" y="0"/><a:ext cx="680000" cy="680000"/></a:xfrm>' .
+                                            '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>' .
+                                        '</pic:spPr>' .
+                                    '</pic:pic>' .
+                                '</a:graphicData>' .
+                            '</a:graphic>' .
+                        '</wp:inline>' .
+                    '</w:drawing>' .
+                '</w:r>' .
+            '</w:p>' .
+            '<w:p>' .
+                '<w:pPr><w:jc w:val="left"/><w:spacing w:before="0" w:after="0"/></w:pPr>' .
+                '<w:r>' .
+                    '<w:rPr><w:sz w:val="16"/><w:b/></w:rPr>' .
+                    '<w:t>Kode Verifikasi: ' . $kodeEscaped . '</w:t>' .
+                '</w:r>' .
+            '</w:p>';
 
-        $cmd = sprintf(
-            'python3 %s %s %s %s %s 2>&1',
-            escapeshellarg($scriptFile),
-            escapeshellarg($docxPath),
-            escapeshellarg($qrPngPath),
-            escapeshellarg($kodeVerifikasi),
-            escapeshellarg($noSurat)
-        );
-        @exec($cmd, $out, $code);
+            if (str_contains($docXml, '<w:sectPr')) {
+                $idx = strrpos($docXml, '<w:sectPr');
+                $docXml = substr($docXml, 0, $idx) . $qrPara . substr($docXml, $idx);
+            } else {
+                $docXml = str_replace('</w:body>', $qrPara . '</w:body>', $docXml);
+            }
 
-        return $code === 0;
+            $zip->addFromString('word/document.xml', $docXml);
+        }
+
+        $zip->close();
+
+        return true;
     }
 
     /**
@@ -731,6 +703,10 @@ PY;
      */
     protected function renderWordAsOriginalImage(string $sourcePath, string $qrPngPath, SuratKeluar $suratKeluar, string $tempDir): ?string
     {
+        if (! function_exists('exec')) {
+            return null;
+        }
+
         $ext = strtolower(pathinfo($sourcePath, PATHINFO_EXTENSION));
         $inputDoc = $tempDir . '/input_asli.' . ($ext ?: 'docx');
         copy($sourcePath, $inputDoc);
@@ -742,7 +718,7 @@ PY;
             escapeshellarg($tempDir),
             escapeshellarg($inputDoc)
         );
-        @exec($cmd, $out, $code);
+        @\exec($cmd, $out, $code);
 
         $pdfCandidate = $tempDir . '/input_asli.pdf';
         if (! is_file($pdfCandidate)) {
@@ -752,7 +728,7 @@ PY;
         // Ubah PDF hasil render Word asli menjadi gambar PNG (150 DPI) menggunakan pdftoppm
         $imgPrefix = $tempDir . '/page';
         $ppmCmd = sprintf('pdftoppm -png -r 150 %s %s 2>&1', escapeshellarg($pdfCandidate), escapeshellarg($imgPrefix));
-        @exec($ppmCmd, $ppmOut, $ppmCode);
+        @\exec($ppmCmd, $ppmOut, $ppmCode);
 
         $pages = glob($tempDir . '/page*.png') ?: [];
         sort($pages);
