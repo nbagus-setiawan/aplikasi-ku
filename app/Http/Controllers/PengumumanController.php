@@ -71,18 +71,27 @@ class PengumumanController extends Controller
         // Atur boolean is_pinned
         $data['is_pinned'] = $request->boolean('is_pinned');
 
-        // Handle upload gambar jika ada
-        if ($request->hasFile('gambar')) {
-            $path = $request->file('gambar')->store('pengumuman', 'public');
-            $data['gambar'] = $path;
+        try {
+            // Handle upload gambar jika ada
+            if ($request->hasFile('gambar')) {
+                Storage::disk('public')->makeDirectory('pengumuman');
+                $path = $request->file('gambar')->store('pengumuman', 'public');
+                $data['gambar'] = $path;
+            }
+
+            $data['user_id'] = Auth::id();
+
+            Pengumuman::create($data);
+
+            return redirect()->route('admin.pengumuman.index')
+                ->with('success', 'Pengumuman baru berhasil disimpan.');
+        } catch (\Throwable $e) {
+            \Log::error('Gagal menyimpan pengumuman: ' . $e->getMessage(), ['exception' => $e]);
+
+            return back()->withInput()->withErrors([
+                'error' => 'Gagal menyimpan pengumuman ke server: ' . $e->getMessage(),
+            ]);
         }
-
-        $data['user_id'] = Auth::id();
-
-        Pengumuman::create($data);
-
-        return redirect()->route('admin.pengumuman.index')
-            ->with('success', 'Pengumuman baru berhasil disimpan.');
     }
 
     /**
