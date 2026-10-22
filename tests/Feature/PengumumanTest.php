@@ -199,4 +199,25 @@ class PengumumanTest extends TestCase
         $response = $this->get(route('publik.pengumuman.show', $pengumuman->slug));
         $response->assertStatus(404);
     }
+
+    public function test_tautan_singkat_pengumuman_mengarahkan_ke_detail_publik()
+    {
+        $pengumuman = Pengumuman::create([
+            'judul' => 'Maklumat Libur Santri',
+            'slug' => 'maklumat-libur-santri',
+            'kategori' => 'santri',
+            'isi' => 'Rincian liburan santri',
+            'tgl_tayang' => Carbon::today()->toDateString(),
+            'status' => 'terbit',
+            'user_id' => $this->user->id,
+        ]);
+
+        // Cek akses via /p/{id}
+        $responseId = $this->get('/p/' . $pengumuman->id);
+        $responseId->assertRedirect(route('publik.pengumuman.show', $pengumuman->slug));
+
+        // Cek akses via /p/{slug}
+        $responseSlug = $this->get('/p/' . $pengumuman->slug);
+        $responseSlug->assertRedirect(route('publik.pengumuman.show', $pengumuman->slug));
+    }
 }

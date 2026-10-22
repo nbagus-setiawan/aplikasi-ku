@@ -114,6 +114,19 @@ class PublicController extends Controller
     }
 
     /**
+     * Tautan Singkat Pengumuman Publik (Short Link).
+     * Contoh: /p/5 atau /p/jadwal-santri
+     */
+    public function pengumumanShortShow(string $identifier)
+    {
+        $pengumuman = is_numeric($identifier)
+            ? Pengumuman::terbitPublik()->where('id', $identifier)->firstOrFail()
+            : Pengumuman::terbitPublik()->where('slug', $identifier)->firstOrFail();
+
+        return redirect()->route('publik.pengumuman.show', $pengumuman->slug, 301);
+    }
+
+    /**
      * Berikan Like atau Batalkan Like pada Pengumuman (AJAX).
      */
     public function likePengumuman(Request $request, string $slug)

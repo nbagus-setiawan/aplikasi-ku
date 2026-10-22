@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [PublicController::class, 'beranda'])->name('home');
 Route::get('/pengumuman', [PublicController::class, 'pengumumanIndex'])->name('publik.pengumuman.index');
 Route::get('/pengumuman/{slug}', [PublicController::class, 'pengumumanShow'])->name('publik.pengumuman.show');
+Route::get('/p/{identifier}', [PublicController::class, 'pengumumanShortShow'])->name('publik.pengumuman.short');
 Route::post('/pengumuman/{slug}/like', [PublicController::class, 'likePengumuman'])->name('publik.pengumuman.like');
 Route::post('/pengumuman/{slug}/komentar', [PublicController::class, 'komentarPengumuman'])->name('publik.pengumuman.komentar');
 Route::post('/pengumuman/{slug}/share', [PublicController::class, 'sharePengumuman'])->name('publik.pengumuman.share');
