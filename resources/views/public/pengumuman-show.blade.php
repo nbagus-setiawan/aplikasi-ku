@@ -6,19 +6,18 @@
 @section('content')
 @php
     $shortUrl = url('/p/' . $pengumuman->id);
-    $fullUrl = route('publik.pengumuman.show', $pengumuman->slug);
     $shareText = "*Warta Resmi Ponpes Al-Falah Putak*\n\n📌 *" . $pengumuman->judul . "*\n\nBaca selengkapnya di:\n" . $shortUrl;
 @endphp
 
-<!-- Header Navigasi Breadcrumb (Ringkas & Rapi di Mobile) -->
-<div class="bg-slate-100/90 border-b border-slate-200/80 py-3">
+<!-- Header Navigasi Breadcrumb (Ringkas & Bersih di HP) -->
+<div class="bg-slate-50 border-b border-slate-200/80 py-2.5 sm:py-3">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium overflow-x-auto whitespace-nowrap">
+        <nav class="flex items-center gap-1.5 sm:gap-2 text-xs text-slate-500 font-medium overflow-x-auto whitespace-nowrap">
             <a href="{{ url('/') }}" class="hover:text-emerald-800 transition shrink-0">Beranda</a>
             <span class="text-slate-300">/</span>
             <a href="{{ url('/pengumuman') }}" class="hover:text-emerald-800 transition shrink-0">Pengumuman</a>
             <span class="text-slate-300">/</span>
-            <span class="text-slate-800 font-semibold truncate">{{ $pengumuman->judul }}</span>
+            <span class="text-slate-700 font-semibold truncate">{{ Str::limit($pengumuman->judul, 45) }}</span>
         </nav>
     </div>
 </div>
@@ -30,33 +29,33 @@
             <!-- KONTEN UTAMA ARTIKEL PENGUMUMAN -->
             <div class="lg:col-span-8 space-y-6">
 
-                <!-- Header Berita -->
+                <!-- Header Judul Berita -->
                 <header class="space-y-3">
                     <div class="flex flex-wrap items-center gap-2 text-xs">
-                        <span class="px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200/60">
+                        <span class="px-3 py-1 rounded-full font-bold uppercase tracking-wider text-[11px] bg-emerald-100 text-emerald-800 border border-emerald-200/80">
                             {{ $pengumuman->kategori }}
                         </span>
                         @if($pengumuman->is_pinned)
-                            <span class="px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-200 flex items-center gap-1">
+                            <span class="px-2.5 py-1 rounded-full font-bold uppercase tracking-wider text-[11px] bg-amber-100 text-amber-900 border border-amber-200 flex items-center gap-1">
                                 <span>📌</span>
                                 <span>Disematkan</span>
                             </span>
                         @endif
-                        <span class="text-slate-400">•</span>
-                        <span class="text-slate-500 font-medium flex items-center gap-1">
+                        <span class="text-slate-300">•</span>
+                        <span class="text-slate-500 font-medium flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                             {{ $pengumuman->formatted_tgl_tayang }}
                         </span>
                     </div>
 
-                    <h1 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-snug tracking-tight">
+                    <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 leading-snug tracking-tight">
                         {{ $pengumuman->judul }}
                     </h1>
                 </header>
 
-                <!-- FOTO UTAMA / BANNER (Proporsional & Respect Posisi Gambar) -->
+                <!-- FOTO UTAMA / BANNER (Proporsional & Mematuhi Posisi Gambar) -->
                 @if($pengumuman->gambar)
-                    <div class="rounded-2xl overflow-hidden border border-slate-200/90 shadow-xs bg-slate-100 relative">
+                    <div class="rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 shadow-xs bg-slate-100 relative">
                         <img src="{{ asset('storage/' . $pengumuman->gambar) }}"
                              alt="{{ $pengumuman->judul }}"
                              class="w-full max-h-[460px] object-cover"
@@ -64,7 +63,7 @@
                     </div>
                 @endif
 
-                <!-- BAR INTERAKSI: LIKE, KOMENTAR & BAGIKAN (Responsive Mobile & Touch-Friendly) -->
+                <!-- BAR INTERAKSI: LIKE, KOMENTAR & BAGIKAN -->
                 <div x-data="{
                     isLiked: {{ $isLiked ? 'true' : 'false' }},
                     likesCount: {{ (int) $likesCount }},
@@ -195,22 +194,22 @@
                         const text = @js($shareText);
                         navigator.clipboard.writeText(text).then(() => {
                             this.triggerShare('instagram');
-                            alert('Teks & Tautan Pendek warta berhasil disalin ke clipboard! Silakan buka Instagram dan tempelkan di Story atau Pesan Anda.');
+                            alert('Teks & Tautan Pendek warta berhasil disalin! Anda dapat membagikannya ke Instagram Story atau Pesan (DM).');
                             window.open('https://www.instagram.com/', '_blank');
                         });
                     }
                 }" class="space-y-6">
 
-                    <!-- Bar Tombol Aksi di Bawah Foto -->
-                    <div class="bg-slate-50/95 rounded-2xl border border-slate-200/90 p-2.5 sm:p-3.5 flex items-center justify-between gap-2 shadow-xs">
-                        <div class="flex items-center gap-1.5 sm:gap-2.5">
+                    <!-- Bar Tombol Interaksi Tepat di Bawah Banner -->
+                    <div class="bg-slate-50/90 rounded-2xl border border-slate-200/90 p-2.5 sm:p-3 flex items-center justify-between gap-2 shadow-xs">
+                        <div class="flex items-center gap-1.5 sm:gap-2">
                             <!-- Tombol Like -->
                             <button
                                 @click="toggleLike()"
                                 :disabled="likeLoading"
                                 class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition transform active:scale-95 border"
                                 :class="isLiked ? 'bg-rose-50 text-rose-600 border-rose-200' : 'bg-white text-slate-700 hover:text-rose-600 hover:bg-rose-50/60 border-slate-200'"
-                                title="Sukai Warta Ini">
+                                title="Sukai Warta">
                                 <svg class="w-4 h-4 sm:w-5 sm:h-5 transition-transform" :class="{'scale-110 fill-rose-600 text-rose-600': isLiked, 'fill-none text-current': !isLiked}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                 </svg>
@@ -234,126 +233,150 @@
                             </button>
                         </div>
 
-                        <!-- Tombol Bagikan dengan Ikon Asli WhatsApp & Modal -->
+                        <!-- Tombol Cepat Bagikan -->
                         <div class="flex items-center gap-1.5">
-                            <!-- Share Cepat WhatsApp Langsung (Ikon Asli WhatsApp) -->
+                            <!-- Tombol Langsung WhatsApp -->
                             <a
                                 href="https://api.whatsapp.com/send?text={{ rawurlencode($shareText) }}"
                                 target="_blank"
                                 @click="triggerShare('whatsapp')"
-                                class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#25D366] hover:bg-[#20ba59] text-white shadow-xs transition transform active:scale-95"
+                                style="background-color: #25D366; color: #ffffff;"
+                                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold shadow-xs hover:opacity-95 transition transform active:scale-95"
                                 title="Bagikan ke WhatsApp">
-                                <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24">
-                                    <path d="M12.031 2C6.514 2 2.02 6.495 2.02 12.012c0 1.954.563 3.782 1.536 5.342L2 22.25l5.064-1.523a9.98 9.98 0 004.967 1.306h.004c5.517 0 10.012-4.496 10.012-10.012 0-2.673-1.042-5.187-2.935-7.08A9.957 9.957 0 0012.031 2zm5.834 14.167c-.246.69-1.22 1.3-1.724 1.378-.456.07-1.046.104-3.376-.86-2.98-1.233-4.903-4.267-5.05-4.464-.146-.197-1.21-1.61-1.21-3.072 0-1.462.766-2.18 1.038-2.477.272-.296.592-.37.79-.37.198 0 .396.002.568.01.185.01.433-.07.677.518.247.592.84 2.052.914 2.2.074.148.123.32.024.518-.098.197-.148.32-.296.494-.148.172-.31.385-.444.518-.148.148-.303.308-.13.604.173.296.768 1.267 1.646 2.05 1.13 1.008 2.083 1.32 2.38 1.468.297.148.47.123.643-.074.173-.197.74-.863.938-1.16.197-.296.395-.246.666-.148.272.099 1.726.814 2.022.962.296.148.494.222.567.345.074.123.074.715-.172 1.405z"/>
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
                                 </svg>
-                                <span>WA</span>
+                                <span>Bagikan</span>
                             </a>
 
-                            <!-- Tombol Opsi Bagikan Lainnya -->
+                            <!-- Tombol Buka Modal Share -->
                             <button
                                 @click="modalShareOpen = true"
-                                class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-700 hover:text-blue-700 hover:bg-blue-50 border border-slate-200 shadow-xs transition transform active:scale-95"
-                                title="Pilihan Bagikan Lainnya">
-                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-700 hover:text-emerald-800 hover:bg-slate-100 border border-slate-200 transition transform active:scale-95"
+                                title="Pilihan Media Lainnya">
+                                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                                 </svg>
-                                <span class="hidden sm:inline">Bagikan</span>
-                                <span class="px-1.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-800"
-                                      x-text="sharesCount"></span>
+                                <span class="hidden sm:inline">Lainnya</span>
                             </button>
                         </div>
                     </div>
 
-                    <!-- ISI ARTIKEL PENGUMUMAN (Tipografi Rapi & Nyaman Dibaca) -->
-                    <div class="text-slate-800 leading-relaxed space-y-4 text-sm sm:text-base border-t border-slate-100 pt-6 font-normal">
+                    <!-- ISI ARTIKEL WARTA PENGUMUMAN -->
+                    <div class="text-slate-800 leading-relaxed space-y-4 text-sm sm:text-base border-t border-slate-100 pt-6">
                         {!! nl2br(e($pengumuman->isi)) !!}
                     </div>
 
-                    <!-- KOTAK BAGIKAN RESMI DI AKHIR WARTA (Lengkap dengan Ikon Asli WA, IG, FB, Telegram) -->
-                    <div class="mt-8 p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-slate-50 to-emerald-50/50 border border-emerald-100/80 space-y-3.5">
+                    <!-- KOTAK BAGIKAN RESMI DI AKHIR WARTA (Desain Mewah & Lengkap) -->
+                    <div class="mt-8 p-5 sm:p-7 rounded-3xl bg-gradient-to-br from-emerald-950 via-emerald-900 to-slate-900 text-white shadow-md border border-emerald-800/80 space-y-5">
                         <div class="flex items-center justify-between flex-wrap gap-2">
                             <div>
-                                <h4 class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-                                    <span>📢 Bagikan Warta Ini:</span>
+                                <h4 class="text-base font-extrabold text-white flex items-center gap-2">
+                                    <span>📢 Bagikan Warta Resmi Ini</span>
                                 </h4>
-                                <p class="text-xs text-slate-500">Sebarkan maklumat dan informasi resmi pesantren ini kepada warga & wali santri.</p>
+                                <p class="text-xs text-emerald-200/90 mt-0.5">Sebarkan maklumat pesantren ini kepada para santri, wali santri, dan masyarakat.</p>
                             </div>
-                            <span class="text-[11px] font-mono text-emerald-800 bg-emerald-100/80 px-2.5 py-1 rounded-md font-semibold">
+                            <span class="text-xs font-mono font-bold text-emerald-300 bg-emerald-900/80 border border-emerald-700/60 px-3 py-1 rounded-full">
                                 {{ $shortUrl }}
                             </span>
                         </div>
 
-                        <!-- Bar Tombol Media Sosial Resmi -->
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
-                            <!-- WhatsApp Asli -->
+                        <!-- 4 Tombol Sosial Media Berwarna Resmi -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                            <!-- WhatsApp -->
                             <a
                                 href="https://api.whatsapp.com/send?text={{ rawurlencode($shareText) }}"
                                 target="_blank"
                                 @click="triggerShare('whatsapp')"
-                                class="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white shadow-xs transition font-bold text-xs">
-                                <svg class="w-4 h-4 fill-white shrink-0" viewBox="0 0 24 24">
-                                    <path d="M12.031 2C6.514 2 2.02 6.495 2.02 12.012c0 1.954.563 3.782 1.536 5.342L2 22.25l5.064-1.523a9.98 9.98 0 004.967 1.306h.004c5.517 0 10.012-4.496 10.012-10.012 0-2.673-1.042-5.187-2.935-7.08A9.957 9.957 0 0012.031 2zm5.834 14.167c-.246.69-1.22 1.3-1.724 1.378-.456.07-1.046.104-3.376-.86-2.98-1.233-4.903-4.267-5.05-4.464-.146-.197-1.21-1.61-1.21-3.072 0-1.462.766-2.18 1.038-2.477.272-.296.592-.37.79-.37.198 0 .396.002.568.01.185.01.433-.07.677.518.247.592.84 2.052.914 2.2.074.148.123.32.024.518-.098.197-.148.32-.296.494-.148.172-.31.385-.444.518-.148.148-.303.308-.13.604.173.296.768 1.267 1.646 2.05 1.13 1.008 2.083 1.32 2.38 1.468.297.148.47.123.643-.074.173-.197.74-.863.938-1.16.197-.296.395-.246.666-.148.272.099 1.726.814 2.022.962.296.148.494.222.567.345.074.123.074.715-.172 1.405z"/>
-                                </svg>
-                                <span>WhatsApp</span>
+                                style="background-color: #25D366; color: #ffffff;"
+                                class="flex items-center gap-3 p-3.5 rounded-2xl shadow-sm hover:opacity-95 transition font-bold text-xs sm:text-sm active:scale-98">
+                                <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                                    <svg viewBox="0 0 24 24" width="22" height="22" fill="#ffffff">
+                                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-extrabold">WhatsApp</div>
+                                    <div class="text-[11px] text-emerald-100 font-normal">Kirim langsung ke kontak / grup</div>
+                                </div>
                             </a>
 
-                            <!-- Instagram Asli -->
+                            <!-- Instagram -->
                             <button
                                 type="button"
                                 @click="shareToInstagram()"
-                                class="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white shadow-xs hover:opacity-90 transition font-bold text-xs">
-                                <svg class="w-4 h-4 fill-white shrink-0" viewBox="0 0 24 24">
-                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                                </svg>
-                                <span>Instagram</span>
+                                style="background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); color: #ffffff;"
+                                class="flex items-center gap-3 p-3.5 rounded-2xl shadow-sm hover:opacity-95 transition font-bold text-xs sm:text-sm text-left active:scale-98">
+                                <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                                    <svg viewBox="0 0 24 24" width="22" height="22" fill="#ffffff">
+                                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-extrabold">Instagram</div>
+                                    <div class="text-[11px] text-pink-100 font-normal">Salin & buka Instagram</div>
+                                </div>
                             </button>
 
-                            <!-- Facebook Asli -->
+                            <!-- Facebook -->
                             <a
                                 href="https://www.facebook.com/sharer/sharer.php?u={{ rawurlencode($shortUrl) }}"
                                 target="_blank"
                                 @click="triggerShare('facebook')"
-                                class="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-[#1877F2] hover:bg-[#166fe5] text-white shadow-xs transition font-bold text-xs">
-                                <svg class="w-4 h-4 fill-white shrink-0" viewBox="0 0 24 24">
-                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                                </svg>
-                                <span>Facebook</span>
+                                style="background-color: #1877F2; color: #ffffff;"
+                                class="flex items-center gap-3 p-3.5 rounded-2xl shadow-sm hover:opacity-95 transition font-bold text-xs sm:text-sm active:scale-98">
+                                <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                                    <svg viewBox="0 0 24 24" width="22" height="22" fill="#ffffff">
+                                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-extrabold">Facebook</div>
+                                    <div class="text-[11px] text-blue-100 font-normal">Bagikan di linimasa Facebook</div>
+                                </div>
                             </a>
 
-                            <!-- Telegram Asli -->
+                            <!-- Telegram -->
                             <a
                                 href="https://t.me/share/url?url={{ rawurlencode($shortUrl) }}&text={{ rawurlencode($pengumuman->judul) }}"
                                 target="_blank"
                                 @click="triggerShare('telegram')"
-                                class="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-[#229ED9] hover:bg-[#1e8ec3] text-white shadow-xs transition font-bold text-xs">
-                                <svg class="w-4 h-4 fill-white shrink-0" viewBox="0 0 24 24">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
-                                </svg>
-                                <span>Telegram</span>
+                                style="background-color: #229ED9; color: #ffffff;"
+                                class="flex items-center gap-3 p-3.5 rounded-2xl shadow-sm hover:opacity-95 transition font-bold text-xs sm:text-sm active:scale-98">
+                                <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                                    <svg viewBox="0 0 24 24" width="22" height="22" fill="#ffffff">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-extrabold">Telegram</div>
+                                    <div class="text-[11px] text-sky-100 font-normal">Kirim ke saluran / grup</div>
+                                </div>
                             </a>
                         </div>
 
-                        <!-- Tombol Salin Tautan Singkat -->
-                        <div class="pt-2">
+                        <!-- Bar Salin Tautan Pendek -->
+                        <div class="pt-2 border-t border-emerald-800/60">
+                            <label class="block text-[11px] font-bold text-emerald-200 uppercase tracking-wider mb-2">Salin Tautan Pendek Resmi:</label>
                             <div class="flex items-center gap-2">
                                 <input
                                     type="text"
                                     readonly
                                     value="{{ $shortUrl }}"
-                                    class="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl text-slate-700 font-mono select-all focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                    class="w-full px-3.5 py-2.5 text-xs bg-emerald-950/90 border border-emerald-700/80 rounded-xl text-emerald-200 font-mono select-all focus:outline-none">
                                 <button
                                     type="button"
                                     @click="copyShortUrl()"
-                                    class="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition shadow-xs"
-                                    :class="copied ? 'bg-emerald-600 text-white' : 'bg-slate-900 hover:bg-slate-800 text-white'">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                    style="background-color: #10b981; color: #ffffff;"
+                                    class="shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-sm active:scale-95">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                                     <span x-text="copiedText"></span>
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- SECTION DAFTAR KOMENTAR & DOA WARGA PESANTREN -->
+                    <!-- SECTION DAFTAR KOMENTAR & DOA -->
                     <div class="pt-8 border-t border-slate-200/80 space-y-5">
                         <div class="flex items-center justify-between flex-wrap gap-3">
                             <div class="flex items-center gap-2">
@@ -418,7 +441,7 @@
                                             💬
                                         </div>
                                         <div>
-                                            <h3 class="text-base font-bold text-slate-900">Beri Komentar & Tanggapan</h3>
+                                            <h3 class="text-base font-bold text-slate-900">Beri Komentar & Doa</h3>
                                             <p class="text-xs text-slate-500">Tanggapan publik untuk warta ini</p>
                                         </div>
                                     </div>
@@ -483,7 +506,7 @@
                         </div>
                     </div>
 
-                    <!-- MODAL POP-UP BAGIKAN / SHARE (Lengkap dengan Ikon Asli Media Sosial) -->
+                    <!-- MODAL POP-UP BAGIKAN / SHARE (Sangat Mewah, Berwarna Resmi & Rapi di Mobile) -->
                     <div x-show="modalShareOpen"
                          x-cloak
                          class="fixed inset-0 z-50 overflow-y-auto"
@@ -498,12 +521,12 @@
                                  @click.stop>
                                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                                     <div class="flex items-center gap-2.5">
-                                        <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-base">
+                                        <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-base font-bold">
                                             ↗️
                                         </div>
                                         <div>
-                                            <h3 class="text-base font-bold text-slate-900">Bagikan Warta</h3>
-                                            <p class="text-xs text-slate-500">Pilih media untuk menyebarkan informasi ini</p>
+                                            <h3 class="text-base font-bold text-slate-900">Bagikan Warta Ini</h3>
+                                            <p class="text-xs text-slate-500">Pilih media sosial resmi di bawah</p>
                                         </div>
                                     </div>
                                     <button @click="modalShareOpen = false" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">
@@ -511,28 +534,41 @@
                                     </button>
                                 </div>
 
-                                <div class="grid grid-cols-2 gap-2.5 pt-1">
+                                <!-- 4 Kartu Media Sosial Resmi Berwarna Cerah & Jelas -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
                                     <!-- WhatsApp Asli -->
                                     <a
                                         href="https://api.whatsapp.com/send?text={{ rawurlencode($shareText) }}"
                                         target="_blank"
                                         @click="triggerShare('whatsapp'); modalShareOpen = false"
-                                        class="flex items-center gap-2.5 p-3 rounded-2xl bg-[#25D366] hover:bg-[#20ba59] text-white shadow-xs transition font-bold text-xs">
-                                        <svg class="w-5 h-5 fill-white shrink-0" viewBox="0 0 24 24">
-                                            <path d="M12.031 2C6.514 2 2.02 6.495 2.02 12.012c0 1.954.563 3.782 1.536 5.342L2 22.25l5.064-1.523a9.98 9.98 0 004.967 1.306h.004c5.517 0 10.012-4.496 10.012-10.012 0-2.673-1.042-5.187-2.935-7.08A9.957 9.957 0 0012.031 2zm5.834 14.167c-.246.69-1.22 1.3-1.724 1.378-.456.07-1.046.104-3.376-.86-2.98-1.233-4.903-4.267-5.05-4.464-.146-.197-1.21-1.61-1.21-3.072 0-1.462.766-2.18 1.038-2.477.272-.296.592-.37.79-.37.198 0 .396.002.568.01.185.01.433-.07.677.518.247.592.84 2.052.914 2.2.074.148.123.32.024.518-.098.197-.148.32-.296.494-.148.172-.31.385-.444.518-.148.148-.303.308-.13.604.173.296.768 1.267 1.646 2.05 1.13 1.008 2.083 1.32 2.38 1.468.297.148.47.123.643-.074.173-.197.74-.863.938-1.16.197-.296.395-.246.666-.148.272.099 1.726.814 2.022.962.296.148.494.222.567.345.074.123.074.715-.172 1.405z"/>
-                                        </svg>
-                                        <span>WhatsApp</span>
+                                        style="background-color: #25D366; color: #ffffff;"
+                                        class="flex items-center gap-3 p-3 rounded-2xl shadow-xs hover:opacity-95 transition font-bold text-xs active:scale-98">
+                                        <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                                            <svg viewBox="0 0 24 24" width="20" height="20" fill="#ffffff">
+                                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="text-left">
+                                            <div class="font-bold text-xs sm:text-sm">WhatsApp</div>
+                                            <div class="text-[10px] text-emerald-100">Kirim pesan langsung</div>
+                                        </div>
                                     </a>
 
                                     <!-- Instagram Asli -->
                                     <button
                                         type="button"
                                         @click="shareToInstagram(); modalShareOpen = false"
-                                        class="flex items-center gap-2.5 p-3 rounded-2xl bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white shadow-xs hover:opacity-90 transition font-bold text-xs text-left">
-                                        <svg class="w-5 h-5 fill-white shrink-0" viewBox="0 0 24 24">
-                                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                                        </svg>
-                                        <span>Instagram</span>
+                                        style="background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); color: #ffffff;"
+                                        class="flex items-center gap-3 p-3 rounded-2xl shadow-xs hover:opacity-95 transition font-bold text-xs text-left active:scale-98">
+                                        <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                                            <svg viewBox="0 0 24 24" width="20" height="20" fill="#ffffff">
+                                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="text-left">
+                                            <div class="font-bold text-xs sm:text-sm">Instagram</div>
+                                            <div class="text-[10px] text-pink-100">Salin & buka IG</div>
+                                        </div>
                                     </button>
 
                                     <!-- Facebook Asli -->
@@ -540,11 +576,17 @@
                                         href="https://www.facebook.com/sharer/sharer.php?u={{ rawurlencode($shortUrl) }}"
                                         target="_blank"
                                         @click="triggerShare('facebook'); modalShareOpen = false"
-                                        class="flex items-center gap-2.5 p-3 rounded-2xl bg-[#1877F2] hover:bg-[#166fe5] text-white shadow-xs transition font-bold text-xs">
-                                        <svg class="w-5 h-5 fill-white shrink-0" viewBox="0 0 24 24">
-                                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                                        </svg>
-                                        <span>Facebook</span>
+                                        style="background-color: #1877F2; color: #ffffff;"
+                                        class="flex items-center gap-3 p-3 rounded-2xl shadow-xs hover:opacity-95 transition font-bold text-xs active:scale-98">
+                                        <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                                            <svg viewBox="0 0 24 24" width="20" height="20" fill="#ffffff">
+                                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="text-left">
+                                            <div class="font-bold text-xs sm:text-sm">Facebook</div>
+                                            <div class="text-[10px] text-blue-100">Berbagi ke Beranda</div>
+                                        </div>
                                     </a>
 
                                     <!-- Telegram Asli -->
@@ -552,27 +594,34 @@
                                         href="https://t.me/share/url?url={{ rawurlencode($shortUrl) }}&text={{ rawurlencode($pengumuman->judul) }}"
                                         target="_blank"
                                         @click="triggerShare('telegram'); modalShareOpen = false"
-                                        class="flex items-center gap-2.5 p-3 rounded-2xl bg-[#229ED9] hover:bg-[#1e8ec3] text-white shadow-xs transition font-bold text-xs">
-                                        <svg class="w-5 h-5 fill-white shrink-0" viewBox="0 0 24 24">
-                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
-                                        </svg>
-                                        <span>Telegram</span>
+                                        style="background-color: #229ED9; color: #ffffff;"
+                                        class="flex items-center gap-3 p-3 rounded-2xl shadow-xs hover:opacity-95 transition font-bold text-xs active:scale-98">
+                                        <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                                            <svg viewBox="0 0 24 24" width="20" height="20" fill="#ffffff">
+                                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="text-left">
+                                            <div class="font-bold text-xs sm:text-sm">Telegram</div>
+                                            <div class="text-[10px] text-sky-100">Kirim ke kontak/grup</div>
+                                        </div>
                                     </a>
                                 </div>
 
-                                <!-- Salin Tautan Singkat -->
+                                <!-- Salin Tautan Pendek -->
                                 <div class="pt-3 border-t border-slate-100 space-y-1.5">
-                                    <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider">Tautan Pendek:</label>
+                                    <label class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Tautan Pendek Resmi:</label>
                                     <div class="flex items-center gap-2">
                                         <input
                                             type="text"
                                             readonly
                                             value="{{ $shortUrl }}"
-                                            class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-mono select-all focus:outline-none">
+                                            class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-mono font-semibold select-all focus:outline-none">
                                         <button
                                             @click="copyShortUrl()"
-                                            class="shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition shadow-xs"
-                                            :class="copied ? 'bg-emerald-600 text-white' : 'bg-slate-900 hover:bg-slate-800 text-white'">
+                                            style="background-color: #065f46; color: #ffffff;"
+                                            class="shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-xs active:scale-95">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                                             <span x-text="copied ? 'Tersalin!' : 'Salin'"></span>
                                         </button>
                                     </div>
