@@ -84,17 +84,70 @@
             <div x-data="{
                 previewUrl: '{{ $pengumuman->gambar ? asset('storage/' . $pengumuman->gambar) : '' }}',
                 posY: {{ $initialY }},
-                onFileChange(e) {
+                isCompressing: false,
+                async onFileChange(e) {
                     const file = e.target.files[0];
-                    if (file) {
-                        if (file.size > 5 * 1024 * 1024) {
-                            alert('Ukuran foto terlalu besar (' + (file.size / (1024 * 1024)).toFixed(1) + ' MB). Maksimal ukuran yang diizinkan adalah 5 MB. Silakan pilih foto lain atau kompres terlebih dahulu.');
-                            e.target.value = '';
-                            this.previewUrl = null;
-                            return;
+                    if (!file) return;
+
+                    // Jika ukuran file di atas 1MB, otomatis kompres di browser agar tidak tertolak batas server
+                    if (file.size > 1024 * 1024 && file.type.startsWith('image/')) {
+                        this.isCompressing = true;
+                        try {
+                            const compressed = await this.compressImage(file);
+                            const dt = new DataTransfer();
+                            dt.items.add(compressed);
+                            e.target.files = dt.files;
+                        } catch (err) {
+                            console.warn('Kompresi otomatis dilewati:', err);
+                        } finally {
+                            this.isCompressing = false;
                         }
-                        this.previewUrl = URL.createObjectURL(file);
                     }
+
+                    if (e.target.files[0]) {
+                        this.previewUrl = URL.createObjectURL(e.target.files[0]);
+                    }
+                },
+                compressImage(file) {
+                    return new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            const img = new Image();
+                            img.onload = () => {
+                                const maxWidth = 1600;
+                                const maxHeight = 1600;
+                                let width = img.width;
+                                let height = img.height;
+                                if (width > maxWidth || height > maxHeight) {
+                                    if (width > height) {
+                                        height = Math.round((height * maxWidth) / width);
+                                        width = maxWidth;
+                                    } else {
+                                        width = Math.round((width * maxHeight) / height);
+                                        height = maxHeight;
+                                    }
+                                }
+                                const canvas = document.createElement('canvas');
+                                canvas.width = width;
+                                canvas.height = height;
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0, width, height);
+                                canvas.toBlob((blob) => {
+                                    if (!blob || blob.size >= file.size) {
+                                        resolve(file);
+                                    } else {
+                                        const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, '') + '.jpg', {
+                                            type: 'image/jpeg',
+                                            lastModified: Date.now()
+                                        });
+                                        resolve(newFile);
+                                    }
+                                }, 'image/jpeg', 0.82);
+                            };
+                            img.src = event.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    });
                 }
             }" class="space-y-4 bg-gray-50/70 p-5 rounded-2xl border border-gray-200">
                 <div>
