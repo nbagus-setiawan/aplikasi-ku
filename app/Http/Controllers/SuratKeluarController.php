@@ -397,11 +397,19 @@ class SuratKeluarController extends Controller
     public function show(SuratKeluar $suratKeluar): View
     {
         $this->docxParserService->ensureWordQrProcessed($suratKeluar);
+
+        // Bersihkan jika sebelumnya file_final keliru menyimpan path .docx
+        if (! empty($suratKeluar->file_final) && str_ends_with(strtolower($suratKeluar->file_final), '.docx')) {
+            $suratKeluar->file_final = null;
+            $suratKeluar->save();
+        }
+
         $suratKeluar->loadMissing(['kategori', 'user', 'tandaTangan', 'tandaTangans']);
         $pengaturan = Pengaturan::getAllKeyValues();
         $qrCodeDataUri = $this->tandaTanganService->generateQrCode(url('/verifikasi/' . $suratKeluar->kode_verifikasi));
+        $pratinjauSuratHtml = $this->tandaTanganService->renderHtml($suratKeluar);
 
-        return view('surat-keluar.show', compact('suratKeluar', 'pengaturan', 'qrCodeDataUri'));
+        return view('surat-keluar.show', compact('suratKeluar', 'pengaturan', 'qrCodeDataUri', 'pratinjauSuratHtml'));
     }
 
     /**
@@ -563,55 +571,41 @@ class SuratKeluarController extends Controller
     }
 
     /**
-     * Buka / Unduh dokumen surat keluar (prioritaskan dokumen asli Word ber-QR atau tampilan gambar asli Word).
+     * Buka / Unduh dokumen surat keluar dalam format PDF atau Word (.docx) ber-QR Code & Kode Verifikasi.
      */
     public function cetak(Request $request, SuratKeluar $suratKeluar): Response
     {
         $this->docxParserService->ensureWordQrProcessed($suratKeluar);
-        $slugNo = Str::slug(str_replace('/', '-', $suratKeluar->no_surat));
+        $slugNo = Str::slug(str_replace('/', '-', $suratKeluar->no_surat)) ?: ('surat-' . $suratKeluar->id);
+        $isDownload = $request->boolean('download') || $request->query('download') == '1';
 
-        // Jika diminta unduh file Word (.docx) asli ber-QR Code
-        if ($request->query('format') === 'docx' && !empty($suratKeluar->file_surat_asli) && Storage::disk('public')->exists($suratKeluar->file_surat_asli)) {
-            $extAsli = strtolower(pathinfo($suratKeluar->file_surat_asli, PATHINFO_EXTENSION)) ?: 'docx';
-            return response(Storage::disk('public')->get($suratKeluar->file_surat_asli), 200, [
-                'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                'Content-Disposition' => 'attachment; filename="surat-' . $slugNo . '.' . $extAsli . '"',
-            ]);
-        }
-
-        if (!empty($suratKeluar->file_final) && Storage::disk('public')->exists($suratKeluar->file_final)) {
-            $ext = strtolower(pathinfo($suratKeluar->file_final, PATHINFO_EXTENSION));
-            if ($ext === 'png' || $ext === 'jpg' || $ext === 'jpeg') {
-                $mime = $ext === 'png' ? 'image/png' : 'image/jpeg';
-                return response(Storage::disk('public')->get($suratKeluar->file_final), 200, [
-                    'Content-Type' => $mime,
-                    'Content-Disposition' => 'inline; filename="surat-' . $slugNo . '.' . $ext . '"',
-                ]);
+        // 1. FORMAT WORD (.docx) BER-QR CODE DAN KODE VERIFIKASI
+        if ($request->query('format') === 'docx') {
+            $docxPath = $suratKeluar->file_surat_asli;
+            if (empty($docxPath) || ! Storage::disk('public')->exists($docxPath)) {
+                $docxPath = $this->docxParserService->generateDocxFromSuratKeluar($suratKeluar);
             }
-            if ($ext === 'docx' || $ext === 'doc') {
-                return response(Storage::disk('public')->get($suratKeluar->file_final), 200, [
+
+            if (! empty($docxPath) && Storage::disk('public')->exists($docxPath)) {
+                $content = Storage::disk('public')->get($docxPath);
+                return response($content, 200, [
                     'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                    'Content-Disposition' => 'attachment; filename="surat-' . $slugNo . '.' . $ext . '"',
-                ]);
-            }
-            if ($ext === 'pdf') {
-                return response(Storage::disk('public')->get($suratKeluar->file_final), 200, [
-                    'Content-Type' => 'application/pdf',
-                    'Content-Disposition' => 'inline; filename="surat-' . $slugNo . '.pdf"',
+                    'Content-Disposition' => 'attachment; filename="surat-' . $slugNo . '.docx"',
                 ]);
             }
         }
 
-        if (!empty($suratKeluar->file_surat_asli) && Storage::disk('public')->exists($suratKeluar->file_surat_asli)) {
-            $extAsli = strtolower(pathinfo($suratKeluar->file_surat_asli, PATHINFO_EXTENSION)) ?: 'docx';
-            return response(Storage::disk('public')->get($suratKeluar->file_surat_asli), 200, [
-                'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                'Content-Disposition' => 'attachment; filename="surat-' . $slugNo . '.' . $extAsli . '"',
-            ]);
-        }
-
+        // 2. FORMAT PDF RESMI BER-QR CODE DAN KODE VERIFIKASI
         $pdf = $this->tandaTanganService->renderPdf($suratKeluar);
 
+        if ($isDownload || $request->query('format') === 'pdf') {
+            return response($pdf->output(), 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="surat-' . $slugNo . '.pdf"',
+            ]);
+        }
+
+        // Pratinjau / cetak langsung di peramban
         return $pdf->stream('surat-' . $slugNo . '.pdf');
     }
 

@@ -1,7 +1,26 @@
 <x-app-layout>
     @section('title', 'Detail Surat Keluar ' . $suratKeluar->no_surat)
 
-    <div class="max-w-5xl mx-auto space-y-6 pb-12" x-data="{ modalDigital: false, modalBasah: false, selectedUrutan: 1 }">
+    <div class="max-w-5xl mx-auto space-y-6 pb-12"
+         x-data="{
+             modalDigital: false,
+             modalBasah: false,
+             modalUnduh: false,
+             unduhFormat: 'pdf',
+             unduhNamaFormat: 'PDF Resmi',
+             unduhUrl: '',
+             selectedUrutan: 1,
+             konfirmasiUnduh(format, url, nama) {
+                 this.unduhFormat = format;
+                 this.unduhNamaFormat = nama;
+                 this.unduhUrl = url;
+                 this.modalUnduh = true;
+             },
+             eksekusiUnduh() {
+                 this.modalUnduh = false;
+                 window.location.href = this.unduhUrl;
+             }
+         }">
         <!-- Top Navigation & Action Buttons -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -22,21 +41,33 @@
                 </div>
             </div>
 
+            <!-- Tepat 2 Opsi Unduh Resmi (PDF & Word ber-QR) + Kontrol Utama -->
             <div class="flex flex-wrap items-center gap-2">
-                <!-- Tombol Cetak PDF -->
-                <a href="{{ route('admin.surat-keluar.cetak', $suratKeluar) }}" target="_blank"
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white text-gray-700 hover:bg-gray-50 text-xs sm:text-sm font-semibold rounded-xl border border-gray-300 shadow-2xs transition active:scale-95">
-                    <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                <!-- 1. Unduh PDF -->
+                <button type="button"
+                        @click="konfirmasiUnduh('pdf', '{{ route('admin.surat-keluar.cetak', [$suratKeluar, 'format' => 'pdf', 'download' => 1]) }}', 'Dokumen PDF Resmi')"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    <span>Cetak PDF Resmi</span>
-                </a>
+                    <span>Unduh PDF</span>
+                </button>
+
+                <!-- 2. Unduh Word (.docx) -->
+                <button type="button"
+                        @click="konfirmasiUnduh('docx', '{{ route('admin.surat-keluar.cetak', [$suratKeluar, 'format' => 'docx', 'download' => 1]) }}', 'Dokumen Word (.docx)')"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-700 hover:bg-blue-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span>Unduh Word (.docx)</span>
+                </button>
 
                 @if (! $suratKeluar->isFinal())
                     <!-- Tombol Ubah Data -->
                     <a href="{{ route('admin.surat-keluar.edit', $suratKeluar) }}"
                        class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white text-gray-700 hover:bg-gray-50 text-xs sm:text-sm font-semibold rounded-xl border border-gray-300 shadow-2xs transition active:scale-95">
-                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                         <span>Ubah</span>
@@ -49,7 +80,7 @@
                         @method('PATCH')
                         <input type="hidden" name="status" value="terkirim">
                         <button type="submit"
-                                class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95">
+                                class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                             </svg>
@@ -88,24 +119,6 @@
                     </button>
                 </div>
             </div>
-        @endif
-
-        <!-- Alert Buka Cetak Otomatis -->
-        @if (session('auto_open_cetak'))
-            <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xs">
-                <div class="text-xs text-blue-900 font-semibold text-center sm:text-left">
-                    🖨️ Dokumen PDF siap dicetak. Jika tab cetak belum terbuka otomatis, klik tombol di samping:
-                </div>
-                <a href="{{ session('auto_open_cetak') }}" target="_blank" id="autoOpenCetakLink"
-                   class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-bold whitespace-nowrap shadow-xs">
-                    Buka & Cetak PDF Sekarang
-                </a>
-            </div>
-            <script>
-                window.addEventListener('DOMContentLoaded', function() {
-                    window.open(@js(session('auto_open_cetak')), '_blank');
-                });
-            </script>
         @endif
 
         <!-- Card Detail Surat -->
@@ -216,43 +229,66 @@
                     </div>
                 @endif
 
-                <!-- DOKUMEN SURAT ASLI RESMI (BER-QR CODE) - TETAP TEPAT SEPERTI ASLINYA -->
-                @if ($suratKeluar->file_final || $suratKeluar->file_surat_asli)
-                    @php
-                        $tampilanPath = $suratKeluar->file_final ?: $suratKeluar->file_surat_asli;
-                        $extTampilan = strtolower(pathinfo($tampilanPath, PATHINFO_EXTENSION));
-                        $isGambarAsli = in_array($extTampilan, ['png', 'jpg', 'jpeg', 'webp'], true);
-                    @endphp
-                    <div class="md:col-span-2 space-y-3 pt-3 border-t border-gray-100">
-                        <div class="flex flex-wrap items-center justify-between gap-2">
-                            <span class="block text-xs font-bold uppercase tracking-wider text-emerald-900">📄 Dokumen Surat Asli Resmi (Ber-QR Code)</span>
-                            <div class="flex flex-wrap items-center gap-2">
-                                @if ($suratKeluar->file_surat_asli)
-                                    <a href="{{ asset('storage/' . $suratKeluar->file_surat_asli) }}" download
-                                       class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold rounded-xl transition shadow-xs">
-                                        Unduh File Word Asli (.docx)
-                                    </a>
-                                @endif
-                                @if ($suratKeluar->file_final)
-                                    <a href="{{ asset('storage/' . $suratKeluar->file_final) }}" target="_blank"
-                                       class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition shadow-xs">
-                                        Buka Dokumen
-                                    </a>
-                                @endif
+                <!-- PRATINJAU DOKUMEN SURAT RESMI (BER-QR CODE DAN KODE VERIFIKASI) -->
+                @php
+                    $tampilanGambar = null;
+                    if (!empty($suratKeluar->file_final)) {
+                        $extFin = strtolower(pathinfo($suratKeluar->file_final, PATHINFO_EXTENSION));
+                        if (in_array($extFin, ['png', 'jpg', 'jpeg', 'webp'], true) && Storage::disk('public')->exists($suratKeluar->file_final)) {
+                            $tampilanGambar = asset('storage/' . $suratKeluar->file_final);
+                        }
+                    }
+                @endphp
+                <div class="md:col-span-2 space-y-4 pt-4 border-t border-gray-100">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-emerald-50/70 p-3.5 rounded-2xl border border-emerald-200">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-8 h-8 rounded-xl bg-emerald-700 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </span>
+                            <div>
+                                <h3 class="text-xs sm:text-sm font-extrabold text-emerald-950">Pratinjau Lembar Surat Resmi (Ber-QR Code & Terverifikasi)</h3>
+                                <p class="text-[11px] text-emerald-800">Kode Verifikasi: <span class="font-mono font-bold">{{ $suratKeluar->kode_verifikasi }}</span> &bull; Dilengkapi QR Code & stempel/tanda tangan</p>
                             </div>
                         </div>
 
-                        @if ($isGambarAsli)
-                            <div class="p-3 bg-gray-100 rounded-2xl border border-emerald-200">
-                                <img src="{{ asset('storage/' . $tampilanPath) }}" alt="Dokumen Surat {{ $suratKeluar->no_surat }}" class="w-full max-w-2xl mx-auto h-auto rounded-xl shadow-xs bg-white" />
+                        <!-- 2 Opsi Unduh Cepat di Samping Header Surat -->
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button type="button"
+                                    @click="konfirmasiUnduh('pdf', '{{ route('admin.surat-keluar.cetak', [$suratKeluar, 'format' => 'pdf', 'download' => 1]) }}', 'Dokumen PDF Resmi')"
+                                    class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition shadow-2xs flex items-center gap-1.5 active:scale-95">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                <span>Unduh PDF</span>
+                            </button>
+                            <button type="button"
+                                    @click="konfirmasiUnduh('docx', '{{ route('admin.surat-keluar.cetak', [$suratKeluar, 'format' => 'docx', 'download' => 1]) }}', 'Dokumen Word (.docx)')"
+                                    class="px-3 py-1.5 bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold rounded-xl transition shadow-2xs flex items-center gap-1.5 active:scale-95">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                <span>Unduh Word (.docx)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- KONTEN LEMBAR SURAT RESMI -->
+                    <div class="p-2 sm:p-5 bg-slate-100/90 rounded-2xl border border-slate-200 flex justify-center">
+                        @if ($tampilanGambar)
+                            <div class="w-full max-w-3xl bg-white p-3 rounded-2xl shadow-md border border-slate-200">
+                                <img src="{{ $tampilanGambar }}" alt="Dokumen Surat Resmi {{ $suratKeluar->no_surat }}" class="w-full h-auto rounded-xl mx-auto shadow-xs" />
                             </div>
                         @else
-                            <div class="w-full h-[650px] rounded-2xl overflow-hidden border border-emerald-200 bg-gray-100 shadow-inner">
-                                <iframe src="{{ asset('storage/' . $tampilanPath) }}" class="w-full h-full" title="Dokumen Surat {{ $suratKeluar->no_surat }}"></iframe>
+                            <div class="w-full max-w-3xl bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+                                <iframe srcdoc="{!! e($pratinjauSuratHtml) !!}"
+                                        class="w-full h-[850px] border-0"
+                                        title="Dokumen Lembar Surat Resmi {{ $suratKeluar->no_surat }}"></iframe>
                             </div>
                         @endif
                     </div>
-                @endif
+                </div>
             </div>
 
             <div class="px-6 sm:px-8 py-3 bg-gray-50/60 border-t border-gray-100 text-xs text-gray-500">
@@ -433,6 +469,74 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- MODAL POP-UP KONFIRMASI UNDUH DOKUMEN RESMI -->
+        <div x-show="modalUnduh" x-cloak
+             class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
+             x-transition:enter="ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+            <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-5 shadow-2xl relative border border-slate-200"
+                 @click.away="modalUnduh = false"
+                 x-transition:enter="ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100">
+                <div class="w-14 h-14 rounded-2xl mx-auto flex items-center justify-center shadow-inner"
+                     :class="unduhFormat === 'pdf' ? 'bg-rose-100 text-rose-700' : 'bg-blue-100 text-blue-700'">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                </div>
+
+                <div class="text-center space-y-1.5">
+                    <h3 class="text-lg font-extrabold text-slate-900">Yakin Ingin Mengunduh?</h3>
+                    <p class="text-xs sm:text-sm text-slate-600">
+                        Anda akan mengunduh dokumen resmi dalam format <strong class="text-slate-900" x-text="unduhNamaFormat"></strong>.
+                    </p>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-2.5">
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-500 font-semibold">Nomor Surat:</span>
+                        <span class="font-mono font-bold text-slate-900">{{ $suratKeluar->no_surat }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-500 font-semibold">Perihal:</span>
+                        <span class="font-bold text-slate-900 truncate max-w-[210px]">{{ $suratKeluar->perihal }}</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-2 border-t border-slate-200">
+                        <span class="text-slate-500 font-semibold">Kode Verifikasi:</span>
+                        <span class="font-mono font-extrabold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                            {{ $suratKeluar->kode_verifikasi }}
+                        </span>
+                    </div>
+                    <div class="text-[11px] text-emerald-700 font-medium flex items-center gap-1.5 pt-1">
+                        <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        <span>QR Code resmi & Kode Verifikasi valid sudah tertanam.</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 pt-2">
+                    <button type="button" @click="modalUnduh = false"
+                            class="flex-1 py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm rounded-xl transition">
+                        Batal
+                    </button>
+                    <button type="button" @click="eksekusiUnduh()"
+                            class="flex-1 py-2.5 px-4 text-white font-bold text-xs sm:text-sm rounded-xl transition shadow-xs flex items-center justify-center gap-1.5 active:scale-95"
+                            :class="unduhFormat === 'pdf' ? 'bg-rose-600 hover:bg-rose-700' : 'bg-blue-700 hover:bg-blue-800'">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span>Ya, Unduh Sekarang</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

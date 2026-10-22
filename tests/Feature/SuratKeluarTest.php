@@ -378,5 +378,84 @@ class SuratKeluarTest extends TestCase
         $verifResp->assertSee('WORDQR99');
         $verifResp->assertSee('Dokumen Surat Asli Resmi (Ber-QR Code)');
     }
+
+    public function test_sekretaris_dapat_mengunduh_surat_keluar_format_docx_ber_qr(): void
+    {
+        $surat = SuratKeluar::create([
+            'no_surat' => '006/SPm.01/AF-PA/X/2026',
+            'tgl_surat' => '2026-10-22',
+            'tujuan' => 'Pengurus Ponpes',
+            'perihal' => 'Undangan Rapat Evaluasi',
+            'kategori_id' => $this->kategori->id,
+            'isi' => '<p>Sehubungan dengan evaluasi triwulan...</p>',
+            'nama_penandatangan' => 'KH. Syamsuni',
+            'jabatan_penandatangan' => 'Pimpinan',
+            'status' => 'draft',
+            'status_ttd' => 'belum',
+            'kode_verifikasi' => 'DOCXTEST123',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.surat-keluar.cetak', [$surat, 'format' => 'docx']));
+
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        $this->assertStringContainsString('attachment', (string) $response->headers->get('Content-Disposition'));
+        $this->assertStringContainsString('.docx', (string) $response->headers->get('Content-Disposition'));
+    }
+
+    public function test_sekretaris_dapat_mengunduh_surat_keluar_format_pdf_dengan_qr_dan_kode_verifikasi(): void
+    {
+        $surat = SuratKeluar::create([
+            'no_surat' => '007/SPm.01/AF-PA/X/2026',
+            'tgl_surat' => '2026-10-22',
+            'tujuan' => 'Dinas Pendidikan',
+            'perihal' => 'Pemberitahuan Kegiatan',
+            'kategori_id' => $this->kategori->id,
+            'isi' => '<p>Isi surat pemberitahuan...</p>',
+            'nama_penandatangan' => 'KH. Syamsuni',
+            'jabatan_penandatangan' => 'Pimpinan',
+            'status' => 'draft',
+            'status_ttd' => 'belum',
+            'kode_verifikasi' => 'PDFTEST456',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.surat-keluar.cetak', [$surat, 'format' => 'pdf', 'download' => 1]));
+
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'application/pdf');
+        $this->assertStringContainsString('attachment', (string) $response->headers->get('Content-Disposition'));
+        $this->assertStringContainsString('.pdf', (string) $response->headers->get('Content-Disposition'));
+    }
+
+    public function test_halaman_show_surat_keluar_menampilkan_pratinjau_surat_dan_modal_unduh(): void
+    {
+        $surat = SuratKeluar::create([
+            'no_surat' => '008/SPm.01/AF-PA/X/2026',
+            'tgl_surat' => '2026-10-22',
+            'tujuan' => 'Kemenag',
+            'perihal' => 'Permohonan Bantuan Buku',
+            'kategori_id' => $this->kategori->id,
+            'isi' => '<p>Isi permohonan bantuan buku...</p>',
+            'nama_penandatangan' => 'KH. Syamsuni',
+            'jabatan_penandatangan' => 'Pimpinan',
+            'status' => 'draft',
+            'status_ttd' => 'belum',
+            'kode_verifikasi' => 'SHOWTEST789',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.surat-keluar.show', $surat));
+
+        $response->assertStatus(200);
+        $response->assertSee('Pratinjau Lembar Surat Resmi');
+        $response->assertSee('Unduh PDF');
+        $response->assertSee('Unduh Word (.docx)');
+        $response->assertSee('Yakin Ingin Mengunduh?');
+        $response->assertSee('SHOWTEST789');
+        $response->assertDontSee('window.open(');
+    }
 }
+
 
