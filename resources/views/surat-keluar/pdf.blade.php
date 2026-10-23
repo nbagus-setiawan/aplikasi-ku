@@ -28,7 +28,13 @@
     $ttd2 = $tandaTangans[2] ?? null;
     $ttd3 = $tandaTangans[3] ?? null;
 
-    $cleanIsi = preg_replace('/<!--.*?-->/s', '', $surat->isi ?? '');
+    $rawIsi = $surat->isi ?? '';
+    $cleanIsi = preg_replace('/<!--.*?-->/s', '', $rawIsi);
+    $cleanIsi = preg_replace('/<(script|style|iframe|object|embed|form|meta|link|applet)\b[^>]*>.*?<\/\1>/is', '', $cleanIsi);
+    $cleanIsi = preg_replace('/<(script|style|iframe|object|embed|form|meta|link|applet)\b[^>]*\/?>/is', '', $cleanIsi);
+    $cleanIsi = preg_replace('/\s+on[a-z]+\s*=\s*(?:\"[^\"]*\"|\'[^\']*\'|[^\s>]+)/is', '', $cleanIsi);
+    $cleanIsi = preg_replace('/javascript\s*:/i', '', $cleanIsi);
+    $cleanIsi = strip_tags($cleanIsi, '<p><br><b><strong><i><em><u><s><table><thead><tbody><tr><th><td><span><ul><ol><li><h1><h2><h3><h4><h5><h6><div><blockquote><hr>');
     $cleanIsi = preg_replace('/<p[^>]*>(?:\s|&nbsp;|<br\s*\/?>)*<\/p>/i', '', $cleanIsi);
 @endphp
 <!DOCTYPE html>

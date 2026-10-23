@@ -364,10 +364,14 @@ class DocxSuratParserService
             $inputDoc = $tempDir . '/input_asli.' . $ext;
             copy($sourcePath, $inputDoc);
 
+            if (app()->runningUnitTests()) {
+                return null;
+            }
+
             $userProfileDir = $tempDir . '/lo-profile';
             $cmd = sprintf(
-                'soffice -env:UserInstallation=file://%s --headless --convert-to pdf --outdir %s %s 2>&1',
-                $userProfileDir,
+                'soffice %s --headless --convert-to pdf --outdir %s %s 2>&1',
+                escapeshellarg('-env:UserInstallation=file://' . $userProfileDir),
                 escapeshellarg($tempDir),
                 escapeshellarg($inputDoc)
             );
@@ -1066,7 +1070,7 @@ class DocxSuratParserService
      */
     protected function renderWordAsOriginalDocument(string $sourcePath, string $badgePngPath, SuratKeluar $suratKeluar, string $tempDir): array
     {
-        if (! function_exists('exec')) {
+        if (! function_exists('exec') || app()->runningUnitTests()) {
             return ['image' => null, 'pdf' => null];
         }
 
@@ -1076,8 +1080,8 @@ class DocxSuratParserService
 
         $userProfileDir = $tempDir . '/lo-profile';
         $cmd = sprintf(
-            'soffice -env:UserInstallation=file://%s --headless --convert-to pdf --outdir %s %s 2>&1',
-            $userProfileDir,
+            'soffice %s --headless --convert-to pdf --outdir %s %s 2>&1',
+            escapeshellarg('-env:UserInstallation=file://' . $userProfileDir),
             escapeshellarg($tempDir),
             escapeshellarg($inputDoc)
         );
@@ -1146,7 +1150,7 @@ class DocxSuratParserService
      */
     public function convertDocxToPdf(string $docxAbsolutePath): ?string
     {
-        if (! function_exists('exec') || ! is_file($docxAbsolutePath)) {
+        if (! function_exists('exec') || ! is_file($docxAbsolutePath) || app()->runningUnitTests()) {
             return null;
         }
 
@@ -1156,8 +1160,8 @@ class DocxSuratParserService
         try {
             $userProfileDir = $tempDir . '/lo-profile';
             $cmd = sprintf(
-                'soffice -env:UserInstallation=file://%s --headless --convert-to pdf --outdir %s %s 2>&1',
-                $userProfileDir,
+                'soffice %s --headless --convert-to pdf --outdir %s %s 2>&1',
+                escapeshellarg('-env:UserInstallation=file://' . $userProfileDir),
                 escapeshellarg($tempDir),
                 escapeshellarg($docxAbsolutePath)
             );

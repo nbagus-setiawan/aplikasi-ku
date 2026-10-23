@@ -24,18 +24,18 @@ Route::get('/', [PublicController::class, 'beranda'])->name('home');
 Route::get('/pengumuman', [PublicController::class, 'pengumumanIndex'])->name('publik.pengumuman.index');
 Route::get('/pengumuman/{slug}', [PublicController::class, 'pengumumanShow'])->name('publik.pengumuman.show');
 Route::get('/p/{identifier}', [PublicController::class, 'pengumumanShortShow'])->name('publik.pengumuman.short');
-Route::post('/pengumuman/{slug}/like', [PublicController::class, 'likePengumuman'])->name('publik.pengumuman.like');
-Route::post('/pengumuman/{slug}/komentar', [PublicController::class, 'komentarPengumuman'])->name('publik.pengumuman.komentar');
-Route::post('/pengumuman/{slug}/share', [PublicController::class, 'sharePengumuman'])->name('publik.pengumuman.share');
+Route::post('/pengumuman/{slug}/like', [PublicController::class, 'likePengumuman'])->middleware('throttle:30,1')->name('publik.pengumuman.like');
+Route::post('/pengumuman/{slug}/komentar', [PublicController::class, 'komentarPengumuman'])->middleware('throttle:15,1')->name('publik.pengumuman.komentar');
+Route::post('/pengumuman/{slug}/share', [PublicController::class, 'sharePengumuman'])->middleware('throttle:30,1')->name('publik.pengumuman.share');
 Route::get('/sitemap.xml', [PublicController::class, 'sitemap'])->name('publik.sitemap');
 
 // Rute Publik: Layanan Konsultasi & Verifikasi Surat & Tanda Tangan Jarak Jauh
 Route::get('/konsultasi', [PublicController::class, 'konsultasi'])->name('publik.konsultasi');
 Route::get('/verifikasi', [VerifikasiPublikController::class, 'index'])->name('publik.verifikasi.index');
-Route::get('/verifikasi/{kode}', [VerifikasiPublikController::class, 'show'])->name('publik.verifikasi');
-Route::get('/verifikasi/{kode}/unduh', [VerifikasiPublikController::class, 'unduh'])->name('publik.verifikasi.unduh');
-Route::get('/tanda-tangan/{token}', [TandaTanganPublikController::class, 'show'])->name('publik.tanda-tangan.show');
-Route::post('/tanda-tangan/{token}', [TandaTanganPublikController::class, 'sign'])->name('publik.tanda-tangan.sign');
+Route::get('/verifikasi/{kode}', [VerifikasiPublikController::class, 'show'])->middleware('throttle:60,1')->name('publik.verifikasi');
+Route::get('/verifikasi/{kode}/unduh', [VerifikasiPublikController::class, 'unduh'])->middleware('throttle:30,1')->name('publik.verifikasi.unduh');
+Route::get('/tanda-tangan/{token}', [TandaTanganPublikController::class, 'show'])->middleware('throttle:30,1')->name('publik.tanda-tangan.show');
+Route::post('/tanda-tangan/{token}', [TandaTanganPublikController::class, 'sign'])->middleware('throttle:15,1')->name('publik.tanda-tangan.sign');
 
 // Rute Admin dengan Middleware auth dan Awalan /admin
 Route::middleware('auth')->prefix('admin')->group(function () {

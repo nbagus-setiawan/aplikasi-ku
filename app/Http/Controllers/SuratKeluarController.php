@@ -677,10 +677,11 @@ class SuratKeluarController extends Controller
     public function finalisasiDigital(Request $request, SuratKeluar $suratKeluar): RedirectResponse
     {
         $request->validate([
-            'data_ttd' => ['required', 'string'],
+            'data_ttd' => ['required', 'string', 'regex:/^data:image\/(png|jpeg|jpg);base64,/'],
             'urutan' => ['nullable', 'integer', 'between:1,3'],
         ], [
             'data_ttd.required' => 'Goresan tanda tangan pada kanvas wajib dibuat.',
+            'data_ttd.regex' => 'Format gambar tanda tangan kanvas tidak valid.',
         ]);
 
         $urutan = (int) ($request->urutan ?? 1);

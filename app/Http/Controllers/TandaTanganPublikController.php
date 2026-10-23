@@ -63,9 +63,10 @@ class TandaTanganPublikController extends Controller
         }
 
         $request->validate([
-            'data_ttd' => ['required', 'string'],
+            'data_ttd' => ['required', 'string', 'regex:/^data:image\/(png|jpeg|jpg);base64,/'],
         ], [
             'data_ttd.required' => 'Goresan tanda tangan pada kanvas wajib dibuat.',
+            'data_ttd.regex' => 'Format gambar tanda tangan kanvas tidak valid.',
         ]);
 
         $suratKeluar = $tandaTangan->suratKeluar;

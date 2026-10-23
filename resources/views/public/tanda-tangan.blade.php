@@ -129,7 +129,14 @@
                     <!-- ISI SURAT -->
                     <div class="isi-surat font-surat text-xs sm:text-sm text-gray-800 leading-relaxed mb-6 space-y-2">
                         @php
-                            $cleanIsi = preg_replace('/<!--.*?-->/s', '', $surat->isi ?? '');
+                            $rawIsi = $surat->isi ?? '';
+                            // Hapus komentar dan elemen script/berbahaya
+                            $cleanIsi = preg_replace('/<!--.*?-->/s', '', $rawIsi);
+                            $cleanIsi = preg_replace('/<(script|style|iframe|object|embed|form|meta|link|applet)\b[^>]*>.*?<\/\1>/is', '', $cleanIsi);
+                            $cleanIsi = preg_replace('/<(script|style|iframe|object|embed|form|meta|link|applet)\b[^>]*\/?>/is', '', $cleanIsi);
+                            $cleanIsi = preg_replace('/\s+on[a-z]+\s*=\s*(?:\"[^\"]*\"|\'[^\']*\'|[^\s>]+)/is', '', $cleanIsi);
+                            $cleanIsi = preg_replace('/javascript\s*:/i', '', $cleanIsi);
+                            $cleanIsi = strip_tags($cleanIsi, '<p><br><b><strong><i><em><u><s><table><thead><tbody><tr><th><td><span><ul><ol><li><h1><h2><h3><h4><h5><h6><div><blockquote><hr>');
                             $cleanIsi = preg_replace('/<p[^>]*>(?:\s|&nbsp;|<br\s*\/?>)*<\/p>/i', '', $cleanIsi);
                         @endphp
                         @if (\Illuminate\Support\Str::contains($cleanIsi, ['<p', '<table', '<div', '<br', '<h', '<ul', '<ol']))
