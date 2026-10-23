@@ -4,41 +4,71 @@
 
 @section('content')
 <div class="space-y-6">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-gray-500 font-medium">
+        <a href="{{ route('dashboard') }}" class="hover:text-emerald-700 transition">Dashboard</a>
+        <span>/</span>
+        <span class="text-gray-800 font-bold">Rekapitulasi & Laporan</span>
+    </nav>
+
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">Rekapitulasi & Laporan Administrasi</h1>
+            <h1 class="text-2xl font-black text-gray-900">Rekapitulasi & Laporan Administrasi</h1>
             <p class="text-sm text-gray-500 mt-1">
                 Pilih modul data, atur periode dan filter, pratinjau data, dan unduh berkas laporan format PDF ber-kop resmi.
             </p>
         </div>
     </div>
 
-    <!-- Navigasi Tab Jenis Laporan -->
+    <!-- 4 Ringkasan Statistik Data -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200/80 shadow-2xs">
+            <span class="text-xs text-gray-500 font-medium uppercase tracking-wider block mb-1">Surat Masuk</span>
+            <span class="text-xl sm:text-2xl font-black text-gray-900">{{ number_format($statistik['total_surat_masuk'] ?? 0) }}</span>
+            <span class="text-[11px] text-gray-400 block mt-1">Total seluruh arsip</span>
+        </div>
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200/80 shadow-2xs">
+            <span class="text-xs text-gray-500 font-medium uppercase tracking-wider block mb-1">Surat Keluar</span>
+            <span class="text-xl sm:text-2xl font-black text-gray-900">{{ number_format($statistik['total_surat_keluar'] ?? 0) }}</span>
+            <span class="text-[11px] text-gray-400 block mt-1">Nomor resmi terbit</span>
+        </div>
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200/80 shadow-2xs">
+            <span class="text-xs text-gray-500 font-medium uppercase tracking-wider block mb-1">Santri Aktif</span>
+            <span class="text-xl sm:text-2xl font-black text-gray-900">{{ number_format($statistik['santri_aktif'] ?? 0) }}</span>
+            <span class="text-[11px] text-gray-400 block mt-1">Terdaftar di pondok</span>
+        </div>
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200/80 shadow-2xs">
+            <span class="text-xs text-gray-500 font-medium uppercase tracking-wider block mb-1">Agenda Bulan Ini</span>
+            <span class="text-xl sm:text-2xl font-black text-gray-900">{{ number_format($statistik['agenda_bulan_ini'] ?? 0) }}</span>
+            <span class="text-[11px] text-gray-400 block mt-1">Kegiatan terjadwal</span>
+        </div>
+    </div>
+
     <!-- Navigasi Tab Jenis Laporan -->
     <div class="bg-white p-2 rounded-2xl border border-gray-200/90 shadow-sm flex items-center gap-2 overflow-x-auto no-scrollbar">
         <a href="{{ route('admin.laporan.index', ['tab' => 'surat-masuk']) }}"
-           class="whitespace-nowrap px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 {{ $tab === 'surat-masuk' ? 'bg-emerald-700 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+           class="whitespace-nowrap px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 {{ $tab === 'surat-masuk' ? 'bg-emerald-700 text-white shadow-2xs' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-            Surat Masuk
+            <span>Surat Masuk</span>
         </a>
 
         <a href="{{ route('admin.laporan.index', ['tab' => 'surat-keluar']) }}"
-           class="whitespace-nowrap px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 {{ $tab === 'surat-keluar' ? 'bg-emerald-700 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+           class="whitespace-nowrap px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 {{ $tab === 'surat-keluar' ? 'bg-emerald-700 text-white shadow-2xs' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-            Surat Keluar
+            <span>Surat Keluar</span>
         </a>
 
         <a href="{{ route('admin.laporan.index', ['tab' => 'santri']) }}"
-           class="whitespace-nowrap px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 {{ $tab === 'santri' ? 'bg-emerald-700 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+           class="whitespace-nowrap px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 {{ $tab === 'santri' ? 'bg-emerald-700 text-white shadow-2xs' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-            Data Santri
+            <span>Data Santri</span>
         </a>
 
         <a href="{{ route('admin.laporan.index', ['tab' => 'agenda']) }}"
-           class="whitespace-nowrap px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 {{ $tab === 'agenda' ? 'bg-emerald-700 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+           class="whitespace-nowrap px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 {{ $tab === 'agenda' ? 'bg-emerald-700 text-white shadow-2xs' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-            Agenda Kegiatan
+            <span>Agenda Kegiatan</span>
         </a>
     </div>
 
@@ -50,19 +80,19 @@
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                 @if($tab !== 'santri')
                     <div class="md:col-span-3">
-                        <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Dari Tanggal</label>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Dari Tanggal</label>
                         <input type="date" name="dari_tanggal" value="{{ $dari }}" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
                     </div>
                     <div class="md:col-span-3">
-                        <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Sampai Tanggal</label>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Sampai Tanggal</label>
                         <input type="date" name="sampai_tanggal" value="{{ $sampai }}" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
                     </div>
                 @endif
 
                 @if($tab === 'surat-masuk')
-                    <div class="md:col-span-3">
-                        <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Status Disposisi</label>
-                        <select name="status_disposisi" class="w-full rounded-xl border-gray-300 text-sm">
+                    <div class="md:col-span-4">
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Status Disposisi</label>
+                        <select name="status_disposisi" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
                             <option value="">Semua Status</option>
                             <option value="baru" {{ request('status_disposisi') === 'baru' ? 'selected' : '' }}>Baru</option>
                             <option value="diproses" {{ request('status_disposisi') === 'diproses' ? 'selected' : '' }}>Diproses</option>
@@ -71,8 +101,8 @@
                     </div>
                 @elseif($tab === 'surat-keluar')
                     <div class="md:col-span-2">
-                        <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Status Surat</label>
-                        <select name="status" class="w-full rounded-xl border-gray-300 text-sm">
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Status Surat</label>
+                        <select name="status" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
                             <option value="">Semua Status</option>
                             <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
                             <option value="final" {{ request('status') === 'final' ? 'selected' : '' }}>Final</option>
@@ -80,17 +110,17 @@
                         </select>
                     </div>
                     <div class="md:col-span-2">
-                        <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Metode TTD</label>
-                        <select name="metode_ttd" class="w-full rounded-xl border-gray-300 text-sm">
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Metode TTD</label>
+                        <select name="metode_ttd" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
                             <option value="">Semua Metode</option>
                             <option value="digital" {{ request('metode_ttd') === 'digital' ? 'selected' : '' }}>Digital</option>
                             <option value="basah" {{ request('metode_ttd') === 'basah' ? 'selected' : '' }}>Basah</option>
                         </select>
                     </div>
                 @elseif($tab === 'santri')
-                    <div class="md:col-span-3">
-                        <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Status Santri</label>
-                        <select name="status" class="w-full rounded-xl border-gray-300 text-sm">
+                    <div class="md:col-span-4">
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Status Santri</label>
+                        <select name="status" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
                             <option value="">Semua Status</option>
                             <option value="aktif" {{ request('status') === 'aktif' ? 'selected' : '' }}>Aktif</option>
                             <option value="alumni" {{ request('status') === 'alumni' ? 'selected' : '' }}>Alumni</option>
@@ -98,17 +128,17 @@
                         </select>
                     </div>
                     <div class="md:col-span-3">
-                        <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Kelas</label>
-                        <input type="text" name="kelas" value="{{ request('kelas') }}" placeholder="Contoh: 1-A" class="w-full rounded-xl border-gray-300 text-sm">
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Kelas</label>
+                        <input type="text" name="kelas" value="{{ request('kelas') }}" placeholder="Contoh: 1-A" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
                     </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Kamar</label>
-                        <input type="text" name="kamar" value="{{ request('kamar') }}" placeholder="Contoh: Asrama A" class="w-full rounded-xl border-gray-300 text-sm">
+                    <div class="md:col-span-3">
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Kamar</label>
+                        <input type="text" name="kamar" value="{{ request('kamar') }}" placeholder="Contoh: Asrama A" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
                     </div>
                 @elseif($tab === 'agenda')
-                    <div class="md:col-span-3">
-                        <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Status Kegiatan</label>
-                        <select name="status" class="w-full rounded-xl border-gray-300 text-sm">
+                    <div class="md:col-span-4">
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Status Kegiatan</label>
+                        <select name="status" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
                             <option value="">Semua Status</option>
                             <option value="rencana" {{ request('status') === 'rencana' ? 'selected' : '' }}>Rencana</option>
                             <option value="berjalan" {{ request('status') === 'berjalan' ? 'selected' : '' }}>Berjalan</option>
@@ -118,10 +148,14 @@
                     </div>
                 @endif
 
-                <div class="md:col-span-2 flex gap-2">
-                    <button type="submit" class="w-full py-2.5 px-4 rounded-xl font-bold text-sm text-white bg-emerald-600 hover:bg-emerald-700 transition">
-                        Terapkan
+                <div class="md:col-span-2 flex items-center gap-2">
+                    <button type="submit" class="flex-1 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm text-white bg-emerald-700 hover:bg-emerald-800 transition shadow-2xs flex items-center justify-center gap-1.5">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                        <span>Saring</span>
                     </button>
+                    <a href="{{ route('admin.laporan.index', ['tab' => $tab]) }}" class="py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-300 transition shadow-2xs flex items-center justify-center" title="Reset Saring">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    </a>
                 </div>
             </div>
         </form>
@@ -142,9 +176,9 @@
                         'agenda' => route('admin.laporan.cetak.agenda', request()->query()),
                     };
                 @endphp
-                <a href="{{ $routeCetak }}" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-white bg-rose-600 hover:bg-rose-700 shadow-sm shadow-rose-600/20 transition">
+                <a href="{{ $routeCetak }}" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-white bg-emerald-700 hover:bg-emerald-800 shadow-sm transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                    Cetak / Unduh PDF Ber-Kop Resmi
+                    <span>Cetak / Unduh PDF Ber-Kop Resmi</span>
                 </a>
             </div>
         </div>

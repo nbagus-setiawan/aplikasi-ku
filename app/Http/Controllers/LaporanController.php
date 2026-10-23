@@ -88,7 +88,14 @@ class LaporanController extends Controller
             $total = $data->count();
         }
 
-        return view('laporan.index', compact('tab', 'dari', 'sampai', 'data', 'total'));
+        $statistik = [
+            'total_surat_masuk' => SuratMasuk::count(),
+            'total_surat_keluar' => SuratKeluar::count(),
+            'santri_aktif' => Santri::where('status', 'aktif')->count(),
+            'agenda_bulan_ini' => Agenda::whereMonth('mulai', Carbon::now()->month)->whereYear('mulai', Carbon::now()->year)->count(),
+        ];
+
+        return view('laporan.index', compact('tab', 'dari', 'sampai', 'data', 'total', 'statistik'));
     }
 
     /**

@@ -2,6 +2,13 @@
     @section('title', 'Pengaturan Sistem')
 
     <div class="max-w-4xl mx-auto space-y-6">
+        <!-- Breadcrumb -->
+        <nav class="flex items-center gap-2 text-xs text-gray-500 font-medium">
+            <a href="{{ route('dashboard') }}" class="hover:text-emerald-700 transition">Dashboard</a>
+            <span>/</span>
+            <span class="text-gray-800 font-bold">Pengaturan Sistem</span>
+        </nav>
+
         <!-- Header Judul -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -123,10 +130,6 @@
             </div>
         </form>
 
-        <!-- BAGIAN 3: Backup Data Harian (Hanya Simpan 1 File Terbaru — Anti Penuh) -->
-        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-            <div class="border-b border-gray-100 pb-3 mb-5 flex flex-wrap items-center justify-between gap-2">
-                <div>
         <!-- BAGIAN 3: Cadangan & Pemulihan Database (Backup & Restore) -->
         <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-6">
             <!-- Header Section 3 -->
@@ -142,7 +145,7 @@
                         Kelola cadangan data harian sistem dan pulihkan database saat diperlukan.
                     </p>
                 </div>
-                <span class="px-3 py-1 bg-emerald-100 text-emerald-800 font-bold text-xs rounded-full self-start sm:self-auto">
+                <span class="px-3 py-1 bg-emerald-100 text-emerald-800 font-bold text-xs rounded-full self-start sm:self-auto border border-emerald-200">
                     ✓ Hemat Ruang 100% (1 File Terbaru)
                 </span>
             </div>
@@ -157,7 +160,7 @@
                 </h3>
                 <div class="bg-gray-50 rounded-xl border border-gray-200 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div class="flex items-center gap-3.5">
-                        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 font-extrabold text-lg">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 font-extrabold text-lg border border-emerald-200">
                             ZIP
                         </div>
                         <div>
@@ -181,11 +184,11 @@
                         <form action="{{ route('admin.pengaturan.backup') }}" method="POST" class="inline">
                             @csrf
                             <button type="submit"
-                                    class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-gray-100 text-gray-800 border border-gray-300 font-bold text-xs rounded-xl shadow-xs transition">
-                                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold text-xs rounded-xl shadow-2xs transition">
+                                <svg class="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                 </svg>
-                                <span>Perbarui Backup Sekarang</span>
+                                <span>Perbarui Cadangan</span>
                             </button>
                         </form>
 
@@ -195,7 +198,7 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
-                            <span>Unduh Backup</span>
+                            <span>Unduh Cadangan</span>
                         </a>
                     </div>
                 </div>
@@ -218,7 +221,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                     </svg>
                     <div>
-                        <strong class="font-bold text-amber-950">PERINGATAN PENTING:</strong> Tindakan pemulihan (restore) akan <strong>menimpa dan mengganti seluruh data database saat ini</strong> dengan data dari file cadangan. Sangat disarankan untuk mengunduh backup terkini sebelum melakukan restore.
+                        <strong class="font-bold text-amber-950">PERINGATAN PENTING:</strong> Tindakan pemulihan (restore) akan <strong>menimpa seluruh database</strong> dengan data dari berkas cadangan. Disarankan mengunduh cadangan terkini sebelum melanjutkan.
                     </div>
                 </div>
 
@@ -235,7 +238,9 @@
                         <form action="{{ route('admin.pengaturan.restore') }}"
                               method="POST"
                               enctype="multipart/form-data"
-                              onsubmit="return confirm('PERINGATAN: Memulihkan database akan menimpa seluruh data yang ada saat ini dengan file yang dipilih.\n\nApakah Anda yakin ingin melanjutkan proses pemulihan?');"
+                              data-konfirmasi="PERINGATAN: Memulihkan database akan menimpa seluruh data yang ada saat ini dengan file yang dipilih. Lanjutkan?"
+                              data-judul="Pulihkan Database dari File"
+                              data-tombol="Ya, Pulihkan Database"
                               class="space-y-3">
                             @csrf
                             <input type="file"
@@ -244,8 +249,8 @@
                                    required
                                    class="block w-full text-xs text-gray-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-white file:text-gray-700 hover:file:bg-gray-100 file:shadow-xs border border-gray-300 rounded-lg bg-white cursor-pointer focus:outline-hidden">
                             <button type="submit"
-                                    class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold text-xs rounded-xl shadow-2xs transition">
+                                <svg class="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                 </svg>
                                 <span>Pulihkan dari File Unggahan</span>
@@ -258,23 +263,25 @@
                         <div>
                             <h4 class="text-xs font-bold text-gray-900 uppercase">Opsi 2: Pulihkan dari Server</h4>
                             <p class="text-xs text-gray-500 mt-1">
-                                Pulihkan langsung dari file cadangan terakhir yang ada di penyimpanan server:
+                                Pulihkan langsung dari file cadangan terakhir yang ada di server:
                                 <strong class="text-gray-800 font-mono block mt-1">{{ $backupInfo['filename'] ?? 'Belum ada file backup' }}</strong>
                             </p>
                         </div>
 
                         <form action="{{ route('admin.pengaturan.restore') }}"
                               method="POST"
-                              onsubmit="return confirm('PERINGATAN: Anda akan memulihkan database dari file backup server ({{ $backupInfo['filename'] ?? '' }}).\n\nSemua perubahan data setelah tanggal backup tersebut akan ditimpa.\n\nApakah Anda yakin ingin melanjutkan?');">
+                              data-konfirmasi="PERINGATAN: Memulihkan database dari cadangan server akan menimpa seluruh data sistem saat ini. Lanjutkan?"
+                              data-judul="Pulihkan Database dari Server"
+                              data-tombol="Ya, Pulihkan Sekarang">
                             @csrf
                             <input type="hidden" name="sumber" value="server">
                             <button type="submit"
                                     @if(empty($backupInfo['exists'])) disabled @endif
-                                    class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 {{ !empty($backupInfo['exists']) ? 'bg-gray-800 hover:bg-gray-900 text-white cursor-pointer' : 'bg-gray-300 text-gray-500 cursor-not-allowed' }} font-bold text-xs rounded-xl shadow-xs transition">
-                                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 {{ !empty($backupInfo['exists']) ? 'bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 cursor-pointer shadow-2xs' : 'bg-gray-200 text-gray-400 border border-gray-200 cursor-not-allowed' }} font-bold text-xs rounded-xl transition">
+                                <svg class="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                 </svg>
-                                <span>Pulihkan Backup Server Terbaru</span>
+                                <span>Pulihkan Cadangan Server</span>
                             </button>
                         </form>
                     </div>
