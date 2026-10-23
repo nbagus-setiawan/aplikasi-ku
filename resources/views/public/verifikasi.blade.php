@@ -19,7 +19,7 @@
 </section>
 
 <section class="py-10 sm:py-14 bg-slate-50 min-h-[500px]">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
+    <div class="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
 
         <!-- Form Pencarian Kode Verifikasi -->
         <div class="bg-white p-5 sm:p-7 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
@@ -216,27 +216,27 @@
                         <div class="pt-3 space-y-3">
                             <div class="flex flex-wrap items-center justify-between gap-3">
                                 <div>
-                                    <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-900 block">📄 Dokumen Surat Asli Resmi (Ber-QR Code)</span>
+                                    <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-900 block">📄 Dokumen Surat Asli Resmi (Terverifikasi Sah)</span>
                                     <span class="text-[11px] text-gray-500 font-medium">Pratinjau naskah dokumen asli langsung dari file Word resmi</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <a href="{{ route('publik.verifikasi.unduh', [$surat->kode_verifikasi, 'format' => 'docx']) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-bold shadow-xs transition-colors" title="Unduh Dokumen Word (.docx) Ber-QR Code">
+                                    <a href="{{ route('publik.verifikasi.unduh', [$surat->kode_verifikasi, 'format' => 'docx']) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-bold shadow-xs transition-colors" title="Unduh Dokumen Word (.docx) Asli">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                         <span>Unduh Word (.docx)</span>
                                     </a>
-                                    <a href="{{ route('publik.verifikasi.unduh', [$surat->kode_verifikasi, 'format' => 'pdf']) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors" title="Unduh Dokumen PDF Resmi Ber-QR Code">
+                                    <a href="{{ route('publik.verifikasi.unduh', [$surat->kode_verifikasi, 'format' => 'pdf']) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors" title="Unduh Dokumen PDF Resmi">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                         <span>Unduh PDF</span>
                                     </a>
                                 </div>
                             </div>
 
-                            <div class="w-full bg-slate-100 p-2 sm:p-4 rounded-2xl border border-slate-200 flex justify-center">
+                            <div class="w-full bg-slate-100/90 p-2 sm:p-5 rounded-2xl border border-slate-200 overflow-x-auto flex flex-col items-center">
                                 <div id="docx-loading-verif" class="p-8 text-center space-y-2">
                                     <div class="w-7 h-7 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
                                     <p class="text-xs text-gray-600 font-medium">Memuat lembar dokumen Word asli...</p>
                                 </div>
-                                <div id="docx-target-verif" class="w-full max-w-3xl bg-white shadow-md rounded-xl overflow-hidden"></div>
+                                <div id="docx-target-verif" class="w-full flex justify-center items-center"></div>
                             </div>
                         </div>
                     @elseif ($tampilanPath && ($isGambarAsli || $extTampilan === 'pdf'))
@@ -406,6 +406,8 @@ document.addEventListener('DOMContentLoaded', function () {
         width: 100%;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        display: flex;
+        justify-content: center;
     }
     #docx-target-verif .docx-wrapper {
         background: transparent !important;
@@ -413,31 +415,25 @@ document.addEventListener('DOMContentLoaded', function () {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
-        min-width: 100%;
-        box-sizing: border-box;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
+    #docx-target-verif section.docx,
     #docx-target-verif .docx {
-        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 4px 25px -4px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05) !important;
         margin: 0 auto 1.5rem auto !important;
         background: white !important;
         color: #0f172a !important;
-        border-radius: 6px;
+        border-radius: 4px;
+        box-sizing: border-box !important;
+        transition: transform 0.15s ease-out;
+    }
+    #docx-target-verif table {
         max-width: 100% !important;
-        box-sizing: border-box !important;
     }
-    #docx-target-verif .docx section {
-        padding: 24px 30px !important;
-        box-sizing: border-box !important;
-    }
-    @media (max-width: 640px) {
-        #docx-target-verif .docx section {
-            padding: 16px 12px !important;
-        }
-        #docx-target-verif .docx {
-            width: 100% !important;
-            min-width: 0 !important;
-            border-radius: 4px;
-        }
+    #docx-target-verif img {
+        max-width: 100% !important;
+        height: auto !important;
     }
 </style>
 <script src="{{ asset('vendor/docx-preview/jszip.min.js') }}"></script>
@@ -447,6 +443,36 @@ document.addEventListener('DOMContentLoaded', function () {
         const docxUrl = "{{ asset('storage/' . $surat->file_surat_asli) }}";
         const loadingEl = document.getElementById('docx-loading-verif');
         const targetEl = document.getElementById('docx-target-verif');
+
+        function adjustDocxScale() {
+            if (!targetEl) return;
+            const sections = targetEl.querySelectorAll('section.docx, .docx');
+            if (!sections.length) return;
+
+            const containerWidth = targetEl.clientWidth;
+            if (containerWidth <= 0) return;
+
+            sections.forEach(function (sec) {
+                if (!sec.dataset.origWidth) {
+                    sec.dataset.origWidth = sec.offsetWidth || 816;
+                    sec.dataset.origHeight = sec.offsetHeight || 1056;
+                }
+                const origW = parseFloat(sec.dataset.origWidth);
+                const origH = parseFloat(sec.dataset.origHeight);
+
+                const targetW = containerWidth - 12;
+                if (targetW < origW && origW > 0) {
+                    const scale = Math.max(0.35, targetW / origW);
+                    sec.style.transform = 'scale(' + scale + ')';
+                    sec.style.transformOrigin = 'top center';
+                    sec.style.marginBottom = '-' + Math.round(origH * (1 - scale) - 20) + 'px';
+                } else {
+                    sec.style.transform = '';
+                    sec.style.transformOrigin = '';
+                    sec.style.marginBottom = '1.5rem';
+                }
+            });
+        }
 
         if (docxUrl && targetEl && window.docx) {
             fetch(docxUrl)
@@ -466,6 +492,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .then(function() {
                     if (loadingEl) loadingEl.style.display = 'none';
+                    setTimeout(adjustDocxScale, 50);
+                    setTimeout(adjustDocxScale, 300);
                 })
                 .catch(function(err) {
                     console.error('Gagal render docx preview verifikasi:', err);
@@ -473,6 +501,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         loadingEl.innerHTML = '<p class="text-xs text-gray-500">Pratinjau naskah dokumen asli dapat dibuka melalui berkas resmi.</p>';
                     }
                 });
+
+            window.addEventListener('resize', adjustDocxScale);
+            window.addEventListener('orientationchange', function () {
+                setTimeout(adjustDocxScale, 150);
+            });
         }
     });
 </script>

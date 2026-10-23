@@ -30,15 +30,22 @@
             flex-direction: column !important;
             align-items: center !important;
         }
+        #docx-render-target section.docx,
         #docx-render-target .docx {
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
             margin: 0 auto 2rem auto !important;
             background: white !important;
             color: #0f172a !important;
             border-radius: 6px;
+            box-sizing: border-box !important;
+            transition: transform 0.15s ease-out;
         }
-        #docx-render-target .docx section {
-            padding: 30px 40px !important;
+        #docx-render-target table {
+            max-width: 100% !important;
+        }
+        #docx-render-target img {
+            max-width: 100% !important;
+            height: auto !important;
         }
         @media print {
             .no-print {
@@ -106,6 +113,36 @@
             const loadingEl = document.getElementById('docx-loading');
             const targetEl = document.getElementById('docx-render-target');
 
+            function adjustDocxScale() {
+                if (!targetEl) return;
+                const sections = targetEl.querySelectorAll('section.docx, .docx');
+                if (!sections.length) return;
+
+                const containerWidth = targetEl.clientWidth;
+                if (containerWidth <= 0) return;
+
+                sections.forEach(function (sec) {
+                    if (!sec.dataset.origWidth) {
+                        sec.dataset.origWidth = sec.offsetWidth || 816;
+                        sec.dataset.origHeight = sec.offsetHeight || 1056;
+                    }
+                    const origW = parseFloat(sec.dataset.origWidth);
+                    const origH = parseFloat(sec.dataset.origHeight);
+
+                    const targetW = containerWidth - 12;
+                    if (targetW < origW && origW > 0) {
+                        const scale = Math.max(0.35, targetW / origW);
+                        sec.style.transform = 'scale(' + scale + ')';
+                        sec.style.transformOrigin = 'top center';
+                        sec.style.marginBottom = '-' + Math.round(origH * (1 - scale) - 20) + 'px';
+                    } else {
+                        sec.style.transform = '';
+                        sec.style.transformOrigin = '';
+                        sec.style.marginBottom = '2rem';
+                    }
+                });
+            }
+
             if (docxUrl && targetEl && window.docx) {
                 fetch(docxUrl)
                     .then(function(res) {
@@ -124,6 +161,8 @@
                     })
                     .then(function() {
                         if (loadingEl) loadingEl.style.display = 'none';
+                        setTimeout(adjustDocxScale, 50);
+                        setTimeout(adjustDocxScale, 300);
                     })
                     .catch(function(err) {
                         console.error('Gagal render dokumen word:', err);
@@ -131,6 +170,11 @@
                             loadingEl.innerHTML = '<p class="text-rose-600 text-sm font-bold">Gagal memuat dokumen Word asli.</p>';
                         }
                     });
+
+                window.addEventListener('resize', adjustDocxScale);
+                window.addEventListener('orientationchange', function () {
+                    setTimeout(adjustDocxScale, 150);
+                });
             }
         });
     </script>
