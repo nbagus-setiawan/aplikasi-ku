@@ -277,15 +277,16 @@
             </div>
 
             <!-- Toolbar Bawah Simpan -->
-            <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
-                <span class="text-xs text-gray-500">
-                    Pastikan menyimpan atau menerbitkan setelah mengubah tata letak.
-                </span>
-                <div class="flex items-center gap-3">
-                    <button type="submit" name="status" value="draft" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition">
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3.5">
+                <div class="flex items-center gap-2.5 text-xs text-gray-500 font-medium">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                    <span>Pastikan menyimpan draf atau menerbitkan perubahan setelah mengubah tata letak.</span>
+                </div>
+                <div class="flex items-center gap-2.5 w-full sm:w-auto">
+                    <button type="submit" name="status" value="draft" class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300 transition shadow-2xs text-center">
                         Simpan Draf
                     </button>
-                    <button type="submit" name="status" value="terbit" class="px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition">
+                    <button type="submit" name="status" value="terbit" class="flex-1 sm:flex-initial px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-emerald-700 hover:bg-emerald-800 shadow-sm transition text-center">
                         Terbitkan Beranda
                     </button>
                 </div>
