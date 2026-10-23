@@ -420,9 +420,9 @@ class SuratKeluarTest extends TestCase
 
         $this->assertIsArray($entries);
         $this->assertArrayHasKey('word/document.xml', $entries);
-        $this->assertArrayHasKey('word/media/qr_verifikasi.png', $entries);
-        $this->assertStringContainsString('rIdQrVerif99', $entries['word/document.xml']);
-        $this->assertStringContainsString('DOCXTEST123', $entries['word/document.xml']);
+        $this->assertStringContainsString('Kode Verifikasi: DOCXTEST123', $entries['word/document.xml']);
+        $this->assertStringContainsString('w:sz w:val="22"', $entries['word/document.xml']);
+        $this->assertStringContainsString('w:jc w:val="end"', $entries['word/document.xml']);
     }
 
     public function test_sekretaris_dapat_mengunduh_surat_keluar_format_pdf_dengan_qr_dan_kode_verifikasi(): void
@@ -575,16 +575,12 @@ class SuratKeluarTest extends TestCase
         @unlink($absRaw);
 
         $this->assertIsArray($entries);
-        $this->assertArrayHasKey('word/media/qr_verifikasi.png', $entries);
         $this->assertArrayHasKey('word/document.xml', $entries);
-        $this->assertArrayHasKey('word/_rels/document.xml.rels', $entries);
-        $this->assertArrayHasKey('[Content_Types].xml', $entries);
 
-        $this->assertStringContainsString('rIdQrVerif99', $entries['word/document.xml']);
-        $this->assertStringContainsString('QR Verifikasi Resmi', $entries['word/document.xml']);
-        $this->assertStringContainsString('wp:cNvGraphicFramePr', $entries['word/document.xml']);
-        $this->assertStringContainsString('media/qr_verifikasi.png', $entries['word/_rels/document.xml.rels']);
-        $this->assertStringContainsString('image/png', $entries['[Content_Types].xml']);
+        $this->assertStringContainsString('Kode Verifikasi: INJECTQR88', $entries['word/document.xml']);
+        $this->assertStringContainsString('w:sz w:val="22"', $entries['word/document.xml']);
+        $this->assertStringContainsString('w:jc w:val="end"', $entries['word/document.xml']);
+        $this->assertStringContainsString('Naskah Asli Dari Word', $entries['word/document.xml']);
     }
 }
 

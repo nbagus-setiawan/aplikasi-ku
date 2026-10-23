@@ -658,12 +658,24 @@
 
     @if (! empty($suratKeluar->file_surat_asli))
     <style>
+        #area-dokumen-asli-word {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        #docx-render-target {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
         #docx-render-target .docx-wrapper {
             background: transparent !important;
             padding: 0 !important;
             display: flex !important;
             flex-direction: column !important;
             align-items: center !important;
+            min-width: 100%;
+            box-sizing: border-box;
         }
         #docx-render-target .docx {
             box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08) !important;
@@ -672,9 +684,21 @@
             color: #0f172a !important;
             border-radius: 6px;
             max-width: 100% !important;
+            box-sizing: border-box !important;
         }
         #docx-render-target .docx section {
             padding: 30px 40px !important;
+            box-sizing: border-box !important;
+        }
+        @media (max-width: 640px) {
+            #docx-render-target .docx section {
+                padding: 16px 12px !important;
+            }
+            #docx-render-target .docx {
+                width: 100% !important;
+                min-width: 0 !important;
+                border-radius: 4px;
+            }
         }
         @media print {
             .no-print, header, aside, nav, footer, button, .modal-backdrop {

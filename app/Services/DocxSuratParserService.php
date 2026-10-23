@@ -714,44 +714,12 @@ class DocxSuratParserService
                     // Penandatangan
                     '<w:p><w:pPr><w:spacing w:before="240" w:after="40"/><w:ind w:left="5000"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:sz w:val="22"/></w:rPr><w:t>' . htmlspecialchars($jabatanPenandatangan, ENT_XML1, 'UTF-8') . '</w:t></w:r></w:p>' .
                     '<w:p><w:pPr><w:spacing w:before="720" w:after="40"/><w:ind w:left="5000"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:b/><w:u w:val="single"/><w:sz w:val="22"/></w:rPr><w:t>' . htmlspecialchars($namaPenandatangan, ENT_XML1, 'UTF-8') . '</w:t></w:r></w:p>' .
-                    // QR Code & Kode Verifikasi di Kanan Bawah
+                    // Kode Verifikasi di Kanan Bawah (Font 11pt, rata kanan sesuai referensi.docx)
                     '<w:p>' .
-                        '<w:pPr><w:jc w:val="right"/><w:spacing w:before="240" w:after="0"/></w:pPr>' .
+                        '<w:pPr><w:jc w:val="end"/><w:spacing w:before="180" w:after="0"/><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:pPr>' .
                         '<w:r>' .
-                            '<w:drawing>' .
-                                '<wp:inline distT="0" distB="0" distL="0" distR="0">' .
-                                    '<wp:extent cx="720000" cy="720000"/>' .
-                                    '<wp:docPr id="9991" name="QR Verifikasi"/>' .
-                                    '<wp:cNvGraphicFramePr>' .
-                                        '<a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>' .
-                                    '</wp:cNvGraphicFramePr>' .
-                                    '<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">' .
-                                        '<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">' .
-                                            '<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">' .
-                                                '<pic:nvPicPr>' .
-                                                    '<pic:cNvPr id="9991" name="qr_verifikasi.png"/>' .
-                                                    '<pic:cNvPicPr/>' .
-                                                '</pic:nvPicPr>' .
-                                                '<pic:blipFill>' .
-                                                    '<a:blip r:embed="rIdQrVerif99"/>' .
-                                                    '<a:stretch><a:fillRect/></a:stretch>' .
-                                                '</pic:blipFill>' .
-                                                '<pic:spPr>' .
-                                                    '<a:xfrm><a:off x="0" y="0"/><a:ext cx="720000" cy="720000"/></a:xfrm>' .
-                                                    '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>' .
-                                                '</pic:spPr>' .
-                                            '</pic:pic>' .
-                                        '</a:graphicData>' .
-                                    '</a:graphic>' .
-                                '</wp:inline>' .
-                            '</w:drawing>' .
-                        '</w:r>' .
-                    '</w:p>' .
-                    '<w:p>' .
-                        '<w:pPr><w:jc w:val="right"/><w:spacing w:before="0" w:after="0"/></w:pPr>' .
-                        '<w:r>' .
-                            '<w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:sz w:val="16"/><w:b/></w:rPr>' .
-                            '<w:t>Kode Verifikasi: ' . $kodeEscaped . '</w:t>' .
+                            '<w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr>' .
+                            '<w:t xml:space="preserve">Kode Verifikasi: ' . $kodeEscaped . '</w:t>' .
                         '</w:r>' .
                     '</w:p>' .
                     '<w:sectPr>' .
@@ -768,9 +736,6 @@ class DocxSuratParserService
                 'word/_rels/document.xml.rels' => $docRels,
                 'word/document.xml' => $docXml,
             ];
-            if (is_file($qrPngPath)) {
-                $entries['word/media/qr_verifikasi.png'] = file_get_contents($qrPngPath);
-            }
 
             $success = $this->writeZipEntries($docxFile, $entries);
 
@@ -818,15 +783,15 @@ class DocxSuratParserService
             copy($sourceAbsolutePath, $workingDocx);
 
             $savedWordQrRel = null;
-            if ($ext === 'docx' && is_file($badgePngPath)) {
-                $injected = $this->injectQrIntoDocx($workingDocx, $badgePngPath, $suratKeluar->kode_verifikasi, $suratKeluar->no_surat);
+            if ($ext === 'docx') {
+                $injected = $this->injectVerificationCodeIntoDocx($workingDocx, $suratKeluar->kode_verifikasi);
                 if ($injected) {
                     $savedWordQrRel = 'surat-keluar/word-qr-' . ($suratKeluar->id ?: time()) . '-' . Str::random(4) . '.docx';
                     Storage::disk('public')->put($savedWordQrRel, file_get_contents($workingDocx));
                 }
             }
 
-            // Render PDF dan gambar tampilan asli dari dokumen Word yang sudah dibubuhi QR Code jika didukung
+            // Render PDF dan gambar tampilan asli dari dokumen Word jika didukung
             $targetDocForRender = ($savedWordQrRel && is_file($workingDocx)) ? $workingDocx : $sourceAbsolutePath;
             $renderResult = $this->renderWordAsOriginalDocument($targetDocForRender, $badgePngPath, $suratKeluar, $tempDir);
 
@@ -841,12 +806,12 @@ class DocxSuratParserService
     }
 
     /**
-     * Sisipkan QR Code PNG dan teks Kode Verifikasi langsung ke dalam file .docx asli
-     * menggunakan PHP ZipArchive atau Pure-PHP ZIP reader/writer (tanpa perlu exec atau python).
+     * Sisipkan teks Kode Verifikasi resmi (font 11pt, rata kanan) ke dalam berkas .docx asli
+     * persis di bagian bawah naskah sebelum batas halaman/section, tanpa mengubah dokumen asli selain kode verifikasi.
      */
-    protected function injectQrIntoDocx(string $docxPath, string $qrPngPath, string $kodeVerifikasi, string $noSurat): bool
+    protected function injectVerificationCodeIntoDocx(string $docxPath, string $kodeVerifikasi): bool
     {
-        if (! is_file($docxPath) || ! is_file($qrPngPath)) {
+        if (! is_file($docxPath)) {
             return false;
         }
 
@@ -855,51 +820,19 @@ class DocxSuratParserService
             return false;
         }
 
-        // 1. Salin gambar QR ke word/media/qr_verifikasi.png
-        $entries['word/media/qr_verifikasi.png'] = file_get_contents($qrPngPath);
-
-        // 2. Pastikan [Content_Types].xml mendukung png
-        $ct = $entries['[Content_Types].xml'] ?? '';
-        $pngTag = '<Default Extension="png" ContentType="image/png"/>';
-        if (empty($ct)) {
-            $ct = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-                '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' .
-                $pngTag .
-                '</Types>';
-            $entries['[Content_Types].xml'] = $ct;
-        } elseif (! str_contains($ct, 'Extension="png"')) {
-            if (str_contains($ct, '</Types>')) {
-                $ct = str_replace('</Types>', $pngTag . '</Types>', $ct);
-            } elseif (preg_match('/<Types\b([^>]*)\/>/', $ct, $m)) {
-                $ct = preg_replace('/<Types\b([^>]*)\/>/', '<Types$1>' . $pngTag . '</Types>', $ct);
-            }
-            $entries['[Content_Types].xml'] = $ct;
-        }
-
-        // 3. Tambahkan relationship rIdQrVerif99 di word/_rels/document.xml.rels
-        $rels = $entries['word/_rels/document.xml.rels'] ?? '';
-        $relTag = '<Relationship Id="rIdQrVerif99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/qr_verifikasi.png"/>';
-        if (empty($rels)) {
-            $rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-                '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' .
-                $relTag .
-                '</Relationships>';
-            $entries['word/_rels/document.xml.rels'] = $rels;
-        } elseif (! str_contains($rels, 'rIdQrVerif99')) {
-            if (str_contains($rels, '</Relationships>')) {
-                $rels = str_replace('</Relationships>', $relTag . '</Relationships>', $rels);
-            } elseif (preg_match('/<Relationships\b([^>]*)\/>/', $rels, $m)) {
-                $rels = preg_replace('/<Relationships\b([^>]*)\/>/', '<Relationships$1>' . $relTag . '</Relationships>', $rels);
-            }
-            $entries['word/_rels/document.xml.rels'] = $rels;
-        }
-
-        // 4. Tambahkan blok QR & Kode Verifikasi ke word/document.xml
         $docXml = $entries['word/document.xml'];
-        $docXml = $this->appendQrToDocumentXml($docXml, $kodeVerifikasi);
+        $docXml = $this->appendVerificationCodeToDocumentXml($docXml, $kodeVerifikasi);
         $entries['word/document.xml'] = $docXml;
 
         return $this->writeZipEntries($docxPath, $entries);
+    }
+
+    /**
+     * Alias kompatibilitas untuk injectQrIntoDocx
+     */
+    protected function injectQrIntoDocx(string $docxPath, string $qrPngPath, string $kodeVerifikasi, string $noSurat = ''): bool
+    {
+        return $this->injectVerificationCodeIntoDocx($docxPath, $kodeVerifikasi);
     }
 
     /**
@@ -1069,87 +1002,60 @@ class DocxSuratParserService
     }
 
     /**
-     * Tambahkan blok QR dan teks Kode Verifikasi ke dalam document.xml
-     * Menggunakan wp:anchor berskema OpenXML lengkap di pojok kanan bawah margin dokumen.
+     * Tambahkan blok teks Kode Verifikasi resmi ke dalam document.xml dengan ukuran font 11 pt, rata kanan,
+     * persis di bawah naskah sebelum <w:sectPr>, sesuai contoh referensi.docx.
      */
-    protected function appendQrToDocumentXml(string $docXml, string $kodeVerifikasi): string
+    protected function appendVerificationCodeToDocumentXml(string $docXml, string $kodeVerifikasi): string
     {
-        if (str_contains($docXml, 'rIdQrVerif99') || str_contains($docXml, 'QR Verifikasi Resmi')) {
+        $kodeClean = strtoupper(trim($kodeVerifikasi));
+
+        // Hindari duplikasi jika kode verifikasi ini sudah ada di dalam dokumen
+        if (str_contains($docXml, 'Kode Verifikasi: ' . $kodeClean) || str_contains($docXml, 'Kode verifikasi : ' . $kodeClean)) {
             return $docXml;
         }
 
-        $nsAdd = [
-            'xmlns:r=' => 'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"',
-            'xmlns:wp=' => 'xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"',
-            'xmlns:a=' => 'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"',
-            'xmlns:pic=' => 'xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"',
-        ];
-        foreach ($nsAdd as $prefix => $attr) {
-            if (! str_contains($docXml, $prefix)) {
-                $docXml = preg_replace('/<w:document\\s+/', '<w:document ' . $attr . ' ', $docXml, 1);
-            }
-        }
+        // Ukuran font 11 pt di OpenXML adalah 22 half-points (w:sz w:val="22" dan w:szCs w:val="22")
+        // Rata kanan (w:jc w:val="end") persis seperti referensi.docx
+        $kodeParagraph = '<w:p>' .
+            '<w:pPr>' .
+                '<w:pStyle w:val="Normal"/>' .
+                '<w:jc w:val="end"/>' .
+                '<w:spacing w:before="120" w:after="0"/>' .
+                '<w:rPr>' .
+                    '<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>' .
+                    '<w:sz w:val="22"/>' .
+                    '<w:szCs w:val="22"/>' .
+                '</w:rPr>' .
+            '</w:pPr>' .
+            '<w:r>' .
+                '<w:rPr>' .
+                    '<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>' .
+                    '<w:sz w:val="22"/>' .
+                    '<w:szCs w:val="22"/>' .
+                '</w:rPr>' .
+                '<w:t xml:space="preserve">Kode Verifikasi: ' . htmlspecialchars($kodeClean, ENT_XML1, 'UTF-8') . '</w:t>' .
+            '</w:r>' .
+        '</w:p>';
 
-        // Anchor drawing menempel di pojok kanan bawah margin dokumen dengan skema ISO OpenXML DrawingML valid
-        $anchorDrawing = '<w:r>' .
-            '<w:drawing>' .
-                '<wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="251658240" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1">' .
-                    '<wp:simplePos x="0" y="0"/>' .
-                    '<wp:positionH relativeFrom="margin">' .
-                        '<wp:align>right</wp:align>' .
-                    '</wp:positionH>' .
-                    '<wp:positionV relativeFrom="margin">' .
-                        '<wp:align>bottom</wp:align>' .
-                    '</wp:positionV>' .
-                    '<wp:extent cx="1080000" cy="1300000"/>' .
-                    '<wp:effectExtent l="0" t="0" r="0" b="0"/>' .
-                    '<wp:wrapNone/>' .
-                    '<wp:docPr id="9991" name="QR Verifikasi Resmi"/>' .
-                    '<wp:cNvGraphicFramePr>' .
-                        '<a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>' .
-                    '</wp:cNvGraphicFramePr>' .
-                    '<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">' .
-                        '<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">' .
-                            '<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">' .
-                                '<pic:nvPicPr>' .
-                                    '<pic:cNvPr id="9991" name="qr_verifikasi.png"/>' .
-                                    '<pic:cNvPicPr/>' .
-                                '</pic:nvPicPr>' .
-                                '<pic:blipFill>' .
-                                    '<a:blip r:embed="rIdQrVerif99"/>' .
-                                    '<a:stretch><a:fillRect/></a:stretch>' .
-                                '</pic:blipFill>' .
-                                '<pic:spPr>' .
-                                    '<a:xfrm><a:off x="0" y="0"/><a:ext cx="1080000" cy="1300000"/></a:xfrm>' .
-                                    '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>' .
-                                '</pic:spPr>' .
-                            '</pic:pic>' .
-                        '</a:graphicData>' .
-                    '</a:graphic>' .
-                '</wp:anchor>' .
-            '</w:drawing>' .
-        '</w:r>';
-
-        // Sisipkan ke dalam </w:p> terakhir sebelum <w:sectPr agar tidak menambah halaman baru
         if (str_contains($docXml, '<w:sectPr')) {
             $sectIdx = strrpos($docXml, '<w:sectPr');
-            $pIdx = strrpos(substr($docXml, 0, $sectIdx), '</w:p>');
-            if ($pIdx !== false) {
-                return substr($docXml, 0, $pIdx) . $anchorDrawing . substr($docXml, $pIdx);
-            }
-            return substr($docXml, 0, $sectIdx) . '<w:p>' . $anchorDrawing . '</w:p>' . substr($docXml, $sectIdx);
+            return substr($docXml, 0, $sectIdx) . $kodeParagraph . substr($docXml, $sectIdx);
         }
 
         if (str_contains($docXml, '</w:body>')) {
             $bodyIdx = strrpos($docXml, '</w:body>');
-            $pIdx = strrpos(substr($docXml, 0, $bodyIdx), '</w:p>');
-            if ($pIdx !== false) {
-                return substr($docXml, 0, $pIdx) . $anchorDrawing . substr($docXml, $pIdx);
-            }
-            return str_replace('</w:body>', '<w:p>' . $anchorDrawing . '</w:p></w:body>', $docXml);
+            return substr($docXml, 0, $bodyIdx) . $kodeParagraph . substr($docXml, $bodyIdx);
         }
 
         return $docXml;
+    }
+
+    /**
+     * Alias kompatibilitas
+     */
+    protected function appendQrToDocumentXml(string $docXml, string $kodeVerifikasi): string
+    {
+        return $this->appendVerificationCodeToDocumentXml($docXml, $kodeVerifikasi);
     }
 
     /**
