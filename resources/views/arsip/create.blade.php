@@ -158,7 +158,7 @@
 
                 <div class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-6 border-t border-gray-100">
                     <a href="{{ route('admin.arsip.index') }}"
-                       class="px-5 py-2.5 text-xs sm:text-sm font-semibold text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-xl transition text-center">
+                       class="px-5 py-2.5 text-xs sm:text-sm font-bold text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 border border-rose-300 rounded-xl transition text-center shadow-2xs">
                         Batal
                     </a>
                     <button type="submit"

@@ -44,7 +44,17 @@ class ArsipController extends Controller
         $kategoriList = Arsip::distinct()->orderBy('kategori')->pluck('kategori');
         $tahunList = Arsip::distinct()->orderByDesc('tahun')->pluck('tahun');
 
-        return view('arsip.index', compact('arsips', 'kategoriList', 'tahunList'));
+        // Statistik Ringkasan Arsip
+        $statistik = [
+            'total' => Arsip::count(),
+            'kategori' => Arsip::distinct('kategori')->count('kategori'),
+            'tahun_ini' => Arsip::where('tahun', date('Y'))->count(),
+            'tertaut' => Arsip::where(function ($q) {
+                $q->whereNotNull('surat_masuk_id')->orWhereNotNull('surat_keluar_id');
+            })->count(),
+        ];
+
+        return view('arsip.index', compact('arsips', 'kategoriList', 'tahunList', 'statistik'));
     }
 
     /**

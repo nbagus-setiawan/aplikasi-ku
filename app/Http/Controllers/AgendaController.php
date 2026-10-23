@@ -65,6 +65,14 @@ class AgendaController extends Controller
         // Peringatan H-1
         $agendasBesok = Agenda::hMinusSatu()->with('pj')->get();
 
+        // Statistik Ringkasan Kegiatan
+        $statistik = [
+            'total' => Agenda::count(),
+            'rencana' => Agenda::where('status', 'rencana')->count(),
+            'berjalan' => Agenda::where('status', 'berjalan')->count(),
+            'selesai' => Agenda::where('status', 'selesai')->count(),
+        ];
+
         return view('agenda.index', compact(
             'viewMode',
             'bulan',
@@ -72,7 +80,8 @@ class AgendaController extends Controller
             'currentDate',
             'agendasBulan',
             'agendas',
-            'agendasBesok'
+            'agendasBesok',
+            'statistik'
         ));
     }
 

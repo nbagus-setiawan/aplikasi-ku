@@ -25,6 +25,65 @@
             </div>
         </div>
 
+        <!-- 4 Kartu Ringkasan Arsip Dokumen -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <!-- Total Dokumen -->
+            <div class="bg-white rounded-2xl border border-gray-200/90 p-4 sm:p-5 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Total Arsip</span>
+                    <div class="text-2xl sm:text-3xl font-black text-gray-900 mt-0.5">{{ $statistik['total'] ?? 0 }}</div>
+                    <span class="text-[11px] text-gray-500 font-medium">Dokumen digital</span>
+                </div>
+                <div class="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-800 border border-emerald-200/60 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Kategori -->
+            <div class="bg-white rounded-2xl border border-purple-200/80 p-4 sm:p-5 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-purple-700">Kategori</span>
+                    <div class="text-2xl sm:text-3xl font-black text-purple-950 mt-0.5">{{ $statistik['kategori'] ?? 0 }}</div>
+                    <span class="text-[11px] text-purple-800 font-medium">Klasifikasi arsip</span>
+                </div>
+                <div class="w-11 h-11 rounded-2xl bg-purple-50 text-purple-700 border border-purple-200 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Tahun Ini -->
+            <div class="bg-white rounded-2xl border border-amber-200/80 p-4 sm:p-5 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-amber-700">Tahun Ini</span>
+                    <div class="text-2xl sm:text-3xl font-black text-amber-950 mt-0.5">{{ $statistik['tahun_ini'] ?? 0 }}</div>
+                    <span class="text-[11px] text-amber-800 font-medium">Tahun {{ date('Y') }}</span>
+                </div>
+                <div class="w-11 h-11 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Tertaut Surat -->
+            <div class="bg-white rounded-2xl border border-blue-200/80 p-4 sm:p-5 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-blue-700">Tertaut Surat</span>
+                    <div class="text-2xl sm:text-3xl font-black text-blue-950 mt-0.5">{{ $statistik['tertaut'] ?? 0 }}</div>
+                    <span class="text-[11px] text-blue-800 font-medium">Surat masuk / keluar</span>
+                </div>
+                <div class="w-11 h-11 rounded-2xl bg-blue-50 text-blue-700 border border-blue-200 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
         <!-- Filter & Pencarian -->
         <div class="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-4 sm:p-5">
             <form method="GET" action="{{ route('admin.arsip.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 sm:gap-4 items-end">
@@ -75,7 +134,7 @@
                     </button>
                     @if (request()->hasAny(['q', 'kategori', 'tahun']))
                         <a href="{{ route('admin.arsip.index') }}"
-                           class="py-2.5 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs sm:text-sm rounded-xl transition" title="Reset Filter">
+                           class="py-2.5 px-3 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold border border-rose-300 text-xs sm:text-sm rounded-xl transition shadow-2xs" title="Reset Filter">
                             ✕
                         </a>
                     @endif
@@ -150,7 +209,7 @@
 
                                         <!-- Unduh File -->
                                         <a href="{{ route('admin.arsip.unduh', $item) }}" title="Unduh Berkas"
-                                           class="p-2 text-blue-900 bg-blue-100 hover:bg-blue-200 border border-blue-300 rounded-xl transition shadow-2xs">
+                                           class="p-2 text-white bg-blue-900 hover:bg-blue-950 rounded-xl transition shadow-2xs">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                             </svg>
@@ -173,7 +232,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" title="Hapus"
-                                                    class="p-2 text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200/60 rounded-xl transition shadow-2xs">
+                                                    class="p-2 text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-300 rounded-xl transition shadow-2xs">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                 </svg>
@@ -242,7 +301,7 @@
                             <span>Detail</span>
                         </a>
                         <a href="{{ route('admin.arsip.unduh', $item) }}"
-                           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-900 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-200">
+                           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-blue-900 hover:bg-blue-950 rounded-lg shadow-2xs">
                             <span>Unduh</span>
                         </a>
                         <a href="{{ route('admin.arsip.edit', $item) }}"
@@ -256,7 +315,7 @@
                               class="inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 rounded-lg hover:bg-rose-100">
+                            <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-rose-700 bg-rose-50 border border-rose-300 rounded-lg hover:bg-rose-100">
                                 <span>Hapus</span>
                             </button>
                         </form>

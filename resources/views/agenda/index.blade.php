@@ -25,6 +25,65 @@
             </div>
         </div>
 
+        <!-- 4 Kartu Ringkasan Kegiatan Agenda -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <!-- Total Agenda -->
+            <div class="bg-white rounded-2xl border border-gray-200/90 p-4 sm:p-5 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Total Agenda</span>
+                    <div class="text-2xl sm:text-3xl font-black text-gray-900 mt-0.5">{{ $statistik['total'] ?? 0 }}</div>
+                    <span class="text-[11px] text-gray-500 font-medium">Seluruh kegiatan</span>
+                </div>
+                <div class="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-800 border border-emerald-200/60 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Rencana -->
+            <div class="bg-white rounded-2xl border border-emerald-200/80 p-4 sm:p-5 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Rencana</span>
+                    <div class="text-2xl sm:text-3xl font-black text-emerald-950 mt-0.5">{{ $statistik['rencana'] ?? 0 }}</div>
+                    <span class="text-[11px] text-emerald-800 font-medium">Jadwal mendatang</span>
+                </div>
+                <div class="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Berjalan -->
+            <div class="bg-white rounded-2xl border border-blue-200/80 p-4 sm:p-5 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-blue-700">Berjalan</span>
+                    <div class="text-2xl sm:text-3xl font-black text-blue-950 mt-0.5">{{ $statistik['berjalan'] ?? 0 }}</div>
+                    <span class="text-[11px] text-blue-800 font-medium">Sedang berlangsung</span>
+                </div>
+                <div class="w-11 h-11 rounded-2xl bg-blue-50 text-blue-700 border border-blue-200 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Selesai -->
+            <div class="bg-white rounded-2xl border border-gray-200/90 p-4 sm:p-5 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-gray-500">Selesai</span>
+                    <div class="text-2xl sm:text-3xl font-black text-gray-700 mt-0.5">{{ $statistik['selesai'] ?? 0 }}</div>
+                    <span class="text-[11px] text-gray-500 font-medium">Telah terlaksana</span>
+                </div>
+                <div class="w-11 h-11 rounded-2xl bg-gray-100 text-gray-600 border border-gray-200 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
         <!-- Banner Peringatan Agenda H-1 (Besok Hari) -->
         @if ($agendasBesok->count() > 0)
             <div class="bg-gradient-to-r from-amber-500/10 via-amber-50 to-amber-500/5 border border-amber-300 rounded-2xl p-5 shadow-xs space-y-3">
@@ -49,7 +108,7 @@
                                 </p>
                                 <p class="text-[11px] text-amber-800 font-bold mt-1">PJ: {{ $ab->pj ? $ab->pj->nama : '-' }}</p>
                             </div>
-                            <a href="{{ route('admin.agenda.show', $ab) }}" class="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-lg text-xs transition shrink-0">
+                            <a href="{{ route('admin.agenda.show', $ab) }}" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold rounded-lg text-xs transition shrink-0">
                                 Detail
                             </a>
                         </div>
@@ -163,7 +222,7 @@
                     <input type="hidden" name="view" value="daftar">
 
                     <!-- Kata Kunci -->
-                    <div class="lg:col-span-5">
+                    <div class="lg:col-span-4">
                         <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Cari Agenda</label>
                         <div class="relative">
                             <input type="text" name="q" value="{{ request('q') }}"
@@ -176,8 +235,8 @@
                     </div>
 
                     <!-- Status -->
-                    <div class="lg:col-span-3">
-                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Status Kegiatan</label>
+                    <div class="lg:col-span-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Status</label>
                         <select name="status" class="w-full text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2.5">
                             <option value="">Semua Status</option>
                             <option value="rencana" {{ request('status') === 'rencana' ? 'selected' : '' }}>Rencana</option>
@@ -189,8 +248,15 @@
 
                     <!-- Rentang Tanggal Mulai -->
                     <div class="lg:col-span-2">
-                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Mulai Tanggal</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Dari Tanggal</label>
                         <input type="date" name="tgl_mulai" value="{{ request('tgl_mulai') }}"
+                               class="w-full text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2.5" />
+                    </div>
+
+                    <!-- Rentang Tanggal Selesai -->
+                    <div class="lg:col-span-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Sampai Tanggal</label>
+                        <input type="date" name="tgl_selesai" value="{{ request('tgl_selesai') }}"
                                class="w-full text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2.5" />
                     </div>
 
@@ -202,7 +268,7 @@
                         </button>
                         @if (request()->hasAny(['q', 'status', 'tgl_mulai', 'tgl_selesai']))
                             <a href="{{ route('admin.agenda.index', ['view' => 'daftar']) }}"
-                               class="py-2.5 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs sm:text-sm rounded-xl transition" title="Reset Filter">
+                               class="py-2.5 px-3 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold border border-rose-300 text-xs sm:text-sm rounded-xl transition shadow-2xs" title="Reset Filter">
                                 ✕
                             </a>
                         @endif
