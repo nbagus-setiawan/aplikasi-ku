@@ -7,49 +7,36 @@
 
     @php
         $namaSitus = 'PONDOK PESANTREN AL-FALAH PUTAK';
-        $namaSitusPendek = 'PON-PES AL FALAH PUTAK'; // Nama situs yang tampil di atas URL pada hasil Google
+        $namaSitusPendek = 'PON-PES AL FALAH PUTAK'; // Nama situs resmi yang tampil di atas URL pada hasil Google
         $judulHalaman = trim(html_entity_decode($__env->yieldContent('title'), ENT_QUOTES, 'UTF-8'));
         $isBeranda = request()->is('/') || $judulHalaman === '' || $judulHalaman === 'Beranda';
         $judulDepan = $isBeranda ? 'HOME' : mb_strtoupper($judulHalaman, 'UTF-8');
         $judulLengkap = $judulDepan . ' | ' . $namaSitus;
         $judulOg = $judulLengkap;
-        $deskripsiDefault = 'Website resmi Pondok Pesantren Salafiyah Al-Falah Putak, Desa Putak, Kec. Gelumbang, Kab. Muara Enim, Sumatera Selatan. Pendidikan kitab kuning, tahfidzul Qur\'an, dan pembinaan akhlak santri berhaluan Ahlussunnah wal Jamaah.';
-        $deskripsi = trim(html_entity_decode($__env->yieldContent('meta_description'), ENT_QUOTES, 'UTF-8')) ?: $deskripsiDefault;
-        $gambarOg = asset('images/og-alfalah-putak.jpg');
+
+        // Deskripsi Lengkap Umum Resmi (Putra & Putri, kurikulum salaf, titik lokasi, pengasuh)
+        $deskripsiDefault = 'Website resmi Pondok Pesantren Salafiyah Al-Falah Putak, lembaga pendidikan Islam salafiyah di Desa Putak, Kec. Gelumbang, Kab. Muara Enim, Sumatera Selatan. Menempa insan santri putra dan putri yang berakhlak mulia, berwawasan luas, mandiri, dan berpegang teguh pada Al-Qur\'an dan Sunnah Nabi SAW dengan landasan akidah Ahlussunnah wal Jama\'ah serta madzhab Syafi\'i. Menyelenggarakan pengajian khazanah kitab kuning salaf, tahfidzul Qur\'an, madrasah diniyah takmiliyah, dan pembinaan karakter di bawah bimbingan Pengasuh K.H. Mursyidi dan Ny. Hj. Aniswatuzzuhriyah.';
+        
+        $deskripsiCustom = trim(html_entity_decode($__env->yieldContent('meta_description'), ENT_QUOTES, 'UTF-8'));
+        $deskripsi = $deskripsiCustom ?: $deskripsiDefault;
+
+        $gambarOgCustom = trim($__env->yieldContent('og_image'));
+        $gambarOg = $gambarOgCustom ?: asset('images/og-alfalah-putak.jpg');
         $urlBeranda = url('/') . '/';
         $urlKanonik = $isBeranda ? $urlBeranda : url()->current();
+
+        // Keywords Lengkap untuk Menguasai Pencarian Lokal & Regional Melawan Pesaing
+        $kataKunciSEO = 'Pondok Pesantren Al-Falah Putak, PP Al Falah Putak, Ponpes Al Falah Putak, Pesantren Salafiyah Sumatera Selatan, Pondok Pesantren Putra Putri Gelumbang, Pondok Pesantren Terbaik di Sumatera Selatan, Pondok Pesantren Muara Enim, Pesantren Terdekat Prabumulih, Pesantren Palembang Ogan Ilir, K.H. Mursyidi, Ny. Hj. Aniswatuzzuhriyah, Media Resmi Al-Falah Putak, Santri Al Falah Putak, Kajian Kitab Kuning Salaf, Nahwu Shorof, Tahfidzul Quran Muara Enim, Madrasah Diniyah Al Falah, Penerimaan Santri Baru Al Falah Putak, Ponpes Gelumbang, Pesantren Ahlussunnah wal Jamaah Sumsel, Sekolah Islam Berasrama Gelumbang';
     @endphp
 
     <title>{{ $judulLengkap }}</title>
 
-    <!-- Google Site Verification Google Search Console -->
+    <!-- Google Site Verification (Wajib Tetap Ada untuk Google Search Console) -->
     <meta name="google-site-verification" content="VkmH3sunnODzVDbLS8PYiE80wRiCRNe72N1aQdDGgtw" />
 
-    <!-- Meta Dasar & SEO Google Indexing -->
-    <meta name="description" content="{{ $deskripsi }}">
-    <meta name="keywords" content="Pondok Pesantren Al-Falah Putak, PP Al Falah Putak, Pesantren Al Falah Putak Gelumbang, Pondok Pesantren Muara Enim, Ponpes Al Falah Putak, Pesantren Salafiyah Sumatera Selatan, K.H. Mursyidi, Ny. Hj. Aniswatuzzuhriyah, Media Resmi Al-Falah Putak, Santri Al Falah Putak, Kajian Kitab Kuning, Tahfidzul Quran Putak, Madrasah Diniyah Al Falah, Penerimaan Santri Baru Al Falah Putak, Ponpes Gelumbang">
-    <meta name="author" content="{{ $namaSitus }}">
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <link rel="canonical" href="{{ $urlKanonik }}">
-
-    <!-- Identitas Nama Situs untuk Hasil Pencarian Google -->
-    <meta name="application-name" content="{{ $namaSitusPendek }}">
-    <meta name="apple-mobile-web-app-title" content="{{ $namaSitusPendek }}">
-    <meta name="theme-color" content="#064e3b">
-
-    <!-- Favicon Google Search Resmi (Memenuhi Logo, Tanpa Sisa Putih) -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=2">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-32x32.png') }}?v=2">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}?v=2">
-    <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon-48x48.png') }}?v=2">
-    <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('favicon-96x96.png') }}?v=2">
-    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('favicon-192x192.png') }}?v=2">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v=2">
-
-    <!-- Open Graph (WhatsApp, Facebook) — gambar lebar 1200x630, < 300 KB -->
+    <!-- Open Graph (Wajib di Atas untuk WhatsApp Crawler & Media Sosial) -->
     <meta property="og:locale" content="id_ID">
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="{{ $isBeranda ? 'website' : 'article' }}">
     <meta property="og:site_name" content="{{ $namaSitusPendek }}">
     <meta property="og:title" content="{{ $judulOg }}">
     <meta property="og:description" content="{{ $deskripsi }}">
@@ -60,60 +47,204 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="{{ $namaSitus }}">
+    <meta itemprop="name" content="{{ $judulOg }}">
+    <meta itemprop="description" content="{{ $deskripsi }}">
+    <meta itemprop="image" content="{{ $gambarOg }}">
     <link rel="image_src" href="{{ $gambarOg }}">
 
-    <!-- Twitter Card (Large Image di Atas) -->
+    <!-- Twitter Card (Pratinjau Gambar Besar) -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $judulOg }}">
     <meta name="twitter:description" content="{{ $deskripsi }}">
     <meta name="twitter:image" content="{{ $gambarOg }}">
 
-    <!-- Structured Data JSON-LD untuk Google Search & Rich Snippet -->
+    <!-- Meta Dasar & SEO Google Indexing -->
+    <meta name="description" content="{{ $deskripsi }}">
+    <meta name="keywords" content="{{ $kataKunciSEO }}">
+    <meta name="author" content="{{ $namaSitus }}">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="google" content="notranslate">
+    <link rel="canonical" href="{{ $urlKanonik }}">
+
+    <!-- Local SEO & Geo Targeting (Google Maps Presisi: -3.193732918976179, 104.48584233774767) -->
+    <meta name="geo.region" content="ID-SS">
+    <meta name="geo.placename" content="Desa Putak, Gelumbang, Muara Enim, Sumatera Selatan">
+    <meta name="geo.position" content="-3.193733;104.485842">
+    <meta name="ICBM" content="-3.193733, 104.485842">
+
+    <!-- Identitas Nama Situs untuk Hasil Pencarian Google -->
+    <meta name="application-name" content="{{ $namaSitusPendek }}">
+    <meta name="apple-mobile-web-app-title" content="{{ $namaSitusPendek }}">
+    <meta name="theme-color" content="#064e3b">
+
+    <!-- Favicon Google Search Resmi (Memenuhi Ruang Logo Secara Penuh Tanpa Margin Sisa) -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=3">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-32x32.png') }}?v=3">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}?v=3">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon-48x48.png') }}?v=3">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('favicon-96x96.png') }}?v=3">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('favicon-192x192.png') }}?v=3">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v=3">
+
+    <!-- Senjata Rahasia SEO: Schema Markup JSON-LD Terstruktur Standar Global Schema.org -->
     <script type="application/ld+json">
     {
         "@@context": "https://schema.org",
-        "@type": "EducationalOrganization",
-        "name": "PONDOK PESANTREN AL-FALAH PUTAK",
-        "alternateName": [
-            "PP Al-Falah Putak",
-            "Pondok Pesantren Salafiyah Al-Falah Putak",
-            "MEDIA RESMI AL-FALAH PUTAK"
-        ],
-        "url": "{{ $urlBeranda }}",
-        "logo": "{{ asset('favicon-192x192.png') }}",
-        "image": "{{ $gambarOg }}",
-        "description": "Media Resmi Pondok Pesantren Salafiyah Al-Falah Putak, Gelumbang, Muara Enim, Sumatera Selatan. Menempa generasi santri yang berakhlak mulia, mendalami khazanah kitab salaf, dan berpegang teguh pada Al-Qur'an dan Sunnah.",
-        "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "Desa Putak",
-            "addressLocality": "Gelumbang",
-            "addressRegion": "Sumatera Selatan",
-            "postalCode": "31171",
-            "addressCountry": "ID"
-        },
-        "founder": [
+        "@@graph": [
             {
-                "@type": "Person",
-                "name": "K.H. Mursyidi"
+                "@@type": ["EducationalOrganization", "ReligiousOrganization"],
+                "@@id": "{{ $urlBeranda }}#organization",
+                "name": "Pondok Pesantren Salafiyah Al-Falah Putak",
+                "alternateName": [
+                    "Pondok Pesantren Al-Falah Putak",
+                    "PP Al-Falah Putak",
+                    "Ponpes Al Falah Putak",
+                    "Pondok Pesantren Putra Putri Al-Falah Putak",
+                    "MEDIA RESMI AL-FALAH PUTAK"
+                ],
+                "url": "{{ $urlBeranda }}",
+                "logo": {
+                    "@@type": "ImageObject",
+                    "@@id": "{{ $urlBeranda }}#logo",
+                    "url": "{{ asset('favicon-192x192.png') }}",
+                    "caption": "Logo Pondok Pesantren Al-Falah Putak",
+                    "width": 192,
+                    "height": 192
+                },
+                "image": {
+                    "@@type": "ImageObject",
+                    "@@id": "{{ $urlBeranda }}#primaryimage",
+                    "url": "{{ $gambarOg }}",
+                    "width": 1200,
+                    "height": 630
+                },
+                "description": "{{ $deskripsiDefault }}",
+                "foundingDate": "2005-03-05",
+                "founder": [
+                    {
+                        "@@type": "Person",
+                        "name": "K.H. Mursyidi",
+                        "jobTitle": "Pengasuh Pondok Pesantren"
+                    },
+                    {
+                        "@@type": "Person",
+                        "name": "Ny. Hj. Aniswatuzzuhriyah",
+                        "jobTitle": "Pengasuh Pondok Pesantren"
+                    }
+                ],
+                "address": {
+                    "@@type": "PostalAddress",
+                    "streetAddress": "Jl. Pesantren Al-Falah, Desa Putak",
+                    "addressLocality": "Kecamatan Gelumbang",
+                    "addressRegion": "Sumatera Selatan",
+                    "postalCode": "31171",
+                    "addressCountry": "ID"
+                },
+                "geo": {
+                    "@@type": "GeoCoordinates",
+                    "latitude": -3.193732918976179,
+                    "longitude": 104.48584233774767
+                },
+                "hasMap": "https://maps.app.goo.gl/sVdzFiBgD7VdYKteA",
+                "telephone": "+6282118702718",
+                "email": "sekretariat@ponpesalfalahputak.my.id",
+                "contactPoint": [
+                    {
+                        "@@type": "ContactPoint",
+                        "telephone": "+6282118702718",
+                        "contactType": "Informasi & Pendaftaran Santri Baru",
+                        "areaServed": "ID",
+                        "availableLanguage": ["Indonesian", "Arabic"]
+                    }
+                ],
+                "sameAs": [
+                    "https://maps.app.goo.gl/sVdzFiBgD7VdYKteA"
+                ],
+                "knowsAbout": [
+                    "Pendidikan Pesantren Salafiyah",
+                    "Pendidikan Santri Putra dan Putri",
+                    "Kajian Khazanah Kitab Kuning",
+                    "Tahfidzul Qur'an",
+                    "Nahwu dan Shorof",
+                    "Fiqih Madzhab Syafi'i",
+                    "Akidah Ahlussunnah wal Jama'ah",
+                    "Madrasah Diniyah Takmiliyah",
+                    "Pembinaan Karakter dan Kemandirian Santri"
+                ],
+                "hasOfferCatalog": {
+                    "@@type": "OfferCatalog",
+                    "name": "Program Pendidikan Pesantren",
+                    "itemListElement": [
+                        {
+                            "@@type": "Offer",
+                            "itemOffered": {
+                                "@@type": "Course",
+                                "name": "Pengajian Kitab Kuning (Salafiyah)",
+                                "description": "Pendalaman kitab-kitab salaf mu'tabarah meliputi nahwu, shorof, fiqih, tafsir, hadits, tasawuf, dan ushul fiqih."
+                            }
+                        },
+                        {
+                            "@@type": "Offer",
+                            "itemOffered": {
+                                "@@type": "Course",
+                                "name": "Program Tahfidz & Tahsin Al-Qur'an",
+                                "description": "Bimbingan menghafal Al-Qur'an bersanad dan tajwid tartil untuk santri putra dan santri putri."
+                            }
+                        },
+                        {
+                            "@@type": "Offer",
+                            "itemOffered": {
+                                "@@type": "Course",
+                                "name": "Madrasah Diniyah Takmiliyah",
+                                "description": "Pendidikan klasikal terstruktur berjenjang untuk penguatan ilmu keislaman."
+                            }
+                        }
+                    ]
+                }
             },
             {
-                "@type": "Person",
-                "name": "Ny. Hj. Aniswatuzzuhriyah"
+                "@@type": "WebSite",
+                "@@id": "{{ $urlBeranda }}#website",
+                "url": "{{ $urlBeranda }}",
+                "name": "{{ $namaSitusPendek }}",
+                "alternateName": [
+                    "{{ $namaSitus }}",
+                    "Ponpes Al Falah Putak",
+                    "Website Resmi Ponpes Al Falah Putak"
+                ],
+                "publisher": {
+                    "@@id": "{{ $urlBeranda }}#organization"
+                },
+                "inLanguage": "id-ID",
+                "potentialAction": {
+                    "@@type": "SearchAction",
+                    "target": {
+                        "@@type": "EntryPoint",
+                        "urlTemplate": "{{ url('/pengumuman') }}?q={search_term_string}"
+                    },
+                    "query-input": "required name=search_term_string"
+                }
+            },
+            {
+                "@@type": "WebPage",
+                "@@id": "{{ $urlKanonik }}#webpage",
+                "url": "{{ $urlKanonik }}",
+                "name": "{{ $judulOg }}",
+                "isPartOf": {
+                    "@@id": "{{ $urlBeranda }}#website"
+                },
+                "about": {
+                    "@@id": "{{ $urlBeranda }}#organization"
+                },
+                "description": "{{ $deskripsi }}",
+                "inLanguage": "id-ID"
             }
-        ],
-        "foundingDate": "2005-03-05",
-        "telephone": "0821-1870-2718"
+        ]
     }
     </script>
-    <script type="application/ld+json">
-    {
-        "@@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "{{ $namaSitusPendek }}",
-        "alternateName": ["{{ $namaSitus }}", "Ponpes Al Falah Putak"],
-        "url": "{{ $urlBeranda }}"
-    }
-    </script>
+
+    @yield('extra_schema')
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">

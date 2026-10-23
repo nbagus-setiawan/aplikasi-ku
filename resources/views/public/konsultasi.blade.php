@@ -1,6 +1,7 @@
 @extends('layouts.public')
 
 @section('title', 'Layanan Konsultasi & Informasi Santri')
+@section('meta_description', 'Layanan konsultasi dan pusat informasi resmi Pondok Pesantren Salafiyah Al-Falah Putak, Gelumbang, Muara Enim. Konsultasi pendaftaran santri putra dan putri, pendidikan pesantren, dan kepengurusan.')
 
 @section('content')
 <!-- Header Halaman Konsultasi -->

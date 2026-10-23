@@ -1,6 +1,7 @@
 @extends('layouts.public')
 
-@section('title', 'Warta & Pengumuman Resmi')
+@section('title', 'Pengumuman & Warta Pesantren')
+@section('meta_description', 'Kanal warta, pengumuman, dan kabar resmi Pondok Pesantren Salafiyah Al-Falah Putak, Desa Putak, Kec. Gelumbang, Kab. Muara Enim, Sumatera Selatan. Informasi kegiatan santri putra dan putri, kalender kegiatan, dan maklumat pondok.')
 
 @section('content')
 <!-- Header Sederhana & Bersih (Tanpa Efek Terpotong) -->

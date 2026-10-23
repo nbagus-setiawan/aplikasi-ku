@@ -1,7 +1,41 @@
 @extends('layouts.public')
 
 @section('title', $pengumuman->judul)
-@section('meta_description', Str::limit(strip_tags($pengumuman->isi), 155))
+@section('meta_description', Str::limit(strip_tags($pengumuman->isi), 170))
+@section('og_image', $pengumuman->gambar ? asset('storage/' . $pengumuman->gambar) : asset('images/og-alfalah-putak.jpg'))
+
+@section('extra_schema')
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "NewsArticle",
+    "mainEntityOfPage": {
+        "@@type": "WebPage",
+        "@@id": "{{ url()->current() }}"
+    },
+    "headline": {{ json_encode($pengumuman->judul) }},
+    "description": {{ json_encode(Str::limit(strip_tags($pengumuman->isi), 170)) }},
+    "image": [
+        "{{ $pengumuman->gambar ? asset('storage/' . $pengumuman->gambar) : asset('images/og-alfalah-putak.jpg') }}"
+    ],
+    "datePublished": "{{ $pengumuman->tgl_tayang ? $pengumuman->tgl_tayang->toIso8601String() : $pengumuman->created_at->toIso8601String() }}",
+    "dateModified": "{{ $pengumuman->updated_at->toIso8601String() }}",
+    "author": {
+        "@@type": "Organization",
+        "name": "Sekretariat Ponpes Al-Falah Putak",
+        "url": "{{ url('/') }}"
+    },
+    "publisher": {
+        "@@type": "EducationalOrganization",
+        "name": "Pondok Pesantren Salafiyah Al-Falah Putak",
+        "logo": {
+            "@@type": "ImageObject",
+            "url": "{{ asset('favicon-192x192.png') }}"
+        }
+    }
+}
+</script>
+@endsection
 
 @section('content')
 @php

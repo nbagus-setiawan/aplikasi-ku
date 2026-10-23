@@ -1,6 +1,7 @@
 @extends('layouts.public')
 
 @section('title', 'Verifikasi Keaslian Surat')
+@section('meta_description', 'Layanan verifikasi keaslian dan keabsahan dokumen surat resmi yang diterbitkan oleh Sekretariat Pondok Pesantren Salafiyah Al-Falah Putak melalui QR code dan kode pengesahan unik.')
 
 @section('content')
 <!-- Header Verifikasi -->
