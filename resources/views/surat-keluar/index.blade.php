@@ -248,7 +248,7 @@
                     <!-- Tombol Aksi Mobile -->
                     <div class="flex items-center justify-end gap-1.5 pt-2 border-t border-gray-100 flex-wrap">
                         <a href="{{ route('admin.surat-keluar.show', $item) }}"
-                           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg">
+                           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 rounded-lg transition shadow-2xs">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -257,20 +257,20 @@
                         </a>
 
                         <a href="{{ route('admin.surat-keluar.cetak', $item) }}" target="_blank"
-                           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 rounded-lg">
+                           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-pink-700 bg-pink-50 border border-pink-300 hover:bg-pink-100 rounded-lg transition shadow-2xs">
                             <span>Cetak PDF</span>
                         </a>
 
                         @if ($item->file_surat_asli)
                             <a href="{{ route('admin.surat-keluar.cetak', [$item, 'format' => 'docx']) }}"
-                               class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg">
+                               class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-900 bg-blue-100/90 border border-blue-300 hover:bg-blue-200 rounded-lg transition shadow-2xs">
                                 <span>Word (.docx)</span>
                             </a>
                         @endif
 
                         @if (! $item->isFinal())
                             <a href="{{ route('admin.surat-keluar.edit', $item) }}"
-                               class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg">
+                               class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-amber-900 bg-amber-100 border border-amber-300 hover:bg-amber-200 rounded-lg transition shadow-2xs">
                                 <span>Ubah</span>
                             </a>
                         @endif
@@ -282,7 +282,7 @@
                               class="inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-red-700 bg-red-50 border border-red-200 rounded-lg">
+                            <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-rose-700 bg-rose-50 border border-rose-300 hover:bg-rose-100 rounded-lg transition shadow-2xs">
                                 <span>Hapus</span>
                             </button>
                         </form>

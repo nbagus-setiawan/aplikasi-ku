@@ -213,7 +213,7 @@
         <!-- TOP ACTION BAR (STICKY) -->
         <div class="sticky top-0 z-30 bg-white/95 backdrop-blur border border-gray-200 rounded-2xl px-4 py-3 shadow-sm flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-3">
-                <a href="{{ route('admin.surat-keluar.show', $suratKeluar) }}" class="p-2 rounded-xl border border-gray-200 hover:bg-gray-100 text-gray-600 transition" title="Kembali">
+                <a href="{{ route('admin.surat-keluar.show', $suratKeluar) }}" class="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 transition shadow-2xs" title="Kembali">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                 </a>
                 <div>
@@ -229,15 +229,15 @@
 
             <div class="flex flex-wrap items-center gap-2">
                 <button type="button" @click="submitSurat('draft')"
-                        class="px-3.5 py-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded-xl text-xs font-bold transition shadow-2xs">
+                        class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs">
                     💾 Simpan Perubahan
                 </button>
                 <button type="button" @click="submitSurat('cetak')"
-                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-extrabold transition shadow-sm flex items-center gap-1.5">
+                        class="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-xl text-xs font-extrabold transition shadow-sm flex items-center gap-1.5">
                     <span>🖨️ Simpan & Langsung Cetak PDF</span>
                 </button>
                 <button type="button" @click="submitSurat('siap_kirim')"
-                        class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-extrabold transition shadow-sm flex items-center gap-1.5">
+                        class="px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl text-xs font-extrabold transition shadow-sm flex items-center gap-1.5">
                     <span>🚀 Simpan & Siap Kirim (Final)</span>
                 </button>
             </div>
@@ -595,8 +595,8 @@
                     </div>
                 </div>
                 <div class="flex justify-end gap-2 pt-2 border-t">
-                    <button type="button" @click="signModalOpen = false" class="px-4 py-2 border border-gray-300 rounded-xl text-xs font-bold text-gray-700">Batal</button>
-                    <button type="button" @click="simpanGoresanModal()" class="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold">✓ Tempel ke Kertas Surat</button>
+                    <button type="button" @click="signModalOpen = false" class="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 rounded-xl text-xs font-bold transition shadow-2xs">Batal</button>
+                    <button type="button" @click="simpanGoresanModal()" class="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs">✓ Tempel ke Kertas Surat</button>
                 </div>
             </div>
         </div>
@@ -619,8 +619,8 @@
                     <input type="hidden" name="perihal_default" :value="tplPerihal">
                     <input type="hidden" name="isi_template" :value="tplIsi">
                     <div class="flex justify-end gap-2 pt-2 border-t">
-                        <button type="button" @click="showTemplateModal = false" class="px-4 py-2 border border-gray-300 rounded-xl text-xs font-bold text-gray-700">Batal</button>
-                        <button type="submit" class="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold">Simpan Template</button>
+                        <button type="button" @click="showTemplateModal = false" class="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 rounded-xl text-xs font-bold transition shadow-2xs">Batal</button>
+                        <button type="submit" class="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs">Simpan Template</button>
                     </div>
                 </form>
             </div>
