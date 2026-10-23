@@ -34,13 +34,32 @@ class PengumumanController extends Controller
             $query->where('kategori', $request->kategori);
         }
 
+        if ($request->filled('tgl_mulai')) {
+            $query->whereDate('tgl_tayang', '>=', $request->tgl_mulai);
+        }
+
+        if ($request->filled('tgl_selesai')) {
+            $query->whereDate('tgl_tayang', '<=', $request->tgl_selesai);
+        }
+
         $pengumumans = $query->orderByDesc('is_pinned')
             ->orderByDesc('tgl_tayang')
             ->orderByDesc('id')
             ->paginate(10)
             ->withQueryString();
 
-        return view('pengumuman.index', compact('pengumumans'));
+        // Statistik Ringkasan Pengumuman & Warta
+        $statistik = [
+            'total' => Pengumuman::count(),
+            'terbit' => Pengumuman::where('status', 'terbit')->count(),
+            'draft' => Pengumuman::where('status', 'draft')->count(),
+            'disematkan' => Pengumuman::where('is_pinned', true)->count(),
+        ];
+
+        // Daftar kategori unik
+        $kategoriList = Pengumuman::distinct()->whereNotNull('kategori')->pluck('kategori');
+
+        return view('pengumuman.index', compact('pengumumans', 'statistik', 'kategoriList'));
     }
 
     /**

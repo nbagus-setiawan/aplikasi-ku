@@ -18,13 +18,13 @@
             </p>
         </div>
         <div class="flex items-center gap-2">
-            <a href="{{ url('/') }}" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-semibold transition">
+            <a href="{{ url('/') }}" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition shadow-2xs">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                Lihat Beranda
+                <span>Lihat Beranda</span>
             </a>
-            <button type="button" onclick="document.getElementById('modal-revisi').classList.remove('hidden')" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-semibold transition">
+            <button type="button" onclick="document.getElementById('modal-revisi').classList.remove('hidden')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300 transition shadow-2xs">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Riwayat Revisi ({{ $revisis->count() }})
+                <span>Riwayat Revisi ({{ $revisis->count() }})</span>
             </button>
         </div>
     </div>
@@ -49,7 +49,7 @@
                         <option value="pengumuman">Warta & Pengumuman</option>
                         <option value="kontak">Kontak & Lokasi</option>
                     </select>
-                    <button type="button" onclick="tambahBlokBaru()" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition">
+                    <button type="button" onclick="tambahBlokBaru()" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 transition shadow-2xs">
                         + Tambah ke Susunan
                     </button>
                 </div>
@@ -57,7 +57,7 @@
                 <div class="flex flex-wrap items-center gap-2">
                     <input type="text" name="catatan_revisi" placeholder="Catatan revisi (opsional)" class="rounded-xl border-gray-300 text-xs py-2 px-3 focus:border-emerald-600 focus:ring-emerald-600 w-full sm:w-56">
                     <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <button type="submit" name="status" value="draft" class="flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition">
+                        <button type="submit" name="status" value="draft" class="flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300 transition shadow-2xs">
                             Simpan Draf
                         </button>
                         <button type="submit" name="status" value="terbit" class="flex-1 sm:flex-initial px-5 py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-emerald-700 hover:bg-emerald-800 shadow-sm transition">
@@ -324,7 +324,7 @@
                           data-judul="Pulihkan Versi Beranda"
                           data-tombol="Ya, Pulihkan Versi">
                         @csrf
-                        <button type="submit" class="px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition">
+                        <button type="submit" class="px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 transition shadow-2xs">
                             Pulihkan Versi Ini
                         </button>
                     </form>
@@ -337,7 +337,7 @@
         </div>
 
         <div class="pt-4 border-t border-gray-200 flex justify-end">
-            <button type="button" onclick="document.getElementById('modal-revisi').classList.add('hidden')" class="px-4 py-2 rounded-xl text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition">
+            <button type="button" onclick="document.getElementById('modal-revisi').classList.add('hidden')" class="px-4 py-2 rounded-xl text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-300 transition shadow-2xs">
                 Tutup
             </button>
         </div>
