@@ -63,6 +63,41 @@ class Pengumuman extends Model
         return $this->tgl_kedaluwarsa ? $this->tgl_kedaluwarsa->format('d-m-Y') : '-';
     }
 
+    public function getFormattedIsiAttribute(): string
+    {
+        if (empty($this->isi)) {
+            return '';
+        }
+
+        $text = $this->isi;
+
+        // Ganti karakter tab dengan indentasi non-breaking spaces
+        $text = str_replace("\t", '&nbsp;&nbsp;&nbsp;&nbsp;', $text);
+
+        // Hapus elemen berbahaya bersarang beserta isinya
+        $text = preg_replace('/<(script|style|iframe|object|embed|form|meta|link)\b[^>]*>.*?<\/\1>/is', '', $text);
+        $text = preg_replace('/<(script|style|iframe|object|embed|form|meta|link)\b[^>]*\/?>/is', '', $text);
+
+        // Bersihkan tag berbahaya dan hanya izinkan tag pemformatan aman
+        $clean = strip_tags($text, '<b><strong><i><em><u><br><p><ul><ol><li><blockquote><span>');
+
+        // Hapus atribut berbahaya (event handlers & javascript pseudo-protocol)
+        $clean = preg_replace('/\s+on[a-z]+\s*=\s*(?:\"[^\"]*\"|\'[^\']*\'|[^\s>]+)/is', '', $clean);
+        $clean = preg_replace('/javascript\s*:/i', '', $clean);
+
+        // Terjemahkan format markdown tebal **teks**
+        $clean = preg_replace('/\*\*(.*?)\*\*/s', '<strong>$1</strong>', $clean);
+
+        // Terjemahkan format markdown miring *teks* atau _teks_
+        $clean = preg_replace('/(?<!\*)\*(?!\*)(.*?)(?<!\*)\*(?!\*)/s', '<em>$1</em>', $clean);
+        $clean = preg_replace('/(?<!_)_(?!_)(.*?)(?<!_)_(?!_)/s', '<em>$1</em>', $clean);
+
+        // Format kutipan maklumat > teks
+        $clean = preg_replace('/^>\s*(.*)$/m', '<blockquote class="border-l-4 border-emerald-500 pl-3 my-2 italic text-gray-700 bg-emerald-50/50 py-1 rounded-r">$1</blockquote>', $clean);
+
+        return nl2br($clean);
+    }
+
     public function likes()
     {
         return $this->hasMany(PengumumanLike::class);

@@ -318,4 +318,18 @@ class PengumumanTest extends TestCase
             'platform' => 'whatsapp',
         ]);
     }
+
+    public function test_formatted_isi_mendukung_format_tebal_miring_tab_dan_sanitasi()
+    {
+        $pengumuman = new Pengumuman([
+            'isi' => "\t**PENGUMUMAN PENTING**\n\t*Jadwal:* <u>Senin</u>\n<script>alert('xss')</script>",
+        ]);
+
+        $formatted = $pengumuman->formatted_isi;
+
+        $this->assertStringContainsString('&nbsp;&nbsp;&nbsp;&nbsp;<strong>PENGUMUMAN PENTING</strong>', $formatted);
+        $this->assertStringContainsString('<em>Jadwal:</em> <u>Senin</u>', $formatted);
+        $this->assertStringNotContainsString('<script>', $formatted);
+        $this->assertStringNotContainsString('alert', $formatted);
+    }
 }

@@ -272,7 +272,7 @@
 
                     <!-- ISI ARTIKEL WARTA PENGUMUMAN -->
                     <div class="text-slate-800 leading-relaxed sm:leading-loose space-y-4 sm:space-y-5 text-sm sm:text-base md:text-[17px] border-t border-slate-100 pt-6">
-                        {!! nl2br(e($pengumuman->isi)) !!}
+                        {!! $pengumuman->formatted_isi !!}
                     </div>
 
                     <!-- BAGIKAN WARTA (Simpel, Rapi, & Hemat Tempat) -->

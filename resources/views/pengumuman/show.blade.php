@@ -96,7 +96,7 @@
             </h2>
 
             <div class="text-gray-700 text-sm leading-relaxed space-y-4">
-                {!! nl2br(e($pengumuman->isi)) !!}
+                {!! $pengumuman->formatted_isi !!}
             </div>
         </div>
     </div>
