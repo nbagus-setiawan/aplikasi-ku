@@ -1,5 +1,5 @@
 <x-app-layout>
-    @section('title', 'Detail Arsip ' . $arsip->judul)
+    @section('title', 'Detail Arsip Dokumen')
 
     <div class="max-w-4xl mx-auto space-y-6 pb-12">
         <!-- Top Navigation & Action Buttons -->
@@ -113,8 +113,32 @@
                             <img src="{{ asset('storage/' . $arsip->file) }}" alt="{{ $arsip->judul }}" class="max-h-[580px] w-auto rounded-xl shadow-xs object-contain bg-white" />
                         </div>
                     @elseif ($arsip->is_pdf)
-                        <div class="border border-gray-200 rounded-2xl overflow-hidden bg-gray-100 h-[650px]">
-                            <iframe src="{{ asset('storage/' . $arsip->file) }}" class="w-full h-full border-0"></iframe>
+                        <!-- Pratinjau Desktop / Tablet -->
+                        <div class="hidden sm:block border border-gray-200 rounded-2xl overflow-hidden bg-gray-100 h-[650px]">
+                            <iframe src="{{ asset('storage/' . $arsip->file) }}" class="w-full h-full border-0" title="Pratinjau PDF {{ $arsip->judul }}"></iframe>
+                        </div>
+
+                        <!-- Tampilan Card Mobile (Mencegah Layar Gelap Iframe di Layar HP) -->
+                        <div class="block sm:hidden p-5 bg-gradient-to-br from-rose-50/70 via-white to-gray-50 rounded-2xl border border-rose-200 shadow-2xs space-y-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0 font-black text-xs">
+                                    PDF
+                                </div>
+                                <div class="min-w-0">
+                                    <h4 class="font-extrabold text-sm text-gray-900 truncate">{{ $arsip->judul }}</h4>
+                                    <p class="text-xs text-gray-500 font-mono mt-0.5 truncate">{{ basename($arsip->file) }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 pt-2 border-t border-rose-100">
+                                <a href="{{ asset('storage/' . $arsip->file) }}" target="_blank"
+                                   class="flex-1 py-2.5 px-3 bg-pink-600 hover:bg-pink-700 text-white font-bold text-xs rounded-xl text-center shadow-xs transition">
+                                    Buka Dokumen PDF
+                                </a>
+                                <a href="{{ route('admin.arsip.unduh', $arsip) }}"
+                                   class="flex-1 py-2.5 px-3 bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs rounded-xl text-center shadow-xs transition">
+                                    Unduh Berkas
+                                </a>
+                            </div>
                         </div>
                     @else
                         <div class="p-5 bg-gray-50/80 rounded-2xl border border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3">
@@ -123,7 +147,7 @@
                                 <p class="text-[11px] text-gray-500 mt-0.5">Pratinjau langsung tidak tersedia untuk format dokumen ini. Silakan unduh berkas untuk melihat.</p>
                             </div>
                             <a href="{{ route('admin.arsip.unduh', $arsip) }}"
-                               class="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition shadow-xs whitespace-nowrap">
+                               class="px-5 py-2.5 bg-blue-900 hover:bg-blue-950 text-white text-xs font-bold rounded-xl transition shadow-xs whitespace-nowrap">
                                 Unduh Dokumen
                             </a>
                         </div>

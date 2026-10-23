@@ -17,11 +17,11 @@
             </div>
             <div class="flex items-center gap-2">
                 <a href="{{ route('admin.arsip.show', $arsip) }}"
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-xs sm:text-sm font-semibold rounded-xl shadow-xs transition active:scale-95">
+                   class="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs sm:text-sm font-bold rounded-xl border border-blue-200 shadow-2xs transition active:scale-95">
                     <span>Lihat Detail</span>
                 </a>
                 <a href="{{ route('admin.arsip.index') }}"
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs sm:text-sm font-semibold rounded-xl transition active:scale-95">
+                   class="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs sm:text-sm font-bold rounded-xl border border-rose-300 shadow-2xs transition active:scale-95">
                     <span>Kembali</span>
                 </a>
             </div>

@@ -1,5 +1,5 @@
 <x-app-layout>
-    @section('title', 'Detail Agenda ' . $agenda->judul)
+    @section('title', 'Detail Agenda Kegiatan')
 
     <div class="max-w-4xl mx-auto space-y-6 pb-12">
         <!-- Top Navigation & Action Buttons -->

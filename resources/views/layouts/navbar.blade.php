@@ -13,11 +13,11 @@
         </button>
 
         <!-- Judul / Info Singkat Halaman -->
-        <div class="flex items-center gap-3">
-            <span class="text-sm sm:text-base font-bold text-gray-800 tracking-tight">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+            <span class="text-xs sm:text-base font-bold text-gray-800 tracking-tight truncate max-w-[160px] xs:max-w-[200px] sm:max-w-xs md:max-w-md lg:max-w-lg" title="@yield('title', 'Panel Sekretariat')">
                 @yield('title', 'Panel Sekretariat')
             </span>
-            <span class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+            <span class="hidden md:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200 shrink-0">
                 Pondok Pesantren Al-Falah Putra
             </span>
         </div>
