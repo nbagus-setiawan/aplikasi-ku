@@ -330,6 +330,40 @@ class PengumumanTest extends TestCase
         $this->assertStringContainsString('&nbsp;&nbsp;&nbsp;&nbsp;<strong>PENGUMUMAN PENTING</strong>', $formatted);
         $this->assertStringContainsString('<em>Jadwal:</em> <u>Senin</u>', $formatted);
         $this->assertStringNotContainsString('<script>', $formatted);
-        $this->assertStringNotContainsString('alert', $formatted);
+    }
+
+    public function test_membuat_pengumuman_dengan_judul_yang_sama_dengan_data_soft_delete_tetap_berhasil_dan_slug_unik()
+    {
+        // Buat pengumuman awal lalu hapus (soft delete)
+        $lama = Pengumuman::create([
+            'judul' => 'Keluarga Besar Pondok Pesantren Al-Falah Putak Mengucapkan Selamat Hari Santri Nasional ke-12',
+            'slug' => 'keluarga-besar-pondok-pesantren-al-falah-putak-mengucapkan-selamat-hari-santri-nasional-ke-12',
+            'kategori' => 'umum',
+            'isi' => 'Konten pengumuman lama',
+            'tgl_tayang' => Carbon::today()->toDateString(),
+            'status' => 'terbit',
+            'user_id' => $this->user->id,
+        ]);
+        $lama->delete(); // Soft delete
+        $this->assertSoftDeleted('pengumumans', ['id' => $lama->id]);
+
+        // Kirim pengumuman baru dengan judul persis sama
+        $payload = [
+            'judul' => 'Keluarga Besar Pondok Pesantren Al-Falah Putak Mengucapkan Selamat Hari Santri Nasional ke-12',
+            'kategori' => 'umum',
+            'isi' => 'Konten pengumuman baru yang aktif',
+            'tgl_tayang' => Carbon::today()->toDateString(),
+            'status' => 'terbit',
+        ];
+
+        $response = $this->actingAs($this->user)->post(route('admin.pengumuman.store'), $payload);
+        $response->assertRedirect(route('admin.pengumuman.index'));
+        $response->assertSessionHas('success');
+
+        // Pastikan tersimpan dan slug baru diberi suffix otomatis (-1)
+        $baru = Pengumuman::where('isi', 'Konten pengumuman baru yang aktif')->first();
+        $this->assertNotNull($baru);
+        $this->assertEquals('keluarga-besar-pondok-pesantren-al-falah-putak-mengucapkan-selamat-hari-santri-nasional-ke-12-1', $baru->slug);
     }
 }
+

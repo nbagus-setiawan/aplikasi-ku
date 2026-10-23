@@ -44,7 +44,7 @@
 
     <!-- Form -->
     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8">
-        <form action="{{ route('admin.pengumuman.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form action="{{ route('admin.pengumuman.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6" onsubmit="const btn = this.querySelector('button[type=submit]'); if(btn && !btn.disabled){ btn.disabled = true; btn.innerHTML = '<span class=\'inline-block animate-pulse\'>Menyimpan...</span>'; btn.classList.add('opacity-75', 'cursor-not-allowed'); }">
             @csrf
 
             <div>

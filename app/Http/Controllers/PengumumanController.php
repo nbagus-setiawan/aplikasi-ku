@@ -77,11 +77,14 @@ class PengumumanController extends Controller
     {
         $data = $request->validated();
 
-        // Generate slug bila tidak diisi manual
+        // Generate slug bila tidak diisi manual (cek seluruh data termasuk trashed)
         $baseSlug = $request->filled('slug') ? Str::slug($request->slug) : Str::slug($request->judul);
+        if (empty($baseSlug)) {
+            $baseSlug = 'pengumuman-' . Str::lower(Str::random(6));
+        }
         $slug = $baseSlug;
         $counter = 1;
-        while (Pengumuman::where('slug', $slug)->exists()) {
+        while (Pengumuman::withTrashed()->where('slug', $slug)->exists()) {
             $slug = "{$baseSlug}-{$counter}";
             $counter++;
         }
@@ -102,7 +105,17 @@ class PengumumanController extends Controller
 
             $data['user_id'] = Auth::id();
 
-            Pengumuman::create($data);
+            try {
+                Pengumuman::create($data);
+            } catch (\Illuminate\Database\QueryException $qe) {
+                // Fallback jika terjadi tabrakan unik slug akibat race condition / double-submit
+                if ($qe->getCode() == 23000 || str_contains($qe->getMessage(), 'pengumumans_slug_unique') || str_contains($qe->getMessage(), 'Duplicate entry')) {
+                    $data['slug'] = $baseSlug . '-' . Str::lower(Str::random(6));
+                    Pengumuman::create($data);
+                } else {
+                    throw $qe;
+                }
+            }
 
             return redirect()->route('admin.pengumuman.index')
                 ->with('success', 'Pengumuman baru berhasil disimpan.');
@@ -140,9 +153,12 @@ class PengumumanController extends Controller
 
         if ($request->filled('slug') && $request->slug !== $pengumuman->slug) {
             $baseSlug = Str::slug($request->slug);
+            if (empty($baseSlug)) {
+                $baseSlug = 'pengumuman-' . Str::lower(Str::random(6));
+            }
             $slug = $baseSlug;
             $counter = 1;
-            while (Pengumuman::where('slug', $slug)->where('id', '!=', $pengumuman->id)->exists()) {
+            while (Pengumuman::withTrashed()->where('slug', $slug)->where('id', '!=', $pengumuman->id)->exists()) {
                 $slug = "{$baseSlug}-{$counter}";
                 $counter++;
             }
@@ -166,7 +182,16 @@ class PengumumanController extends Controller
             $data['gambar'] = $request->file('gambar')->storeAs('pengumuman', $fileName, 'public');
         }
 
-        $pengumuman->update($data);
+        try {
+            $pengumuman->update($data);
+        } catch (\Illuminate\Database\QueryException $qe) {
+            if (($qe->getCode() == 23000 || str_contains($qe->getMessage(), 'pengumumans_slug_unique') || str_contains($qe->getMessage(), 'Duplicate entry')) && isset($data['slug'])) {
+                $data['slug'] = $data['slug'] . '-' . Str::lower(Str::random(6));
+                $pengumuman->update($data);
+            } else {
+                throw $qe;
+            }
+        }
 
         return redirect()->route('admin.pengumuman.index')
             ->with('success', 'Pengumuman berhasil diperbarui.');
