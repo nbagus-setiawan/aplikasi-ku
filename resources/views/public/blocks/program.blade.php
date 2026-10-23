@@ -29,7 +29,7 @@
             <span class="inline-block text-xs font-semibold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3.5 py-1 rounded-full border border-emerald-100">
                 Pendidikan & Kurikulum
             </span>
-            <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+            <h2 class="text-xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
                 {{ $judul }}
             </h2>
             <p class="text-slate-600 text-xs sm:text-sm md:text-base leading-relaxed">
@@ -37,7 +37,7 @@
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             @foreach($programs as $prog)
                 <div class="bg-slate-50/80 rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-xs hover:border-emerald-300 hover:bg-white hover:shadow-sm transition duration-200 flex flex-col justify-between h-full">
                     <div class="space-y-3">

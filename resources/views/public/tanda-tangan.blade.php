@@ -55,7 +55,7 @@
                     </span>
                     <button type="button"
                             @click="showModalTtd = true; setTimeout(() => initSignaturePad(), 120)"
-                            class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg shadow-md transition flex items-center gap-1.5 active:scale-95 shrink-0">
+                            class="min-h-[44px] px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition flex items-center gap-1.5 active:scale-95 shrink-0">
                         <span>✍️ Bubuhkan Tanda Tangan</span>
                     </button>
                 </div>
@@ -65,8 +65,7 @@
         <!-- AREA LEMBAR SURAT RESMI (TAMPILAN PERSIS SEPERTI CETAK PDF) -->
         <main class="flex-1 max-w-4xl w-full mx-auto p-2 sm:p-6 my-2 sm:my-4">
             
-            <div class="bg-white shadow-2xl rounded-sm border border-gray-300 mx-auto font-surat text-gray-900 relative flex flex-col justify-between"
-                 style="max-width: 21cm; min-height: 29.7cm; padding: 2cm 2cm 2.5cm 2.5cm;">
+            <div class="bg-white shadow-2xl rounded-sm border border-gray-300 mx-auto font-surat text-gray-900 relative flex flex-col justify-between p-4 sm:p-8 md:p-12 lg:p-[2cm] max-w-full sm:max-w-[21cm] min-h-[auto] sm:min-h-[29.7cm]">
 
                 <div>
                     <!-- KOP SURAT RESMI -->

@@ -16,14 +16,14 @@
             </span>
 
             <!-- Judul Profil: Di Ponsel Berbaris Dua Sesuai Arahan, Di Desktop Menyatu Rapi (Font Sama dengan Pengumuman & Warta) -->
-            <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+            <h2 class="text-xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
                 <span class="block sm:inline">Sekilas Tentang</span>
                 <span class="block sm:inline sm:ml-1.5">Pondok Pesantren Al-Falah Putak</span>
             </h2>
 
             @if(!empty($kutipan))
                 <div class="pt-1">
-                    <p class="text-sm sm:text-base text-emerald-800 italic font-medium leading-relaxed max-w-2xl mx-auto px-4 py-2.5 rounded-xl bg-emerald-50/70 border border-emerald-100/90 shadow-2xs">
+                    <p class="text-xs sm:text-sm md:text-base text-emerald-800 italic font-medium leading-relaxed max-w-2xl mx-auto px-4 py-2.5 rounded-xl bg-emerald-50/70 border border-emerald-100/90 shadow-2xs">
                         “{{ $kutipan }}”
                     </p>
                 </div>

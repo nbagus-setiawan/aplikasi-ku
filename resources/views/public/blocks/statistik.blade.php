@@ -17,7 +17,7 @@
             <span class="inline-block text-xs font-semibold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3.5 py-1 rounded-full border border-emerald-100">
                 Statistik Pesantren
             </span>
-            <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
+            <h2 class="text-xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">
                 {{ $judul }}
             </h2>
             <p class="text-slate-600 text-xs sm:text-sm md:text-base leading-relaxed">
@@ -28,7 +28,7 @@
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
             <!-- Kartu 1: Santri Aktif -->
             <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs text-center flex flex-col justify-center transition-all hover:border-emerald-300 hover:shadow-xs">
-                <span class="block text-2xl sm:text-3xl font-extrabold text-emerald-800 tabular-nums">
+                <span class="block text-2xl sm:text-3xl md:text-4xl font-extrabold text-emerald-800 tabular-nums">
                     {{ $santri }}
                 </span>
                 <span class="block text-xs sm:text-sm font-bold text-slate-700 mt-1">
@@ -38,7 +38,7 @@
 
             <!-- Kartu 2: Asatidz & Pengurus -->
             <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs text-center flex flex-col justify-center transition-all hover:border-emerald-300 hover:shadow-xs">
-                <span class="block text-2xl sm:text-3xl font-extrabold text-emerald-800 tabular-nums">
+                <span class="block text-2xl sm:text-3xl md:text-4xl font-extrabold text-emerald-800 tabular-nums">
                     {{ $pengurus }}
                 </span>
                 <span class="block text-xs sm:text-sm font-bold text-slate-700 mt-1">
@@ -48,7 +48,7 @@
 
             <!-- Kartu 3: Kamar Asrama -->
             <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs text-center flex flex-col justify-center transition-all hover:border-emerald-300 hover:shadow-xs">
-                <span class="block text-2xl sm:text-3xl font-extrabold text-emerald-800 tabular-nums">
+                <span class="block text-2xl sm:text-3xl md:text-4xl font-extrabold text-emerald-800 tabular-nums">
                     {{ $kamar }}
                 </span>
                 <span class="block text-xs sm:text-sm font-bold text-slate-700 mt-1">
@@ -58,7 +58,7 @@
 
             <!-- Kartu 4: Angkatan Alumni -->
             <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs text-center flex flex-col justify-center transition-all hover:border-emerald-300 hover:shadow-xs">
-                <span class="block text-2xl sm:text-3xl font-extrabold text-emerald-800 tabular-nums">
+                <span class="block text-2xl sm:text-3xl md:text-4xl font-extrabold text-emerald-800 tabular-nums">
                     {{ $alumni }}
                 </span>
                 <span class="block text-xs sm:text-sm font-bold text-slate-700 mt-1">

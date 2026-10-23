@@ -162,13 +162,13 @@
                 <div class="flex md:hidden items-center shrink-0">
                     <button type="button"
                             @click="mobileOpen = !mobileOpen"
-                            class="p-2 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 transition border border-slate-200/80 focus:outline-none"
+                            class="w-11 h-11 flex items-center justify-center rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 active:scale-95 transition border border-slate-200/90 focus:outline-none"
                             aria-label="Buka Menu Navigasi"
                             :aria-expanded="mobileOpen">
-                        <svg x-show="!mobileOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg x-show="!mobileOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
-                        <svg x-show="mobileOpen" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg x-show="mobileOpen" x-cloak class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </button>
@@ -184,20 +184,20 @@
                  x-transition:leave="transition ease-in duration-150"
                  x-transition:leave-start="opacity-100 translate-y-0"
                  x-transition:leave-end="opacity-0 -translate-y-3"
-                 class="md:hidden py-3 border-t border-slate-100 space-y-1">
+                 class="md:hidden py-3 border-t border-slate-100 space-y-1.5">
                 <a href="{{ url('/') }}"
-                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition {{ request()->is('/') ? 'text-emerald-950 bg-emerald-50' : 'text-slate-700 hover:bg-slate-100/70' }}">
-                    <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm sm:text-base font-bold min-h-[46px] transition active:scale-[0.99] {{ request()->is('/') ? 'text-emerald-950 bg-emerald-50' : 'text-slate-700 hover:bg-slate-100/70' }}">
+                    <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                     <span>Beranda Utama</span>
                 </a>
                 <a href="{{ url('/pengumuman') }}"
-                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition {{ request()->is('pengumuman*') ? 'text-emerald-950 bg-emerald-50' : 'text-slate-700 hover:bg-slate-100/70' }}">
-                    <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm sm:text-base font-bold min-h-[46px] transition active:scale-[0.99] {{ request()->is('pengumuman*') ? 'text-emerald-950 bg-emerald-50' : 'text-slate-700 hover:bg-slate-100/70' }}">
+                    <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
                     <span>Pengumuman & Warta</span>
                 </a>
                 <a href="{{ url('/verifikasi') }}"
-                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition {{ request()->is('verifikasi*') ? 'text-emerald-950 bg-emerald-50' : 'text-slate-700 hover:bg-slate-100/70' }}">
-                    <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm sm:text-base font-bold min-h-[46px] transition active:scale-[0.99] {{ request()->is('verifikasi*') ? 'text-emerald-950 bg-emerald-50' : 'text-slate-700 hover:bg-slate-100/70' }}">
+                    <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                     <span>Verifikasi Dokumen</span>
                 </a>
             </div>
@@ -248,18 +248,18 @@
                 <div class="md:col-span-3">
                     <h4 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-emerald-300 mb-4">Navigasi Utama</h4>
                     <ul class="space-y-2.5 text-sm sm:text-base">
-                        <li><a href="{{ url('/') }}" class="hover:text-emerald-400 transition">Beranda Utama</a></li>
-                        <li><a href="{{ url('/pengumuman') }}" class="hover:text-emerald-400 transition">Pengumuman &amp; Warta</a></li>
-                        <li><a href="{{ url('/verifikasi') }}" class="hover:text-emerald-400 transition">Verifikasi Dokumen</a></li>
+                        <li><a href="{{ url('/') }}" class="hover:text-emerald-400 transition py-1 inline-block">Beranda Utama</a></li>
+                        <li><a href="{{ url('/pengumuman') }}" class="hover:text-emerald-400 transition py-1 inline-block">Pengumuman &amp; Warta</a></li>
+                        <li><a href="{{ url('/verifikasi') }}" class="hover:text-emerald-400 transition py-1 inline-block">Verifikasi Dokumen</a></li>
                         <!-- Akses Login Petugas di Letakkan di Bawah Saja -->
                         <li class="pt-3 border-t border-emerald-900/80">
                             @auth
-                                <a href="{{ route('dashboard') }}" class="text-emerald-400 hover:text-white transition inline-flex items-center gap-1.5 font-bold text-xs sm:text-sm">
+                                <a href="{{ route('dashboard') }}" class="text-emerald-400 hover:text-white transition inline-flex items-center gap-1.5 font-bold text-xs sm:text-sm min-h-[40px]">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                                     <span>Buka Panel Admin &rarr;</span>
                                 </a>
                             @else
-                                <a href="{{ route('login') }}" class="text-slate-400 hover:text-emerald-300 transition inline-flex items-center gap-1.5 font-semibold text-xs sm:text-sm">
+                                <a href="{{ route('login') }}" class="text-slate-400 hover:text-emerald-300 transition inline-flex items-center gap-1.5 font-semibold text-xs sm:text-sm min-h-[40px]">
                                     <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
                                     <span>Portal Sekretariat (Login) &rarr;</span>
                                 </a>
@@ -280,9 +280,9 @@
                 </div>
             </div>
 
-            <!-- Hak Cipta Resmi -->
+            <!-- Hak Cipta Resmi Sesuai Arahan Pengguna -->
             <div class="pt-6 sm:pt-8 text-center text-xs sm:text-sm text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <p>&copy; {{ date('Y') }} MEDIA RESMI AL-FALAH PUTAK &bull; Pondok Pesantren Salafiyah Al-Falah Putak</p>
+                <p>@2026 PONPES ALFALAH PUTAK. All Right Reserved</p>
                 <div class="flex items-center gap-3 text-xs sm:text-sm text-slate-400">
                     <span class="text-emerald-400/90">Desa Putak, Gelumbang, Muara Enim</span>
                 </div>

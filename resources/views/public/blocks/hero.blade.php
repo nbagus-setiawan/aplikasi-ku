@@ -36,7 +36,7 @@
             </div>
         @endif
 
-        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight drop-shadow-md">
+        <h1 class="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight drop-shadow-md">
             {{ $judul }}
         </h1>
 
@@ -48,7 +48,7 @@
         <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4 w-full sm:w-auto">
             @if(!empty($ctaText))
                 <a href="{{ url($ctaUrl) }}"
-                   class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 sm:px-8 sm:py-4 rounded-xl font-bold text-sm sm:text-base text-emerald-950 bg-amber-400 hover:bg-amber-300 shadow-md shadow-amber-400/20 transition active:scale-95 text-center">
+                   class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 min-h-[48px] px-7 py-3.5 sm:px-8 sm:py-4 rounded-xl font-bold text-sm sm:text-base text-emerald-950 bg-amber-400 hover:bg-amber-300 shadow-md shadow-amber-400/20 transition active:scale-95 text-center">
                     <span>{{ $ctaText }}</span>
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </a>
@@ -56,7 +56,7 @@
 
             @if(!empty($ctaSecText))
                 <a href="{{ url($ctaSecUrl) }}"
-                   class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 sm:px-8 sm:py-4 rounded-xl font-bold text-sm sm:text-base text-white bg-emerald-900/90 hover:bg-emerald-800/90 border border-emerald-600/70 shadow-md transition active:scale-95 text-center">
+                   class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 min-h-[48px] px-7 py-3.5 sm:px-8 sm:py-4 rounded-xl font-bold text-sm sm:text-base text-white bg-emerald-900/90 hover:bg-emerald-800/90 border border-emerald-600/70 shadow-md transition active:scale-95 text-center">
                     <svg class="w-4 h-4 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                     <span>{{ $ctaSecText }}</span>
                 </a>

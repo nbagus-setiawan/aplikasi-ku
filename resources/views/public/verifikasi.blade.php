@@ -9,11 +9,11 @@
         <span class="inline-block px-3.5 py-1 rounded-full bg-emerald-900/80 border border-emerald-700/60 text-emerald-300 text-xs font-semibold uppercase tracking-wider">
             Layanan Resmi Sekretariat
         </span>
-        <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight">
+        <h1 class="text-xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
             Verifikasi Keaslian Dokumen Surat
         </h1>
         <p class="max-w-xl mx-auto text-emerald-100/90 text-xs sm:text-sm md:text-base font-normal leading-relaxed">
-            Periksa keabsahan dan keaslian dokumen surat resmi yang diterbitkan oleh Sekretariat Pondok Pesantren Al-Falah Putra.
+            Periksa keabsahan dan keaslian dokumen surat resmi yang diterbitkan oleh Sekretariat Pondok Pesantren Al-Falah Putak.
         </p>
     </div>
 </section>
@@ -28,7 +28,7 @@
                     <svg class="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     <span>Pengecekan Kode Verifikasi Surat</span>
                 </h2>
-                <p class="text-xs text-slate-500 leading-relaxed">
+                <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">
                     Pindai QR Code pada dokumen surat fisik atau ketik 8 karakter kode verifikasi (atau nomor surat) di bawah ini:
                 </p>
             </div>
@@ -42,17 +42,17 @@
                                value="{{ $kode ?? '' }}"
                                placeholder="Contoh: AF-7B9A atau 001/SPm.01/AF-PA/..."
                                required
-                               class="w-full rounded-xl border border-slate-200 text-sm focus:border-emerald-500 focus:ring-emerald-500 py-3 px-4 font-mono uppercase tracking-wider">
+                               class="w-full rounded-xl border border-slate-200 text-sm sm:text-base focus:border-emerald-500 focus:ring-emerald-500 py-3 px-4 min-h-[48px] font-mono uppercase tracking-wider">
                     </div>
                     <div class="flex items-center gap-2">
                         <button type="button"
                                 id="btn-toggle-scan"
-                                class="flex-1 sm:flex-none px-4 py-3 rounded-xl font-bold text-xs sm:text-sm text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition shrink-0 flex items-center justify-center gap-2 shadow-xs">
+                                class="flex-1 sm:flex-none min-h-[48px] px-4 py-3 rounded-xl font-bold text-xs sm:text-sm text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition shrink-0 flex items-center justify-center gap-2 shadow-xs active:scale-95">
                             <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
                             <span>Scan QR</span>
                         </button>
                         <button type="submit"
-                                class="flex-1 sm:flex-none px-5 py-3 rounded-xl font-bold text-xs sm:text-sm text-white bg-emerald-700 hover:bg-emerald-800 shadow-xs transition shrink-0 flex items-center justify-center gap-2">
+                                class="flex-1 sm:flex-none min-h-[48px] px-5 py-3 rounded-xl font-bold text-xs sm:text-sm text-white bg-emerald-700 hover:bg-emerald-800 shadow-xs transition shrink-0 flex items-center justify-center gap-2 active:scale-95">
                             <span>Periksa</span>
                         </button>
                     </div>

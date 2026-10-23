@@ -15,7 +15,7 @@
             <span class="inline-block text-xs font-semibold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3.5 py-1 rounded-full border border-emerald-100">
                 Kontak & Pelayanan
             </span>
-            <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+            <h2 class="text-xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
                 {{ $judul }}
             </h2>
             <p class="text-slate-600 text-xs sm:text-sm md:text-base leading-relaxed">

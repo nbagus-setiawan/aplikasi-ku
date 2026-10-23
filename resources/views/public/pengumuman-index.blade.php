@@ -10,10 +10,10 @@
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
             Kanal Informasi Resmi
         </span>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        <h1 class="text-xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight">
             Pengumuman &amp; Warta Pesantren
         </h1>
-        <p class="text-emerald-100/90 text-xs sm:text-sm max-w-lg mx-auto leading-relaxed">
+        <p class="text-emerald-100/90 text-xs sm:text-sm md:text-base max-w-lg mx-auto leading-relaxed">
             Pusat maklumat, kalender akademik, dan kabar kegiatan santri Pondok Pesantren Al-Falah Putak.
         </p>
     </div>
@@ -42,18 +42,18 @@
                            name="q"
                            value="{{ request('q') }}"
                            placeholder="Cari warta pesantren..."
-                           class="w-full pl-10 pr-24 py-2.5 sm:py-3 rounded-full border border-slate-300 bg-white shadow-xs focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-sm placeholder:text-slate-400">
+                           class="w-full pl-10 pr-24 py-3 sm:py-3.5 rounded-full border border-slate-300 bg-white shadow-xs focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-sm sm:text-base placeholder:text-slate-400 min-h-[46px]">
 
                     <!-- Tombol Aksi di Kanan -->
                     <div style="position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 4px;">
                         @if(request('q'))
                             <a href="{{ url('/pengumuman' . (request('kategori') ? '?kategori=' . request('kategori') : '')) }}"
-                               class="text-xs text-slate-400 hover:text-slate-600 px-1.5 py-1" title="Hapus pencarian">
+                               class="text-xs text-slate-400 hover:text-slate-600 px-2 py-1.5" title="Hapus pencarian">
                                 ✕
                             </a>
                         @endif
                         <button type="submit"
-                                class="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 transition shadow-2xs whitespace-nowrap">
+                                class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold text-white bg-emerald-700 hover:bg-emerald-800 transition shadow-2xs whitespace-nowrap active:scale-95 min-h-[38px] flex items-center justify-center">
                             Cari
                         </button>
                     </div>
@@ -61,14 +61,14 @@
             </form>
 
             <!-- Kategori Tabs (Pills Horizontal Rapi & Mudah Dipilih di HP) -->
-            <div class="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
+            <div class="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs sm:text-sm">
                 <a href="{{ url('/pengumuman' . (request('q') ? '?q=' . urlencode(request('q')) : '')) }}"
-                   class="px-4 py-1.5 rounded-full font-semibold whitespace-nowrap transition shadow-2xs {{ !request('kategori') ? 'bg-emerald-800 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200' }}">
+                   class="px-4 py-2 rounded-full font-semibold whitespace-nowrap transition shadow-2xs min-h-[38px] inline-flex items-center {{ !request('kategori') ? 'bg-emerald-800 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200' }}">
                     Semua
                 </a>
                 @foreach(['umum' => 'Umum', 'santri' => 'Santri', 'wali' => 'Wali Santri', 'akademik' => 'Akademik'] as $slug => $label)
                     <a href="{{ url('/pengumuman?kategori=' . $slug . (request('q') ? '&q=' . urlencode(request('q')) : '')) }}"
-                       class="px-4 py-1.5 rounded-full font-semibold whitespace-nowrap transition shadow-2xs {{ request('kategori') === $slug ? 'bg-emerald-800 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200' }}">
+                       class="px-4 py-2 rounded-full font-semibold whitespace-nowrap transition shadow-2xs min-h-[38px] inline-flex items-center {{ request('kategori') === $slug ? 'bg-emerald-800 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200' }}">
                         {{ $label }}
                     </a>
                 @endforeach
@@ -77,7 +77,7 @@
 
         <!-- Daftar Kartu Pengumuman Bersih & Elegan -->
         @if($pengumumans->count() > 0)
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 pt-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 pt-2">
                 @foreach($pengumumans as $item)
                     <article class="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-xs hover:shadow-md hover:border-emerald-300 transition duration-200 flex flex-col justify-between group">
                         <div>
@@ -133,7 +133,7 @@
                         <!-- Footer Kartu Sederhana & Bersih (Tanpa Tumpukan Angka Statis) -->
                         <div class="p-5 pt-0">
                             <a href="{{ url('/pengumuman/' . $item->slug) }}"
-                               class="inline-flex items-center text-xs sm:text-sm font-bold text-emerald-800 hover:text-emerald-900 group/link">
+                               class="inline-flex items-center min-h-[44px] text-xs sm:text-sm font-bold text-emerald-800 hover:text-emerald-900 group/link">
                                 <span>Baca Selengkapnya</span>
                                 <svg class="w-4 h-4 ml-1.5 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>

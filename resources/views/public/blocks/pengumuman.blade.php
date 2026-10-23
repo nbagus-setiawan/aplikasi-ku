@@ -11,7 +11,7 @@
                 <span class="inline-block text-xs font-semibold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3.5 py-1 rounded-full border border-emerald-100">
                     Warta Sekretariat
                 </span>
-                <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                <h2 class="text-xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
                     {{ $judul }}
                 </h2>
                 <p class="text-slate-600 text-xs sm:text-sm md:text-base leading-relaxed">
@@ -19,7 +19,7 @@
                 </p>
             </div>
             <div>
-                <a href="{{ url('/pengumuman') }}" class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-emerald-800 hover:text-emerald-900 group">
+                <a href="{{ url('/pengumuman') }}" class="inline-flex items-center gap-1.5 min-h-[44px] text-xs sm:text-sm font-bold text-emerald-800 hover:text-emerald-900 group">
                     <span>Lihat Seluruh Pengumuman</span>
                     <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </a>
@@ -27,7 +27,7 @@
         </div>
 
         @if(isset($pengumumanTerbaru) && $pengumumanTerbaru->count() > 0)
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
                 @foreach($pengumumanTerbaru as $item)
                     <article class="bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-xs hover:border-emerald-300 hover:shadow-sm transition duration-200 flex flex-col justify-between h-full">
                         <div>
@@ -75,7 +75,7 @@
                         </div>
 
                         <div class="p-5 pt-0">
-                            <a href="{{ url('/pengumuman/' . $item->slug) }}" class="inline-flex items-center text-xs sm:text-sm font-bold text-emerald-800 hover:text-emerald-900 group">
+                            <a href="{{ url('/pengumuman/' . $item->slug) }}" class="inline-flex items-center min-h-[44px] text-xs sm:text-sm font-bold text-emerald-800 hover:text-emerald-900 group">
                                 <span>Baca Pengumuman</span>
                                 <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                             </a>
