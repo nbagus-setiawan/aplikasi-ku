@@ -50,6 +50,21 @@ class PublicController extends Controller
     }
 
     /**
+     * Tampilkan Halaman Layanan Konsultasi Publik.
+     */
+    public function konsultasi()
+    {
+        $pengaturan = Pengaturan::pluck('value', 'key')->toArray();
+        $nomorWa = $pengaturan['kontak'] ?? '0821-1870-2717';
+        $nomorWaClean = preg_replace('/[^0-9]/', '', $nomorWa);
+        if (str_starts_with($nomorWaClean, '0')) {
+            $nomorWaClean = '62' . substr($nomorWaClean, 1);
+        }
+
+        return view('public.konsultasi', compact('pengaturan', 'nomorWa', 'nomorWaClean'));
+    }
+
+    /**
      * Tampilkan Daftar Pengumuman Publik.
      */
     public function pengumumanIndex(Request $request)

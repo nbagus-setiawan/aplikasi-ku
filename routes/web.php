@@ -29,7 +29,8 @@ Route::post('/pengumuman/{slug}/komentar', [PublicController::class, 'komentarPe
 Route::post('/pengumuman/{slug}/share', [PublicController::class, 'sharePengumuman'])->name('publik.pengumuman.share');
 Route::get('/sitemap.xml', [PublicController::class, 'sitemap'])->name('publik.sitemap');
 
-// Rute Publik: Verifikasi Surat & Tanda Tangan Jarak Jauh (Fase 3)
+// Rute Publik: Layanan Konsultasi & Verifikasi Surat & Tanda Tangan Jarak Jauh
+Route::get('/konsultasi', [PublicController::class, 'konsultasi'])->name('publik.konsultasi');
 Route::get('/verifikasi', [VerifikasiPublikController::class, 'index'])->name('publik.verifikasi.index');
 Route::get('/verifikasi/{kode}', [VerifikasiPublikController::class, 'show'])->name('publik.verifikasi');
 Route::get('/verifikasi/{kode}/unduh', [VerifikasiPublikController::class, 'unduh'])->name('publik.verifikasi.unduh');

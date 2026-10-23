@@ -152,6 +152,10 @@
                        class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition {{ request()->is('pengumuman*') ? 'text-emerald-900 bg-emerald-50 font-bold shadow-xs' : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-100/70' }}">
                         Pengumuman
                     </a>
+                    <a href="{{ url('/konsultasi') }}"
+                       class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition {{ request()->is('konsultasi*') ? 'text-emerald-900 bg-emerald-50 font-bold shadow-xs' : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-100/70' }}">
+                        Layanan Konsultasi
+                    </a>
                     <a href="{{ url('/verifikasi') }}"
                        class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition {{ request()->is('verifikasi*') ? 'text-emerald-900 bg-emerald-50 font-bold shadow-xs' : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-100/70' }}">
                         Verifikasi Dokumen
@@ -195,6 +199,11 @@
                     <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
                     <span>Pengumuman & Warta</span>
                 </a>
+                <a href="{{ url('/konsultasi') }}"
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm sm:text-base font-bold min-h-[46px] transition active:scale-[0.99] {{ request()->is('konsultasi*') ? 'text-emerald-950 bg-emerald-50' : 'text-slate-700 hover:bg-slate-100/70' }}">
+                    <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                    <span>Layanan Konsultasi</span>
+                </a>
                 <a href="{{ url('/verifikasi') }}"
                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm sm:text-base font-bold min-h-[46px] transition active:scale-[0.99] {{ request()->is('verifikasi*') ? 'text-emerald-950 bg-emerald-50' : 'text-slate-700 hover:bg-slate-100/70' }}">
                     <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
@@ -212,7 +221,8 @@
         @yield('content')
     </main>
 
-    <!-- Footer Publik yang Berwibawa & Rapi -->
+    <!-- Footer Publik: Lengkap di Beranda, Minimalis di Halaman Lainnya -->
+    @if (request()->is('/'))
     <footer class="bg-emerald-950 text-slate-300 pt-12 sm:pt-16 pb-10 sm:pb-12 border-t border-emerald-900/60">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-10 pb-10 sm:pb-12 border-b border-emerald-900/80">
@@ -239,7 +249,7 @@
                         </p>
                         <p class="flex items-center gap-2.5">
                             <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                            <span>{{ $pengaturan['kontak'] ?? '0851-8320-1627' }}</span>
+                            <span>{{ $pengaturan['kontak'] ?? '0821-1870-2717' }}</span>
                         </p>
                     </div>
                 </div>
@@ -250,6 +260,7 @@
                     <ul class="space-y-2.5 text-sm sm:text-base">
                         <li><a href="{{ url('/') }}" class="hover:text-emerald-400 transition py-1 inline-block">Beranda Utama</a></li>
                         <li><a href="{{ url('/pengumuman') }}" class="hover:text-emerald-400 transition py-1 inline-block">Pengumuman &amp; Warta</a></li>
+                        <li><a href="{{ url('/konsultasi') }}" class="hover:text-emerald-400 transition py-1 inline-block">Layanan Konsultasi</a></li>
                         <li><a href="{{ url('/verifikasi') }}" class="hover:text-emerald-400 transition py-1 inline-block">Verifikasi Dokumen</a></li>
                         <!-- Akses Login Petugas di Letakkan di Bawah Saja -->
                         <li class="pt-3 border-t border-emerald-900/80">
@@ -268,27 +279,47 @@
                     </ul>
                 </div>
 
-                <!-- Kolom 3: Layanan Sekretariat -->
+                <!-- Kolom 3: Layanan Sekretariat & Jam Operasional -->
                 <div class="md:col-span-3">
-                    <h4 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-emerald-300 mb-4">Layanan Sekretariat</h4>
+                    <h4 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-emerald-300 mb-4">Layanan &amp; Waktu</h4>
                     <ul class="space-y-2.5 text-xs sm:text-sm text-slate-300/90 leading-relaxed">
-                        <li>Administrasi &amp; Induk Santri</li>
-                        <li>Legalisir &amp; Pengesahan Surat</li>
-                        <li>Arsip Dokumen &amp; Piagam Ijazah</li>
-                        <li class="pt-1.5 text-emerald-400 font-bold">Pelayanan: Sabtu - Kamis (08:00 - 17:00 WIB)</li>
+                        <li>Administrasi &amp; Surat-Menyurat</li>
+                        <li>Legalisir &amp; Pengesahan Dokumen</li>
+                        <li class="pt-2 border-t border-emerald-900/70 text-emerald-300 font-semibold">
+                            Informasi Layanan:
+                        </li>
+                        <li class="flex items-center justify-between text-xs sm:text-sm">
+                            <span class="text-slate-300">Senin - Kamis</span>
+                            <span class="font-bold text-emerald-400">08.00 - 16.00 WIB</span>
+                        </li>
+                        <li class="flex items-center justify-between text-xs sm:text-sm">
+                            <span class="text-slate-300">Sabtu - Minggu</span>
+                            <span class="font-bold text-emerald-400">07.30 - 15.00 WIB</span>
+                        </li>
+                        <li class="text-[11px] sm:text-xs text-amber-300/80 pt-0.5">
+                            * Jumat: Libur / Pelayanan Terjadwal
+                        </li>
                     </ul>
                 </div>
             </div>
 
             <!-- Hak Cipta Resmi Sesuai Arahan Pengguna -->
             <div class="pt-6 sm:pt-8 text-center text-xs sm:text-sm text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <p>@2026 PONPES ALFALAH PUTAK. All Right Reserved</p>
+                <p>@2026 JAKASTRA OFFICIAL. All Reght Reserved</p>
                 <div class="flex items-center gap-3 text-xs sm:text-sm text-slate-400">
                     <span class="text-emerald-400/90">Desa Putak, Gelumbang, Muara Enim</span>
                 </div>
             </div>
         </div>
     </footer>
+    @else
+    <!-- Footer Minimalis untuk Halaman Selain Beranda -->
+    <footer class="bg-emerald-950 text-slate-400 py-6 border-t border-emerald-900/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs sm:text-sm">
+            <p>@2026 JAKASTRA OFFICIAL. All Reght Reserved</p>
+        </div>
+    </footer>
+    @endif
 
     @stack('scripts')
 </body>

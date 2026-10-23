@@ -173,5 +173,29 @@ class HalamanTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Pondok Al-Falah Putra Unggul');
         $response->assertSee('Pusat Keilmuan Islam');
+        $response->assertSee('@2026 JAKASTRA OFFICIAL. All Reght Reserved');
+        $response->assertSee('08.00 - 16.00 WIB');
+    }
+
+    public function test_halaman_layanan_konsultasi_dapat_diakses_publik_dan_memiliki_elemen_lengkap()
+    {
+        $response = $this->get(route('publik.konsultasi'));
+        $response->assertStatus(200);
+        $response->assertSee('Layanan Konsultasi');
+        $response->assertSee('Konsultasikan Sekarang');
+        $response->assertSee('Topik Konsultasi');
+        $response->assertSee('Senin - Kamis');
+        $response->assertSee('08.00 - 16.00 WIB');
+        $response->assertSee('Sabtu - Minggu');
+        $response->assertSee('07.30 - 15.00 WIB');
+        $response->assertSee('@2026 JAKASTRA OFFICIAL. All Reght Reserved');
+    }
+
+    public function test_footer_halaman_selain_beranda_menampilkan_footer_minimalis()
+    {
+        $response = $this->get(route('publik.konsultasi'));
+        $response->assertStatus(200);
+        $response->assertSee('@2026 JAKASTRA OFFICIAL. All Reght Reserved');
+        $response->assertDontSee('Layanan &amp; Waktu', false);
     }
 }
