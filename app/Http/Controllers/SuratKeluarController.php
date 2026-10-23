@@ -407,7 +407,10 @@ class SuratKeluarController extends Controller
         $suratKeluar->loadMissing(['kategori', 'user', 'tandaTangan', 'tandaTangans']);
         $pengaturan = Pengaturan::getAllKeyValues();
         $qrCodeDataUri = $this->tandaTanganService->generateQrCode(url('/verifikasi/' . $suratKeluar->kode_verifikasi));
-        $pratinjauSuratHtml = $this->tandaTanganService->renderHtml($suratKeluar);
+        // HANYA render template HTML bawaan jika surat dibuat murni dari form web tanpa berkas asli Word
+        $pratinjauSuratHtml = empty($suratKeluar->file_surat_asli)
+            ? $this->tandaTanganService->renderHtml($suratKeluar)
+            : null;
 
         return view('surat-keluar.show', compact('suratKeluar', 'pengaturan', 'qrCodeDataUri', 'pratinjauSuratHtml'));
     }
@@ -623,7 +626,13 @@ class SuratKeluarController extends Controller
             ]);
         }
 
-        // Fallback untuk surat yang dibuat lewat formulir teks biasa (tanpa unggah Word):
+        // Jika surat berasal dari dokumen Word asli tetapi server cPanel belum memiliki LibreOffice,
+        // buka tampilan cetak dokumen Word asli (BUKAN membuat ulang dari template HTML bawaan)
+        if (! empty($suratKeluar->file_surat_asli) && Storage::disk('public')->exists($suratKeluar->file_surat_asli)) {
+            return response()->view('surat-keluar.docx-print', compact('suratKeluar'));
+        }
+
+        // Fallback hanya untuk surat yang dibuat lewat formulir teks biasa (tanpa unggah Word):
         $pdf = $this->tandaTanganService->renderPdf($suratKeluar);
 
         if ($isDownload || $request->query('format') === 'pdf') {

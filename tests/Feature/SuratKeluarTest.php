@@ -456,6 +456,34 @@ class SuratKeluarTest extends TestCase
         $response->assertSee('SHOWTEST789');
         $response->assertDontSee('window.open(');
     }
+
+    public function test_halaman_show_surat_keluar_menampilkan_pratinjau_docx_asli_tanpa_iframe_html(): void
+    {
+        $surat = SuratKeluar::create([
+            'no_surat' => '009/SPm.01/AF-PA/X/2026',
+            'tgl_surat' => '2026-10-22',
+            'tujuan' => 'Kemenag',
+            'perihal' => 'Naskah Asli Word',
+            'kategori_id' => $this->kategori->id,
+            'isi' => '<p>Isi surat...</p>',
+            'nama_penandatangan' => 'KH. Syamsuni',
+            'jabatan_penandatangan' => 'Pimpinan',
+            'file_surat_asli' => 'surat-keluar/word-qr-1-test.docx',
+            'status' => 'final',
+            'status_ttd' => 'sudah',
+            'kode_verifikasi' => 'WORDASLI99',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.surat-keluar.show', $surat));
+
+        $response->assertStatus(200);
+        $response->assertSee('docx-render-target');
+        $response->assertSee('docx-loading');
+        $response->assertSee('Cetak / Simpan PDF');
+        $response->assertSee('Unduh Word (.docx)');
+        $response->assertDontSee('srcdoc=');
+    }
 }
 
 

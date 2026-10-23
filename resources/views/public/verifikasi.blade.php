@@ -212,7 +212,22 @@
                         }
                         $isGambarAsli = in_array($extTampilan, ['png', 'jpg', 'jpeg', 'webp'], true);
                     @endphp
-                    @if ($tampilanPath && ($isGambarAsli || $extTampilan === 'pdf'))
+                    @if (! empty($surat->file_surat_asli))
+                        <div class="pt-3 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-900">📄 Dokumen Surat Asli Resmi (Ber-QR Code)</span>
+                                <span class="text-[11px] text-gray-500 font-medium">Pratinjau naskah dokumen asli</span>
+                            </div>
+
+                            <div class="w-full bg-slate-100 p-2 sm:p-4 rounded-2xl border border-slate-200 flex justify-center">
+                                <div id="docx-loading-verif" class="p-8 text-center space-y-2">
+                                    <div class="w-7 h-7 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                                    <p class="text-xs text-gray-600 font-medium">Memuat lembar dokumen Word asli...</p>
+                                </div>
+                                <div id="docx-target-verif" class="w-full max-w-3xl bg-white shadow-md rounded-xl overflow-hidden"></div>
+                            </div>
+                        </div>
+                    @elseif ($tampilanPath && ($isGambarAsli || $extTampilan === 'pdf'))
                         <div class="pt-3 space-y-3">
                             <div class="flex items-center justify-between">
                                 <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-900">📄 Dokumen Surat Asli Resmi (Ber-QR Code)</span>
@@ -372,5 +387,64 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
+
+@if (! empty($surat->file_surat_asli))
+<style>
+    #docx-target-verif .docx-wrapper {
+        background: transparent !important;
+        padding: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    #docx-target-verif .docx {
+        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08) !important;
+        margin: 0 auto 1.5rem auto !important;
+        background: white !important;
+        color: #0f172a !important;
+        border-radius: 6px;
+        max-width: 100% !important;
+    }
+    #docx-target-verif .docx section {
+        padding: 24px 30px !important;
+    }
+</style>
+<script src="{{ asset('vendor/docx-preview/jszip.min.js') }}"></script>
+<script src="{{ asset('vendor/docx-preview/docx-preview.min.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const docxUrl = "{{ asset('storage/' . $surat->file_surat_asli) }}";
+        const loadingEl = document.getElementById('docx-loading-verif');
+        const targetEl = document.getElementById('docx-target-verif');
+
+        if (docxUrl && targetEl && window.docx) {
+            fetch(docxUrl)
+                .then(function(res) {
+                    if (!res.ok) throw new Error('Gagal mengambil file .docx');
+                    return res.blob();
+                })
+                .then(function(blob) {
+                    return window.docx.renderAsync(blob, targetEl, null, {
+                        inWrapper: true,
+                        ignoreWidth: false,
+                        ignoreHeight: false,
+                        breakPages: true,
+                        renderHeaders: true,
+                        renderFooters: true
+                    });
+                })
+                .then(function() {
+                    if (loadingEl) loadingEl.style.display = 'none';
+                })
+                .catch(function(err) {
+                    console.error('Gagal render docx preview verifikasi:', err);
+                    if (loadingEl) {
+                        loadingEl.innerHTML = '<p class="text-xs text-gray-500">Pratinjau naskah dokumen asli dapat dibuka melalui berkas resmi.</p>';
+                    }
+                });
+        }
+    });
+</script>
+@endif
 @endpush
 @endsection

@@ -18,7 +18,11 @@
              },
              eksekusiUnduh() {
                  this.modalUnduh = false;
-                 window.location.href = this.unduhUrl;
+                 if (this.unduhFormat === 'print') {
+                     setTimeout(() => window.print(), 250);
+                 } else if (this.unduhUrl) {
+                     window.location.href = this.unduhUrl;
+                 }
              }
          }">
         <!-- Top Navigation & Action Buttons -->
@@ -43,22 +47,34 @@
 
             <!-- Tepat 2 Opsi Unduh Resmi (PDF & Word ber-QR) + Kontrol Utama -->
             <div class="flex flex-wrap items-center gap-2">
-                <!-- 1. Unduh PDF -->
-                <button type="button"
-                        @click="konfirmasiUnduh('pdf', '{{ route('admin.surat-keluar.cetak', [$suratKeluar, 'format' => 'pdf', 'download' => 1]) }}', 'Dokumen PDF Resmi')"
-                        class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span>Unduh PDF</span>
-                </button>
+                @if (!empty($suratKeluar->file_surat_asli))
+                    <!-- 1. Cetak / Simpan PDF Asli -->
+                    <button type="button"
+                            @click="konfirmasiUnduh('print', '', 'Cetak / Simpan PDF Asli')"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        <span>Cetak / Simpan PDF</span>
+                    </button>
+                @else
+                    <!-- 1. Unduh PDF -->
+                    <button type="button"
+                            @click="konfirmasiUnduh('pdf', '{{ route('admin.surat-keluar.cetak', [$suratKeluar, 'format' => 'pdf', 'download' => 1]) }}', 'Dokumen PDF Resmi')"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>Unduh PDF</span>
+                    </button>
+                @endif
 
                 <!-- 2. Unduh Word (.docx) -->
                 <button type="button"
                         @click="konfirmasiUnduh('docx', '{{ route('admin.surat-keluar.cetak', [$suratKeluar, 'format' => 'docx', 'download' => 1]) }}', 'Dokumen Word (.docx)')"
                         class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-700 hover:bg-blue-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
                     <span>Unduh Word (.docx)</span>
                 </button>
@@ -270,14 +286,25 @@
 
                         <!-- 2 Opsi Unduh Cepat di Samping Header Surat -->
                         <div class="flex items-center gap-2 shrink-0">
-                            <button type="button"
-                                    @click="konfirmasiUnduh('pdf', '{{ route('admin.surat-keluar.cetak', [$suratKeluar, 'format' => 'pdf', 'download' => 1]) }}', 'Dokumen PDF Resmi')"
-                                    class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition shadow-2xs flex items-center gap-1.5 active:scale-95">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                                <span>Unduh PDF</span>
-                            </button>
+                            @if (!empty($suratKeluar->file_surat_asli))
+                                <button type="button"
+                                        @click="konfirmasiUnduh('print', '', 'Cetak / Simpan PDF Asli')"
+                                        class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition shadow-2xs flex items-center gap-1.5 active:scale-95">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                    </svg>
+                                    <span>Cetak / Simpan PDF</span>
+                                </button>
+                            @else
+                                <button type="button"
+                                        @click="konfirmasiUnduh('pdf', '{{ route('admin.surat-keluar.cetak', [$suratKeluar, 'format' => 'pdf', 'download' => 1]) }}', 'Dokumen PDF Resmi')"
+                                        class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition shadow-2xs flex items-center gap-1.5 active:scale-95">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    <span>Unduh PDF</span>
+                                </button>
+                            @endif
                             <button type="button"
                                     @click="konfirmasiUnduh('docx', '{{ route('admin.surat-keluar.cetak', [$suratKeluar, 'format' => 'docx', 'download' => 1]) }}', 'Dokumen Word (.docx)')"
                                     class="px-3 py-1.5 bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold rounded-xl transition shadow-2xs flex items-center gap-1.5 active:scale-95">
@@ -291,7 +318,18 @@
 
                     <!-- KONTEN LEMBAR SURAT RESMI -->
                     <div class="p-2 sm:p-5 bg-slate-100/90 rounded-2xl border border-slate-200 flex justify-center">
-                        @if ($tampilanGambar)
+                        @if (! empty($suratKeluar->file_surat_asli))
+                            <div class="w-full max-w-4xl space-y-3" id="area-dokumen-asli-word">
+                                <div id="docx-loading" class="flex flex-col items-center justify-center p-12 space-y-3 bg-white rounded-2xl border border-slate-200 shadow-xs">
+                                    <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+                                    <div class="text-center">
+                                        <p class="text-xs sm:text-sm text-gray-800 font-bold">Memuat Lembar Dokumen Word Asli...</p>
+                                        <p class="text-[11px] text-gray-500 mt-0.5">Menampilkan tata letak naskah asli, kop surat, tabel, dan tanda tangan</p>
+                                    </div>
+                                </div>
+                                <div id="docx-render-target" class="w-full bg-transparent flex justify-center"></div>
+                            </div>
+                        @elseif ($tampilanGambar)
                             <div class="w-full max-w-3xl bg-white p-3 rounded-2xl shadow-md border border-slate-200">
                                 <img src="{{ $tampilanGambar }}" alt="Dokumen Surat Resmi {{ $suratKeluar->no_surat }}" class="w-full h-auto rounded-xl mx-auto shadow-xs" />
                             </div>
@@ -301,7 +339,7 @@
                                         class="w-full h-[850px] border-0"
                                         title="Dokumen Lembar Surat Resmi {{ $suratKeluar->no_surat }}"></iframe>
                             </div>
-                        @else
+                        @elseif ($pratinjauSuratHtml)
                             <div class="w-full max-w-3xl bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
                                 <iframe srcdoc="{!! e($pratinjauSuratHtml) !!}"
                                         class="w-full h-[850px] border-0"
@@ -551,11 +589,11 @@
                     </button>
                     <button type="button" @click="eksekusiUnduh()"
                             class="flex-1 py-2.5 px-4 text-white font-bold text-xs sm:text-sm rounded-xl transition shadow-xs flex items-center justify-center gap-1.5 active:scale-95"
-                            :class="unduhFormat === 'pdf' ? 'bg-rose-600 hover:bg-rose-700' : 'bg-blue-700 hover:bg-blue-800'">
+                            :class="unduhFormat === 'docx' ? 'bg-blue-700 hover:bg-blue-800' : 'bg-rose-600 hover:bg-rose-700'">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
-                        <span>Ya, Unduh Sekarang</span>
+                        <span x-text="unduhFormat === 'print' ? 'Ya, Buka & Simpan PDF' : 'Ya, Unduh Sekarang'"></span>
                     </button>
                 </div>
             </div>
@@ -617,5 +655,93 @@
             }
         });
     </script>
+
+    @if (! empty($suratKeluar->file_surat_asli))
+    <style>
+        #docx-render-target .docx-wrapper {
+            background: transparent !important;
+            padding: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+        }
+        #docx-render-target .docx {
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08) !important;
+            margin: 0 auto 1.5rem auto !important;
+            background: white !important;
+            color: #0f172a !important;
+            border-radius: 6px;
+            max-width: 100% !important;
+        }
+        #docx-render-target .docx section {
+            padding: 30px 40px !important;
+        }
+        @media print {
+            .no-print, header, aside, nav, footer, button, .modal-backdrop {
+                display: none !important;
+            }
+            body * {
+                visibility: hidden !important;
+            }
+            #docx-render-target, #docx-render-target * {
+                visibility: visible !important;
+            }
+            #docx-render-target {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            #docx-render-target .docx {
+                box-shadow: none !important;
+                margin: 0 !important;
+                page-break-after: always;
+            }
+        }
+    </style>
+    <script src="{{ asset('vendor/docx-preview/jszip.min.js') }}"></script>
+    <script src="{{ asset('vendor/docx-preview/docx-preview.min.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const docxUrl = "{{ asset('storage/' . $suratKeluar->file_surat_asli) }}";
+            const loadingEl = document.getElementById('docx-loading');
+            const targetEl = document.getElementById('docx-render-target');
+
+            if (docxUrl && targetEl && window.docx) {
+                fetch(docxUrl)
+                    .then(function(res) {
+                        if (!res.ok) throw new Error('Gagal mengambil file .docx');
+                        return res.blob();
+                    })
+                    .then(function(blob) {
+                        return window.docx.renderAsync(blob, targetEl, null, {
+                            inWrapper: true,
+                            ignoreWidth: false,
+                            ignoreHeight: false,
+                            breakPages: true,
+                            renderHeaders: true,
+                            renderFooters: true
+                        });
+                    })
+                    .then(function() {
+                        if (loadingEl) loadingEl.style.display = 'none';
+                    })
+                    .catch(function(err) {
+                        console.error('Gagal render docx preview:', err);
+                        if (loadingEl) {
+                            loadingEl.innerHTML = `
+                                <div class="text-center p-6 space-y-2">
+                                    <p class="text-xs font-bold text-rose-600">Pratinjau naskah Word asli siap dibuka</p>
+                                    <p class="text-[11px] text-gray-500">Silakan gunakan tombol "Unduh Word (.docx)" di atas untuk membuka naskah asli di Microsoft Word.</p>
+                                </div>
+                            `;
+                        }
+                    });
+            }
+        });
+    </script>
+    @endif
     @endpush
 </x-app-layout>
