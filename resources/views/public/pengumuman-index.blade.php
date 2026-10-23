@@ -21,11 +21,11 @@
 
 <!-- Konten Daftar Pengumuman -->
 <section class="py-6 sm:py-10 bg-slate-50 min-h-[600px]">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 space-y-6">
+    <div x-data="liveFilter()" class="max-w-6xl mx-auto px-4 sm:px-6 space-y-6">
 
         <!-- Area Pencarian & Filter Kategori yang Ringkas & Rapi -->
         <div class="space-y-4 max-w-xl mx-auto">
-            <form action="{{ url('/pengumuman') }}" method="GET" class="w-full">
+            <form x-ref="filterForm" action="{{ url('/pengumuman') }}" method="GET" @submit.prevent="applyLive()" class="w-full">
                 @if(request('kategori'))
                     <input type="hidden" name="kategori" value="{{ request('kategori') }}">
                 @endif
@@ -41,16 +41,23 @@
                     <input type="text"
                            name="q"
                            value="{{ request('q') }}"
+                           @input="applyLive()"
                            placeholder="Cari warta pesantren..."
                            class="w-full pl-10 pr-24 py-3 sm:py-3.5 rounded-full border border-slate-300 bg-white shadow-xs focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-sm sm:text-base placeholder:text-slate-400 min-h-[46px]">
 
                     <!-- Tombol Aksi di Kanan -->
                     <div style="position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 4px;">
+                        <div x-show="loading" x-cloak class="mr-1">
+                            <svg class="animate-spin w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                            </svg>
+                        </div>
                         @if(request('q'))
-                            <a href="{{ url('/pengumuman' . (request('kategori') ? '?kategori=' . request('kategori') : '')) }}"
+                            <button type="button" @click="resetFilters()"
                                class="text-xs text-slate-400 hover:text-slate-600 px-2 py-1.5" title="Hapus pencarian">
                                 ✕
-                            </a>
+                            </button>
                         @endif
                         <button type="submit"
                                 class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold text-white bg-emerald-700 hover:bg-emerald-800 transition shadow-2xs whitespace-nowrap active:scale-95 min-h-[38px] flex items-center justify-center">
@@ -75,9 +82,22 @@
             </div>
         </div>
 
-        <!-- Daftar Kartu Pengumuman Bersih & Elegan -->
-        @if($pengumumans->count() > 0)
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 pt-2">
+        <!-- Data Container (Live Swappable) -->
+        <div id="data-container" class="relative">
+            <!-- Overlay Indikator Saat Memuat Data -->
+            <div x-show="loading" x-cloak class="absolute inset-0 bg-white/60 z-10 backdrop-blur-[1px] flex items-center justify-center transition-opacity rounded-2xl">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white shadow-md border border-slate-200 text-xs font-bold text-emerald-800">
+                    <svg class="animate-spin w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    <span>Mencari warta...</span>
+                </div>
+            </div>
+
+            <!-- Daftar Kartu Pengumuman Bersih & Elegan -->
+            @if($pengumumans->count() > 0)
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 pt-2">
                 @foreach($pengumumans as $item)
                     <article class="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-xs hover:shadow-md hover:border-emerald-300 transition duration-200 flex flex-col justify-between group">
                         <div>
@@ -164,6 +184,7 @@
                 </div>
             </div>
         @endif
+        </div>
 
     </div>
 </section>

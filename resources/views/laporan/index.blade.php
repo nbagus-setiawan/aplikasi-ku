@@ -72,121 +72,180 @@
         </a>
     </div>
 
-    <!-- Filter Form & Tombol Cetak PDF -->
-    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
-        <form action="{{ route('admin.laporan.index') }}" method="GET" class="space-y-4">
-            <input type="hidden" name="tab" value="{{ $tab }}">
+    <!-- Filter Form & Tombol Cetak PDF (Live & Collapsible) -->
+    <div x-data="liveFilter({
+        hasActiveFilters: {{ request()->hasAny(['dari_tanggal', 'sampai_tanggal', 'status_disposisi', 'status', 'metode_ttd', 'kelas', 'kamar']) ? 'true' : 'false' }},
+        activeCount: {{ (request('dari_tanggal') ? 1 : 0) + (request('sampai_tanggal') ? 1 : 0) + (request('status_disposisi') ? 1 : 0) + (request('status') ? 1 : 0) + (request('metode_ttd') ? 1 : 0) + (request('kelas') ? 1 : 0) + (request('kamar') ? 1 : 0) }}
+    })" class="space-y-4">
+        <div class="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+            <form x-ref="filterForm" action="{{ route('admin.laporan.index') }}" method="GET" @submit.prevent="applyLive()">
+                <input type="hidden" name="tab" value="{{ $tab }}">
 
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                @if($tab !== 'santri')
-                    <div class="md:col-span-3">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Dari Tanggal</label>
-                        <input type="date" name="dari_tanggal" value="{{ $dari }}" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                <!-- Baris Utama: Info Tab + Tombol Filter Lanjutan + Reset -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1.5 bg-emerald-100 text-emerald-800 rounded-xl text-xs font-bold uppercase tracking-wider">
+                            Modul: {{ str_replace('-', ' ', ucfirst($tab)) }}
+                        </span>
+                        <div x-show="loading" x-cloak class="inline-flex items-center gap-1.5 text-xs text-emerald-700 font-bold">
+                            <svg class="animate-spin w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                            </svg>
+                            <span>Memperbarui data...</span>
+                        </div>
                     </div>
-                    <div class="md:col-span-3">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Sampai Tanggal</label>
-                        <input type="date" name="sampai_tanggal" value="{{ $sampai }}" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                    </div>
-                @endif
 
-                @if($tab === 'surat-masuk')
-                    <div class="md:col-span-4">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Status Disposisi</label>
-                        <select name="status_disposisi" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                            <option value="">Semua Status</option>
-                            <option value="baru" {{ request('status_disposisi') === 'baru' ? 'selected' : '' }}>Baru</option>
-                            <option value="diproses" {{ request('status_disposisi') === 'diproses' ? 'selected' : '' }}>Diproses</option>
-                            <option value="selesai" {{ request('status_disposisi') === 'selesai' ? 'selected' : '' }}>Selesai</option>
-                        </select>
-                    </div>
-                @elseif($tab === 'surat-keluar')
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Status Surat</label>
-                        <select name="status" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                            <option value="">Semua Status</option>
-                            <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
-                            <option value="final" {{ request('status') === 'final' ? 'selected' : '' }}>Final</option>
-                            <option value="terkirim" {{ request('status') === 'terkirim' ? 'selected' : '' }}>Terkirim</option>
-                        </select>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Metode TTD</label>
-                        <select name="metode_ttd" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                            <option value="">Semua Metode</option>
-                            <option value="digital" {{ request('metode_ttd') === 'digital' ? 'selected' : '' }}>Digital</option>
-                            <option value="basah" {{ request('metode_ttd') === 'basah' ? 'selected' : '' }}>Basah</option>
-                        </select>
-                    </div>
-                @elseif($tab === 'santri')
-                    <div class="md:col-span-4">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Status Santri</label>
-                        <select name="status" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                            <option value="">Semua Status</option>
-                            <option value="aktif" {{ request('status') === 'aktif' ? 'selected' : '' }}>Aktif</option>
-                            <option value="alumni" {{ request('status') === 'alumni' ? 'selected' : '' }}>Alumni</option>
-                            <option value="berhenti" {{ request('status') === 'berhenti' ? 'selected' : '' }}>Berhenti</option>
-                        </select>
-                    </div>
-                    <div class="md:col-span-3">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Kelas</label>
-                        <input type="text" name="kelas" value="{{ request('kelas') }}" placeholder="Contoh: 1-A" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                    </div>
-                    <div class="md:col-span-3">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Kamar</label>
-                        <input type="text" name="kamar" value="{{ request('kamar') }}" placeholder="Contoh: Asrama A" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                    </div>
-                @elseif($tab === 'agenda')
-                    <div class="md:col-span-4">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Status Kegiatan</label>
-                        <select name="status" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                            <option value="">Semua Status</option>
-                            <option value="rencana" {{ request('status') === 'rencana' ? 'selected' : '' }}>Rencana</option>
-                            <option value="berjalan" {{ request('status') === 'berjalan' ? 'selected' : '' }}>Berjalan</option>
-                            <option value="selesai" {{ request('status') === 'selesai' ? 'selected' : '' }}>Selesai</option>
-                            <option value="batal" {{ request('status') === 'batal' ? 'selected' : '' }}>Batal</option>
-                        </select>
-                    </div>
-                @endif
+                    <div class="flex items-center gap-2">
+                        <!-- Tombol Toggle Filter Lanjutan -->
+                        <button type="button" @click="showFilters = !showFilters"
+                                :class="showFilters || activeCount > 0 ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'"
+                                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border font-bold text-xs sm:text-sm shadow-2xs transition shrink-0">
+                            <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                            </svg>
+                            <span>Saring Periode & Kriteria</span>
+                            <template x-if="activeCount > 0">
+                                <span class="px-1.5 py-0.5 text-[11px] font-black rounded-full bg-emerald-700 text-white" x-text="activeCount"></span>
+                            </template>
+                            <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="showFilters ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
 
-                <div class="md:col-span-2 flex items-center gap-2">
-                    <button type="submit" class="flex-1 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm text-white bg-emerald-700 hover:bg-emerald-800 transition shadow-2xs flex items-center justify-center gap-1.5">
-                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-                        <span>Saring</span>
-                    </button>
-                    <a href="{{ route('admin.laporan.index', ['tab' => $tab]) }}" class="py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-300 transition shadow-2xs flex items-center justify-center" title="Reset Saring">
-                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        <!-- Tombol Reset Filter -->
+                        <button type="button" @click="resetFilters()"
+                                class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-xs sm:text-sm shadow-2xs transition shrink-0"
+                                title="Reset Saring">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            <span>Reset</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Panel Filter Lanjutan (Disembunyikan secara default) -->
+                <div x-show="showFilters" x-cloak
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 -translate-y-2"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 -translate-y-2"
+                     class="grid grid-cols-1 md:grid-cols-12 gap-3.5 pt-4 mt-4 border-t border-gray-100">
+                    @if($tab !== 'santri')
+                        <div class="md:col-span-3">
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Dari Tanggal</label>
+                            <input type="date" name="dari_tanggal" value="{{ $dari }}" @change="applyLive()" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        </div>
+                        <div class="md:col-span-3">
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Sampai Tanggal</label>
+                            <input type="date" name="sampai_tanggal" value="{{ $sampai }}" @change="applyLive()" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        </div>
+                    @endif
+
+                    @if($tab === 'surat-masuk')
+                        <div class="md:col-span-6">
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Status Disposisi</label>
+                            <select name="status_disposisi" @change="applyLive()" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="">Semua Status</option>
+                                <option value="baru" {{ request('status_disposisi') === 'baru' ? 'selected' : '' }}>Baru</option>
+                                <option value="diproses" {{ request('status_disposisi') === 'diproses' ? 'selected' : '' }}>Diproses</option>
+                                <option value="selesai" {{ request('status_disposisi') === 'selesai' ? 'selected' : '' }}>Selesai</option>
+                            </select>
+                        </div>
+                    @elseif($tab === 'surat-keluar')
+                        <div class="md:col-span-3">
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Status Surat</label>
+                            <select name="status" @change="applyLive()" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="">Semua Status</option>
+                                <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
+                                <option value="final" {{ request('status') === 'final' ? 'selected' : '' }}>Final</option>
+                                <option value="terkirim" {{ request('status') === 'terkirim' ? 'selected' : '' }}>Terkirim</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-3">
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Metode TTD</label>
+                            <select name="metode_ttd" @change="applyLive()" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="">Semua Metode</option>
+                                <option value="digital" {{ request('metode_ttd') === 'digital' ? 'selected' : '' }}>Digital</option>
+                                <option value="basah" {{ request('metode_ttd') === 'basah' ? 'selected' : '' }}>Basah</option>
+                            </select>
+                        </div>
+                    @elseif($tab === 'santri')
+                        <div class="md:col-span-4">
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Status Santri</label>
+                            <select name="status" @change="applyLive()" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="">Semua Status</option>
+                                <option value="aktif" {{ request('status') === 'aktif' ? 'selected' : '' }}>Aktif</option>
+                                <option value="alumni" {{ request('status') === 'alumni' ? 'selected' : '' }}>Alumni</option>
+                                <option value="berhenti" {{ request('status') === 'berhenti' ? 'selected' : '' }}>Berhenti</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-4">
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Kelas</label>
+                            <input type="text" name="kelas" value="{{ request('kelas') }}" @input="applyLive()" placeholder="Contoh: 1-A" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        </div>
+                        <div class="md:col-span-4">
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Kamar</label>
+                            <input type="text" name="kamar" value="{{ request('kamar') }}" @input="applyLive()" placeholder="Contoh: Asrama A" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        </div>
+                    @elseif($tab === 'agenda')
+                        <div class="md:col-span-6">
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Status Kegiatan</label>
+                            <select name="status" @change="applyLive()" class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="">Semua Status</option>
+                                <option value="rencana" {{ request('status') === 'rencana' ? 'selected' : '' }}>Rencana</option>
+                                <option value="berjalan" {{ request('status') === 'berjalan' ? 'selected' : '' }}>Berjalan</option>
+                                <option value="selesai" {{ request('status') === 'selesai' ? 'selected' : '' }}>Selesai</option>
+                                <option value="batal" {{ request('status') === 'batal' ? 'selected' : '' }}>Batal</option>
+                            </select>
+                        </div>
+                    @endif
+                </div>
+            </form>
+        </div>
+
+        <!-- Data Container (Live Swappable) -->
+        <div id="data-container" class="relative space-y-4">
+            <!-- Overlay Indikator Saat Memuat Data -->
+            <div x-show="loading" x-cloak class="absolute inset-0 bg-white/60 z-10 backdrop-blur-[1px] flex items-center justify-center transition-opacity rounded-2xl">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white shadow-md border border-slate-200 text-xs font-bold text-emerald-800">
+                    <svg class="animate-spin w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    <span>Memperbarui data laporan...</span>
+                </div>
+            </div>
+
+            <!-- Baris Tombol Cetak PDF & Info Total -->
+            <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="flex items-center gap-2 text-sm text-gray-600">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <span>Ditemukan <strong>{{ $total }}</strong> baris data sesuai kriteria.</span>
+                </div>
+
+                <div>
+                    @php
+                        $routeCetak = match($tab) {
+                            'surat-masuk' => route('admin.laporan.cetak.surat-masuk', request()->query()),
+                            'surat-keluar' => route('admin.laporan.cetak.surat-keluar', request()->query()),
+                            'santri' => route('admin.laporan.cetak.santri', request()->query()),
+                            'agenda' => route('admin.laporan.cetak.agenda', request()->query()),
+                        };
+                    @endphp
+                    <a href="{{ $routeCetak }}" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-white bg-emerald-700 hover:bg-emerald-800 shadow-sm transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                        <span>Cetak / Unduh PDF Ber-Kop Resmi</span>
                     </a>
                 </div>
             </div>
-        </form>
 
-        <!-- Baris Tombol Cetak PDF & Info Total -->
-        <div class="pt-4 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div class="flex items-center gap-2 text-sm text-gray-600">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                <span>Ditemukan <strong>{{ $total }}</strong> baris data sesuai kriteria.</span>
-            </div>
-
-            <div>
-                @php
-                    $routeCetak = match($tab) {
-                        'surat-masuk' => route('admin.laporan.cetak.surat-masuk', request()->query()),
-                        'surat-keluar' => route('admin.laporan.cetak.surat-keluar', request()->query()),
-                        'santri' => route('admin.laporan.cetak.santri', request()->query()),
-                        'agenda' => route('admin.laporan.cetak.agenda', request()->query()),
-                    };
-                @endphp
-                <a href="{{ $routeCetak }}" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-white bg-emerald-700 hover:bg-emerald-800 shadow-sm transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                    <span>Cetak / Unduh PDF Ber-Kop Resmi</span>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Pratinjau Tabel Data (Responsive Mobile Cards & Desktop Table) -->
-    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        <div class="p-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+            <!-- Pratinjau Tabel Data (Responsive Mobile Cards & Desktop Table) -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="p-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
             <h3 class="text-xs font-bold uppercase tracking-wider text-gray-700">Pratinjau Data Laporan</h3>
             <span class="text-xs text-gray-400">Format: Kertas A4 Otomatis</span>
         </div>
@@ -423,5 +482,7 @@
             </div>
         @endif
     </div>
+</div>
+</div>
 </div>
 @endsection

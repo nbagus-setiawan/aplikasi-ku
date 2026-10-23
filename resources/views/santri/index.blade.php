@@ -10,10 +10,10 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2.5">
-                <!-- Tombol Cetak Rekap PDF (Pink Merah Jambu) -->
+                <!-- Tombol Cetak Rekap PDF -->
                 <a href="{{ route('admin.santri.cetak', request()->query()) }}" target="_blank"
-                   class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-pink-50 hover:bg-pink-100 text-pink-700 text-xs sm:text-sm font-bold rounded-xl border border-pink-300 shadow-xs transition active:scale-95">
-                    <svg class="w-4 h-4 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-bold rounded-xl border border-emerald-300 shadow-xs transition active:scale-95">
+                    <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                     </svg>
                     <span>Cetak Rekap PDF</span>
@@ -90,73 +90,118 @@
             </div>
         @endif
 
-        <!-- Filter & Pencarian Santri -->
-        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 md:p-6 shadow-xs">
-            <form method="GET" action="{{ route('admin.santri.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3.5 sm:gap-4 items-end">
-                <!-- Search Input -->
-                <div class="lg:col-span-4 space-y-1.5">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">Cari Nama / NIS</label>
-                    <div class="relative">
-                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Ketik nama atau NIS santri..."
-                               class="w-full text-sm rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 pl-10 py-2.5">
-                        <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        <!-- Filter & Pencarian Santri (Live & Collapsible) -->
+        <div x-data="liveFilter({
+            hasActiveFilters: {{ request()->hasAny(['status', 'kelas', 'kamar']) ? 'true' : 'false' }},
+            activeCount: {{ (request('status') ? 1 : 0) + (request('kelas') ? 1 : 0) + (request('kamar') ? 1 : 0) }}
+        })" class="space-y-6">
+
+            <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-xs space-y-4">
+                <form x-ref="filterForm" method="GET" action="{{ route('admin.santri.index') }}" @submit.prevent="applyLive()">
+                    <!-- Baris Utama: Pencarian Global + Tombol Filter Lanjutan + Tombol Reset -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                        <!-- Search Bar Global -->
+                        <div class="relative flex-1">
+                            <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari santri berdasarkan nama lengkap atau NIS..."
+                                   @input="applyLive()"
+                                   class="w-full text-sm rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 pl-10 pr-10 py-2.5 shadow-2xs">
+                            <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <!-- Spinner Indikator Loading di dalam input -->
+                            <div x-show="loading" x-cloak class="absolute right-3.5 top-3">
+                                <svg class="animate-spin w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Tombol Toggle Filter Lanjutan -->
+                        <button type="button" @click="showFilters = !showFilters"
+                                :class="showFilters || activeCount > 0 ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'"
+                                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border font-bold text-xs sm:text-sm shadow-2xs transition shrink-0">
+                            <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                            </svg>
+                            <span>Filter Lanjutan</span>
+                            <template x-if="activeCount > 0">
+                                <span class="px-1.5 py-0.5 text-[11px] font-black rounded-full bg-emerald-700 text-white" x-text="activeCount"></span>
+                            </template>
+                            <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="showFilters ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <!-- Tombol Reset Filter -->
+                        <button type="button" @click="resetFilters()"
+                                class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-xs sm:text-sm shadow-2xs transition shrink-0"
+                                title="Bersihkan Semua Filter">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            <span class="hidden sm:inline">Reset</span>
+                        </button>
+                    </div>
+
+                    <!-- Panel Filter Lanjutan (Disembunyikan secara default) -->
+                    <div x-show="showFilters" x-cloak
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 -translate-y-2"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 -translate-y-2"
+                         class="pt-4 mt-4 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                        <!-- Status Filter -->
+                        <div class="space-y-1">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500">Status Santri</label>
+                            <select name="status" @change="applyLive()" class="w-full text-xs rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 py-2">
+                                <option value="">Semua Status</option>
+                                <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                                <option value="lulus" {{ request('status') == 'lulus' ? 'selected' : '' }}>Lulus</option>
+                                <option value="keluar" {{ request('status') == 'keluar' ? 'selected' : '' }}>Keluar</option>
+                                <option value="pindah" {{ request('status') == 'pindah' ? 'selected' : '' }}>Pindah</option>
+                            </select>
+                        </div>
+
+                        <!-- Kelas Filter -->
+                        <div class="space-y-1">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500">Kelas</label>
+                            <select name="kelas" @change="applyLive()" class="w-full text-xs rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 py-2">
+                                <option value="">Semua Kelas</option>
+                                @foreach ($listKelas as $k)
+                                    <option value="{{ $k }}" {{ request('kelas') == $k ? 'selected' : '' }}>{{ $k }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Kamar Filter -->
+                        <div class="space-y-1">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500">Kamar Asrama</label>
+                            <select name="kamar" @change="applyLive()" class="w-full text-xs rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 py-2">
+                                <option value="">Semua Kamar</option>
+                                @foreach ($listKamar as $km)
+                                    <option value="{{ $km }}" {{ request('kamar') == $km ? 'selected' : '' }}>{{ $km }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tabel Data Santri (Desktop) & Tampilan Kartu (Mobile) -->
+            <div id="data-container" class="relative bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+                <!-- Overlay Indikator Saat Memuat Data -->
+                <div x-show="loading" x-cloak class="absolute inset-0 bg-white/60 z-10 backdrop-blur-[1px] flex items-center justify-center transition-opacity">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white shadow-md border border-slate-200 text-xs font-bold text-emerald-800">
+                        <svg class="animate-spin w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                         </svg>
+                        <span>Menyaring data...</span>
                     </div>
                 </div>
-
-                <!-- Status Filter -->
-                <div class="lg:col-span-2 space-y-1.5">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">Status</label>
-                    <select name="status" class="w-full text-sm rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 py-2.5">
-                        <option value="">Semua Status</option>
-                        <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
-                        <option value="lulus" {{ request('status') == 'lulus' ? 'selected' : '' }}>Lulus</option>
-                        <option value="keluar" {{ request('status') == 'keluar' ? 'selected' : '' }}>Keluar</option>
-                        <option value="pindah" {{ request('status') == 'pindah' ? 'selected' : '' }}>Pindah</option>
-                    </select>
-                </div>
-
-                <!-- Kelas Filter -->
-                <div class="lg:col-span-2 space-y-1.5">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">Kelas</label>
-                    <select name="kelas" class="w-full text-sm rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 py-2.5">
-                        <option value="">Semua Kelas</option>
-                        @foreach ($listKelas as $k)
-                            <option value="{{ $k }}" {{ request('kelas') == $k ? 'selected' : '' }}>{{ $k }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Kamar Filter -->
-                <div class="lg:col-span-2 space-y-1.5">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">Kamar</label>
-                    <select name="kamar" class="w-full text-sm rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 py-2.5">
-                        <option value="">Semua Kamar</option>
-                        @foreach ($listKamar as $km)
-                            <option value="{{ $km }}" {{ request('kamar') == $km ? 'selected' : '' }}>{{ $km }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Tombol Filter & Reset -->
-                <div class="lg:col-span-2 flex items-center gap-2">
-                    <button type="submit"
-                            class="flex-1 py-2.5 px-4 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm rounded-xl transition shadow-xs">
-                        Filter
-                    </button>
-                    @if (request()->hasAny(['q', 'status', 'kelas', 'kamar']))
-                        <a href="{{ route('admin.santri.index') }}"
-                           class="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs sm:text-sm rounded-xl transition" title="Reset Filter">
-                            ✕
-                        </a>
-                    @endif
-                </div>
-            </form>
-        </div>
-
-        <!-- Tabel Data Santri (Desktop) & Tampilan Kartu (Mobile) -->
-        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
             <!-- 1. Tampilan Desktop Table -->
             <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-left text-sm text-slate-600">
@@ -211,9 +256,9 @@
                                 </td>
                                 <td class="py-4 px-5 text-center whitespace-nowrap">
                                     <div class="flex items-center justify-center gap-1.5">
-                                        <!-- Cetak Biodata PDF (Pink Merah Jambu) -->
+                                        <!-- Cetak Biodata PDF -->
                                         <a href="{{ route('admin.santri.biodata', $santri->id) }}" target="_blank"
-                                           class="p-2 text-pink-700 bg-pink-50 hover:bg-pink-100 border border-pink-200/80 rounded-xl transition shadow-2xs" title="Cetak Kartu Biodata">
+                                           class="p-2 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 rounded-xl transition shadow-2xs" title="Cetak Kartu Biodata">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                                             </svg>
@@ -302,8 +347,8 @@
 
                         <div class="flex items-center justify-end gap-1.5 pt-1 flex-wrap">
                             <a href="{{ route('admin.santri.biodata', $santri->id) }}" target="_blank"
-                               class="inline-flex items-center gap-1 px-3 py-1.5 text-pink-700 bg-pink-50 hover:bg-pink-100 border border-pink-300 rounded-xl text-xs font-bold transition shadow-2xs active:scale-95" title="Cetak Biodata PDF">
-                                <svg class="w-3.5 h-3.5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                               class="inline-flex items-center gap-1 px-3 py-1.5 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-xl text-xs font-bold transition shadow-2xs active:scale-95" title="Cetak Biodata PDF">
+                                <svg class="w-3.5 h-3.5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
                                 <span>PDF</span>
                             </a>
                             <a href="{{ route('admin.santri.show', $santri->id) }}"
@@ -342,6 +387,7 @@
                     {{ $santris->links() }}
                 </div>
             @endif
+        </div>
         </div>
 
         <!-- Modal Impor Santri (CSV / Excel) -->

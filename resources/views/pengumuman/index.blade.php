@@ -84,63 +84,106 @@
         </div>
     </div>
 
-    <!-- Filter & Pencarian -->
-    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200/90 shadow-xs">
-        <form action="{{ route('admin.pengumuman.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 sm:gap-4 items-end">
-            <!-- Kata Kunci -->
-            <div class="lg:col-span-4">
-                <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Cari Pengumuman</label>
-                <div class="relative">
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Judul atau isi pengumuman..." class="w-full rounded-xl border-gray-300 text-sm focus:border-emerald-600 focus:ring-emerald-600 pl-10 py-2.5 shadow-2xs">
-                    <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+    <!-- Filter & Pencarian (Live & Collapsible) -->
+    <div x-data="liveFilter({
+        hasActiveFilters: {{ request()->hasAny(['kategori', 'status', 'tgl_mulai']) ? 'true' : 'false' }},
+        activeCount: {{ (request('kategori') ? 1 : 0) + (request('status') ? 1 : 0) + (request('tgl_mulai') ? 1 : 0) }}
+    })" class="space-y-4">
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200/90 shadow-xs space-y-4">
+            <form x-ref="filterForm" action="{{ route('admin.pengumuman.index') }}" method="GET" @submit.prevent="applyLive()">
+                <!-- Baris Utama: Pencarian Global + Filter Lanjutan + Reset -->
+                <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
+                    <div class="relative flex-1">
+                        <input type="text" name="q" value="{{ request('q') }}"
+                               placeholder="Cari judul pengumuman, ringkasan, atau isi..."
+                               @input="applyLive()"
+                               class="w-full rounded-xl border-gray-300 text-sm focus:border-emerald-600 focus:ring-emerald-600 pl-10 pr-10 py-2.5 shadow-2xs">
+                        <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <div x-show="loading" x-cloak class="absolute right-3.5 top-3">
+                            <svg class="animate-spin w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Tombol Toggle Filter Lanjutan -->
+                    <button type="button" @click="showFilters = !showFilters"
+                            :class="showFilters || activeCount > 0 ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'"
+                            class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border font-bold text-xs sm:text-sm shadow-2xs transition shrink-0">
+                        <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                        </svg>
+                        <span>Filter Lanjutan</span>
+                        <template x-if="activeCount > 0">
+                            <span class="px-1.5 py-0.5 text-[11px] font-black rounded-full bg-emerald-700 text-white" x-text="activeCount"></span>
+                        </template>
+                        <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="showFilters ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <!-- Tombol Reset Filter -->
+                    <button type="button" @click="resetFilters()"
+                            class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-xs sm:text-sm shadow-2xs transition shrink-0"
+                            title="Bersihkan Semua Filter">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        <span class="hidden sm:inline">Reset</span>
+                    </button>
+                </div>
+
+                <!-- Baris Filter Lanjutan (Kategori, Status, Tanggal) -->
+                <div x-show="showFilters" x-cloak
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 -translate-y-2"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 -translate-y-2"
+                     class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-3 mt-3 border-t border-gray-100">
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Kategori</label>
+                        <select name="kategori" @change="applyLive()" class="w-full rounded-xl border-gray-300 text-xs focus:border-emerald-600 focus:ring-emerald-600 py-2">
+                            <option value="">Semua Kategori</option>
+                            @foreach($kategoriList ?? ['umum', 'santri', 'wali', 'akademik'] as $kat)
+                                <option value="{{ $kat }}" {{ request('kategori') == $kat ? 'selected' : '' }}>{{ ucfirst($kat) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Status Publikasi</label>
+                        <select name="status" @change="applyLive()" class="w-full rounded-xl border-gray-300 text-xs focus:border-emerald-600 focus:ring-emerald-600 py-2">
+                            <option value="">Semua Status</option>
+                            <option value="terbit" {{ request('status') == 'terbit' ? 'selected' : '' }}>Terbit (Publik)</option>
+                            <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Dari Tanggal</label>
+                        <input type="date" name="tgl_mulai" value="{{ request('tgl_mulai') }}" @change="applyLive()" class="w-full rounded-xl border-gray-300 text-xs focus:border-emerald-600 focus:ring-emerald-600 py-2">
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- List Pengumuman (Responsive Mobile Cards & Desktop Table) -->
+        <div id="data-container" class="relative bg-white rounded-2xl border border-gray-200/90 shadow-sm overflow-hidden">
+            <!-- Overlay Indikator Saat Memuat Data -->
+            <div x-show="loading" x-cloak class="absolute inset-0 bg-white/60 z-10 backdrop-blur-[1px] flex items-center justify-center transition-opacity rounded-2xl">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white shadow-md border border-gray-200 text-xs font-bold text-emerald-800">
+                    <svg class="animate-spin w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                     </svg>
+                    <span>Menyaring pengumuman...</span>
                 </div>
             </div>
-
-            <!-- Kategori -->
-            <div class="lg:col-span-2">
-                <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Kategori</label>
-                <select name="kategori" class="w-full rounded-xl border-gray-300 text-sm focus:border-emerald-600 focus:ring-emerald-600 py-2.5">
-                    <option value="">Semua Kategori</option>
-                    @foreach($kategoriList ?? ['umum', 'santri', 'wali', 'akademik'] as $kat)
-                        <option value="{{ $kat }}" {{ request('kategori') == $kat ? 'selected' : '' }}>{{ ucfirst($kat) }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Status -->
-            <div class="lg:col-span-2">
-                <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Status</label>
-                <select name="status" class="w-full rounded-xl border-gray-300 text-sm focus:border-emerald-600 focus:ring-emerald-600 py-2.5">
-                    <option value="">Semua Status</option>
-                    <option value="terbit" {{ request('status') == 'terbit' ? 'selected' : '' }}>Terbit</option>
-                    <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
-                </select>
-            </div>
-
-            <!-- Mulai Tanggal -->
-            <div class="lg:col-span-2">
-                <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Dari Tanggal</label>
-                <input type="date" name="tgl_mulai" value="{{ request('tgl_mulai') }}" class="w-full rounded-xl border-gray-300 text-sm focus:border-emerald-600 focus:ring-emerald-600 py-2.5">
-            </div>
-
-            <!-- Tombol Filter -->
-            <div class="lg:col-span-2 flex items-center gap-2">
-                <button type="submit" class="flex-1 py-2.5 px-4 rounded-xl font-bold text-xs sm:text-sm text-white bg-emerald-700 hover:bg-emerald-800 shadow-xs transition">
-                    Saring
-                </button>
-                @if (request()->hasAny(['q', 'kategori', 'status', 'tgl_mulai', 'tgl_selesai']))
-                    <a href="{{ route('admin.pengumuman.index') }}" class="py-2.5 px-3 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold border border-rose-300 text-xs sm:text-sm rounded-xl transition shadow-2xs" title="Reset Filter">
-                        ✕
-                    </a>
-                @endif
-            </div>
-        </form>
-    </div>
-
-    <!-- List Pengumuman (Responsive Mobile Cards & Desktop Table) -->
-    <div class="bg-white rounded-2xl border border-gray-200/90 shadow-sm overflow-hidden">
         <!-- Desktop Table (md:block) -->
         <div class="hidden md:block overflow-x-auto">
             <table class="w-full text-left text-sm text-gray-600">
@@ -315,6 +358,7 @@
                 {{ $pengumumans->links() }}
             </div>
         @endif
+        </div>
     </div>
 </div>
 @endsection

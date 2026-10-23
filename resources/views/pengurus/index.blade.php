@@ -55,54 +55,102 @@
         </div>
 
         <!-- TAMPILAN 1: TABEL PENGURUS -->
-        <div x-show="tab === 'tabel'" class="space-y-4">
-            <!-- Filter & Pencarian -->
-            <div class="bg-white rounded-2xl border border-gray-200/90 p-4 sm:p-5 shadow-xs">
-                <form method="GET" action="{{ route('admin.pengurus.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 sm:gap-4 items-end">
-                    <div class="lg:col-span-5">
-                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Cari Pengurus</label>
-                        <div class="relative">
-                            <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama, jabatan, divisi..."
-                                   class="w-full text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 pl-10 py-2.5">
-                            <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div x-show="tab === 'tabel'"
+             x-data="liveFilter({
+                 hasActiveFilters: {{ request()->hasAny(['is_aktif', 'periode']) ? 'true' : 'false' }},
+                 activeCount: {{ (request('is_aktif') !== null && request('is_aktif') !== '' ? 1 : 0) + (request('periode') ? 1 : 0) }}
+             })"
+             class="space-y-4">
+            <!-- Filter & Pencarian (Live & Collapsible) -->
+            <div class="bg-white rounded-2xl border border-gray-200/90 p-4 sm:p-5 shadow-xs space-y-4">
+                <form x-ref="filterForm" method="GET" action="{{ route('admin.pengurus.index') }}" @submit.prevent="applyLive()">
+                    <!-- Baris Utama: Pencarian Global + Tombol Filter Lanjutan + Tombol Reset -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                        <!-- Search Bar Global -->
+                        <div class="relative flex-1">
+                            <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama pengurus, jabatan, divisi..."
+                                   @input="applyLive()"
+                                   class="w-full text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 pl-10 pr-10 py-2.5 shadow-2xs">
+                            <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                             </svg>
+                            <div x-show="loading" x-cloak class="absolute right-3.5 top-3">
+                                <svg class="animate-spin w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                </svg>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="lg:col-span-3">
-                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Status Keaktifan</label>
-                        <select name="is_aktif" class="w-full text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2.5">
-                            <option value="">Semua Status</option>
-                            <option value="1" {{ request('is_aktif') === '1' ? 'selected' : '' }}>Aktif</option>
-                            <option value="0" {{ request('is_aktif') === '0' ? 'selected' : '' }}>Tidak Aktif</option>
-                        </select>
-                    </div>
-
-                    <div class="lg:col-span-2">
-                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Periode Mulai</label>
-                        <select name="periode" class="w-full text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2.5 font-mono">
-                            <option value="">Semua Periode</option>
-                            @foreach ($listPeriode as $p)
-                                <option value="{{ $p }}" {{ request('periode') == $p ? 'selected' : '' }}>{{ $p }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="lg:col-span-2 flex items-center gap-2">
-                        <button type="submit"
-                                class="flex-1 py-2.5 px-4 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm rounded-xl transition shadow-xs">
-                            Saring
+                        <!-- Tombol Toggle Filter Lanjutan -->
+                        <button type="button" @click="showFilters = !showFilters"
+                                :class="showFilters || activeCount > 0 ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'"
+                                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border font-bold text-xs sm:text-sm shadow-2xs transition shrink-0">
+                            <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                            </svg>
+                            <span>Filter Lanjutan</span>
+                            <template x-if="activeCount > 0">
+                                <span class="px-1.5 py-0.5 text-[11px] font-black rounded-full bg-emerald-700 text-white" x-text="activeCount"></span>
+                            </template>
+                            <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="showFilters ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
                         </button>
-                        @if (request()->hasAny(['q', 'is_aktif', 'periode']))
-                            <a href="{{ route('admin.pengurus.index') }}"
-                               class="py-2.5 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs sm:text-sm rounded-xl transition" title="Reset Filter">
-                                ✕
-                            </a>
-                        @endif
+
+                        <!-- Tombol Reset Filter -->
+                        <button type="button" @click="resetFilters()"
+                                class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-xs sm:text-sm shadow-2xs transition shrink-0"
+                                title="Bersihkan Semua Filter">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            <span class="hidden sm:inline">Reset</span>
+                        </button>
+                    </div>
+
+                    <!-- Panel Filter Lanjutan (Disembunyikan secara default) -->
+                    <div x-show="showFilters" x-cloak
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 -translate-y-2"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 -translate-y-2"
+                         class="pt-4 mt-4 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div class="space-y-1">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500">Status Keaktifan</label>
+                            <select name="is_aktif" @change="applyLive()" class="w-full text-xs rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2">
+                                <option value="">Semua Status</option>
+                                <option value="1" {{ request('is_aktif') === '1' ? 'selected' : '' }}>Aktif</option>
+                                <option value="0" {{ request('is_aktif') === '0' ? 'selected' : '' }}>Tidak Aktif</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500">Periode Mulai</label>
+                            <select name="periode" @change="applyLive()" class="w-full text-xs rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2 font-mono">
+                                <option value="">Semua Periode</option>
+                                @foreach ($listPeriode as $p)
+                                    <option value="{{ $p }}" {{ request('periode') == $p ? 'selected' : '' }}>{{ $p }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                 </form>
             </div>
+
+            <div id="data-container" class="relative space-y-4">
+                <!-- Overlay Indikator Saat Memuat Data -->
+                <div x-show="loading" x-cloak class="absolute inset-0 bg-white/60 z-10 backdrop-blur-[1px] flex items-center justify-center transition-opacity rounded-2xl">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white shadow-md border border-gray-200 text-xs font-bold text-emerald-800">
+                        <svg class="animate-spin w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                        </svg>
+                        <span>Menyaring data pengurus...</span>
+                    </div>
+                </div>
 
             <!-- Tampilan Desktop: Table -->
             <div class="hidden md:block bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
@@ -318,6 +366,7 @@
                     {{ $penguruses->links() }}
                 </div>
             @endif
+            </div>
         </div>
 
         <!-- TAMPILAN 2: STRUKTUR KEPENGURUSAN PER DIVISI -->

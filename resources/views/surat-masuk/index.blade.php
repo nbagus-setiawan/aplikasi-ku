@@ -84,85 +84,115 @@
             </div>
         </div>
 
-        <!-- Filter & Pencarian Lengkap -->
-        <div class="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-4 sm:p-6" x-data="{ bukaFilterLanjutan: {{ request()->hasAny(['kategori_id', 'status_disposisi', 'tgl_mulai', 'tgl_selesai']) ? 'true' : 'false' }} }">
-            <form method="GET" action="{{ route('admin.surat-masuk.index') }}" class="space-y-3.5">
-                <!-- Baris Pencarian Utama -->
-                <div class="flex flex-col sm:flex-row gap-3 items-center">
-                    <div class="relative flex-1 w-full">
-                        <input type="text" name="q" value="{{ request('q') }}"
-                               placeholder="Cari berdasarkan Perihal, No. Surat, Pengirim, atau No. Agenda..."
-                               class="w-full text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 pl-10 pr-4 py-2.5 shadow-2xs" />
-                        <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                    </div>
+        <!-- Filter & Pencarian Lengkap (Live & Collapsible) -->
+        <div x-data="liveFilter({
+            hasActiveFilters: {{ request()->hasAny(['kategori_id', 'status_disposisi', 'tgl_mulai', 'tgl_selesai']) ? 'true' : 'false' }},
+            activeCount: {{ (request('kategori_id') ? 1 : 0) + (request('status_disposisi') ? 1 : 0) + (request('tgl_mulai') ? 1 : 0) + (request('tgl_selesai') ? 1 : 0) }}
+        })" class="space-y-4">
+            <div class="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-4 sm:p-5 space-y-4">
+                <form x-ref="filterForm" method="GET" action="{{ route('admin.surat-masuk.index') }}" @submit.prevent="applyLive()">
+                    <!-- Baris Pencarian Utama: Global Search + Filter Lanjutan + Reset -->
+                    <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
+                        <div class="relative flex-1">
+                            <input type="text" name="q" value="{{ request('q') }}"
+                                   placeholder="Cari perihal, pengirim, nomor surat, atau no. agenda..."
+                                   @input="applyLive()"
+                                   class="w-full text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 pl-10 pr-10 py-2.5 shadow-2xs" />
+                            <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <div x-show="loading" x-cloak class="absolute right-3.5 top-3">
+                                <svg class="animate-spin w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                </svg>
+                            </div>
+                        </div>
 
-                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <button type="button" @click="bukaFilterLanjutan = !bukaFilterLanjutan"
-                                class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-bold text-xs sm:text-sm transition shadow-2xs"
-                                :class="bukaFilterLanjutan ? 'border-emerald-500 text-emerald-800 bg-emerald-50/50' : ''">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <!-- Tombol Toggle Filter Lanjutan -->
+                        <button type="button" @click="showFilters = !showFilters"
+                                :class="showFilters || activeCount > 0 ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'"
+                                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border font-bold text-xs sm:text-sm shadow-2xs transition shrink-0">
+                            <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                             </svg>
-                            <span>Filter</span>
-                            @if (request()->hasAny(['kategori_id', 'status_disposisi', 'tgl_mulai', 'tgl_selesai']))
-                                <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
-                            @endif
+                            <span>Filter Lanjutan</span>
+                            <template x-if="activeCount > 0">
+                                <span class="px-1.5 py-0.5 text-[11px] font-black rounded-full bg-emerald-700 text-white" x-text="activeCount"></span>
+                            </template>
+                            <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="showFilters ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
                         </button>
 
-                        <button type="submit"
-                                class="flex-1 sm:flex-none py-2.5 px-5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-xs">
-                            Cari
+                        <!-- Tombol Reset Filter -->
+                        <button type="button" @click="resetFilters()"
+                                class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-xs sm:text-sm shadow-2xs transition shrink-0"
+                                title="Bersihkan Semua Filter">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            <span class="hidden sm:inline">Reset</span>
                         </button>
+                    </div>
 
-                        @if (request()->hasAny(['q', 'kategori_id', 'status_disposisi', 'tgl_mulai', 'tgl_selesai']))
-                            <a href="{{ route('admin.surat-masuk.index') }}"
-                               class="py-2.5 px-3.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-xs sm:text-sm rounded-xl transition shadow-2xs" title="Reset Filter">
-                                Reset
-                            </a>
-                        @endif
+                    <!-- Baris Filter Lanjutan (Kategori, Status, Tanggal) -->
+                    <div x-show="showFilters" x-cloak
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 -translate-y-2"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 -translate-y-2"
+                         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3 mt-3 border-t border-gray-100">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Status Disposisi</label>
+                            <select name="status_disposisi" @change="applyLive()" class="w-full text-xs rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2 font-medium">
+                                <option value="">Semua Status</option>
+                                <option value="baru" {{ request('status_disposisi') === 'baru' ? 'selected' : '' }}>Baru (Perlu Tindak Lanjut)</option>
+                                <option value="diproses" {{ request('status_disposisi') === 'diproses' ? 'selected' : '' }}>Sedang Diproses</option>
+                                <option value="selesai" {{ request('status_disposisi') === 'selesai' ? 'selected' : '' }}>Selesai</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Kategori Surat</label>
+                            <select name="kategori_id" @change="applyLive()" class="w-full text-xs rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2 font-medium">
+                                <option value="">Semua Kategori</option>
+                                @foreach ($kategoriList as $kat)
+                                    <option value="{{ $kat->id }}" {{ (string) request('kategori_id') === (string) $kat->id ? 'selected' : '' }}>
+                                        {{ $kat->nama }} ({{ $kat->kode }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Diterima Mulai</label>
+                            <input type="date" name="tgl_mulai" value="{{ request('tgl_mulai') }}" @change="applyLive()"
+                                   class="w-full text-xs rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2" />
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Diterima Selesai</label>
+                            <input type="date" name="tgl_selesai" value="{{ request('tgl_selesai') }}" @change="applyLive()"
+                                   class="w-full text-xs rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div id="data-container" class="relative space-y-4">
+                <!-- Overlay Indikator Saat Memuat Data -->
+                <div x-show="loading" x-cloak class="absolute inset-0 bg-white/60 z-10 backdrop-blur-[1px] flex items-center justify-center transition-opacity rounded-2xl">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white shadow-md border border-gray-200 text-xs font-bold text-emerald-800">
+                        <svg class="animate-spin w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                        </svg>
+                        <span>Menyaring surat masuk...</span>
                     </div>
                 </div>
-
-                <!-- Baris Filter Lanjutan (Kategori, Status, Tanggal) -->
-                <div x-show="bukaFilterLanjutan" x-cloak class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3 border-t border-gray-100">
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Status Disposisi</label>
-                        <select name="status_disposisi" class="w-full text-xs sm:text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2 font-medium">
-                            <option value="">Semua Status</option>
-                            <option value="baru" {{ request('status_disposisi') === 'baru' ? 'selected' : '' }}>Baru (Perlu Tindak Lanjut)</option>
-                            <option value="diproses" {{ request('status_disposisi') === 'diproses' ? 'selected' : '' }}>Sedang Diproses</option>
-                            <option value="selesai" {{ request('status_disposisi') === 'selesai' ? 'selected' : '' }}>Selesai</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Kategori Surat</label>
-                        <select name="kategori_id" class="w-full text-xs sm:text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2 font-medium">
-                            <option value="">Semua Kategori</option>
-                            @foreach ($kategoriList as $kat)
-                                <option value="{{ $kat->id }}" {{ (string) request('kategori_id') === (string) $kat->id ? 'selected' : '' }}>
-                                    {{ $kat->nama }} ({{ $kat->kode }})
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Diterima Mulai</label>
-                        <input type="date" name="tgl_mulai" value="{{ request('tgl_mulai') }}"
-                               class="w-full text-xs sm:text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2" />
-                    </div>
-
-                    <div>
-                        <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Diterima Selesai</label>
-                        <input type="date" name="tgl_selesai" value="{{ request('tgl_selesai') }}"
-                               class="w-full text-xs sm:text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2" />
-                    </div>
-                </div>
-            </form>
-        </div>
 
         <!-- TAMPILAN DESKTOP: TABEL -->
         <div class="hidden md:block bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
@@ -412,5 +442,7 @@
                 {{ $suratMasuks->links() }}
             </div>
         @endif
+            </div>
+        </div>
     </div>
 </x-app-layout>
