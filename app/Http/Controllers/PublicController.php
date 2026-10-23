@@ -310,7 +310,14 @@ class PublicController extends Controller
 
         $content = view('public.sitemap', compact('pengumumans'))->render();
 
+        // Tulis juga ke berkas fisik public/sitemap.xml agar web server (LiteSpeed/Apache/Nginx) bisa menyajikan langsung
+        try {
+            @file_put_contents(public_path('sitemap.xml'), $content);
+        } catch (\Throwable $e) {
+            // Abaikan jika permission tidak mengizinkan penulisan berkas
+        }
+
         return response($content, 200)
-            ->header('Content-Type', 'text/xml');
+            ->header('Content-Type', 'application/xml; charset=utf-8');
     }
 }
