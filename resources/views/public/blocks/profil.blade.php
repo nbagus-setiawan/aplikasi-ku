@@ -74,40 +74,94 @@
                 </div>
 
                 <!-- Badges Program Unggulan -->
-                <div class="pt-0.5 flex flex-wrap gap-2 text-xs sm:text-sm font-semibold text-slate-700">
+                <div class="pt-1 flex flex-wrap gap-2 text-xs sm:text-sm font-semibold text-slate-700">
                     <span class="px-3.5 py-1.5 bg-slate-100 rounded-xl">Kitab Kuning Salafiyah</span>
                     <span class="px-3.5 py-1.5 bg-slate-100 rounded-xl">Tahfidzul Qur'an</span>
                     <span class="px-3.5 py-1.5 bg-slate-100 rounded-xl">Madrasah Diniyah Ula/Wustho/Ulya</span>
                     <span class="px-3.5 py-1.5 bg-slate-100 rounded-xl">Pendidikan Formal MI, MTs, MA</span>
                 </div>
+            </div>
+        </div>
 
-                <!-- Kartu Visi & Misi Sejajar -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+        <!-- Bagian Visi & Misi Lembaga yang Luas, Lega, & Proporsional -->
+        @if(!empty($visi) || !empty($misi))
+            <div class="mt-10 sm:mt-14 pt-8 sm:pt-10 border-t border-slate-100">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-stretch">
                     @if(!empty($visi))
-                        <div class="p-4.5 rounded-xl bg-slate-50 border border-slate-200/80 shadow-xs space-y-1.5">
-                            <div class="flex items-center gap-2 text-emerald-950 font-bold text-sm sm:text-base">
-                                <span class="w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>
-                                <h4>Visi Lembaga</h4>
+                        <div class="bg-gradient-to-br from-emerald-50/70 via-white to-slate-50 p-6 sm:p-7 rounded-2xl border border-emerald-100/90 shadow-xs flex flex-col justify-between">
+                            <div class="space-y-3.5">
+                                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-emerald-100/80 text-emerald-900 font-bold text-xs sm:text-sm tracking-wide">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                                    <span>Visi Pondok Pesantren</span>
+                                </div>
+                                <h3 class="text-base sm:text-lg md:text-xl font-extrabold text-slate-900 leading-snug">
+                                    Arah &amp; Cita-Cita Utama Santri
+                                </h3>
+                                <p class="text-sm sm:text-base text-slate-700 leading-relaxed pt-1">
+                                    {{ $visi }}
+                                </p>
                             </div>
-                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                                {{ $visi }}
-                            </p>
+                            <div class="pt-4 mt-6 border-t border-emerald-200/50 flex items-center gap-2 text-xs font-semibold text-emerald-800">
+                                <span>Pondok Pesantren Salafiyah Al-Falah Putak</span>
+                            </div>
                         </div>
                     @endif
 
                     @if(!empty($misi))
-                        <div class="p-4.5 rounded-xl bg-slate-50 border border-slate-200/80 shadow-xs space-y-1.5">
-                            <div class="flex items-center gap-2 text-emerald-950 font-bold text-sm sm:text-base">
-                                <span class="w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>
-                                <h4>Misi Lembaga</h4>
+                        <div class="bg-gradient-to-br from-slate-50 via-white to-emerald-50/50 p-6 sm:p-7 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
+                            <div class="space-y-3.5">
+                                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-emerald-100/80 text-emerald-900 font-bold text-xs sm:text-sm tracking-wide">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                                    <span>Misi Pondok Pesantren</span>
+                                </div>
+                                <h3 class="text-base sm:text-lg md:text-xl font-extrabold text-slate-900 leading-snug">
+                                    Langkah Nyata Pendidikan &amp; Khidmah
+                                </h3>
+                                @php
+                                    $misiItems = [];
+                                    if (preg_match('/1\.\s/', $misi)) {
+                                        $parts = preg_split('/(?=\d+\.\s)/', $misi, -1, PREG_SPLIT_NO_EMPTY);
+                                        foreach ($parts as $p) {
+                                            $cleaned = trim(preg_replace('/^\d+\.\s*/', '', $p));
+                                            if (!empty($cleaned)) {
+                                                $misiItems[] = $cleaned;
+                                            }
+                                        }
+                                    } elseif (str_contains($misi, "\n")) {
+                                        $lines = explode("\n", $misi);
+                                        foreach ($lines as $l) {
+                                            $cleaned = trim(preg_replace('/^[-•*\d.]\s*/', '', $l));
+                                            if (!empty($cleaned)) {
+                                                $misiItems[] = $cleaned;
+                                            }
+                                        }
+                                    }
+                                @endphp
+
+                                @if(!empty($misiItems))
+                                    <ul class="space-y-3 pt-1">
+                                        @foreach($misiItems as $idx => $item)
+                                            <li class="flex items-start gap-3 text-sm sm:text-base text-slate-700 leading-relaxed">
+                                                <span class="w-6 h-6 rounded-full bg-emerald-700 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
+                                                    {{ $idx + 1 }}
+                                                </span>
+                                                <span class="flex-1">{{ $item }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <p class="text-sm sm:text-base text-slate-700 leading-relaxed pt-1">
+                                        {{ $misi }}
+                                    </p>
+                                @endif
                             </div>
-                            <div class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                                {{ $misi }}
+                            <div class="pt-4 mt-6 border-t border-slate-200/60 flex items-center gap-2 text-xs font-semibold text-emerald-800">
+                                <span>Kurikulum Kitab Salaf &amp; Tahfidzul Qur'an</span>
                             </div>
                         </div>
                     @endif
                 </div>
             </div>
-        </div>
+        @endif
     </div>
 </section>
