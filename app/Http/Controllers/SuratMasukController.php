@@ -82,7 +82,14 @@ class SuratMasukController extends Controller
         $suratMasuks = $query->paginate(15)->withQueryString();
         $kategoriList = KategoriSurat::orderBy('nama')->get();
 
-        return view('surat-masuk.index', compact('suratMasuks', 'kategoriList'));
+        $statistik = [
+            'total' => SuratMasuk::count(),
+            'baru' => SuratMasuk::where('status_disposisi', 'baru')->count(),
+            'diproses' => SuratMasuk::where('status_disposisi', 'diproses')->count(),
+            'selesai' => SuratMasuk::where('status_disposisi', 'selesai')->count(),
+        ];
+
+        return view('surat-masuk.index', compact('suratMasuks', 'kategoriList', 'statistik'));
     }
 
     /**

@@ -18,39 +18,148 @@
                 <a href="{{ route('admin.surat-masuk.create') }}"
                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-emerald-700/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
                     <span>Upload / Catat Surat Masuk</span>
                 </a>
             </div>
         </div>
 
-        <!-- Filter & Pencarian -->
-        <div class="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-4 sm:p-5">
-            <form method="GET" action="{{ route('admin.surat-masuk.index') }}" class="flex flex-col sm:flex-row gap-3 items-end">
-                <div class="flex-1 w-full">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Cari Surat Masuk</label>
-                    <div class="relative">
+        <!-- 4 Kartu Ringkasan Administrasi Surat Masuk -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <!-- Total Surat Masuk -->
+            <div class="bg-white rounded-2xl border border-gray-200/90 p-4 sm:p-5 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Total Surat</span>
+                    <div class="text-2xl sm:text-3xl font-black text-gray-900 mt-0.5">{{ $statistik['total'] ?? 0 }}</div>
+                    <span class="text-[11px] text-gray-500 font-medium">Dokumen terdaftar</span>
+                </div>
+                <div class="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-800 border border-emerald-200/60 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Disposisi Baru -->
+            <div class="bg-white rounded-2xl border border-amber-200/80 p-4 sm:p-5 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-amber-700">Disposisi Baru</span>
+                    <div class="text-2xl sm:text-3xl font-black text-amber-950 mt-0.5">{{ $statistik['baru'] ?? 0 }}</div>
+                    <span class="text-[11px] text-amber-800 font-medium">Perlu tindak lanjut</span>
+                </div>
+                <div class="w-11 h-11 rounded-2xl bg-amber-50 text-amber-700 border border-amber-300 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Sedang Diproses -->
+            <div class="bg-white rounded-2xl border border-blue-200/80 p-4 sm:p-5 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-blue-700">Diproses</span>
+                    <div class="text-2xl sm:text-3xl font-black text-blue-950 mt-0.5">{{ $statistik['diproses'] ?? 0 }}</div>
+                    <span class="text-[11px] text-blue-800 font-medium">Dalam penanganan</span>
+                </div>
+                <div class="w-11 h-11 rounded-2xl bg-blue-50 text-blue-700 border border-blue-200 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Selesai -->
+            <div class="bg-white rounded-2xl border border-emerald-200/80 p-4 sm:p-5 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Selesai</span>
+                    <div class="text-2xl sm:text-3xl font-black text-emerald-950 mt-0.5">{{ $statistik['selesai'] ?? 0 }}</div>
+                    <span class="text-[11px] text-emerald-800 font-medium">Tuntas diarsipkan</span>
+                </div>
+                <div class="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter & Pencarian Lengkap -->
+        <div class="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-4 sm:p-6" x-data="{ bukaFilterLanjutan: {{ request()->hasAny(['kategori_id', 'status_disposisi', 'tgl_mulai', 'tgl_selesai']) ? 'true' : 'false' }} }">
+            <form method="GET" action="{{ route('admin.surat-masuk.index') }}" class="space-y-3.5">
+                <!-- Baris Pencarian Utama -->
+                <div class="flex flex-col sm:flex-row gap-3 items-center">
+                    <div class="relative flex-1 w-full">
                         <input type="text" name="q" value="{{ request('q') }}"
                                placeholder="Cari berdasarkan Perihal, No. Surat, Pengirim, atau No. Agenda..."
-                               class="w-full text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 pl-10 py-2.5 shadow-2xs" />
+                               class="w-full text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 pl-10 pr-4 py-2.5 shadow-2xs" />
                         <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </div>
+
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <button type="button" @click="bukaFilterLanjutan = !bukaFilterLanjutan"
+                                class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-bold text-xs sm:text-sm transition shadow-2xs"
+                                :class="bukaFilterLanjutan ? 'border-emerald-500 text-emerald-800 bg-emerald-50/50' : ''">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                            </svg>
+                            <span>Filter</span>
+                            @if (request()->hasAny(['kategori_id', 'status_disposisi', 'tgl_mulai', 'tgl_selesai']))
+                                <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                            @endif
+                        </button>
+
+                        <button type="submit"
+                                class="flex-1 sm:flex-none py-2.5 px-5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-xs">
+                            Cari
+                        </button>
+
+                        @if (request()->hasAny(['q', 'kategori_id', 'status_disposisi', 'tgl_mulai', 'tgl_selesai']))
+                            <a href="{{ route('admin.surat-masuk.index') }}"
+                               class="py-2.5 px-3.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-xs sm:text-sm rounded-xl transition shadow-2xs" title="Reset Filter">
+                                Reset
+                            </a>
+                        @endif
+                    </div>
                 </div>
 
-                <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <button type="submit"
-                            class="flex-1 sm:flex-none py-2.5 px-5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-xs">
-                        Cari
-                    </button>
-                    @if (request()->hasAny(['q', 'kategori_id', 'status_disposisi', 'tgl_mulai', 'tgl_selesai']))
-                        <a href="{{ route('admin.surat-masuk.index') }}"
-                           class="py-2.5 px-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs sm:text-sm rounded-xl transition" title="Reset Filter">
-                            ✕
-                        </a>
-                    @endif
+                <!-- Baris Filter Lanjutan (Kategori, Status, Tanggal) -->
+                <div x-show="bukaFilterLanjutan" x-cloak class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3 border-t border-gray-100">
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Status Disposisi</label>
+                        <select name="status_disposisi" class="w-full text-xs sm:text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2 font-medium">
+                            <option value="">Semua Status</option>
+                            <option value="baru" {{ request('status_disposisi') === 'baru' ? 'selected' : '' }}>Baru (Perlu Tindak Lanjut)</option>
+                            <option value="diproses" {{ request('status_disposisi') === 'diproses' ? 'selected' : '' }}>Sedang Diproses</option>
+                            <option value="selesai" {{ request('status_disposisi') === 'selesai' ? 'selected' : '' }}>Selesai</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Kategori Surat</label>
+                        <select name="kategori_id" class="w-full text-xs sm:text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2 font-medium">
+                            <option value="">Semua Kategori</option>
+                            @foreach ($kategoriList as $kat)
+                                <option value="{{ $kat->id }}" {{ (string) request('kategori_id') === (string) $kat->id ? 'selected' : '' }}>
+                                    {{ $kat->nama }} ({{ $kat->kode }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Diterima Mulai</label>
+                        <input type="date" name="tgl_mulai" value="{{ request('tgl_mulai') }}"
+                               class="w-full text-xs sm:text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2" />
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Diterima Selesai</label>
+                        <input type="date" name="tgl_selesai" value="{{ request('tgl_selesai') }}"
+                               class="w-full text-xs sm:text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2" />
+                    </div>
                 </div>
             </form>
         </div>

@@ -130,7 +130,14 @@ class SuratKeluarController extends Controller
         $suratKeluars = $query->paginate(15)->withQueryString();
         $kategoriList = KategoriSurat::orderBy('nama')->get();
 
-        return view('surat-keluar.index', compact('suratKeluars', 'kategoriList'));
+        $statistik = [
+            'total' => SuratKeluar::count(),
+            'draft' => SuratKeluar::where('status', 'draft')->count(),
+            'final' => SuratKeluar::where('status', 'final')->count(),
+            'terkirim' => SuratKeluar::where('status', 'terkirim')->count(),
+        ];
+
+        return view('surat-keluar.index', compact('suratKeluars', 'kategoriList', 'statistik'));
     }
 
     /**
