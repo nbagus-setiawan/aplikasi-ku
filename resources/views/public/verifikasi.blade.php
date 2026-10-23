@@ -216,15 +216,15 @@
                         <div class="pt-3 space-y-3">
                             <div class="flex flex-wrap items-center justify-between gap-3">
                                 <div>
-                                    <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-900 block">📄 Dokumen Surat Asli Resmi (Terverifikasi Sah)</span>
+                                    <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-900 block">📄 Dokumen Surat Asli Resmi (Ber-QR Code)</span>
                                     <span class="text-[11px] text-gray-500 font-medium">Pratinjau naskah dokumen asli langsung dari file Word resmi</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <a href="{{ route('publik.verifikasi.unduh', [$surat->kode_verifikasi, 'format' => 'docx']) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-bold shadow-xs transition-colors" title="Unduh Dokumen Word (.docx) Asli">
+                                    <a href="{{ route('publik.verifikasi.unduh', [$surat->kode_verifikasi, 'format' => 'docx']) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-900 hover:bg-blue-950 text-white rounded-xl text-xs font-bold shadow-xs transition-colors active:scale-95" title="Unduh Dokumen Word (.docx) Asli">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                         <span>Unduh Word (.docx)</span>
                                     </a>
-                                    <a href="{{ route('publik.verifikasi.unduh', [$surat->kode_verifikasi, 'format' => 'pdf']) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors" title="Unduh Dokumen PDF Resmi">
+                                    <a href="{{ route('publik.verifikasi.unduh', [$surat->kode_verifikasi, 'format' => 'pdf']) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors active:scale-95" title="Unduh Dokumen PDF Resmi">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                         <span>Unduh PDF</span>
                                     </a>
@@ -404,9 +404,9 @@ document.addEventListener('DOMContentLoaded', function () {
 <style>
     #docx-target-verif {
         width: 100%;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
         display: flex;
+        flex-direction: column;
+        align-items: center;
         justify-content: center;
     }
     #docx-target-verif .docx-wrapper {
@@ -420,13 +420,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     #docx-target-verif section.docx,
     #docx-target-verif .docx {
-        box-shadow: 0 4px 25px -4px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05) !important;
-        margin: 0 auto 1.5rem auto !important;
         background: white !important;
         color: #0f172a !important;
         border-radius: 4px;
         box-sizing: border-box !important;
-        transition: transform 0.15s ease-out;
     }
     #docx-target-verif table {
         max-width: 100% !important;
@@ -449,27 +446,76 @@ document.addEventListener('DOMContentLoaded', function () {
             const sections = targetEl.querySelectorAll('section.docx, .docx');
             if (!sections.length) return;
 
-            const containerWidth = targetEl.clientWidth;
-            if (containerWidth <= 0) return;
+            const parentContainer = targetEl.parentElement || targetEl;
+            const isMobile = window.innerWidth < 768;
+            const availableWidth = parentContainer.clientWidth - (isMobile ? 12 : 24);
+            if (availableWidth <= 20) return;
 
             sections.forEach(function (sec) {
                 if (!sec.dataset.origWidth) {
-                    sec.dataset.origWidth = sec.offsetWidth || 816;
-                    sec.dataset.origHeight = sec.offsetHeight || 1056;
+                    sec.dataset.origWidth = sec.offsetWidth || 794;
                 }
-                const origW = parseFloat(sec.dataset.origWidth);
-                const origH = parseFloat(sec.dataset.origHeight);
+                const origW = parseFloat(sec.dataset.origWidth) || 794;
 
-                const targetW = containerWidth - 12;
-                if (targetW < origW && origW > 0) {
-                    const scale = Math.max(0.35, targetW / origW);
+                if (!sec.dataset.origHeight) {
+                    sec.dataset.origHeight = sec.scrollHeight || sec.offsetHeight || 1123;
+                }
+                const origH = parseFloat(sec.dataset.origHeight) || 1123;
+
+                let wrap = sec.parentElement;
+                if (!wrap || !wrap.classList.contains('docx-page-scaler')) {
+                    wrap = document.createElement('div');
+                    wrap.className = 'docx-page-scaler';
+                    sec.parentNode.insertBefore(wrap, sec);
+                    wrap.appendChild(sec);
+                }
+
+                if (availableWidth < origW) {
+                    const scale = Math.max(0.30, availableWidth / origW);
+                    const scaledW = Math.round(origW * scale);
+                    const scaledH = Math.round(origH * scale);
+
+                    wrap.style.width = scaledW + 'px';
+                    wrap.style.height = scaledH + 'px';
+                    wrap.style.margin = '0 auto 1.5rem auto';
+                    wrap.style.position = 'relative';
+                    wrap.style.overflow = 'hidden';
+                    wrap.style.boxShadow = '0 4px 20px -2px rgba(0, 0, 0, 0.12)';
+                    wrap.style.borderRadius = '6px';
+                    wrap.style.maxWidth = '100%';
+
+                    sec.style.width = origW + 'px';
+                    sec.style.minWidth = origW + 'px';
+                    sec.style.maxWidth = origW + 'px';
+                    sec.style.height = origH + 'px';
+                    sec.style.position = 'absolute';
+                    sec.style.top = '0';
+                    sec.style.left = '0';
+                    sec.style.transformOrigin = 'top left';
                     sec.style.transform = 'scale(' + scale + ')';
-                    sec.style.transformOrigin = 'top center';
-                    sec.style.marginBottom = '-' + Math.round(origH * (1 - scale) - 20) + 'px';
+                    sec.style.margin = '0';
+                    sec.style.boxShadow = 'none';
                 } else {
-                    sec.style.transform = '';
+                    wrap.style.width = origW + 'px';
+                    wrap.style.height = 'auto';
+                    wrap.style.margin = '0 auto 1.5rem auto';
+                    wrap.style.position = 'relative';
+                    wrap.style.overflow = 'visible';
+                    wrap.style.boxShadow = 'none';
+                    wrap.style.borderRadius = '0';
+                    wrap.style.maxWidth = '100%';
+
+                    sec.style.width = origW + 'px';
+                    sec.style.minWidth = origW + 'px';
+                    sec.style.maxWidth = origW + 'px';
+                    sec.style.height = 'auto';
+                    sec.style.position = 'relative';
+                    sec.style.top = '';
+                    sec.style.left = '';
                     sec.style.transformOrigin = '';
-                    sec.style.marginBottom = '1.5rem';
+                    sec.style.transform = '';
+                    sec.style.margin = '0 auto 1.5rem auto';
+                    sec.style.boxShadow = '0 4px 25px -4px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05)';
                 }
             });
         }

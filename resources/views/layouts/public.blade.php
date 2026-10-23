@@ -204,6 +204,9 @@
         </div>
     </header>
 
+    <!-- Modal Toast Terpusat di Tengah dengan Animasi Ceklis & Timer 2 Detik -->
+    <x-modal-toast />
+
     <!-- Konten Utama Halaman -->
     <main class="flex-grow">
         @yield('content')

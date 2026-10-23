@@ -162,7 +162,7 @@
                                     </td>
                                     <td class="py-4 px-5 text-center whitespace-nowrap">
                                         <div class="flex items-center justify-center gap-1.5">
-                                            <!-- Edit Trigger -->
+                                            <!-- Edit Trigger (Kuning) -->
                                             <button @click="
                                                 editFotoPreview = null;
                                                 editData = {
@@ -178,20 +178,20 @@
                                                     actionUrl: '{{ route('admin.pengurus.update', $pengurus->id) }}'
                                                 };
                                                 modalEdit = true;
-                                            " class="p-2 text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200/60 rounded-xl transition shadow-2xs" title="Ubah Data">
+                                            " class="p-2 text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300 rounded-xl transition shadow-2xs" title="Ubah Data">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                 </svg>
                                             </button>
 
-                                            <!-- Hapus -->
+                                            <!-- Hapus (Merah) -->
                                             <form action="{{ route('admin.pengurus.destroy', $pengurus->id) }}" method="POST" class="inline"
                                                   data-konfirmasi="Apakah Anda yakin ingin menghapus data pengurus ini?"
                                                   data-judul="Hapus Data Pengurus"
                                                   data-tombol="Ya, Hapus Data">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="p-2 text-gray-500 hover:text-red-700 hover:bg-red-50 border border-transparent hover:border-red-200/60 rounded-xl transition" title="Hapus Pengurus">
+                                                <button type="submit" class="p-2 text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200/60 rounded-xl transition shadow-2xs" title="Hapus Pengurus">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                     </svg>
@@ -283,7 +283,7 @@
                                     actionUrl: '{{ route('admin.pengurus.update', $pengurus->id) }}'
                                 };
                                 modalEdit = true;
-                            " class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg">
+                            " class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-amber-900 bg-amber-100 border border-amber-300 rounded-lg">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
@@ -296,7 +296,7 @@
                                   data-tombol="Ya, Hapus Data">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-red-700 bg-red-50 border border-red-200 rounded-lg">
+                                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 rounded-lg">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
@@ -571,11 +571,11 @@
 
                         <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-end gap-2.5">
                             <button type="button" @click="modalTambah = false"
-                                    class="px-4 py-2.5 text-xs sm:text-sm font-semibold text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-xl transition">
+                                    class="px-4 py-2.5 text-xs sm:text-sm font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-300 rounded-xl transition">
                                 Batal
                             </button>
                             <button type="submit"
-                                    class="px-5 py-2.5 text-xs sm:text-sm font-bold text-white bg-emerald-700 hover:bg-emerald-800 rounded-xl shadow-md shadow-emerald-700/20 hover:scale-[1.01] active:scale-[0.98] transition-all">
+                                    class="px-5 py-2.5 text-xs sm:text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md shadow-emerald-700/20 hover:scale-[1.01] active:scale-[0.98] transition-all">
                                 Simpan Pengurus
                             </button>
                         </div>
@@ -705,11 +705,11 @@
 
                         <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-end gap-2.5">
                             <button type="button" @click="modalEdit = false"
-                                    class="px-4 py-2.5 text-xs sm:text-sm font-semibold text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-xl transition">
+                                    class="px-4 py-2.5 text-xs sm:text-sm font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-300 rounded-xl transition">
                                 Batal
                             </button>
                             <button type="submit"
-                                    class="px-5 py-2.5 text-xs sm:text-sm font-bold text-white bg-emerald-700 hover:bg-emerald-800 rounded-xl shadow-md shadow-emerald-700/20 hover:scale-[1.01] active:scale-[0.98] transition-all">
+                                    class="px-5 py-2.5 text-xs sm:text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md shadow-emerald-700/20 hover:scale-[1.01] active:scale-[0.98] transition-all">
                                 Simpan Perubahan
                             </button>
                         </div>

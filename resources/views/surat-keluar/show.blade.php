@@ -51,7 +51,7 @@
                     <!-- 1. Cetak / Simpan PDF Asli -->
                     <button type="button"
                             @click="konfirmasiUnduh('print', '', 'Cetak / Simpan PDF Asli')"
-                            class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95">
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-pink-600 hover:bg-pink-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                         </svg>
@@ -61,7 +61,7 @@
                     <!-- 1. Unduh PDF -->
                     <button type="button"
                             @click="konfirmasiUnduh('pdf', '{{ route('admin.surat-keluar.cetak', [$suratKeluar, 'format' => 'pdf', 'download' => 1]) }}', 'Dokumen PDF Resmi')"
-                            class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95">
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-pink-600 hover:bg-pink-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
@@ -72,7 +72,7 @@
                 <!-- 2. Unduh Word (.docx) -->
                 <button type="button"
                         @click="konfirmasiUnduh('docx', '{{ route('admin.surat-keluar.cetak', [$suratKeluar, 'format' => 'docx', 'download' => 1]) }}', 'Dokumen Word (.docx)')"
-                        class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-700 hover:bg-blue-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95">
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-900 hover:bg-blue-950 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
@@ -82,8 +82,8 @@
                 @if (! $suratKeluar->isFinal())
                     <!-- Tombol Ubah Data -->
                     <a href="{{ route('admin.surat-keluar.edit', $suratKeluar) }}"
-                       class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white text-gray-700 hover:bg-gray-50 text-xs sm:text-sm font-semibold rounded-xl border border-gray-300 shadow-2xs transition active:scale-95">
-                        <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-amber-400 hover:bg-amber-500 text-slate-900 text-xs sm:text-sm font-bold rounded-xl border border-amber-300 shadow-2xs transition active:scale-95">
+                        <svg class="w-4 h-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                         <span>Ubah</span>
@@ -289,7 +289,7 @@
                             @if (!empty($suratKeluar->file_surat_asli))
                                 <button type="button"
                                         @click="konfirmasiUnduh('print', '', 'Cetak / Simpan PDF Asli')"
-                                        class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition shadow-2xs flex items-center gap-1.5 active:scale-95">
+                                        class="px-3 py-1.5 bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold rounded-xl transition shadow-2xs flex items-center gap-1.5 active:scale-95">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                                     </svg>
@@ -298,7 +298,7 @@
                             @else
                                 <button type="button"
                                         @click="konfirmasiUnduh('pdf', '{{ route('admin.surat-keluar.cetak', [$suratKeluar, 'format' => 'pdf', 'download' => 1]) }}', 'Dokumen PDF Resmi')"
-                                        class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition shadow-2xs flex items-center gap-1.5 active:scale-95">
+                                        class="px-3 py-1.5 bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold rounded-xl transition shadow-2xs flex items-center gap-1.5 active:scale-95">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                     </svg>
@@ -307,7 +307,7 @@
                             @endif
                             <button type="button"
                                     @click="konfirmasiUnduh('docx', '{{ route('admin.surat-keluar.cetak', [$suratKeluar, 'format' => 'docx', 'download' => 1]) }}', 'Dokumen Word (.docx)')"
-                                    class="px-3 py-1.5 bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold rounded-xl transition shadow-2xs flex items-center gap-1.5 active:scale-95">
+                                    class="px-3 py-1.5 bg-blue-900 hover:bg-blue-950 text-white text-xs font-bold rounded-xl transition shadow-2xs flex items-center gap-1.5 active:scale-95">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                 </svg>
@@ -584,12 +584,12 @@
 
                 <div class="flex items-center gap-3 pt-2">
                     <button type="button" @click="modalUnduh = false"
-                            class="flex-1 py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm rounded-xl transition">
+                            class="flex-1 py-2.5 px-4 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-xs sm:text-sm rounded-xl transition">
                         Batal
                     </button>
                     <button type="button" @click="eksekusiUnduh()"
                             class="flex-1 py-2.5 px-4 text-white font-bold text-xs sm:text-sm rounded-xl transition shadow-xs flex items-center justify-center gap-1.5 active:scale-95"
-                            :class="unduhFormat === 'docx' ? 'bg-blue-700 hover:bg-blue-800' : 'bg-rose-600 hover:bg-rose-700'">
+                            :class="unduhFormat === 'docx' ? 'bg-blue-900 hover:bg-blue-950' : 'bg-pink-600 hover:bg-pink-700'">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
@@ -660,14 +660,12 @@
     <style>
         #area-dokumen-asli-word {
             width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
         }
         #docx-render-target {
             width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
             display: flex;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
         }
         #docx-render-target .docx-wrapper {
@@ -681,13 +679,10 @@
         }
         #docx-render-target section.docx,
         #docx-render-target .docx {
-            box-shadow: 0 4px 25px -4px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05) !important;
-            margin: 0 auto 1.5rem auto !important;
             background: white !important;
             color: #0f172a !important;
             border-radius: 4px;
             box-sizing: border-box !important;
-            transition: transform 0.15s ease-out;
         }
         #docx-render-target table {
             max-width: 100% !important;
@@ -706,6 +701,13 @@
             #docx-render-target, #docx-render-target * {
                 visibility: visible !important;
             }
+            .docx-page-scaler {
+                width: 100% !important;
+                height: auto !important;
+                position: static !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+            }
             #docx-render-target {
                 position: absolute !important;
                 left: 0 !important;
@@ -714,7 +716,10 @@
                 margin: 0 !important;
                 padding: 0 !important;
             }
+            #docx-render-target section.docx,
             #docx-render-target .docx {
+                position: static !important;
+                transform: none !important;
                 box-shadow: none !important;
                 margin: 0 !important;
                 page-break-after: always;
@@ -734,27 +739,76 @@
                 const sections = targetEl.querySelectorAll('section.docx, .docx');
                 if (!sections.length) return;
 
-                const containerWidth = targetEl.clientWidth;
-                if (containerWidth <= 0) return;
+                const parentContainer = targetEl.parentElement || targetEl;
+                const isMobile = window.innerWidth < 768;
+                const availableWidth = parentContainer.clientWidth - (isMobile ? 12 : 24);
+                if (availableWidth <= 20) return;
 
                 sections.forEach(function (sec) {
                     if (!sec.dataset.origWidth) {
-                        sec.dataset.origWidth = sec.offsetWidth || 816;
-                        sec.dataset.origHeight = sec.offsetHeight || 1056;
+                        sec.dataset.origWidth = sec.offsetWidth || 794;
                     }
-                    const origW = parseFloat(sec.dataset.origWidth);
-                    const origH = parseFloat(sec.dataset.origHeight);
+                    const origW = parseFloat(sec.dataset.origWidth) || 794;
 
-                    const targetW = containerWidth - 12;
-                    if (targetW < origW && origW > 0) {
-                        const scale = Math.max(0.35, targetW / origW);
+                    if (!sec.dataset.origHeight) {
+                        sec.dataset.origHeight = sec.scrollHeight || sec.offsetHeight || 1123;
+                    }
+                    const origH = parseFloat(sec.dataset.origHeight) || 1123;
+
+                    let wrap = sec.parentElement;
+                    if (!wrap || !wrap.classList.contains('docx-page-scaler')) {
+                        wrap = document.createElement('div');
+                        wrap.className = 'docx-page-scaler';
+                        sec.parentNode.insertBefore(wrap, sec);
+                        wrap.appendChild(sec);
+                    }
+
+                    if (availableWidth < origW) {
+                        const scale = Math.max(0.30, availableWidth / origW);
+                        const scaledW = Math.round(origW * scale);
+                        const scaledH = Math.round(origH * scale);
+
+                        wrap.style.width = scaledW + 'px';
+                        wrap.style.height = scaledH + 'px';
+                        wrap.style.margin = '0 auto 1.5rem auto';
+                        wrap.style.position = 'relative';
+                        wrap.style.overflow = 'hidden';
+                        wrap.style.boxShadow = '0 4px 20px -2px rgba(0, 0, 0, 0.12)';
+                        wrap.style.borderRadius = '6px';
+                        wrap.style.maxWidth = '100%';
+
+                        sec.style.width = origW + 'px';
+                        sec.style.minWidth = origW + 'px';
+                        sec.style.maxWidth = origW + 'px';
+                        sec.style.height = origH + 'px';
+                        sec.style.position = 'absolute';
+                        sec.style.top = '0';
+                        sec.style.left = '0';
+                        sec.style.transformOrigin = 'top left';
                         sec.style.transform = 'scale(' + scale + ')';
-                        sec.style.transformOrigin = 'top center';
-                        sec.style.marginBottom = '-' + Math.round(origH * (1 - scale) - 20) + 'px';
+                        sec.style.margin = '0';
+                        sec.style.boxShadow = 'none';
                     } else {
-                        sec.style.transform = '';
+                        wrap.style.width = origW + 'px';
+                        wrap.style.height = 'auto';
+                        wrap.style.margin = '0 auto 1.5rem auto';
+                        wrap.style.position = 'relative';
+                        wrap.style.overflow = 'visible';
+                        wrap.style.boxShadow = 'none';
+                        wrap.style.borderRadius = '0';
+                        wrap.style.maxWidth = '100%';
+
+                        sec.style.width = origW + 'px';
+                        sec.style.minWidth = origW + 'px';
+                        sec.style.maxWidth = origW + 'px';
+                        sec.style.height = 'auto';
+                        sec.style.position = 'relative';
+                        sec.style.top = '';
+                        sec.style.left = '';
                         sec.style.transformOrigin = '';
-                        sec.style.marginBottom = '1.5rem';
+                        sec.style.transform = '';
+                        sec.style.margin = '0 auto 1.5rem auto';
+                        sec.style.boxShadow = '0 4px 25px -4px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05)';
                     }
                 });
             }

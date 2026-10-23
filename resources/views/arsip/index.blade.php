@@ -141,7 +141,7 @@
                                     <div class="flex items-center justify-center gap-1.5">
                                         <!-- Lihat Detail -->
                                         <a href="{{ route('admin.arsip.show', $item) }}" title="Lihat Detail & Pratinjau"
-                                           class="p-2 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/60 rounded-xl transition shadow-2xs">
+                                           class="p-2 text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200/60 rounded-xl transition shadow-2xs">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -150,7 +150,7 @@
 
                                         <!-- Unduh File -->
                                         <a href="{{ route('admin.arsip.unduh', $item) }}" title="Unduh Berkas"
-                                           class="p-2 text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200/60 rounded-xl transition shadow-2xs">
+                                           class="p-2 text-blue-900 bg-blue-100 hover:bg-blue-200 border border-blue-300 rounded-xl transition shadow-2xs">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                             </svg>
@@ -158,7 +158,7 @@
 
                                         <!-- Ubah -->
                                         <a href="{{ route('admin.arsip.edit', $item) }}" title="Ubah Data"
-                                           class="p-2 text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200/60 rounded-xl transition shadow-2xs">
+                                           class="p-2 text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300 rounded-xl transition shadow-2xs">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
@@ -173,7 +173,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" title="Hapus"
-                                                    class="p-2 text-gray-500 hover:text-red-700 hover:bg-red-50 border border-transparent hover:border-red-200/60 rounded-xl transition">
+                                                    class="p-2 text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200/60 rounded-xl transition shadow-2xs">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                 </svg>
@@ -238,15 +238,15 @@
                     <!-- Tombol Aksi Mobile -->
                     <div class="flex items-center justify-end gap-1.5 pt-2 border-t border-gray-100 flex-wrap">
                         <a href="{{ route('admin.arsip.show', $item) }}"
-                           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg">
+                           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100">
                             <span>Detail</span>
                         </a>
                         <a href="{{ route('admin.arsip.unduh', $item) }}"
-                           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-sky-700 bg-sky-50 border border-sky-200 rounded-lg">
+                           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-900 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-200">
                             <span>Unduh</span>
                         </a>
                         <a href="{{ route('admin.arsip.edit', $item) }}"
-                           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg">
+                           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-amber-900 bg-amber-100 border border-amber-300 rounded-lg hover:bg-amber-200">
                             <span>Ubah</span>
                         </a>
                         <form method="POST" action="{{ route('admin.arsip.destroy', $item) }}"
@@ -256,7 +256,7 @@
                               class="inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-red-700 bg-red-50 border border-red-200 rounded-lg">
+                            <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 rounded-lg hover:bg-rose-100">
                                 <span>Hapus</span>
                             </button>
                         </form>
