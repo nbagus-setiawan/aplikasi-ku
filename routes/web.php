@@ -32,6 +32,7 @@ Route::get('/sitemap.xml', [PublicController::class, 'sitemap'])->name('publik.s
 // Rute Publik: Verifikasi Surat & Tanda Tangan Jarak Jauh (Fase 3)
 Route::get('/verifikasi', [VerifikasiPublikController::class, 'index'])->name('publik.verifikasi.index');
 Route::get('/verifikasi/{kode}', [VerifikasiPublikController::class, 'show'])->name('publik.verifikasi');
+Route::get('/verifikasi/{kode}/unduh', [VerifikasiPublikController::class, 'unduh'])->name('publik.verifikasi.unduh');
 Route::get('/tanda-tangan/{token}', [TandaTanganPublikController::class, 'show'])->name('publik.tanda-tangan.show');
 Route::post('/tanda-tangan/{token}', [TandaTanganPublikController::class, 'sign'])->name('publik.tanda-tangan.sign');
 

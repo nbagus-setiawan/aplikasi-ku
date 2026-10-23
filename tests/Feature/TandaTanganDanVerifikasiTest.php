@@ -211,4 +211,27 @@ class TandaTanganDanVerifikasiTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Dokumen Tidak Ditemukan');
     }
+
+    public function test_publik_dapat_mengunduh_dokumen_resmi_terverifikasi_format_word_dan_pdf(): void
+    {
+        $this->suratKeluar->update([
+            'status' => 'final',
+            'status_ttd' => 'sudah',
+            'metode_ttd' => 'digital',
+        ]);
+
+        // Unduh format Word (.docx)
+        $respWord = $this->get(route('publik.verifikasi.unduh', [$this->suratKeluar->kode_verifikasi, 'format' => 'docx']));
+        $respWord->assertStatus(200);
+        $respWord->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        $this->assertStringContainsString('attachment', (string) $respWord->headers->get('Content-Disposition'));
+        $this->assertStringContainsString('.docx', (string) $respWord->headers->get('Content-Disposition'));
+
+        // Unduh format PDF
+        $respPdf = $this->get(route('publik.verifikasi.unduh', [$this->suratKeluar->kode_verifikasi, 'format' => 'pdf']));
+        $respPdf->assertStatus(200);
+        $respPdf->assertHeader('Content-Type', 'application/pdf');
+        $this->assertStringContainsString('attachment', (string) $respPdf->headers->get('Content-Disposition'));
+        $this->assertStringContainsString('.pdf', (string) $respPdf->headers->get('Content-Disposition'));
+    }
 }

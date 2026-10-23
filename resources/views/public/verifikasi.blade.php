@@ -214,9 +214,21 @@
                     @endphp
                     @if (! empty($surat->file_surat_asli))
                         <div class="pt-3 space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-900">📄 Dokumen Surat Asli Resmi (Ber-QR Code)</span>
-                                <span class="text-[11px] text-gray-500 font-medium">Pratinjau naskah dokumen asli</span>
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <div>
+                                    <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-900 block">📄 Dokumen Surat Asli Resmi (Ber-QR Code)</span>
+                                    <span class="text-[11px] text-gray-500 font-medium">Pratinjau naskah dokumen asli langsung dari file Word resmi</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ route('publik.verifikasi.unduh', [$surat->kode_verifikasi, 'format' => 'docx']) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-bold shadow-xs transition-colors" title="Unduh Dokumen Word (.docx) Ber-QR Code">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                        <span>Unduh Word (.docx)</span>
+                                    </a>
+                                    <a href="{{ route('publik.verifikasi.unduh', [$surat->kode_verifikasi, 'format' => 'pdf']) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors" title="Unduh Dokumen PDF Resmi Ber-QR Code">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                        <span>Unduh PDF</span>
+                                    </a>
+                                </div>
                             </div>
 
                             <div class="w-full bg-slate-100 p-2 sm:p-4 rounded-2xl border border-slate-200 flex justify-center">

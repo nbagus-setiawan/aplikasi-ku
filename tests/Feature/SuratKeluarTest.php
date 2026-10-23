@@ -402,6 +402,27 @@ class SuratKeluarTest extends TestCase
         $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
         $this->assertStringContainsString('attachment', (string) $response->headers->get('Content-Disposition'));
         $this->assertStringContainsString('.docx', (string) $response->headers->get('Content-Disposition'));
+
+        $binary = $response->getContent();
+        $this->assertNotEmpty($binary);
+
+        $tempFile = tempnam(sys_get_temp_dir(), 'test_docx_');
+        file_put_contents($tempFile, $binary);
+
+        /** @var \App\Services\DocxSuratParserService $docxService */
+        $docxService = app(\App\Services\DocxSuratParserService::class);
+        $reflection = new \ReflectionClass($docxService);
+        $method = $reflection->getMethod('readZipEntries');
+        $method->setAccessible(true);
+        $entries = $method->invoke($docxService, $tempFile);
+
+        @unlink($tempFile);
+
+        $this->assertIsArray($entries);
+        $this->assertArrayHasKey('word/document.xml', $entries);
+        $this->assertArrayHasKey('word/media/qr_verifikasi.png', $entries);
+        $this->assertStringContainsString('rIdQrVerif99', $entries['word/document.xml']);
+        $this->assertStringContainsString('DOCXTEST123', $entries['word/document.xml']);
     }
 
     public function test_sekretaris_dapat_mengunduh_surat_keluar_format_pdf_dengan_qr_dan_kode_verifikasi(): void
@@ -483,6 +504,87 @@ class SuratKeluarTest extends TestCase
         $response->assertSee('Cetak / Simpan PDF');
         $response->assertSee('Unduh Word (.docx)');
         $response->assertDontSee('srcdoc=');
+    }
+
+    public function test_unduhan_word_surat_keluar_asli_memuat_qr_dan_kode_verifikasi_setelah_proses(): void
+    {
+        /** @var \App\Services\DocxSuratParserService $docxService */
+        $docxService = app(\App\Services\DocxSuratParserService::class);
+        $reflection = new \ReflectionClass($docxService);
+        $writeMethod = $reflection->getMethod('writeZipEntries');
+        $writeMethod->setAccessible(true);
+        $readMethod = $reflection->getMethod('readZipEntries');
+        $readMethod->setAccessible(true);
+
+        $initialDocXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+            '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' .
+            '<w:body><w:p><w:r><w:t>Naskah Asli Dari Word</w:t></w:r></w:p><w:sectPr/></w:body></w:document>';
+
+        $initialRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+            '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"/>';
+
+        $initialTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+            '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' .
+            '<Default Extension="xml" ContentType="application/xml"/>' .
+            '</Types>';
+
+        \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('surat-keluar-word');
+        $rawWordRel = 'surat-keluar-word/test-asli-' . Str::random(6) . '.docx';
+        $absRaw = storage_path('app/public/' . $rawWordRel);
+
+        $writeMethod->invoke($docxService, $absRaw, [
+            '[Content_Types].xml' => $initialTypes,
+            'word/document.xml' => $initialDocXml,
+            'word/_rels/document.xml.rels' => $initialRels,
+        ]);
+
+        $this->assertFileExists($absRaw);
+
+        $surat = SuratKeluar::create([
+            'no_surat' => '010/SPm.01/AF-PA/X/2026',
+            'tgl_surat' => '2026-10-22',
+            'tujuan' => 'Kemenag',
+            'perihal' => 'Naskah Asli Test',
+            'kategori_id' => $this->kategori->id,
+            'isi' => '<p>Isi surat...</p>',
+            'nama_penandatangan' => 'KH. Syamsuni',
+            'jabatan_penandatangan' => 'Pimpinan',
+            'file_surat_asli' => $rawWordRel,
+            'status' => 'final',
+            'status_ttd' => 'sudah',
+            'kode_verifikasi' => 'INJECTQR88',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.surat-keluar.cetak', [$surat, 'format' => 'docx', 'download' => 1]));
+
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+
+        $surat->refresh();
+        $this->assertStringContainsString('word-qr-', $surat->file_surat_asli);
+
+        $binary = $response->getContent();
+        $this->assertNotEmpty($binary);
+
+        $tempDownloaded = tempnam(sys_get_temp_dir(), 'test_dl_');
+        file_put_contents($tempDownloaded, $binary);
+
+        $entries = $readMethod->invoke($docxService, $tempDownloaded);
+        @unlink($tempDownloaded);
+        @unlink($absRaw);
+
+        $this->assertIsArray($entries);
+        $this->assertArrayHasKey('word/media/qr_verifikasi.png', $entries);
+        $this->assertArrayHasKey('word/document.xml', $entries);
+        $this->assertArrayHasKey('word/_rels/document.xml.rels', $entries);
+        $this->assertArrayHasKey('[Content_Types].xml', $entries);
+
+        $this->assertStringContainsString('rIdQrVerif99', $entries['word/document.xml']);
+        $this->assertStringContainsString('QR Verifikasi Resmi', $entries['word/document.xml']);
+        $this->assertStringContainsString('wp:cNvGraphicFramePr', $entries['word/document.xml']);
+        $this->assertStringContainsString('media/qr_verifikasi.png', $entries['word/_rels/document.xml.rels']);
+        $this->assertStringContainsString('image/png', $entries['[Content_Types].xml']);
     }
 }
 

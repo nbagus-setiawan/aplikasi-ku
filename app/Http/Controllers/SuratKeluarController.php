@@ -397,6 +397,7 @@ class SuratKeluarController extends Controller
     public function show(SuratKeluar $suratKeluar): View
     {
         $this->docxParserService->ensureWordQrProcessed($suratKeluar);
+        $suratKeluar->refresh();
 
         // Bersihkan jika sebelumnya file_final keliru menyimpan path .docx
         if (! empty($suratKeluar->file_final) && str_ends_with(strtolower($suratKeluar->file_final), '.docx')) {
@@ -579,6 +580,7 @@ class SuratKeluarController extends Controller
     public function cetak(Request $request, SuratKeluar $suratKeluar): Response
     {
         $this->docxParserService->ensureWordQrProcessed($suratKeluar);
+        $suratKeluar->refresh();
         $slugNo = Str::slug(str_replace('/', '-', $suratKeluar->no_surat)) ?: ('surat-' . $suratKeluar->id);
         $isDownload = $request->boolean('download') || $request->query('download') == '1';
 
