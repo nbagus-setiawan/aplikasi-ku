@@ -52,6 +52,9 @@ class SantriController extends Controller
         $totalAktif = Santri::where('status', 'aktif')->count();
         $totalSemua = Santri::count();
 
+        // Simpan URL filter aktif ke session agar setelah edit/hapus tetap berada di filter & halaman yang sama
+        session(['santri_filter_url' => $request->fullUrl()]);
+
         return view('santri.index', compact(
             'santris',
             'listKelas',
@@ -93,17 +96,19 @@ class SantriController extends Controller
     /**
      * Tampilkan detail biodata santri.
      */
-    public function show(Santri $santri): View
+    public function show(Request $request, Santri $santri): View
     {
-        return view('santri.show', compact('santri'));
+        $returnUrl = $request->query('return_url', session('santri_filter_url', route('admin.santri.index')));
+        return view('santri.show', compact('santri', 'returnUrl'));
     }
 
     /**
      * Tampilkan formulir edit santri.
      */
-    public function edit(Santri $santri): View
+    public function edit(Request $request, Santri $santri): View
     {
-        return view('santri.edit', compact('santri'));
+        $returnUrl = $request->query('return_url', session('santri_filter_url', route('admin.santri.index')));
+        return view('santri.edit', compact('santri', 'returnUrl'));
     }
 
     /**
@@ -125,8 +130,12 @@ class SantriController extends Controller
 
         $santri->update($data);
 
-        return redirect()
-            ->route('admin.santri.index')
+        // Arahkan kembali ke data yang sedang difilter (bukan reset ke semua data)
+        $returnUrl = $request->input('return_url')
+            ?: session('santri_filter_url')
+            ?: route('admin.santri.index');
+
+        return redirect($returnUrl)
             ->with('success', 'Data santri berhasil diperbarui.');
     }
 
@@ -137,8 +146,10 @@ class SantriController extends Controller
     {
         $santri->delete();
 
-        return redirect()
-            ->route('admin.santri.index')
+        // Tetap berada pada filter aktif setelah menghapus
+        $returnUrl = session('santri_filter_url') ?: route('admin.santri.index');
+
+        return redirect($returnUrl)
             ->with('success', 'Data santri berhasil dihapus (soft delete).');
     }
 

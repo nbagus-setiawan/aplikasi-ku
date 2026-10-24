@@ -55,6 +55,9 @@ class PengurusController extends Controller
                                        return $item->divisi ?: 'Pimpinan & Sekretariat';
                                    });
 
+        // Simpan URL filter pengurus aktif ke session agar filter tidak hilang saat edit/hapus
+        session(['pengurus_filter_url' => $request->fullUrl()]);
+
         return view('pengurus.index', compact(
             'penguruses',
             'listPeriode',
@@ -106,8 +109,12 @@ class PengurusController extends Controller
 
         $pengurus->update($data);
 
-        return redirect()
-            ->route('admin.pengurus.index')
+        // Arahkan kembali ke data yang sedang difilter
+        $returnUrl = $request->input('return_url')
+            ?: session('pengurus_filter_url')
+            ?: route('admin.pengurus.index');
+
+        return redirect($returnUrl)
             ->with('success', 'Data pengurus berhasil diperbarui.');
     }
 
@@ -122,8 +129,10 @@ class PengurusController extends Controller
 
         $pengurus->delete();
 
-        return redirect()
-            ->route('admin.pengurus.index')
+        // Tetap berada pada filter aktif setelah menghapus
+        $returnUrl = session('pengurus_filter_url') ?: route('admin.pengurus.index');
+
+        return redirect($returnUrl)
             ->with('success', 'Data pengurus berhasil dihapus.');
     }
 }

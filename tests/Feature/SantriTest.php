@@ -203,4 +203,46 @@ class SantriTest extends TestCase
         $this->assertStringContainsString('Santri Ekspor CSV', $content);
         $this->assertStringContainsString('Abu Bakar 01', $content);
     }
+
+    public function test_updating_santri_redirects_back_to_filtered_url(): void
+    {
+        $user = User::factory()->create();
+
+        $santri = Santri::create([
+            'nis' => '2026333',
+            'nama' => 'Santri Filtered',
+            'status' => 'aktif',
+            'kelas' => 'VII 1',
+            'kamar' => 'BAROKAH',
+        ]);
+
+        $filterUrl = route('admin.santri.index', [
+            'status' => 'aktif',
+            'kelas' => 'VII 1',
+            'kamar' => 'BAROKAH',
+            'page' => 1,
+        ]);
+
+        // 1. Kunjungi index dengan filter
+        $this->actingAs($user)->get($filterUrl);
+
+        // 2. Buka form edit dengan return_url
+        $editResponse = $this->actingAs($user)->get(route('admin.santri.edit', [
+            'santri' => $santri->id,
+            'return_url' => $filterUrl,
+        ]));
+        $editResponse->assertStatus(200);
+
+        // 3. Simpan perubahan dengan return_url
+        $response = $this->actingAs($user)->put(route('admin.santri.update', $santri->id), [
+            'nis' => '2026333',
+            'nama' => 'Santri Filtered Updated',
+            'status' => 'aktif',
+            'kelas' => 'VII 1',
+            'return_url' => $filterUrl,
+        ]);
+
+        // Pastikan dialihkan kembali ke URL yang terfilter
+        $response->assertRedirect($filterUrl);
+    }
 }

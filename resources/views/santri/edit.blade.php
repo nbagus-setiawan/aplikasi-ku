@@ -16,9 +16,9 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <nav class="flex items-center gap-2 text-xs text-gray-500 mb-1.5 font-medium">
-                    <a href="{{ route('admin.santri.index') }}" class="hover:text-emerald-700 transition">Santri</a>
+                    <a href="{{ $returnUrl ?? session('santri_filter_url', route('admin.santri.index')) }}" class="hover:text-emerald-700 transition">Santri</a>
                     <span>/</span>
-                    <a href="{{ route('admin.santri.show', $santri->id) }}" class="hover:text-emerald-700 transition">{{ $santri->nama }}</a>
+                    <a href="{{ route('admin.santri.show', ['santri' => $santri->id, 'return_url' => $returnUrl ?? session('santri_filter_url')]) }}" class="hover:text-emerald-700 transition">{{ $santri->nama }}</a>
                     <span>/</span>
                     <span class="text-emerald-800 font-semibold">Ubah Data</span>
                 </nav>
@@ -26,7 +26,7 @@
                 <p class="text-xs sm:text-sm text-gray-500 mt-1">NIS: <span class="font-mono font-bold text-emerald-800">{{ $santri->nis }}</span> &bull; {{ $santri->nama }}</p>
             </div>
             <div class="flex items-center gap-2">
-                <a href="{{ route('admin.santri.show', $santri->id) }}"
+                <a href="{{ route('admin.santri.show', ['santri' => $santri->id, 'return_url' => $returnUrl ?? session('santri_filter_url')]) }}"
                    class="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-xs sm:text-sm font-semibold rounded-xl shadow-xs transition">
                     <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -34,7 +34,7 @@
                     </svg>
                     <span>Lihat Biodata</span>
                 </a>
-                <a href="{{ route('admin.santri.index') }}"
+                <a href="{{ $returnUrl ?? session('santri_filter_url', route('admin.santri.index')) }}"
                    class="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs sm:text-sm font-semibold rounded-xl transition">
                     <span>Kembali</span>
                 </a>
@@ -60,6 +60,7 @@
             <form action="{{ route('admin.santri.update', $santri->id) }}" method="POST" enctype="multipart/form-data" class="p-6 sm:p-8 space-y-8">
                 @csrf
                 @method('PUT')
+                <input type="hidden" name="return_url" value="{{ $returnUrl ?? session('santri_filter_url', route('admin.santri.index')) }}">
 
                 <!-- 1. DATA POKOK -->
                 <div class="space-y-4">
@@ -221,7 +222,7 @@
 
                 <!-- TOMBOL SIMPAN / BATAL (Sesuai Aturan Warna Desain) -->
                 <div class="pt-6 border-t border-gray-100 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3">
-                    <a href="{{ route('admin.santri.index') }}"
+                    <a href="{{ $returnUrl ?? session('santri_filter_url', route('admin.santri.index')) }}"
                        class="px-5 py-2.5 text-xs sm:text-sm font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-300 rounded-xl transition text-center shadow-xs active:scale-95">
                         Batalkan
                     </a>

@@ -6,7 +6,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <nav class="flex items-center gap-2 text-xs text-gray-500 mb-1.5 font-medium">
-                    <a href="{{ route('admin.santri.index') }}" class="hover:text-emerald-700 transition">Santri</a>
+                    <a href="{{ $returnUrl ?? session('santri_filter_url', route('admin.santri.index')) }}" class="hover:text-emerald-700 transition">Santri</a>
                     <span>/</span>
                     <span class="text-emerald-800 font-semibold">Biodata Lengkap</span>
                 </nav>
@@ -23,14 +23,14 @@
                     </svg>
                     <span>Cetak PDF</span>
                 </a>
-                <a href="{{ route('admin.santri.edit', $santri->id) }}"
+                <a href="{{ route('admin.santri.edit', ['santri' => $santri->id, 'return_url' => $returnUrl ?? session('santri_filter_url', route('admin.santri.index'))]) }}"
                    class="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-400 hover:bg-amber-500 text-slate-900 text-xs sm:text-sm font-bold rounded-xl shadow-sm transition active:scale-95">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                     <span>Ubah Data</span>
                 </a>
-                <a href="{{ route('admin.santri.index') }}"
+                <a href="{{ $returnUrl ?? session('santri_filter_url', route('admin.santri.index')) }}"
                    class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-xs sm:text-sm font-semibold rounded-xl shadow-xs transition active:scale-95">
                     <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
