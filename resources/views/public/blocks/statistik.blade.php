@@ -1,7 +1,7 @@
 @php
     $data = $block['data'] ?? [];
     $judul = $data['judul'] ?? 'Pondok Pesantren dalam Angka';
-    $subjudul = $data['subjudul'] ?? 'Data riil perkembangan pendidikan dan kependudukan santri Pondok Pesantren Al-Falah Putak';
+    $subjudul = $data['subjudul'] ?? 'Data riil perkembangan pendidikan dan kependudukan santri putra Pondok Pesantren Al-Falah Putak';
     $subjudul = str_replace('Al-Falah Putra', 'Al-Falah Putak', $subjudul);
 
     // Prioritaskan data riil dari database jika tersedia
