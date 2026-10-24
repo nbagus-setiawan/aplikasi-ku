@@ -21,6 +21,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SuratKeluarController extends Controller
 {
@@ -138,6 +139,76 @@ class SuratKeluarController extends Controller
         ];
 
         return view('surat-keluar.index', compact('suratKeluars', 'kategoriList', 'statistik'));
+    }
+
+    /**
+     * Unduh buku induk administrasi surat keluar dalam format CSV.
+     * Kolom: No, Tanggal Pembuatan Surat, Jenis Surat, Perihal, Nomor Surat, Tujuan Surat.
+     */
+    public function exportCsv(Request $request): StreamedResponse
+    {
+        $query = SuratKeluar::with(['kategori'])->latest('tgl_surat')->latest('id');
+
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function ($sub) use ($q) {
+                $sub->where('no_surat', 'like', "%{$q}%")
+                    ->orWhere('tujuan', 'like', "%{$q}%")
+                    ->orWhere('perihal', 'like', "%{$q}%")
+                    ->orWhere('lampiran_teks', 'like', "%{$q}%");
+            });
+        }
+
+        if ($request->filled('kategori_id')) {
+            $query->where('kategori_id', $request->kategori_id);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('tgl_mulai')) {
+            $query->whereDate('tgl_surat', '>=', $request->tgl_mulai);
+        }
+
+        if ($request->filled('tgl_selesai')) {
+            $query->whereDate('tgl_surat', '<=', $request->tgl_selesai);
+        }
+
+        $filename = 'buku-induk-surat-keluar-' . date('Ymd-His') . '.csv';
+
+        return response()->streamDownload(function () use ($query) {
+            $output = fopen('php://output', 'w');
+            // Tambahkan UTF-8 BOM agar rapi saat dibuka di Microsoft Excel
+            fputs($output, "\xEF\xBB\xBF");
+            fputcsv($output, [
+                'No',
+                'Tanggal Pembuatan Surat',
+                'Jenis Surat',
+                'Perihal',
+                'Nomor Surat',
+                'Tujuan Surat',
+            ]);
+
+            $no = 1;
+            $query->chunk(200, function ($surats) use ($output, &$no) {
+                foreach ($surats as $surat) {
+                    fputcsv($output, [
+                        $no++,
+                        $surat->tgl_surat ? Carbon::parse($surat->tgl_surat)->format('d-m-Y') : '-',
+                        $surat->kategori?->nama ?? '-',
+                        $surat->perihal ?? '-',
+                        $surat->no_surat ?? '-',
+                        $surat->tujuan ?? '-',
+                    ]);
+                }
+            });
+
+            fclose($output);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
     }
 
     /**

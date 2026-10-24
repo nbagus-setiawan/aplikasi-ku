@@ -7,11 +7,13 @@ use App\Models\KategoriSurat;
 use App\Models\SuratMasuk;
 use App\Services\DocxSuratParserService;
 use App\Services\NomorSuratService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SuratMasukController extends Controller
 {
@@ -90,6 +92,77 @@ class SuratMasukController extends Controller
         ];
 
         return view('surat-masuk.index', compact('suratMasuks', 'kategoriList', 'statistik'));
+    }
+
+    /**
+     * Unduh buku induk agenda surat masuk dalam format CSV.
+     * Kolom: No, Tanggal Pembuatan Surat, Jenis Surat, Perihal, Nomor Surat, Asal Surat.
+     */
+    public function exportCsv(Request $request): StreamedResponse
+    {
+        $query = SuratMasuk::with(['kategori'])->latest('tgl_diterima')->latest('id');
+
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function ($sub) use ($q) {
+                $sub->where('no_agenda', 'like', "%{$q}%")
+                    ->orWhere('no_surat', 'like', "%{$q}%")
+                    ->orWhere('pengirim', 'like', "%{$q}%")
+                    ->orWhere('perihal', 'like', "%{$q}%")
+                    ->orWhere('lampiran_teks', 'like', "%{$q}%");
+            });
+        }
+
+        if ($request->filled('kategori_id')) {
+            $query->where('kategori_id', $request->kategori_id);
+        }
+
+        if ($request->filled('status_disposisi')) {
+            $query->where('status_disposisi', $request->status_disposisi);
+        }
+
+        if ($request->filled('tgl_mulai')) {
+            $query->whereDate('tgl_diterima', '>=', $request->tgl_mulai);
+        }
+
+        if ($request->filled('tgl_selesai')) {
+            $query->whereDate('tgl_diterima', '<=', $request->tgl_selesai);
+        }
+
+        $filename = 'buku-induk-surat-masuk-' . date('Ymd-His') . '.csv';
+
+        return response()->streamDownload(function () use ($query) {
+            $output = fopen('php://output', 'w');
+            // Tambahkan UTF-8 BOM agar rapi saat dibuka di Microsoft Excel
+            fputs($output, "\xEF\xBB\xBF");
+            fputcsv($output, [
+                'No',
+                'Tanggal Pembuatan Surat',
+                'Jenis Surat',
+                'Perihal',
+                'Nomor Surat',
+                'Asal Surat',
+            ]);
+
+            $no = 1;
+            $query->chunk(200, function ($surats) use ($output, &$no) {
+                foreach ($surats as $surat) {
+                    fputcsv($output, [
+                        $no++,
+                        $surat->tgl_surat ? Carbon::parse($surat->tgl_surat)->format('d-m-Y') : '-',
+                        $surat->kategori?->nama ?? '-',
+                        $surat->perihal ?? '-',
+                        $surat->no_surat ?? '-',
+                        $surat->pengirim ?? '-',
+                    ]);
+                }
+            });
+
+            fclose($output);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
     }
 
     /**

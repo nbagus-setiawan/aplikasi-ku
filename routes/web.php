@@ -62,11 +62,13 @@ Route::middleware('auth')->prefix('admin')->group(function () {
         ->names('admin.pengurus');
 
     // Modul Surat Masuk (Fase 3)
+    Route::get('/surat-masuk-ekspor', [SuratMasukController::class, 'exportCsv'])->name('admin.surat-masuk.export');
     Route::post('/surat-masuk/parse-docx', [SuratMasukController::class, 'parseDocx'])->name('admin.surat-masuk.parse-docx');
     Route::patch('/surat-masuk/{suratMasuk}/disposisi', [SuratMasukController::class, 'updateDisposisi'])->name('admin.surat-masuk.disposisi');
     Route::resource('surat-masuk', SuratMasukController::class)->names('admin.surat-masuk');
 
     // Modul Surat Keluar (Fase 3)
+    Route::get('/surat-keluar-ekspor', [SuratKeluarController::class, 'exportCsv'])->name('admin.surat-keluar.export');
     Route::post('/surat-keluar/parse-docx', [SuratKeluarController::class, 'parseDocx'])->name('admin.surat-keluar.parse-docx');
     Route::post('/surat-keluar/template', [SuratKeluarController::class, 'storeTemplate'])->name('admin.surat-keluar.template.store');
     Route::delete('/surat-keluar/template/{templateSurat}', [SuratKeluarController::class, 'destroyTemplate'])->name('admin.surat-keluar.template.destroy');

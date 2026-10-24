@@ -14,7 +14,17 @@
                 <p class="text-xs sm:text-sm text-gray-500 mt-1">Kelola arsip surat masuk, disposisi pimpinan, dan berkas asli dokumen pesantren.</p>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Unduh Buku Agenda Surat Masuk (CSV) -->
+                <a href="{{ route('admin.surat-masuk.export', request()->query()) }}"
+                   class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-bold rounded-xl border border-emerald-300 shadow-xs transition active:scale-95"
+                   title="Unduh Buku Agenda Surat Masuk (CSV)">
+                    <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    <span>Unduh CSV</span>
+                </a>
+
                 <a href="{{ route('admin.surat-masuk.create') }}"
                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-emerald-700/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

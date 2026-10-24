@@ -204,4 +204,41 @@ class SuratMasukTest extends TestCase
         Storage::disk('public')->assertExists($surat->file_surat_asli);
         Storage::disk('public')->assertExists($surat->file_lampiran);
     }
+
+    public function test_sekretaris_dapat_mengunduh_buku_induk_surat_masuk_csv(): void
+    {
+        SuratMasuk::create([
+            'no_agenda' => '009',
+            'no_surat' => '999/UND/2026',
+            'tgl_surat' => '2026-10-20',
+            'tgl_diterima' => '2026-10-21',
+            'pengirim' => 'Dinas Pendidikan Kab. Muara Enim',
+            'perihal' => 'Undangan Sosialisasi Kurikulum Pesantren',
+            'status_disposisi' => 'baru',
+            'kategori_id' => $this->kategori->id,
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.surat-masuk.export'));
+
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
+
+        $content = $response->streamedContent();
+        $this->assertStringContainsString('Tanggal Pembuatan Surat', $content);
+        $this->assertStringContainsString('Jenis Surat', $content);
+        $this->assertStringContainsString('Perihal', $content);
+        $this->assertStringContainsString('Nomor Surat', $content);
+        $this->assertStringContainsString('Asal Surat', $content);
+        $this->assertStringContainsString('999/UND/2026', $content);
+        $this->assertStringContainsString('Undangan Sosialisasi Kurikulum Pesantren', $content);
+        $this->assertStringContainsString('Dinas Pendidikan Kab. Muara Enim', $content);
+        $this->assertStringContainsString('20-10-2026', $content);
+    }
+
+    public function test_tamu_tidak_dapat_mengunduh_buku_induk_surat_masuk_csv(): void
+    {
+        $response = $this->get(route('admin.surat-masuk.export'));
+        $response->assertRedirect(route('login'));
+    }
 }

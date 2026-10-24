@@ -582,6 +582,46 @@ class SuratKeluarTest extends TestCase
         $this->assertStringContainsString('w:jc w:val="end"', $entries['word/document.xml']);
         $this->assertStringContainsString('Naskah Asli Dari Word', $entries['word/document.xml']);
     }
+
+    public function test_sekretaris_dapat_mengunduh_buku_induk_surat_keluar_csv(): void
+    {
+        SuratKeluar::create([
+            'no_surat' => '005/SPm.01/AF-PA/X/2026',
+            'tgl_surat' => '2026-10-25',
+            'tujuan' => 'Kemenag Wilayah',
+            'perihal' => 'Permohonan Dana Bantuan Operasional',
+            'kategori_id' => $this->kategori->id,
+            'isi' => 'Isi surat...',
+            'nama_penandatangan' => 'KH. Syamsuni',
+            'jabatan_penandatangan' => 'Pimpinan',
+            'status' => 'final',
+            'status_ttd' => 'sudah',
+            'kode_verifikasi' => Str::random(32),
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.surat-keluar.export'));
+
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
+
+        $content = $response->streamedContent();
+        $this->assertStringContainsString('Tanggal Pembuatan Surat', $content);
+        $this->assertStringContainsString('Jenis Surat', $content);
+        $this->assertStringContainsString('Perihal', $content);
+        $this->assertStringContainsString('Nomor Surat', $content);
+        $this->assertStringContainsString('Tujuan Surat', $content);
+        $this->assertStringContainsString('005/SPm.01/AF-PA/X/2026', $content);
+        $this->assertStringContainsString('Permohonan Dana Bantuan Operasional', $content);
+        $this->assertStringContainsString('Kemenag Wilayah', $content);
+        $this->assertStringContainsString('25-10-2026', $content);
+    }
+
+    public function test_tamu_tidak_dapat_mengunduh_buku_induk_surat_keluar_csv(): void
+    {
+        $response = $this->get(route('admin.surat-keluar.export'));
+        $response->assertRedirect(route('login'));
+    }
 }
 
 
