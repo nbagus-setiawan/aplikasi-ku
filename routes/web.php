@@ -29,6 +29,8 @@ Route::post('/pengumuman/{slug}/like', [PublicController::class, 'likePengumuman
 Route::post('/pengumuman/{slug}/komentar', [PublicController::class, 'komentarPengumuman'])->middleware('throttle:15,1')->name('publik.pengumuman.komentar');
 Route::post('/pengumuman/{slug}/share', [PublicController::class, 'sharePengumuman'])->middleware('throttle:30,1')->name('publik.pengumuman.share');
 Route::get('/sitemap.xml', [PublicController::class, 'sitemap'])->name('publik.sitemap');
+Route::get('/sitemap', [PublicController::class, 'sitemap']);
+Route::get('/sitemap_index.xml', [PublicController::class, 'sitemap']);
 
 // Rute Publik: Layanan Konsultasi & Verifikasi Surat & Tanda Tangan Jarak Jauh
 Route::get('/konsultasi', [PublicController::class, 'konsultasi'])->name('publik.konsultasi');

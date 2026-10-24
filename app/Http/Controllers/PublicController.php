@@ -306,15 +306,19 @@ class PublicController extends Controller
      */
     public function sitemap()
     {
-        $pengumumans = Pengumuman::terbitPublik()->orderByDesc('updated_at')->get();
-
-        $content = view('public.sitemap', compact('pengumumans'))->render();
-
-        // Tulis juga ke berkas fisik public/sitemap.xml agar web server (LiteSpeed/Apache/Nginx) bisa menyajikan langsung
         try {
+            $pengumumans = Pengumuman::terbitPublik()->orderByDesc('updated_at')->get();
+            $content = view('public.sitemap', compact('pengumumans'))->render();
+
+            // Tulis juga ke berkas fisik public/sitemap.xml agar web server (LiteSpeed/Apache/Nginx) bisa menyajikan langsung
             @file_put_contents(public_path('sitemap.xml'), $content);
         } catch (\Throwable $e) {
-            // Abaikan jika permission tidak mengizinkan penulisan berkas
+            // Fallback: gunakan berkas statis public/sitemap.xml jika ada kendala database
+            if (is_file(public_path('sitemap.xml'))) {
+                $content = file_get_contents(public_path('sitemap.xml'));
+            } else {
+                $content = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"><url><loc>https://ponpesalfalahputak.my.id/</loc><priority>1.0</priority></url></urlset>";
+            }
         }
 
         return response($content, 200)

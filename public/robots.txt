@@ -6,6 +6,8 @@ Allow: /verifikasi
 Allow: /images/
 Allow: /build/
 Allow: /favicon*
+Allow: /sitemap.xml
+Allow: /robots.txt
 Disallow: /admin/
 Disallow: /login
 Disallow: /tanda-tangan/

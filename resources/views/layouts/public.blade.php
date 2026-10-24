@@ -182,7 +182,12 @@
                             "itemOffered": {
                                 "@@type": "Course",
                                 "name": "Pengajian Kitab Kuning (Salafiyah)",
-                                "description": "Pendalaman kitab-kitab salaf mu'tabarah meliputi nahwu, shorof, fiqih, tafsir, hadits, tasawuf, dan ushul fiqih."
+                                "description": "Pendalaman kitab-kitab salaf mu'tabarah meliputi nahwu, shorof, fiqih, tafsir, hadits, tasawuf, dan ushul fiqih.",
+                                "provider": {
+                                    "@@type": "EducationalOrganization",
+                                    "name": "Pondok Pesantren Salafiyah Al-Falah Putak",
+                                    "sameAs": "{{ $urlBeranda }}"
+                                }
                             }
                         },
                         {
@@ -190,7 +195,12 @@
                             "itemOffered": {
                                 "@@type": "Course",
                                 "name": "Program Tahfidz & Tahsin Al-Qur'an",
-                                "description": "Bimbingan menghafal Al-Qur'an bersanad dan tajwid tartil untuk santri putra dan santri putri."
+                                "description": "Bimbingan menghafal Al-Qur'an bersanad dan tajwid tartil untuk santri putra dan santri putri.",
+                                "provider": {
+                                    "@@type": "EducationalOrganization",
+                                    "name": "Pondok Pesantren Salafiyah Al-Falah Putak",
+                                    "sameAs": "{{ $urlBeranda }}"
+                                }
                             }
                         },
                         {
@@ -198,7 +208,12 @@
                             "itemOffered": {
                                 "@@type": "Course",
                                 "name": "Madrasah Diniyah Takmiliyah",
-                                "description": "Pendidikan klasikal terstruktur berjenjang untuk penguatan ilmu keislaman."
+                                "description": "Pendidikan klasikal terstruktur berjenjang untuk penguatan ilmu keislaman.",
+                                "provider": {
+                                    "@@type": "EducationalOrganization",
+                                    "name": "Pondok Pesantren Salafiyah Al-Falah Putak",
+                                    "sameAs": "{{ $urlBeranda }}"
+                                }
                             }
                         }
                     ]
