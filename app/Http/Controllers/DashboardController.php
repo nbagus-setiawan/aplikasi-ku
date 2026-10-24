@@ -245,6 +245,22 @@ class DashboardController extends Controller
             $chartJenjangData[] = $countLainnya;
         }
 
+        // Persentase jenjang santri terhadap total santri aktif
+        $pctMts = $totalSantriAktif > 0 ? round(($countMts / $totalSantriAktif) * 100, 1) : 0;
+        $pctMa = $totalSantriAktif > 0 ? round(($countMa / $totalSantriAktif) * 100, 1) : 0;
+        $pctMutakhorijin = $totalSantriAktif > 0 ? round(($countMutakhorijin / $totalSantriAktif) * 100, 1) : 0;
+        $pctMahasantri = $totalSantriAktif > 0 ? round(($countMahasantri / $totalSantriAktif) * 100, 1) : 0;
+
+        // Daftar hunian asrama terstruktur untuk visual ranking bar
+        $hunianKamarList = [];
+        foreach ($hunianKamar as $kamarNama => $kamarJml) {
+            $hunianKamarList[] = [
+                'nama' => $kamarNama,
+                'total' => $kamarJml,
+            ];
+        }
+        $maxHunian = ! empty($chartAsramaData) ? max($chartAsramaData) : 1;
+
         // Disposisi Surat Masuk
         $disposisiStatusData = [
             'baru' => SuratMasuk::where('status_disposisi', 'baru')->count(),
@@ -282,6 +298,12 @@ class DashboardController extends Controller
             'countMutakhorijin',
             'countMahasantri',
             'countLainnya',
+            'pctMts',
+            'pctMa',
+            'pctMutakhorijin',
+            'pctMahasantri',
+            'hunianKamarList',
+            'maxHunian',
             'chartKelasLabels',
             'chartKelasData',
             'chartKelasColors',

@@ -139,6 +139,12 @@ class DashboardStatisticsTest extends TestCase
 
         $response->assertViewHas('countMutakhorijin', 1);
         $response->assertViewHas('countMahasantri', 1);
+        $response->assertViewHas('pctMts', 37.5);
+        $response->assertViewHas('pctMa', 37.5);
+        $response->assertViewHas('pctMutakhorijin', 12.5);
+        $response->assertViewHas('pctMahasantri', 12.5);
+        $response->assertViewHas('hunianKamarList');
+        $response->assertViewHas('maxHunian', 2);
 
         // Kamar terisi: AS-SIBYAN (2), BAROKAH 7 (2), BAROKAH 9 (2), AL-MUTTAQIN (1), AL-AMIN (1) => 5 kamar
         $response->assertViewHas('totalKamarTerisi', 5);
