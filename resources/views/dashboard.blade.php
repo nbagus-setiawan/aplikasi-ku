@@ -131,7 +131,7 @@
                 </div>
                 <div>
                     <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums">{{ number_format($countMutakhorijin, 0, ',', '.') }}</h3>
-                    <p class="text-[11px] text-amber-700 font-medium mt-1">Khidmah 1 Tahun</p>
+                    <p class="text-[11px] text-amber-700 font-medium mt-1">{{ $pctMutakhorijin }}% dari total santri</p>
                 </div>
             </a>
 
@@ -145,7 +145,7 @@
                 </div>
                 <div>
                     <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums">{{ number_format($countMahasantri, 0, ',', '.') }}</h3>
-                    <p class="text-[11px] text-purple-700 font-medium mt-1">Mukim di Pondok</p>
+                    <p class="text-[11px] text-purple-700 font-medium mt-1">{{ $pctMahasantri }}% dari total santri</p>
                 </div>
             </a>
         </div>
