@@ -173,25 +173,45 @@
             </a>
         </div>
 
+        @if ($countLainnya > 0)
+            <div class="flex items-center justify-between text-xs text-slate-500 bg-slate-50 border border-slate-200/60 rounded-xl px-3.5 py-2">
+                <span class="inline-flex items-center gap-1.5 font-medium text-slate-600">
+                    <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Total {{ $totalSantriAktif }} santri aktif: <strong>{{ $countMts }}</strong> MTs, <strong>{{ $countMa }}</strong> MA, <strong>{{ $countMutakhorijin }}</strong> Mutakhorijin, <strong>{{ $countMahasantri }}</strong> Mahasantri, dan <strong>{{ $countLainnya }}</strong> santri kelas lainnya.
+                </span>
+                <a href="{{ route('admin.santri.index') }}" class="text-emerald-700 hover:text-emerald-800 font-bold hover:underline shrink-0 ml-2">
+                    Lihat Data &rarr;
+                </a>
+            </div>
+        @endif
+
         <!-- 4. Area Grafik Statistik: Sebaran Jenjang Pendidikan & Hunian Asrama (Grafik Batangan / Bar Chart) -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-stretch">
             <!-- Grafik Batangan 1: Sebaran Santri per Jenjang & Tingkat -->
             <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 lg:p-6 shadow-xs flex flex-col justify-between">
                 <div>
-                    <div class="flex items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
                         <div>
                             <h2 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
                                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
-                                Sebaran Jenjang Pendidikan
+                                Sebaran Kelas & Jenjang
                             </h2>
-                            <p class="text-xs text-slate-500 mt-0.5">Perbandingan santri MTs, MA, Mutakhorijin, dan Mahasantri</p>
+                            <p class="text-xs text-slate-500 mt-0.5">Sesuai nilai kelas riil yang diinputkan di data santri</p>
                         </div>
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 text-slate-700">
-                            {{ $totalSantriAktif }} Aktif
-                        </span>
+                        <!-- Toggle Tampilan: Per Kelas (Riil) vs Per Jenjang (Ringkasan) -->
+                        <div class="inline-flex p-0.5 bg-slate-100 border border-slate-200/80 rounded-lg text-xs font-semibold self-start sm:self-auto">
+                            <button type="button" id="btnModeKelas" class="px-2.5 py-1 rounded-md bg-white text-emerald-800 shadow-xs font-bold transition">
+                                Per Kelas
+                            </button>
+                            <button type="button" id="btnModeJenjang" class="px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-800 transition">
+                                Per Jenjang
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- Canvas Grafik Batangan Jenjang -->
+                    <!-- Canvas Grafik Batangan Jenjang / Kelas -->
                     <div class="mt-4 relative h-64 sm:h-72">
                         <canvas id="chartJenjangSantri"></canvas>
                     </div>
@@ -232,7 +252,7 @@
                                 Statistik Hunian Asrama
                             </h2>
                             <p class="text-xs text-slate-500 mt-0.5">
-                                Hanya menampilkan asrama/kamar yang memiliki penghuni santri aktif
+                                Menampilkan kamar yang berpenghuni sesuai inputan data santri
                             </p>
                         </div>
                         <div class="flex items-center gap-2">
@@ -653,26 +673,38 @@
                 });
             }
 
-            // 3. Inisialisasi Grafik Batang Sebaran Jenjang Pendidikan
+            // 3. Inisialisasi Grafik Batang Sebaran Kelas & Jenjang Santri
             const ctxJenjang = document.getElementById('chartJenjangSantri');
             if (ctxJenjang) {
-                new window.Chart(ctxJenjang, {
+                const dataKelas = {
+                    labels: {!! json_encode($chartKelasLabels) !!},
+                    data: {!! json_encode($chartKelasData) !!},
+                    colors: {!! json_encode($chartKelasColors) !!}
+                };
+
+                const dataJenjang = {
+                    labels: {!! json_encode($chartJenjangLabels) !!},
+                    data: {!! json_encode($chartJenjangData) !!},
+                    colors: [
+                        '#059669', // MTs (Emerald)
+                        '#2563eb', // MA (Blue)
+                        '#d97706', // Mutakhorijin (Amber)
+                        '#7c3aed', // Mahasantri (Purple)
+                        '#64748b'  // Lainnya (Slate)
+                    ]
+                };
+
+                const chartJenjangInst = new window.Chart(ctxJenjang, {
                     type: 'bar',
                     data: {
-                        labels: {!! json_encode($chartJenjangLabels) !!},
+                        labels: dataKelas.labels,
                         datasets: [{
                             label: 'Jumlah Santri',
-                            data: {!! json_encode($chartJenjangData) !!},
-                            backgroundColor: [
-                                '#059669', // MTs (Emerald)
-                                '#2563eb', // MA (Blue)
-                                '#d97706', // Mutakhorijin (Amber)
-                                '#7c3aed', // Mahasantri (Purple)
-                                '#64748b'  // Lainnya (Slate)
-                            ],
-                            borderRadius: 8,
+                            data: dataKelas.data,
+                            backgroundColor: dataKelas.colors,
+                            borderRadius: 6,
                             borderSkipped: false,
-                            maxBarThickness: 48
+                            maxBarThickness: 36
                         }]
                     },
                     options: {
@@ -706,13 +738,42 @@
                             },
                             x: {
                                 ticks: {
-                                    font: { size: 11, weight: '600' }
+                                    font: { size: 10, weight: '600' },
+                                    autoSkip: false,
+                                    maxRotation: 45,
+                                    minRotation: 0
                                 },
                                 grid: { display: false }
                             }
                         }
                     }
                 });
+
+                // Handler tombol switch antara 'Per Kelas' (data riil) dan 'Per Jenjang'
+                const btnKelas = document.getElementById('btnModeKelas');
+                const btnJenjang = document.getElementById('btnModeJenjang');
+
+                if (btnKelas && btnJenjang) {
+                    btnKelas.addEventListener('click', function() {
+                        btnKelas.className = 'px-2.5 py-1 rounded-md bg-white text-emerald-800 shadow-xs font-bold transition';
+                        btnJenjang.className = 'px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-800 transition';
+                        chartJenjangInst.data.labels = dataKelas.labels;
+                        chartJenjangInst.data.datasets[0].data = dataKelas.data;
+                        chartJenjangInst.data.datasets[0].backgroundColor = dataKelas.colors;
+                        chartJenjangInst.data.datasets[0].maxBarThickness = 36;
+                        chartJenjangInst.update();
+                    });
+
+                    btnJenjang.addEventListener('click', function() {
+                        btnJenjang.className = 'px-2.5 py-1 rounded-md bg-white text-emerald-800 shadow-xs font-bold transition';
+                        btnKelas.className = 'px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-800 transition';
+                        chartJenjangInst.data.labels = dataJenjang.labels;
+                        chartJenjangInst.data.datasets[0].data = dataJenjang.data;
+                        chartJenjangInst.data.datasets[0].backgroundColor = dataJenjang.colors;
+                        chartJenjangInst.data.datasets[0].maxBarThickness = 52;
+                        chartJenjangInst.update();
+                    });
+                }
             }
 
             // 4. Inisialisasi Grafik Batang Statistik Hunian Asrama

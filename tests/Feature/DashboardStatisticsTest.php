@@ -118,7 +118,7 @@ class DashboardStatisticsTest extends TestCase
         $response = $this->actingAs($user)->get('/admin');
 
         $response->assertStatus(200);
-        $response->assertSee('Sebaran Jenjang Pendidikan');
+        $response->assertSee('Sebaran Kelas & Jenjang', false);
         $response->assertSee('Statistik Hunian Asrama');
         $response->assertSee('Santri MTs');
         $response->assertSee('Santri MA');
@@ -144,5 +144,13 @@ class DashboardStatisticsTest extends TestCase
         $response->assertViewHas('totalKamarTerisi', 5);
         $response->assertViewHas('totalSantriBerasrama', 8);
         $response->assertViewHas('totalSantriTanpaKamar', 0);
+
+        // Kelas riil sesuai inputan
+        $response->assertViewHas('chartKelasLabels', function ($labels) {
+            return in_array('VII 1', $labels) && in_array('X 1', $labels) && in_array('Mutakhorijin', $labels) && in_array('Mahasantri', $labels);
+        });
+        $response->assertViewHas('chartAsramaLabels', function ($labels) {
+            return in_array('AS-SIBYAN', $labels) && in_array('BAROKAH 7', $labels);
+        });
     }
 }

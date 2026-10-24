@@ -165,14 +165,13 @@ class DashboardController extends Controller
                 $countLainnya++;
             }
 
-            // Agregasi Hunian Asrama / Kamar (Hanya yang berpenghuni)
-            if (! empty($rawKamar) && $rawKamar !== '-' && strtolower($rawKamar) !== 'belum ada') {
-                $cleanKamar = strtoupper($rawKamar);
-                $hunianKamar[$cleanKamar] = ($hunianKamar[$cleanKamar] ?? 0) + 1;
+            // Agregasi Hunian Asrama / Kamar (Hanya yang berpenghuni, sesuai teks asli yang diinputkan)
+            if (! empty($rawKamar) && $rawKamar !== '-' && $rawKamar !== '0' && strtolower($rawKamar) !== 'belum ada') {
+                $hunianKamar[$rawKamar] = ($hunianKamar[$rawKamar] ?? 0) + 1;
             }
         }
 
-        // Urutkan asrama berdasarkan jumlah penghuni terbanyak
+        // Urutkan asrama berdasarkan jumlah penghuni terbanyak (persis sesuai inputan data santri)
         arsort($hunianKamar);
 
         $chartAsramaLabels = array_keys($hunianKamar);
@@ -181,7 +180,64 @@ class DashboardController extends Controller
         $totalSantriBerasrama = array_sum($chartAsramaData);
         $totalSantriTanpaKamar = max(0, $totalSantriAktif - $totalSantriBerasrama);
 
-        // Data Grafik Jenjang Santri
+        // Agregasi Kelas Santri (Murni persis sesuai nilai yang diinputkan di data santri)
+        $kelasCounts = [];
+        foreach ($santriAktifList as $s) {
+            $kls = trim((string) $s->kelas);
+            if (! empty($kls) && $kls !== '-' && $kls !== '0') {
+                $kelasCounts[$kls] = ($kelasCounts[$kls] ?? 0) + 1;
+            }
+        }
+
+        // Urutkan kelas berdasarkan urutan jenjang pendidikan pondok:
+        // VII -> VIII -> IX -> X -> XI -> XII -> Mutakhorijin -> Mahasantri -> Lainnya
+        uksort($kelasCounts, function ($a, $b) {
+            $order = function ($val) {
+                $u = strtoupper(trim($val));
+                if (preg_match('/\bVII\b/i', $u) || str_starts_with($u, 'VII') || str_contains($u, 'MTS 1') || str_contains($u, 'MTS 7')) return 10;
+                if (preg_match('/\bVIII\b/i', $u) || str_starts_with($u, 'VIII') || str_contains($u, 'MTS 2') || str_contains($u, 'MTS 8')) return 20;
+                if (preg_match('/\bIX\b/i', $u) || str_starts_with($u, 'IX') || str_contains($u, 'MTS 3') || str_contains($u, 'MTS 9')) return 30;
+                if (preg_match('/\bX\b/i', $u) || str_starts_with($u, 'X') || str_contains($u, 'MA 1') || str_contains($u, 'MA 10')) {
+                    if (! str_starts_with($u, 'XI') && ! str_starts_with($u, 'XII')) return 40;
+                }
+                if (preg_match('/\bXI\b/i', $u) || str_starts_with($u, 'XI') || str_contains($u, 'MA 2') || str_contains($u, 'MA 11')) {
+                    if (! str_starts_with($u, 'XII')) return 50;
+                }
+                if (preg_match('/\bXII\b/i', $u) || str_starts_with($u, 'XII') || str_contains($u, 'MA 3') || str_contains($u, 'MA 12')) return 60;
+                if (str_contains($u, 'MUTAKHORIJ')) return 70;
+                if (str_contains($u, 'MAHASANTRI') || str_contains($u, 'KULIAH')) return 80;
+                return 90;
+            };
+
+            $weightA = $order($a);
+            $weightB = $order($b);
+            if ($weightA === $weightB) {
+                return strnatcasecmp($a, $b);
+            }
+            return $weightA <=> $weightB;
+        });
+
+        $chartKelasLabels = array_keys($kelasCounts);
+        $chartKelasData = array_values($kelasCounts);
+
+        // Skema warna per batang kelas sesuai jenjang
+        $chartKelasColors = [];
+        foreach ($chartKelasLabels as $label) {
+            $u = strtoupper(trim($label));
+            if (str_contains($u, 'MUTAKHORIJ')) {
+                $chartKelasColors[] = '#d97706'; // Amber
+            } elseif (str_contains($u, 'MAHASANTRI') || str_contains($u, 'KULIAH')) {
+                $chartKelasColors[] = '#7c3aed'; // Purple
+            } elseif (preg_match('/\b(VII|VIII|IX)\b/i', $u) || str_contains($u, 'MTS')) {
+                $chartKelasColors[] = '#059669'; // Emerald (MTs)
+            } elseif (preg_match('/\b(X|XI|XII)\b/i', $u) || str_contains($u, 'MA')) {
+                $chartKelasColors[] = '#2563eb'; // Blue (MA)
+            } else {
+                $chartKelasColors[] = '#64748b'; // Slate (Lainnya)
+            }
+        }
+
+        // Data Ringkasan Grafik Jenjang Santri
         $chartJenjangLabels = ['Santri MTs', 'Santri MA', 'Mutakhorijin', 'Mahasantri'];
         $chartJenjangData = [$countMts, $countMa, $countMutakhorijin, $countMahasantri];
         if ($countLainnya > 0) {
@@ -226,6 +282,9 @@ class DashboardController extends Controller
             'countMutakhorijin',
             'countMahasantri',
             'countLainnya',
+            'chartKelasLabels',
+            'chartKelasData',
+            'chartKelasColors',
             'chartJenjangLabels',
             'chartJenjangData',
             'chartAsramaLabels',
