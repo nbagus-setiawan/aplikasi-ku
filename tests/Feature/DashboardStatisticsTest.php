@@ -118,7 +118,7 @@ class DashboardStatisticsTest extends TestCase
         $response = $this->actingAs($user)->get('/admin');
 
         $response->assertStatus(200);
-        $response->assertSee('Sebaran Kelas & Jenjang', false);
+        $response->assertSee('Sebaran Jenjang Santri');
         $response->assertSee('Statistik Hunian Asrama');
         $response->assertSee('Santri MTs');
         $response->assertSee('Santri MA');
