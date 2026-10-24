@@ -151,116 +151,114 @@
         </div>
 
         <!-- 4. Area Visual Statistik: Komposisi Jenjang Santri & Hunian Asrama -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
             <!-- Bagian Kiri: Komposisi Jenjang Santri (Segmented Visual & Detail Cards) -->
-            <div class="lg:col-span-6 bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 lg:p-6 shadow-xs flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between gap-3 pb-3 border-b border-slate-100">
-                        <div>
-                            <h2 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
-                                Sebaran Jenjang Santri
-                            </h2>
-                            <p class="text-xs text-slate-500 mt-0.5">Proporsi santri berdasarkan tingkat pendidikan</p>
-                        </div>
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-100">
-                            {{ $totalSantriAktif }} Santri
-                        </span>
+            <div class="lg:col-span-6 bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 lg:p-6 shadow-xs flex flex-col">
+                <div class="flex items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                    <div>
+                        <h2 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full" style="background-color: #059669;"></span>
+                            Sebaran Jenjang Santri
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Proporsi santri berdasarkan tingkat pendidikan</p>
                     </div>
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-100">
+                        {{ $totalSantriAktif }} Santri
+                    </span>
+                </div>
 
-                    <!-- Visual Segmented Bar Proporsional (Sleek & Modern) -->
-                    <div class="mt-5 space-y-2">
-                        <div class="h-3.5 w-full bg-slate-100 rounded-full flex overflow-hidden p-0.5 gap-0.5 shadow-inner">
-                            @if ($pctMts > 0)
-                                <div style="width: {{ $pctMts }}%" class="h-full bg-emerald-500 rounded-l-full transition-all" title="MTs: {{ $countMts }} ({{ $pctMts }}%)"></div>
-                            @endif
-                            @if ($pctMa > 0)
-                                <div style="width: {{ $pctMa }}%" class="h-full bg-blue-500 transition-all" title="MA: {{ $countMa }} ({{ $pctMa }}%)"></div>
-                            @endif
-                            @if ($pctMutakhorijin > 0)
-                                <div style="width: {{ $pctMutakhorijin }}%" class="h-full bg-amber-500 transition-all" title="Mutakhorijin: {{ $countMutakhorijin }} ({{ $pctMutakhorijin }}%)"></div>
-                            @endif
-                            @if ($pctMahasantri > 0)
-                                <div style="width: {{ $pctMahasantri }}%" class="h-full bg-purple-500 rounded-r-full transition-all" title="Mahasantri: {{ $countMahasantri }} ({{ $pctMahasantri }}%)"></div>
-                            @endif
-                        </div>
-                        <div class="flex items-center justify-between text-[11px] text-slate-400 font-semibold px-0.5">
-                            <span>MTs {{ $pctMts }}%</span>
-                            <span>MA {{ $pctMa }}%</span>
-                            <span>Mutakhorijin {{ $pctMutakhorijin }}%</span>
-                            <span>Mahasantri {{ $pctMahasantri }}%</span>
-                        </div>
+                <!-- Visual Segmented Bar Proporsional (Sleek & Modern) -->
+                <div class="mt-4 space-y-1.5">
+                    <div class="h-3 w-full bg-slate-100 rounded-full flex overflow-hidden p-0.5 gap-0.5">
+                        @if ($pctMts > 0)
+                            <div style="width: {{ $pctMts }}%; background-color: #10b981;" class="h-full rounded-l-full transition-all" title="MTs: {{ $countMts }} ({{ $pctMts }}%)"></div>
+                        @endif
+                        @if ($pctMa > 0)
+                            <div style="width: {{ $pctMa }}%; background-color: #3b82f6;" class="h-full transition-all" title="MA: {{ $countMa }} ({{ $pctMa }}%)"></div>
+                        @endif
+                        @if ($pctMutakhorijin > 0)
+                            <div style="width: {{ $pctMutakhorijin }}%; background-color: #f59e0b;" class="h-full transition-all" title="Mutakhorijin: {{ $countMutakhorijin }} ({{ $pctMutakhorijin }}%)"></div>
+                        @endif
+                        @if ($pctMahasantri > 0)
+                            <div style="width: {{ $pctMahasantri }}%; background-color: #8b5cf6;" class="h-full rounded-r-full transition-all" title="Mahasantri: {{ $countMahasantri }} ({{ $pctMahasantri }}%)"></div>
+                        @endif
                     </div>
-
-                    <!-- Kartu Rincian Tiap Jenjang (2x2 Grid Bersih & Rapi) -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-                        <!-- MTs -->
-                        <div class="p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-100/80">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold text-emerald-900">Madrasah Tsanawiyah</span>
-                                <span class="text-xs font-black text-emerald-700">{{ $pctMts }}%</span>
-                            </div>
-                            <div class="mt-1 flex items-baseline gap-1">
-                                <span class="text-xl font-black text-emerald-950 tabular-nums">{{ $countMts }}</span>
-                                <span class="text-[11px] text-emerald-700">Santri</span>
-                            </div>
-                            <div class="mt-2 pt-2 border-t border-emerald-100/60 flex items-center gap-1.5 text-[10px] text-emerald-800 font-semibold">
-                                <span>VII: {{ $countMtsVII }}</span>
-                                <span>&bull;</span>
-                                <span>VIII: {{ $countMtsVIII }}</span>
-                                <span>&bull;</span>
-                                <span>IX: {{ $countMtsIX }}</span>
-                            </div>
-                        </div>
-
-                        <!-- MA -->
-                        <div class="p-3.5 rounded-xl bg-blue-50/50 border border-blue-100/80">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold text-blue-900">Madrasah Aliyah</span>
-                                <span class="text-xs font-black text-blue-700">{{ $pctMa }}%</span>
-                            </div>
-                            <div class="mt-1 flex items-baseline gap-1">
-                                <span class="text-xl font-black text-blue-950 tabular-nums">{{ $countMa }}</span>
-                                <span class="text-[11px] text-blue-700">Santri</span>
-                            </div>
-                            <div class="mt-2 pt-2 border-t border-blue-100/60 flex items-center gap-1.5 text-[10px] text-blue-800 font-semibold">
-                                <span>X: {{ $countMaX }}</span>
-                                <span>&bull;</span>
-                                <span>XI: {{ $countMaXI }}</span>
-                                <span>&bull;</span>
-                                <span>XII: {{ $countMaXII }}</span>
-                            </div>
-                        </div>
-
-                        <!-- Mutakhorijin -->
-                        <div class="p-3.5 rounded-xl bg-amber-50/50 border border-amber-100/80">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold text-amber-900">Mutakhorijin</span>
-                                <span class="text-xs font-black text-amber-700">{{ $pctMutakhorijin }}%</span>
-                            </div>
-                            <div class="mt-1 flex items-baseline gap-1">
-                                <span class="text-xl font-black text-amber-950 tabular-nums">{{ $countMutakhorijin }}</span>
-                                <span class="text-[11px] text-amber-700">Santri</span>
-                            </div>
-                            <p class="mt-2 pt-2 border-t border-amber-100/60 text-[10px] text-amber-800 font-medium">Tamat Kls 12 &bull; Khidmah 1 Tahun</p>
-                        </div>
-
-                        <!-- Mahasantri -->
-                        <div class="p-3.5 rounded-xl bg-purple-50/50 border border-purple-100/80">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold text-purple-900">Mahasantri</span>
-                                <span class="text-xs font-black text-purple-700">{{ $pctMahasantri }}%</span>
-                            </div>
-                            <div class="mt-1 flex items-baseline gap-1">
-                                <span class="text-xl font-black text-purple-950 tabular-nums">{{ $countMahasantri }}</span>
-                                <span class="text-[11px] text-purple-700">Santri</span>
-                            </div>
-                            <p class="mt-2 pt-2 border-t border-purple-100/60 text-[10px] text-purple-800 font-medium">Kuliah Luar &bull; Mukim Pondok</p>
-                        </div>
+                    <div class="flex items-center justify-between text-[11px] text-slate-400 font-semibold px-0.5">
+                        <span>MTs {{ $pctMts }}%</span>
+                        <span>MA {{ $pctMa }}%</span>
+                        <span>Mutakhorijin {{ $pctMutakhorijin }}%</span>
+                        <span>Mahasantri {{ $pctMahasantri }}%</span>
                     </div>
                 </div>
 
-                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <!-- Kartu Rincian Tiap Jenjang (2x2 Grid Bersih & Rapi) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-3.5">
+                    <!-- MTs -->
+                    <div class="p-3 rounded-xl bg-emerald-50/50 border border-emerald-100/80">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-emerald-900">Madrasah Tsanawiyah</span>
+                            <span class="text-xs font-black text-emerald-700">{{ $pctMts }}%</span>
+                        </div>
+                        <div class="mt-1 flex items-baseline gap-1">
+                            <span class="text-lg font-black text-emerald-950 tabular-nums">{{ $countMts }}</span>
+                            <span class="text-[11px] text-emerald-700">Santri</span>
+                        </div>
+                        <div class="mt-1.5 pt-1.5 border-t border-emerald-100/60 flex items-center gap-1.5 text-[10px] text-emerald-800 font-semibold">
+                            <span>VII: {{ $countMtsVII }}</span>
+                            <span>&bull;</span>
+                            <span>VIII: {{ $countMtsVIII }}</span>
+                            <span>&bull;</span>
+                            <span>IX: {{ $countMtsIX }}</span>
+                        </div>
+                    </div>
+
+                    <!-- MA -->
+                    <div class="p-3 rounded-xl bg-blue-50/50 border border-blue-100/80">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-blue-900">Madrasah Aliyah</span>
+                            <span class="text-xs font-black text-blue-700">{{ $pctMa }}%</span>
+                        </div>
+                        <div class="mt-1 flex items-baseline gap-1">
+                            <span class="text-lg font-black text-blue-950 tabular-nums">{{ $countMa }}</span>
+                            <span class="text-[11px] text-blue-700">Santri</span>
+                        </div>
+                        <div class="mt-1.5 pt-1.5 border-t border-blue-100/60 flex items-center gap-1.5 text-[10px] text-blue-800 font-semibold">
+                            <span>X: {{ $countMaX }}</span>
+                            <span>&bull;</span>
+                            <span>XI: {{ $countMaXI }}</span>
+                            <span>&bull;</span>
+                            <span>XII: {{ $countMaXII }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Mutakhorijin -->
+                    <div class="p-3 rounded-xl bg-amber-50/50 border border-amber-100/80">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-amber-900">Mutakhorijin</span>
+                            <span class="text-xs font-black text-amber-700">{{ $pctMutakhorijin }}%</span>
+                        </div>
+                        <div class="mt-1 flex items-baseline gap-1">
+                            <span class="text-lg font-black text-amber-950 tabular-nums">{{ $countMutakhorijin }}</span>
+                            <span class="text-[11px] text-amber-700">Santri</span>
+                        </div>
+                        <p class="mt-1.5 pt-1.5 border-t border-amber-100/60 text-[10px] text-amber-800 font-medium">Tamat Kls 12 &bull; Khidmah 1 Tahun</p>
+                    </div>
+
+                    <!-- Mahasantri -->
+                    <div class="p-3 rounded-xl bg-purple-50/50 border border-purple-100/80">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-purple-900">Mahasantri</span>
+                            <span class="text-xs font-black text-purple-700">{{ $pctMahasantri }}%</span>
+                        </div>
+                        <div class="mt-1 flex items-baseline gap-1">
+                            <span class="text-lg font-black text-purple-950 tabular-nums">{{ $countMahasantri }}</span>
+                            <span class="text-[11px] text-purple-700">Santri</span>
+                        </div>
+                        <p class="mt-1.5 pt-1.5 border-t border-purple-100/60 text-[10px] text-purple-800 font-medium">Kuliah Luar &bull; Mukim Pondok</p>
+                    </div>
+                </div>
+
+                <div class="mt-3.5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
                     <span class="font-medium text-slate-500">Data aktif sesuai database santri</span>
                     <a href="{{ route('admin.santri.index') }}" class="text-emerald-700 hover:text-emerald-800 font-semibold hover:underline">
                         Buka Data Santri &rarr;
@@ -268,56 +266,54 @@
                 </div>
             </div>
 
-            <!-- Bagian Kanan: Statistik Hunian Asrama (Daftar Ranking Progress Bar Bersih) -->
-            <div class="lg:col-span-6 bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 lg:p-6 shadow-xs flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between gap-3 pb-3 border-b border-slate-100">
-                        <div>
-                            <h2 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                                Statistik Hunian Asrama
-                            </h2>
-                            <p class="text-xs text-slate-500 mt-0.5">Keterisian kamar berpenghuni santri aktif</p>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200/60">
-                                {{ $totalKamarTerisi }} Kamar
-                            </span>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/60">
-                                {{ $totalSantriBerasrama }} Santri
-                            </span>
-                        </div>
+            <!-- Bagian Kanan: Statistik Hunian Asrama (Daftar Ranking Progress Bar Bersih & Rapi) -->
+            <div class="lg:col-span-6 bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 lg:p-6 shadow-xs flex flex-col">
+                <div class="flex items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                    <div>
+                        <h2 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full" style="background-color: #f59e0b;"></span>
+                            Statistik Hunian Asrama
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Keterisian kamar berpenghuni santri aktif</p>
                     </div>
-
-                    <!-- Daftar Kamar Berpenghuni (Sleek Horizontal Progress List) -->
-                    <div class="mt-4 space-y-2.5 max-h-[310px] overflow-y-auto pr-1">
-                        @forelse ($hunianKamarList as $hk)
-                            @php
-                                $pctKamar = $maxHunian > 0 ? round(($hk['total'] / $maxHunian) * 100) : 0;
-                            @endphp
-                            <div class="p-2.5 rounded-xl hover:bg-slate-50/80 transition border border-slate-100/90">
-                                <div class="flex items-center justify-between text-xs mb-1.5">
-                                    <span class="font-bold text-slate-800 flex items-center gap-2">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                                        {{ $hk['nama'] }}
-                                    </span>
-                                    <span class="inline-flex items-center gap-1 font-black text-amber-900 bg-amber-50 border border-amber-200/60 px-2 py-0.5 rounded-md text-[11px] tabular-nums">
-                                        {{ $hk['total'] }} Santri
-                                    </span>
-                                </div>
-                                <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                                    <div class="h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-500 transition-all duration-300" style="width: {{ $pctKamar }}%"></div>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="h-48 flex flex-col items-center justify-center text-center p-6 text-slate-400">
-                                <p class="text-xs">Belum ada data kamar terisi.</p>
-                            </div>
-                        @endforelse
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200/60">
+                            {{ $totalKamarTerisi }} Kamar
+                        </span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/60">
+                            {{ $totalSantriBerasrama }} Santri
+                        </span>
                     </div>
                 </div>
 
-                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <!-- Daftar Kamar Berpenghuni (Sleek Horizontal Progress List dengan Scroll Terbatas) -->
+                <div class="mt-4 space-y-2 pr-1" style="max-height: 270px; overflow-y: auto;">
+                    @forelse ($hunianKamarList as $hk)
+                        @php
+                            $pctKamar = $maxHunian > 0 ? round(($hk['total'] / $maxHunian) * 100) : 0;
+                        @endphp
+                        <div class="p-2 sm:p-2.5 rounded-xl hover:bg-slate-50 transition border border-slate-100/90">
+                            <div class="flex items-center justify-between text-xs mb-1.5">
+                                <span class="font-bold text-slate-800 flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full" style="background-color: #f59e0b;"></span>
+                                    {{ $hk['nama'] }}
+                                </span>
+                                <span class="inline-flex items-center gap-1 font-black text-amber-900 bg-amber-50 border border-amber-200/60 px-2 py-0.5 rounded-md text-[11px] tabular-nums">
+                                    {{ $hk['total'] }} Santri
+                                </span>
+                            </div>
+                            <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                                <div class="h-full rounded-full transition-all" style="width: {{ max($pctKamar, 5) }}%; background-color: #f59e0b; min-width: 6px;"></div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="h-40 flex flex-col items-center justify-center text-center p-6 text-slate-400">
+                            <p class="text-xs">Belum ada data kamar terisi.</p>
+                        </div>
+                    @endforelse
+                </div>
+
+                <div class="mt-3.5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
                     @if ($totalSantriTanpaKamar > 0)
                         <span class="text-amber-700 font-medium truncate">
                             {{ $totalSantriTanpaKamar }} santri belum ada alokasi kamar
