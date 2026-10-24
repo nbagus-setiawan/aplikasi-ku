@@ -55,11 +55,14 @@ class SuratKeluarController extends Controller
             $tahun = date('Y', strtotime($tglSurat));
             $urutBerikutnya = str_pad((string) (SuratKeluar::whereYear('tgl_surat', $tahun)->withTrashed()->count() + 1), 3, '0', STR_PAD_LEFT);
             $saranNomor = "{$urutBerikutnya}/{$kodeJenis}/{$lembaga}/{$bulanRomawi}/{$tahun}";
+            $kat = KategoriSurat::resolveOrCreate($kodeJenis);
+            $jenisSuratNama = $kat ? $kat->nama : 'Surat Permohonan';
 
             return response()->json([
                 'success' => true,
                 'data' => array_merge($parsed, [
                     'saran_no_surat' => $saranNomor,
+                    'jenis_surat' => $jenisSuratNama,
                 ]),
             ]);
         } catch (\Throwable $e) {
@@ -81,6 +84,7 @@ class SuratKeluarController extends Controller
                     'no_surat' => '',
                     'is_nomor_lengkap' => false,
                     'kode_jenis' => 'SPm.01',
+                    'jenis_surat' => 'Surat Permohonan',
                     'lampiran_teks' => '-',
                     'ada_lampiran' => false,
                     'perihal' => $fileName,
@@ -266,17 +270,20 @@ class SuratKeluarController extends Controller
         $namaPenandatangan = $validated['nama_penandatangan'] ?? '-';
         $jabatanPenandatangan = $validated['jabatan_penandatangan'] ?? '-';
 
-        // Tentukan kode jenis surat
+        // Tentukan jenis & kategori surat
+        $jenisSuratInput = trim((string) ($request->input('jenis_surat') ?: ($validated['jenis_surat'] ?? '')));
         $kodeJenisInput = $validated['kode_jenis_surat'] ?? ($parsedDocx['kode_jenis'] ?? null);
-        if (!empty($kodeJenisInput)) {
-            $kodeJenis = strtoupper(trim($kodeJenisInput));
-            $kategori = KategoriSurat::firstOrCreate(
-                ['kode' => $kodeJenis],
-                ['nama' => $kodeJenis, 'keterangan' => 'Jenis surat ' . $kodeJenis]
-            );
+
+        $kategori = null;
+        if ($jenisSuratInput !== '') {
+            $kategori = KategoriSurat::resolveOrCreate($jenisSuratInput);
+        } elseif (!empty($kodeJenisInput)) {
+            $kategori = KategoriSurat::resolveOrCreate($kodeJenisInput);
         } elseif (!empty($validated['kategori_id'])) {
-            $kategori = KategoriSurat::findOrFail($validated['kategori_id']);
-        } else {
+            $kategori = KategoriSurat::find($validated['kategori_id']);
+        }
+
+        if (empty($kategori)) {
             $kategori = KategoriSurat::firstOrCreate(
                 ['kode' => 'SPm.01'],
                 ['nama' => 'Surat Permohonan']

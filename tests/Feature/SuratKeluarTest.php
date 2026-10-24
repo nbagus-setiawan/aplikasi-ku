@@ -622,6 +622,37 @@ class SuratKeluarTest extends TestCase
         $response = $this->get(route('admin.surat-keluar.export'));
         $response->assertRedirect(route('login'));
     }
+
+    public function test_sekretaris_dapat_menginput_jenis_surat_secara_manual_pada_surat_keluar(): void
+    {
+        $payload = [
+            'no_surat_manual' => '099/SKM.01/AF-PA/X/2026',
+            'tgl_surat' => '2026-10-25',
+            'tujuan' => 'Pimpinan Lembaga',
+            'perihal' => 'Surat Keterangan Mengajar Asatidz',
+            'jenis_surat' => 'Surat Keterangan Mengajar',
+            'isi' => '<p>Menerangkan bahwa...</p>',
+            'nama_penandatangan' => 'KH. Syamsuni',
+            'jabatan_penandatangan' => 'Pimpinan',
+            'status' => 'draft',
+        ];
+
+        $response = $this->actingAs($this->user)->post(route('admin.surat-keluar.store'), $payload);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('kategori_surats', [
+            'nama' => 'Surat Keterangan Mengajar',
+        ]);
+
+        $kategori = \App\Models\KategoriSurat::where('nama', 'Surat Keterangan Mengajar')->first();
+        $this->assertNotNull($kategori);
+
+        $this->assertDatabaseHas('surat_keluars', [
+            'no_surat' => '099/SKM.01/AF-PA/X/2026',
+            'kategori_id' => $kategori->id,
+            'perihal' => 'Surat Keterangan Mengajar Asatidz',
+        ]);
+    }
 }
 
 

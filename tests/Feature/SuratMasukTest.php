@@ -241,4 +241,33 @@ class SuratMasukTest extends TestCase
         $response = $this->get(route('admin.surat-masuk.export'));
         $response->assertRedirect(route('login'));
     }
+
+    public function test_sekretaris_dapat_menginput_jenis_surat_secara_manual_pada_surat_masuk(): void
+    {
+        $payload = [
+            'no_surat' => '100/DIKNAS/2026',
+            'tgl_surat' => '2026-10-25',
+            'tgl_diterima' => '2026-10-25',
+            'pengirim' => 'Dinas Pendidikan',
+            'perihal' => 'Pemberitahuan Bantuan Operasional',
+            'jenis_surat' => 'Surat Pemberitahuan Khusus',
+            'status_disposisi' => 'baru',
+        ];
+
+        $response = $this->actingAs($this->user)->post(route('admin.surat-masuk.store'), $payload);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('kategori_surats', [
+            'nama' => 'Surat Pemberitahuan Khusus',
+        ]);
+
+        $kategori = \App\Models\KategoriSurat::where('nama', 'Surat Pemberitahuan Khusus')->first();
+        $this->assertNotNull($kategori);
+
+        $this->assertDatabaseHas('surat_masuks', [
+            'no_surat' => '100/DIKNAS/2026',
+            'kategori_id' => $kategori->id,
+            'perihal' => 'Pemberitahuan Bantuan Operasional',
+        ]);
+    }
 }

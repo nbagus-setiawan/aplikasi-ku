@@ -16,6 +16,7 @@
             saran_no_surat: '',
             is_nomor_lengkap: true,
             kode_jenis: 'SPm.01',
+            jenis_surat: 'Surat Masuk',
             perihal: '',
             lampiran_teks: '-',
             ada_lampiran: false,
@@ -193,6 +194,7 @@
             @csrf
             <!-- Hidden fields yang terhubung langsung ke hasil deteksi (dan otomatis ikut berubah jika dikoreksi manual) -->
             <input type="hidden" name="no_surat" :value="inputNomorManual">
+            <input type="hidden" name="jenis_surat" :value="detected.jenis_surat">
             <input type="hidden" name="perihal" :value="detected.perihal">
             <input type="hidden" name="lampiran_teks" :value="detected.lampiran_teks">
             <input type="hidden" name="pengirim" :value="detected.pengirim">
@@ -365,6 +367,22 @@
                                        class="text-xs font-bold text-gray-900 rounded-lg border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-1 px-2" />
                             </div>
                         </div>
+
+                        <!-- 6. Jenis Surat (Bisa Ketik Bebas Manual / Rekomendasi) -->
+                        <div class="sm:col-span-2 p-3.5 bg-white rounded-xl border border-gray-200 space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <label class="block text-gray-500 font-bold text-[11px] uppercase tracking-wider">Jenis Surat</label>
+                                <span class="text-[10px] text-emerald-700 font-semibold">Ketik Bebas Manual / Rekomendasi</span>
+                            </div>
+                            <input type="text" list="list-jenis-surat-masuk" x-model="detected.jenis_surat"
+                                   placeholder="Ketik jenis surat (contoh: Surat Undangan, Surat Pemberitahuan, Surat Permohonan, dll)..."
+                                   class="w-full text-xs font-bold text-gray-900 rounded-lg border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2 px-2.5" />
+                            <datalist id="list-jenis-surat-masuk">
+                                @foreach($kategoriList as $kat)
+                                    <option value="{{ $kat->nama }}">{{ $kat->nama }} ({{ $kat->kode }})</option>
+                                @endforeach
+                            </datalist>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -452,6 +470,10 @@
                     <div class="flex justify-between gap-2">
                         <span class="text-gray-500">No. Surat Asal:</span>
                         <span class="font-mono font-bold text-gray-900 text-right" x-text="inputNomorManual"></span>
+                    </div>
+                    <div class="flex justify-between gap-2">
+                        <span class="text-gray-500">Jenis Surat:</span>
+                        <span class="font-bold text-emerald-800 text-right" x-text="detected.jenis_surat"></span>
                     </div>
                     <div class="flex justify-between gap-2">
                         <span class="text-gray-500">Perihal:</span>

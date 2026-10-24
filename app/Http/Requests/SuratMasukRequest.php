@@ -30,6 +30,7 @@ class SuratMasukRequest extends FormRequest
             'perihal' => [$isWordUpload ? 'nullable' : 'required', 'string', 'max:255'],
             'lampiran_teks' => ['nullable', 'string', 'max:100'],
             'kategori_id' => ['nullable', 'exists:kategori_surats,id'],
+            'jenis_surat' => ['nullable', 'string', 'max:255'],
             'file_surat_asli' => ['nullable', 'file', 'extensions:docx,doc,pdf,jpg,jpeg,png,txt,html,htm', 'max:5120'],
             'file' => ['nullable', 'file', 'extensions:pdf,jpg,jpeg,png,doc,docx', 'max:5120'],
             'file_lampiran' => ['nullable', 'file', 'extensions:pdf,jpg,jpeg,png,doc,docx', 'max:5120'],

@@ -30,6 +30,7 @@ class SuratKeluarRequest extends FormRequest
             'perihal' => [$hasWordFile ? 'nullable' : 'required', 'string', 'max:255'],
             'lampiran_teks' => ['nullable', 'string', 'max:100'],
             'kategori_id' => ['nullable', 'exists:kategori_surats,id'],
+            'jenis_surat' => ['nullable', 'string', 'max:255'],
             'kode_jenis_surat' => ['nullable', 'string', 'max:50'],
             'ukuran_kertas' => ['nullable', 'in:a4,f4'],
             'margin' => ['nullable', 'string', 'max:50'],

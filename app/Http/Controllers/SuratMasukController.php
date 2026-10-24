@@ -38,11 +38,16 @@ class SuratMasukController extends Controller
         $tahun = date('Y');
         $noAgendaBerikutnya = str_pad((string) (SuratMasuk::whereYear('tgl_diterima', $tahun)->withTrashed()->count() + 1), 3, '0', STR_PAD_LEFT);
 
+        $kodeJenis = $parsed['kode_jenis'] ?? '';
+        $kat = !empty($kodeJenis) ? KategoriSurat::resolveOrCreate($kodeJenis) : null;
+        $jenisSuratNama = $kat ? $kat->nama : 'Surat Masuk';
+
         return response()->json([
             'success' => true,
             'data' => array_merge($parsed, [
                 'tgl_diterima' => date('Y-m-d'),
                 'no_agenda_berikutnya' => $noAgendaBerikutnya,
+                'jenis_surat' => $jenisSuratNama,
             ]),
         ]);
     }
@@ -225,6 +230,17 @@ class SuratMasukController extends Controller
         $perihal = trim((string) ($validated['perihal'] ?? ($parsedDocx['perihal'] ?? 'Surat Masuk')));
         $lampiranTeks = trim((string) ($validated['lampiran_teks'] ?? ($parsedDocx['lampiran_teks'] ?? '-')));
 
+        // Tentukan kategori dari jenis_surat (ketik bebas / pilih) atau kategori_id
+        $jenisSuratInput = trim((string) ($request->input('jenis_surat') ?: ($validated['jenis_surat'] ?? '')));
+        $kategoriId = null;
+
+        if ($jenisSuratInput !== '') {
+            $kat = KategoriSurat::resolveOrCreate($jenisSuratInput);
+            $kategoriId = $kat?->id;
+        } elseif (!empty($validated['kategori_id'])) {
+            $kategoriId = $validated['kategori_id'];
+        }
+
         $noAgenda = $this->nomorSuratService->generateNomorAgenda($tglDiterima);
 
         $suratMasuk = SuratMasuk::create([
@@ -236,7 +252,7 @@ class SuratMasukController extends Controller
             'pengirim' => $pengirim ?: '-',
             'perihal' => $perihal ?: 'Surat Masuk',
             'lampiran_teks' => $lampiranTeks ?: '-',
-            'kategori_id' => $validated['kategori_id'] ?? null,
+            'kategori_id' => $kategoriId,
             'file' => $fileTampilanPath,
             'file_surat_asli' => $fileSuratAsliPath ?: $fileTampilanPath,
             'file_lampiran' => $fileLampiranPath,
