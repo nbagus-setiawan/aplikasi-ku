@@ -32,6 +32,7 @@
     <title>{{ $judulLengkap }}</title>
 
     <!-- Google Site Verification (Wajib Tetap Ada untuk Google Search Console) -->
+     <meta name="google-site-verification" content="72Nq8pD4SrApP7ntXjAQOdaCnfwLRmT3lMQ5bRs7cHY" />
 
 
     <!-- Open Graph (Wajib di Atas untuk WhatsApp Crawler & Media Sosial) -->
