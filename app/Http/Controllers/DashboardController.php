@@ -69,6 +69,126 @@ class DashboardController extends Controller
         ];
         $totalSantriSemua = array_sum($santriStatusData);
 
+        // Klasifikasi Jenjang Santri Aktif (MTs, MA, Mutakhorijin, Mahasantri) & Hunian Asrama
+        $santriAktifList = Santri::where('status', 'aktif')->get(['id', 'kelas', 'kamar']);
+
+        $countMts = 0;
+        $countMtsVII = 0;
+        $countMtsVIII = 0;
+        $countMtsIX = 0;
+
+        $countMa = 0;
+        $countMaX = 0;
+        $countMaXI = 0;
+        $countMaXII = 0;
+
+        $countMutakhorijin = 0;
+        $countMahasantri = 0;
+        $countLainnya = 0;
+
+        $hunianKamar = [];
+
+        foreach ($santriAktifList as $s) {
+            $rawKelas = strtoupper(trim((string) $s->kelas));
+            $rawKamar = trim((string) $s->kamar);
+
+            // 1. Mutakhorijin (tamat kelas 12 & mengabdi 1 tahun)
+            if (str_contains($rawKelas, 'MUTAKHORIJIN') || str_contains($rawKelas, 'MUTAKHORIJ') || str_contains($rawKelas, 'PENGABDIAN')) {
+                $countMutakhorijin++;
+            }
+            // 2. Mahasantri (kuliah di luar tapi mukim di pondok)
+            elseif (str_contains($rawKelas, 'MAHASANTRI') || str_contains($rawKelas, 'KULIAH')) {
+                $countMahasantri++;
+            }
+            // 3. MTs (Kelas VII, VIII, IX) - Cek VIII terlebih dahulu agar awalan 'VIII' tidak tertangkap oleh 'VII'
+            elseif (
+                preg_match('/\bVIII\b/i', $rawKelas) || 
+                str_starts_with($rawKelas, 'VIII') || 
+                str_contains($rawKelas, 'MTS 2') || 
+                str_contains($rawKelas, 'MTS 8') ||
+                preg_match('/^8\b/', $rawKelas)
+            ) {
+                $countMts++;
+                $countMtsVIII++;
+            } elseif (
+                preg_match('/\bIX\b/i', $rawKelas) || 
+                str_starts_with($rawKelas, 'IX') || 
+                str_contains($rawKelas, 'MTS 3') || 
+                str_contains($rawKelas, 'MTS 9') ||
+                preg_match('/^9\b/', $rawKelas)
+            ) {
+                $countMts++;
+                $countMtsIX++;
+            } elseif (
+                preg_match('/\bVII\b/i', $rawKelas) || 
+                str_starts_with($rawKelas, 'VII') || 
+                str_contains($rawKelas, 'MTS 1') || 
+                str_contains($rawKelas, 'MTS 7') ||
+                preg_match('/^7\b/', $rawKelas)
+            ) {
+                $countMts++;
+                $countMtsVII++;
+            } elseif (str_contains($rawKelas, 'MTS') || str_contains($rawKelas, 'TSANAWIYAH')) {
+                $countMts++;
+            }
+            // 4. MA (Kelas X, XI, XII)
+            elseif (
+                preg_match('/\bXII\b/i', $rawKelas) || 
+                str_starts_with($rawKelas, 'XII') || 
+                str_contains($rawKelas, 'MA 3') || 
+                str_contains($rawKelas, 'MA 12') ||
+                preg_match('/^12\b/', $rawKelas)
+            ) {
+                $countMa++;
+                $countMaXII++;
+            } elseif (
+                preg_match('/\bXI\b/i', $rawKelas) || 
+                str_starts_with($rawKelas, 'XI') || 
+                str_contains($rawKelas, 'MA 2') || 
+                str_contains($rawKelas, 'MA 11') ||
+                preg_match('/^11\b/', $rawKelas)
+            ) {
+                $countMa++;
+                $countMaXI++;
+            } elseif (
+                preg_match('/\bX\b/i', $rawKelas) || 
+                str_starts_with($rawKelas, 'X') || 
+                str_contains($rawKelas, 'MA 1') || 
+                str_contains($rawKelas, 'MA 10') ||
+                preg_match('/^10\b/', $rawKelas)
+            ) {
+                $countMa++;
+                $countMaX++;
+            } elseif (str_contains($rawKelas, 'MA') || str_contains($rawKelas, 'ALIYAH')) {
+                $countMa++;
+            } else {
+                $countLainnya++;
+            }
+
+            // Agregasi Hunian Asrama / Kamar (Hanya yang berpenghuni)
+            if (! empty($rawKamar) && $rawKamar !== '-' && strtolower($rawKamar) !== 'belum ada') {
+                $cleanKamar = strtoupper($rawKamar);
+                $hunianKamar[$cleanKamar] = ($hunianKamar[$cleanKamar] ?? 0) + 1;
+            }
+        }
+
+        // Urutkan asrama berdasarkan jumlah penghuni terbanyak
+        arsort($hunianKamar);
+
+        $chartAsramaLabels = array_keys($hunianKamar);
+        $chartAsramaData = array_values($hunianKamar);
+        $totalKamarTerisi = count($hunianKamar);
+        $totalSantriBerasrama = array_sum($chartAsramaData);
+        $totalSantriTanpaKamar = max(0, $totalSantriAktif - $totalSantriBerasrama);
+
+        // Data Grafik Jenjang Santri
+        $chartJenjangLabels = ['Santri MTs', 'Santri MA', 'Mutakhorijin', 'Mahasantri'];
+        $chartJenjangData = [$countMts, $countMa, $countMutakhorijin, $countMahasantri];
+        if ($countLainnya > 0) {
+            $chartJenjangLabels[] = 'Lainnya';
+            $chartJenjangData[] = $countLainnya;
+        }
+
         // Disposisi Surat Masuk
         $disposisiStatusData = [
             'baru' => SuratMasuk::where('status_disposisi', 'baru')->count(),
@@ -94,7 +214,25 @@ class DashboardController extends Controller
             'chartSuratKeluarData',
             'santriStatusData',
             'totalSantriSemua',
-            'disposisiStatusData'
+            'disposisiStatusData',
+            'countMts',
+            'countMtsVII',
+            'countMtsVIII',
+            'countMtsIX',
+            'countMa',
+            'countMaX',
+            'countMaXI',
+            'countMaXII',
+            'countMutakhorijin',
+            'countMahasantri',
+            'countLainnya',
+            'chartJenjangLabels',
+            'chartJenjangData',
+            'chartAsramaLabels',
+            'chartAsramaData',
+            'totalKamarTerisi',
+            'totalSantriBerasrama',
+            'totalSantriTanpaKamar'
         ));
     }
 }

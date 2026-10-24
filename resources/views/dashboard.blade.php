@@ -77,88 +77,219 @@
             </div>
         @endif
 
-        <!-- 3. Empat Kartu Statistik Utama (Responsive Grid: 2 kolom di HP, 4 kolom di Laptop/Desktop) -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-            <!-- Santri Aktif -->
-            <a href="{{ route('admin.santri.index') }}" class="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200/80 shadow-xs hover:border-emerald-400 hover:shadow-sm transition flex flex-col justify-between gap-3 group">
+        <!-- 3. Metrik Statistik Santri & Jenjang (Responsif: 2 kolom di HP dengan Santri Aktif full width, 5 kolom di Desktop) -->
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
+            <!-- 1. Santri Aktif (Semua) - Full width di HP (col-span-2), 1 kolom di desktop -->
+            <a href="{{ route('admin.santri.index') }}" class="col-span-2 lg:col-span-1 bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-md transition flex flex-col justify-between gap-3 group relative overflow-hidden">
+                <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
                 <div class="flex items-center justify-between gap-2">
-                    <span class="text-[11px] xs:text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider truncate">Santri Aktif</span>
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-100">
+                    <span class="text-[11px] xs:text-xs font-bold text-emerald-100 uppercase tracking-wider truncate">Santri Aktif</span>
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/15 text-white flex items-center justify-center shrink-0 border border-white/20">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                     </div>
                 </div>
                 <div>
-                    <h3 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tabular-nums">{{ number_format($totalSantriAktif, 0, ',', '.') }}</h3>
-                    <span class="inline-flex items-center gap-1 text-[11px] sm:text-xs font-semibold text-emerald-700 mt-1 group-hover:translate-x-0.5 transition-transform">
-                        Kelola Santri &rarr;
-                    </span>
+                    <h3 class="text-2xl sm:text-3xl font-black text-white tabular-nums tracking-tight">{{ number_format($totalSantriAktif, 0, ',', '.') }}</h3>
+                    <div class="flex items-center justify-between mt-1 text-[11px] text-emerald-100 font-medium">
+                        <span>Semua Jenjang</span>
+                        <span class="font-bold group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+                    </div>
                 </div>
             </a>
 
-            <!-- Surat Masuk Bulan Ini -->
-            <a href="{{ route('admin.surat-masuk.index') }}" class="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200/80 shadow-xs hover:border-blue-400 hover:shadow-sm transition flex flex-col justify-between gap-3 group">
+            <!-- 2. Santri MTs -->
+            <a href="{{ route('admin.santri.index') }}" class="col-span-1 bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200/80 shadow-xs hover:border-emerald-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5 group">
                 <div class="flex items-center justify-between gap-2">
-                    <span class="text-[11px] xs:text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider truncate">Surat Masuk</span>
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 border border-blue-100">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                    <span class="text-[11px] xs:text-xs font-bold text-slate-500 uppercase tracking-wider truncate">Santri MTs</span>
+                    <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-100">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                         </svg>
                     </div>
                 </div>
                 <div>
-                    <h3 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tabular-nums">{{ $suratMasukBulanIni }}</h3>
-                    @if ($suratMasukBelumDisposisi > 0)
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] sm:text-xs font-bold bg-amber-100 text-amber-800 mt-1">
-                            {{ $suratMasukBelumDisposisi }} perlu disposisi
-                        </span>
-                    @else
-                        <span class="inline-flex items-center gap-1 text-[11px] sm:text-xs font-semibold text-blue-700 mt-1 group-hover:translate-x-0.5 transition-transform">
-                            Buku Agenda &rarr;
-                        </span>
-                    @endif
+                    <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 tabular-nums">{{ number_format($countMts, 0, ',', '.') }}</h3>
+                    <div class="mt-1 flex flex-wrap gap-1 text-[10px] text-slate-500 font-medium">
+                        <span class="px-1.5 py-0.5 rounded bg-slate-100 font-semibold text-slate-600">VII: {{ $countMtsVII }}</span>
+                        <span class="px-1.5 py-0.5 rounded bg-slate-100 font-semibold text-slate-600">VIII: {{ $countMtsVIII }}</span>
+                        <span class="px-1.5 py-0.5 rounded bg-slate-100 font-semibold text-slate-600">IX: {{ $countMtsIX }}</span>
+                    </div>
                 </div>
             </a>
 
-            <!-- Surat Keluar Bulan Ini -->
-            <a href="{{ route('admin.surat-keluar.index') }}" class="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200/80 shadow-xs hover:border-amber-400 hover:shadow-sm transition flex flex-col justify-between gap-3 group">
+            <!-- 3. Santri MA -->
+            <a href="{{ route('admin.santri.index') }}" class="col-span-1 bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200/80 shadow-xs hover:border-blue-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5 group">
                 <div class="flex items-center justify-between gap-2">
-                    <span class="text-[11px] xs:text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider truncate">Surat Keluar</span>
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 border border-amber-100">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    <span class="text-[11px] xs:text-xs font-bold text-slate-500 uppercase tracking-wider truncate">Santri MA</span>
+                    <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 border border-blue-100">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
                     </div>
                 </div>
                 <div>
-                    <h3 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tabular-nums">{{ $suratKeluarBulanIni }}</h3>
-                    <span class="inline-flex items-center gap-1 text-[11px] sm:text-xs font-semibold text-amber-700 mt-1 group-hover:translate-x-0.5 transition-transform">
-                        Buku Ekspedisi &rarr;
-                    </span>
+                    <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 tabular-nums">{{ number_format($countMa, 0, ',', '.') }}</h3>
+                    <div class="mt-1 flex flex-wrap gap-1 text-[10px] text-slate-500 font-medium">
+                        <span class="px-1.5 py-0.5 rounded bg-slate-100 font-semibold text-slate-600">X: {{ $countMaX }}</span>
+                        <span class="px-1.5 py-0.5 rounded bg-slate-100 font-semibold text-slate-600">XI: {{ $countMaXI }}</span>
+                        <span class="px-1.5 py-0.5 rounded bg-slate-100 font-semibold text-slate-600">XII: {{ $countMaXII }}</span>
+                    </div>
                 </div>
             </a>
 
-            <!-- Agenda Mendatang -->
-            <a href="{{ route('admin.agenda.index') }}" class="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200/80 shadow-xs hover:border-purple-400 hover:shadow-sm transition flex flex-col justify-between gap-3 group">
+            <!-- 4. Mutakhorijin -->
+            <a href="{{ route('admin.santri.index', ['search' => 'Mutakhorijin']) }}" class="col-span-1 bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200/80 shadow-xs hover:border-amber-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5 group">
                 <div class="flex items-center justify-between gap-2">
-                    <span class="text-[11px] xs:text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider truncate">Agenda Terjadwal</span>
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center shrink-0 border border-purple-100">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <span class="text-[11px] xs:text-xs font-bold text-slate-500 uppercase tracking-wider truncate">Mutakhorijin</span>
+                    <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 border border-amber-100">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                         </svg>
                     </div>
                 </div>
                 <div>
-                    <h3 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tabular-nums">{{ $agendaMendatang }}</h3>
-                    <span class="inline-flex items-center gap-1 text-[11px] sm:text-xs font-semibold text-purple-700 mt-1 group-hover:translate-x-0.5 transition-transform">
-                        Jadwal Kegiatan &rarr;
-                    </span>
+                    <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 tabular-nums">{{ number_format($countMutakhorijin, 0, ',', '.') }}</h3>
+                    <p class="text-[10px] sm:text-xs text-slate-500 font-medium mt-1 truncate">Tamat Kls 12 · Khidmah 1 Th</p>
+                </div>
+            </a>
+
+            <!-- 5. Mahasantri -->
+            <a href="{{ route('admin.santri.index', ['search' => 'Mahasantri']) }}" class="col-span-1 bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200/80 shadow-xs hover:border-purple-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5 group">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-[11px] xs:text-xs font-bold text-slate-500 uppercase tracking-wider truncate">Mahasantri</span>
+                    <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center shrink-0 border border-purple-100">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                        </svg>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 tabular-nums">{{ number_format($countMahasantri, 0, ',', '.') }}</h3>
+                    <p class="text-[10px] sm:text-xs text-slate-500 font-medium mt-1 truncate">Kuliah Luar · Mukim Pondok</p>
                 </div>
             </a>
         </div>
 
-        <!-- 4. Area Bagan / Grafik Statistik (Chart.js Responsif) -->
+        <!-- 4. Area Grafik Statistik: Sebaran Jenjang Pendidikan & Hunian Asrama (Grafik Batangan / Bar Chart) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-stretch">
+            <!-- Grafik Batangan 1: Sebaran Santri per Jenjang & Tingkat -->
+            <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 lg:p-6 shadow-xs flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                        <div>
+                            <h2 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                                Sebaran Jenjang Pendidikan
+                            </h2>
+                            <p class="text-xs text-slate-500 mt-0.5">Perbandingan santri MTs, MA, Mutakhorijin, dan Mahasantri</p>
+                        </div>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 text-slate-700">
+                            {{ $totalSantriAktif }} Aktif
+                        </span>
+                    </div>
+
+                    <!-- Canvas Grafik Batangan Jenjang -->
+                    <div class="mt-4 relative h-64 sm:h-72">
+                        <canvas id="chartJenjangSantri"></canvas>
+                    </div>
+                </div>
+
+                <!-- Ringkasan Rincian Jenjang di Bawah Grafik -->
+                <div class="mt-4 pt-3 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+                    <div class="p-2 rounded-xl bg-emerald-50/60 border border-emerald-100/80">
+                        <span class="block text-[10px] font-bold text-emerald-800 uppercase tracking-wide">MTs</span>
+                        <span class="text-base font-black text-emerald-950 tabular-nums">{{ $countMts }}</span>
+                        <span class="block text-[9px] text-emerald-700 mt-0.5">Kls VII–IX</span>
+                    </div>
+                    <div class="p-2 rounded-xl bg-blue-50/60 border border-blue-100/80">
+                        <span class="block text-[10px] font-bold text-blue-800 uppercase tracking-wide">MA</span>
+                        <span class="text-base font-black text-blue-950 tabular-nums">{{ $countMa }}</span>
+                        <span class="block text-[9px] text-blue-700 mt-0.5">Kls X–XII</span>
+                    </div>
+                    <div class="p-2 rounded-xl bg-amber-50/60 border border-amber-100/80">
+                        <span class="block text-[10px] font-bold text-amber-800 uppercase tracking-wide">Mutakhorijin</span>
+                        <span class="text-base font-black text-amber-950 tabular-nums">{{ $countMutakhorijin }}</span>
+                        <span class="block text-[9px] text-amber-700 mt-0.5">Khidmah</span>
+                    </div>
+                    <div class="p-2 rounded-xl bg-purple-50/60 border border-purple-100/80">
+                        <span class="block text-[10px] font-bold text-purple-800 uppercase tracking-wide">Mahasantri</span>
+                        <span class="text-base font-black text-purple-950 tabular-nums">{{ $countMahasantri }}</span>
+                        <span class="block text-[9px] text-purple-700 mt-0.5">Mukim</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grafik Batangan 2: Statistik Hunian Asrama (Hanya yang berpenghuni) -->
+            <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 lg:p-6 shadow-xs flex flex-col justify-between">
+                <div>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+                        <div>
+                            <h2 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                                Statistik Hunian Asrama
+                            </h2>
+                            <p class="text-xs text-slate-500 mt-0.5">
+                                Hanya menampilkan asrama/kamar yang memiliki penghuni santri aktif
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200/60">
+                                {{ $totalKamarTerisi }} Kamar Terisi
+                            </span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/60">
+                                {{ $totalSantriBerasrama }} Santri
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Canvas Grafik Batangan Hunian Asrama -->
+                    <div class="mt-4 relative h-64 sm:h-72">
+                        @if ($totalKamarTerisi > 0)
+                            <canvas id="chartHunianAsrama"></canvas>
+                        @else
+                            <div class="h-full flex flex-col items-center justify-center text-center p-6 text-slate-400">
+                                <svg class="w-10 h-10 mb-2 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                                <p class="text-sm font-semibold text-slate-600">Belum ada data kamar terisi</p>
+                                <p class="text-xs text-slate-400 mt-1">Data asrama akan otomatis tampil saat santri memiliki alokasi kamar aktif.</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                @if ($totalSantriTanpaKamar > 0)
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                        <span class="inline-flex items-center gap-1.5 text-amber-700 font-medium">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Terdapat <strong>{{ $totalSantriTanpaKamar }}</strong> santri aktif belum memiliki alokasi kamar.
+                        </span>
+                        <a href="{{ route('admin.santri.index') }}" class="text-emerald-700 hover:text-emerald-800 font-semibold hover:underline">
+                            Lengkapi &rarr;
+                        </a>
+                    </div>
+                @else
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                        <span class="text-emerald-700 font-medium flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Seluruh santri aktif telah teralokasi ke asrama.
+                        </span>
+                        <a href="{{ route('admin.santri.index') }}" class="text-emerald-700 hover:text-emerald-800 font-semibold hover:underline">
+                            Daftar Santri &rarr;
+                        </a>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- 5. Area Bagan / Grafik Statistik Persuratan (Chart.js Responsif) -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
             <!-- Grafik 1: Tren Persuratan Bulanan (Line/Area Chart) -->
             <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 lg:p-6 shadow-xs flex flex-col justify-between">
@@ -516,6 +647,128 @@
                                 bodyFont: { size: 12 },
                                 padding: 10,
                                 cornerRadius: 8
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 3. Inisialisasi Grafik Batang Sebaran Jenjang Pendidikan
+            const ctxJenjang = document.getElementById('chartJenjangSantri');
+            if (ctxJenjang) {
+                new window.Chart(ctxJenjang, {
+                    type: 'bar',
+                    data: {
+                        labels: {!! json_encode($chartJenjangLabels) !!},
+                        datasets: [{
+                            label: 'Jumlah Santri',
+                            data: {!! json_encode($chartJenjangData) !!},
+                            backgroundColor: [
+                                '#059669', // MTs (Emerald)
+                                '#2563eb', // MA (Blue)
+                                '#d97706', // Mutakhorijin (Amber)
+                                '#7c3aed', // Mahasantri (Purple)
+                                '#64748b'  // Lainnya (Slate)
+                            ],
+                            borderRadius: 8,
+                            borderSkipped: false,
+                            maxBarThickness: 48
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#0f172a',
+                                titleFont: { size: 12, weight: 'bold' },
+                                bodyFont: { size: 12 },
+                                padding: 10,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: function(context) {
+                                        return ' ' + context.parsed.y + ' Santri';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0,
+                                    font: { size: 11 }
+                                },
+                                grid: {
+                                    color: 'rgba(226, 232, 240, 0.6)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    font: { size: 11, weight: '600' }
+                                },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 4. Inisialisasi Grafik Batang Statistik Hunian Asrama
+            const ctxAsrama = document.getElementById('chartHunianAsrama');
+            if (ctxAsrama) {
+                new window.Chart(ctxAsrama, {
+                    type: 'bar',
+                    data: {
+                        labels: {!! json_encode($chartAsramaLabels) !!},
+                        datasets: [{
+                            label: 'Jumlah Santri',
+                            data: {!! json_encode($chartAsramaData) !!},
+                            backgroundColor: '#d97706',
+                            hoverBackgroundColor: '#b45309',
+                            borderRadius: 6,
+                            borderSkipped: false,
+                            maxBarThickness: 36
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#0f172a',
+                                titleFont: { size: 12, weight: 'bold' },
+                                bodyFont: { size: 12 },
+                                padding: 10,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: function(context) {
+                                        return ' ' + context.parsed.y + ' Santri Menempati';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0,
+                                    font: { size: 11 }
+                                },
+                                grid: {
+                                    color: 'rgba(226, 232, 240, 0.6)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    font: { size: 10, weight: '600' },
+                                    autoSkip: false,
+                                    maxRotation: 45,
+                                    minRotation: 0
+                                },
+                                grid: { display: false }
                             }
                         }
                     }
