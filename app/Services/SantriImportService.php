@@ -79,6 +79,80 @@ class SantriImportService
     }
 
     /**
+     * Hasilkan isi file CSV ekspor data santri berdasarkan filter aktif.
+     */
+    public function exportCsv(array $filters = []): string
+    {
+        $query = Santri::query();
+
+        if (! empty($filters['q'])) {
+            $search = $filters['q'];
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('nis', 'like', "%{$search}%");
+            });
+        }
+
+        if (! empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (! empty($filters['kelas'])) {
+            $query->where('kelas', $filters['kelas']);
+        }
+
+        if (! empty($filters['kamar'])) {
+            $query->where('kamar', $filters['kamar']);
+        }
+
+        $santris = $query->orderBy('nama', 'asc')->get();
+
+        $output = fopen('php://temp', 'r+');
+        // Tambahkan UTF-8 BOM agar rapi saat dibuka di Microsoft Excel
+        fputs($output, "\xEF\xBB\xBF");
+
+        // Header kolom CSV
+        fputcsv($output, [
+            'No',
+            'NIS',
+            'Nama Lengkap',
+            'Tempat Lahir',
+            'Tanggal Lahir',
+            'Alamat',
+            'Nama Wali',
+            'No. HP Wali',
+            'Kamar Asrama',
+            'Kelas',
+            'Tahun Masuk',
+            'Status',
+        ]);
+
+        $no = 1;
+        foreach ($santris as $s) {
+            fputcsv($output, [
+                $no++,
+                $s->nis,
+                $s->nama,
+                $s->tempat_lahir ?: '-',
+                $s->tanggal_lahir ? $s->tanggal_lahir->format('d-m-Y') : '-',
+                $s->alamat ?: '-',
+                $s->nama_wali ?: '-',
+                $s->hp_wali ?: '-',
+                $s->kamar ?: '-',
+                $s->kelas ?: '-',
+                $s->tahun_masuk ?: '-',
+                ucfirst($s->status ?: 'aktif'),
+            ]);
+        }
+
+        rewind($output);
+        $csvContent = stream_get_contents($output);
+        fclose($output);
+
+        return $csvContent;
+    }
+
+    /**
      * Proses impor file data santri (CSV/Excel).
      */
     public function import(UploadedFile $file): array

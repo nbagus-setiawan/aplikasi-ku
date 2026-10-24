@@ -17,6 +17,22 @@ class SantriImportController extends Controller
     }
 
     /**
+     * Unduh / ekspor seluruh data santri (atau sesuai filter) dalam format CSV.
+     */
+    public function export(Request $request): StreamedResponse
+    {
+        $csvContent = $this->importService->exportCsv($request->all());
+        $filename = 'data-santri-' . date('Ymd-His') . '.csv';
+
+        return response()->streamDownload(function () use ($csvContent) {
+            echo $csvContent;
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
+    }
+
+    /**
      * Unduh template file CSV/Excel untuk data santri.
      */
     public function template(): StreamedResponse

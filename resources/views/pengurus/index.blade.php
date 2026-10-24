@@ -5,6 +5,7 @@
         tab: 'tabel',
         modalTambah: false,
         modalEdit: false,
+        modalImpor: false,
         tambahFotoPreview: null,
         editFotoPreview: null,
         editData: { id: '', nama: '', jabatan: '', divisi: '', foto_url: '', no_hp: '', periode_mulai: '', periode_selesai: '', is_aktif: true, actionUrl: '' }
@@ -21,7 +22,26 @@
                 <p class="text-xs sm:text-sm text-gray-500 mt-1">Kelola data kepengurusan pesantren Al-Falah Putak, periode masa bakti, dan struktur divisi.</p>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2.5">
+                <!-- Tombol Unduh Data CSV -->
+                <a href="{{ route('admin.pengurus.export', request()->query()) }}"
+                   class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-bold rounded-xl border border-emerald-300 shadow-xs transition active:scale-95">
+                    <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    <span>Unduh Data (CSV)</span>
+                </a>
+
+                <!-- Tombol Impor CSV -->
+                <button type="button" @click="modalImpor = true"
+                        class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-900 hover:bg-emerald-100 text-xs sm:text-sm font-bold rounded-xl border border-emerald-300 shadow-xs transition active:scale-95">
+                    <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    <span>Impor Data</span>
+                </button>
+
+                <!-- Tombol Tambah Pengurus -->
                 <button @click="modalTambah = true; tambahFotoPreview = null;"
                         class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-emerald-700/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -31,6 +51,44 @@
                 </button>
             </div>
         </div>
+
+        <!-- Laporan Hasil Impor (Jika Baru Selesai Impor) -->
+        @if (session('import_result'))
+            @php $res = session('import_result'); @endphp
+            <div class="bg-white rounded-2xl border border-emerald-200 shadow-xs p-5 space-y-3">
+                <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+                    <h3 class="font-bold text-sm text-gray-900 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Hasil Impor Data Pengurus</span>
+                    </h3>
+                    <div class="flex items-center gap-2 text-xs font-bold">
+                        <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-lg">{{ $res['sukses'] ?? 0 }} Berhasil</span>
+                        @if(($res['gagal'] ?? 0) > 0)
+                            <span class="px-2.5 py-1 bg-rose-100 text-rose-800 rounded-lg">{{ $res['gagal'] }} Gagal</span>
+                        @endif
+                    </div>
+                </div>
+
+                @if (!empty($res['baris_gagal']))
+                    <div class="space-y-2">
+                        <p class="text-xs font-bold text-rose-700">Daftar Baris yang Gagal Diproses:</p>
+                        <div class="max-h-48 overflow-y-auto border border-rose-200 rounded-xl divide-y divide-rose-100 text-xs bg-rose-50/50">
+                            @foreach ($res['baris_gagal'] as $gagal)
+                                <div class="p-2.5 flex items-start justify-between gap-4">
+                                    <div>
+                                        <span class="font-bold text-rose-900">Baris {{ $gagal['baris'] ?? '-' }}:</span>
+                                        <span class="text-gray-700 ml-1">{{ $gagal['data']['nama'] ?? ($gagal['data']['nama_lengkap'] ?? 'Tanpa Nama') }} ({{ $gagal['data']['jabatan'] ?? 'Tanpa Jabatan' }})</span>
+                                    </div>
+                                    <span class="text-rose-600 text-[11px] font-medium shrink-0">{{ $gagal['alasan'] ?? 'Format tidak valid' }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            </div>
+        @endif
 
         <!-- Tab Navigasi: Tabel & Struktur Organisasi -->
         <div class="flex items-center border-b border-gray-200 pb-2">
@@ -763,6 +821,59 @@
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Impor Pengurus (CSV) -->
+        <div x-show="modalImpor" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div x-show="modalImpor" @click="modalImpor = false" class="fixed inset-0 bg-gray-900/50 backdrop-blur-xs transition-opacity"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+                <div x-show="modalImpor" class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full p-6">
+                    <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+                        <h3 class="text-base font-bold text-gray-900 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                            <span>Impor Data Pengurus</span>
+                        </h3>
+                        <button type="button" @click="modalImpor = false" class="text-gray-400 hover:text-gray-600 text-lg">&times;</button>
+                    </div>
+
+                    <div class="mt-4 space-y-4">
+                        <div class="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 text-xs text-emerald-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                            <div>
+                                <p class="font-bold">Gunakan Template Standar</p>
+                                <p class="text-[11px] text-emerald-800 mt-0.5">Kolom: nama, jabatan, divisi, no_hp, periode_mulai, periode_selesai, is_aktif.</p>
+                            </div>
+                            <a href="{{ route('admin.pengurus.template') }}"
+                               class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-[11px] rounded-lg shadow-xs whitespace-nowrap transition">
+                                Unduh Template
+                            </a>
+                        </div>
+
+                        <form action="{{ route('admin.pengurus.impor') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                            @csrf
+                            <div class="space-y-1">
+                                <label class="block text-xs font-bold text-gray-700 uppercase">Pilih File CSV (.csv) <span class="text-rose-500">*</span></label>
+                                <input type="file" name="file" accept=".csv,text/csv" required
+                                       class="w-full text-xs text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-800 hover:file:bg-emerald-100 cursor-pointer border border-gray-200 rounded-xl">
+                                <p class="text-[11px] text-gray-400">Ukuran berkas maksimal 5 MB. Format berkas CSV dengan pemisah koma (,).</p>
+                            </div>
+
+                            <div class="mt-5 pt-3 border-t border-gray-100 flex justify-end gap-2">
+                                <button type="button" @click="modalImpor = false"
+                                        class="px-4 py-2 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-300 rounded-xl transition">
+                                    Batal
+                                </button>
+                                <button type="submit"
+                                        class="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition">
+                                    Mulai Impor
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

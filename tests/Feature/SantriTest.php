@@ -179,4 +179,28 @@ class SantriTest extends TestCase
         $response->assertStatus(200);
         $this->assertEquals('application/pdf', $response->headers->get('content-type'));
     }
+
+    public function test_secretary_can_export_santri_csv(): void
+    {
+        $user = User::factory()->create();
+
+        Santri::create([
+            'nis' => '2026888',
+            'nama' => 'Santri Ekspor CSV',
+            'status' => 'aktif',
+            'kelas' => '1 Ula',
+            'kamar' => 'Abu Bakar 01',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('admin.santri.export'));
+
+        $response->assertStatus(200);
+        $this->assertStringContainsString('text/csv', (string) $response->headers->get('content-type'));
+        $this->assertStringContainsString('data-santri-', (string) $response->headers->get('content-disposition'));
+
+        $content = $response->streamedContent();
+        $this->assertStringContainsString('2026888', $content);
+        $this->assertStringContainsString('Santri Ekspor CSV', $content);
+        $this->assertStringContainsString('Abu Bakar 01', $content);
+    }
 }

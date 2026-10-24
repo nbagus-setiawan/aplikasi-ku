@@ -9,6 +9,7 @@ use App\Http\Controllers\KategoriSuratController;
 use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\PengurusController;
+use App\Http\Controllers\PengurusImportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\SantriController;
@@ -45,11 +46,15 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     // Modul Santri (Fase 2)
     Route::get('/santri/cetak', [SantriController::class, 'cetakDaftar'])->name('admin.santri.cetak');
     Route::get('/santri/{santri}/cetak', [SantriController::class, 'cetakBiodata'])->name('admin.santri.biodata');
+    Route::get('/santri-ekspor', [SantriImportController::class, 'export'])->name('admin.santri.export');
     Route::get('/santri-impor/template', [SantriImportController::class, 'template'])->name('admin.santri.template');
     Route::post('/santri-impor', [SantriImportController::class, 'import'])->name('admin.santri.impor');
     Route::resource('santri', SantriController::class)->names('admin.santri');
 
     // Modul Pengurus (Fase 2)
+    Route::get('/pengurus-ekspor', [PengurusImportController::class, 'export'])->name('admin.pengurus.export');
+    Route::get('/pengurus-impor/template', [PengurusImportController::class, 'template'])->name('admin.pengurus.template');
+    Route::post('/pengurus-impor', [PengurusImportController::class, 'import'])->name('admin.pengurus.impor');
     Route::resource('pengurus', PengurusController::class)
         ->parameters(['pengurus' => 'pengurus'])
         ->names('admin.pengurus');
