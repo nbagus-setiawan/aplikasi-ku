@@ -170,7 +170,7 @@ class SuratKeluarTest extends TestCase
         $response = $this->actingAs($this->user)->delete(route('admin.surat-keluar.destroy', $surat));
 
         $response->assertRedirect(route('admin.surat-keluar.index'));
-        $this->assertSoftDeleted('surat_keluars', ['id' => $surat->id]);
+        $this->assertDatabaseMissing('surat_keluars', ['id' => $surat->id]);
     }
 
     public function test_sekretaris_dapat_membuat_surat_keluar_dengan_ketik_manual_kode_jenis_surat(): void

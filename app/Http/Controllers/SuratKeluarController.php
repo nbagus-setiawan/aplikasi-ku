@@ -874,15 +874,24 @@ class SuratKeluarController extends Controller
     }
 
     /**
-     * Hapus surat keluar (soft delete).
+     * Hapus permanen surat keluar beserta berkas dan tanda tangannya.
      */
     public function destroy(SuratKeluar $suratKeluar): RedirectResponse
     {
-        $suratKeluar->delete();
+        if ($suratKeluar->file && Storage::disk('public')->exists($suratKeluar->file)) {
+            Storage::disk('public')->delete($suratKeluar->file);
+        }
+        if ($suratKeluar->file_surat_asli && Storage::disk('public')->exists($suratKeluar->file_surat_asli)) {
+            Storage::disk('public')->delete($suratKeluar->file_surat_asli);
+        }
+
+        $suratKeluar->tandaTangans()->delete();
+        $suratKeluar->forceDelete();
 
         return redirect()->route('admin.surat-keluar.index')
-            ->with('success', 'Surat keluar berhasil dihapus.');
+            ->with('success', 'Surat keluar berhasil dihapus dari sistem.');
     }
+
 
     /**
      * Simpan template surat baru (dibuat dari web atau hasil unggah file .docx/.html/.txt).
