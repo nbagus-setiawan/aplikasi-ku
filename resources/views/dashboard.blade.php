@@ -140,7 +140,7 @@
                 <div class="flex items-center justify-between gap-2">
                     <span class="text-[11px] xs:text-xs font-bold text-slate-500 uppercase tracking-wider truncate">Mahasantri</span>
                     <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-800 border border-purple-100">
-                        Kuliah Luar
+                        Kuliah
                     </span>
                 </div>
                 <div>
@@ -254,7 +254,7 @@
                             <span class="text-lg font-black text-purple-950 tabular-nums">{{ $countMahasantri }}</span>
                             <span class="text-[11px] text-purple-700">Santri</span>
                         </div>
-                        <p class="mt-1.5 pt-1.5 border-t border-purple-100/60 text-[10px] text-purple-800 font-medium">Kuliah Luar &bull; Mukim Pondok</p>
+                        <p class="mt-1.5 pt-1.5 border-t border-purple-100/60 text-[10px] text-purple-800 font-medium">Kuliah &bull; Mukim Pondok</p>
                     </div>
                 </div>
 
