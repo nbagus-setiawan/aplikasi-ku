@@ -241,9 +241,14 @@
                                 <!-- No. Surat & Status -->
                                 <td class="px-5 py-4">
                                     <div class="flex flex-col items-start gap-1">
-                                        <span class="font-mono font-bold text-emerald-900 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 text-xs">
-                                            {{ $item->no_surat }}
-                                        </span>
+                                        <div class="flex items-center gap-1.5 flex-wrap">
+                                            <span class="font-mono font-bold text-emerald-900 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 text-xs">
+                                                {{ $item->no_surat }}
+                                            </span>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-purple-50 text-purple-800 border border-purple-200">
+                                                🏷️ {{ $item->kategori?->nama ?? 'Surat' }}
+                                            </span>
+                                        </div>
                                         <div>
                                             @if ($item->status === 'draft')
                                                 <span class="px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-200 font-bold rounded-full text-[10px]">Draft</span>
@@ -376,6 +381,10 @@
                     </div>
 
                     <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 space-y-1.5 text-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-400 text-[10px] uppercase font-bold">Jenis Surat:</span>
+                            <span class="font-bold text-purple-800 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 text-[11px]">{{ $item->kategori?->nama ?? '-' }}</span>
+                        </div>
                         <div class="flex items-center justify-between">
                             <span class="text-gray-400 text-[10px] uppercase font-bold">No. Surat:</span>
                             <span class="font-mono font-bold text-emerald-900 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[11px] truncate max-w-[200px]">

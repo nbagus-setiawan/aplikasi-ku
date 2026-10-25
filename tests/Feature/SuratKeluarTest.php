@@ -741,6 +741,90 @@ class SuratKeluarTest extends TestCase
         $this->assertNotNull($contentDisposition);
         $this->assertStringContainsString('055-STPA.01-AF-PA-X-2026 - SURAT TUGAS PENGABDIAN ASATIDZ.pdf', $contentDisposition);
     }
+
+    public function test_indeks_mengurutkan_surat_berdasarkan_nomor_urut_terbesar_ke_terkecil(): void
+    {
+        SuratKeluar::create([
+            'no_surat' => '001/SPm.01/AF-PA/X/2026',
+            'tgl_surat' => '2026-10-25',
+            'tujuan' => 'Tujuan 1',
+            'perihal' => 'Perihal Surat Urut Satu',
+            'kategori_id' => $this->kategori->id,
+            'isi' => 'Isi',
+            'nama_penandatangan' => 'Pimpinan',
+            'jabatan_penandatangan' => 'Pimpinan',
+            'status' => 'final',
+            'kode_verifikasi' => Str::random(32),
+            'user_id' => $this->user->id,
+        ]);
+
+        SuratKeluar::create([
+            'no_surat' => '002/SPm.01/AF-PA/X/2026',
+            'tgl_surat' => '2026-10-25',
+            'tujuan' => 'Tujuan 2',
+            'perihal' => 'Perihal Surat Urut Dua',
+            'kategori_id' => $this->kategori->id,
+            'isi' => 'Isi',
+            'nama_penandatangan' => 'Pimpinan',
+            'jabatan_penandatangan' => 'Pimpinan',
+            'status' => 'final',
+            'kode_verifikasi' => Str::random(32),
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.surat-keluar.index'));
+        $response->assertStatus(200);
+
+        $content = $response->getContent();
+        $pos002 = strpos($content, '002/SPm.01/AF-PA/X/2026');
+        $pos001 = strpos($content, '001/SPm.01/AF-PA/X/2026');
+
+        $this->assertNotFalse($pos002);
+        $this->assertNotFalse($pos001);
+        $this->assertTrue($pos002 < $pos001, 'Nomor 002 harus tampil sebelum nomor 001 di indeks');
+    }
+
+    public function test_unduh_csv_mengurutkan_surat_berdasarkan_nomor_urut_terkecil_ke_terbesar(): void
+    {
+        SuratKeluar::create([
+            'no_surat' => '002/SPm.01/AF-PA/X/2026',
+            'tgl_surat' => '2026-10-25',
+            'tujuan' => 'Tujuan 2',
+            'perihal' => 'Perihal Surat Urut Dua',
+            'kategori_id' => $this->kategori->id,
+            'isi' => 'Isi',
+            'nama_penandatangan' => 'Pimpinan',
+            'jabatan_penandatangan' => 'Pimpinan',
+            'status' => 'final',
+            'kode_verifikasi' => Str::random(32),
+            'user_id' => $this->user->id,
+        ]);
+
+        SuratKeluar::create([
+            'no_surat' => '001/SPm.01/AF-PA/X/2026',
+            'tgl_surat' => '2026-10-25',
+            'tujuan' => 'Tujuan 1',
+            'perihal' => 'Perihal Surat Urut Satu',
+            'kategori_id' => $this->kategori->id,
+            'isi' => 'Isi',
+            'nama_penandatangan' => 'Pimpinan',
+            'jabatan_penandatangan' => 'Pimpinan',
+            'status' => 'final',
+            'kode_verifikasi' => Str::random(32),
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.surat-keluar.export'));
+        $response->assertStatus(200);
+
+        $content = $response->streamedContent();
+        $pos001 = strpos($content, '001/SPm.01/AF-PA/X/2026');
+        $pos002 = strpos($content, '002/SPm.01/AF-PA/X/2026');
+
+        $this->assertNotFalse($pos001);
+        $this->assertNotFalse($pos002);
+        $this->assertTrue($pos001 < $pos002, 'Nomor 001 harus muncul sebelum nomor 002 di unduh CSV');
+    }
 }
 
 

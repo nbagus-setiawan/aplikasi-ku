@@ -18,6 +18,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -100,11 +101,31 @@ class SuratKeluarController extends Controller
     }
 
     /**
+     * Terapkan pengurutan berdasarkan nomor urut surat.
+     * $direction = 'DESC' (terbesar/terbaru di atas, untuk halaman indeks)
+     * $direction = 'ASC'  (terkecil ke terbesar, untuk unduh CSV buku induk)
+     */
+    protected function applyOrderNomorSurat($query, string $direction = 'DESC')
+    {
+        $dir = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
+        $driver = DB::connection()->getDriverName();
+
+        if ($driver === 'sqlite') {
+            return $query->orderByRaw("CAST(SUBSTR(no_surat, 1, INSTR(no_surat || '/', '/') - 1) AS INTEGER) {$dir}")
+                         ->orderBy('id', $dir);
+        }
+
+        return $query->orderByRaw("CAST(SUBSTRING_INDEX(no_surat, '/', 1) AS UNSIGNED) {$dir}")
+                     ->orderBy('id', $dir);
+    }
+
+    /**
      * Tampilkan daftar surat keluar dengan filter dan pencarian.
      */
     public function index(Request $request): View
     {
-        $query = SuratKeluar::with(['kategori', 'user', 'tandaTangan', 'tandaTangans'])->latest('id');
+        $query = SuratKeluar::with(['kategori', 'user', 'tandaTangan', 'tandaTangans']);
+        $this->applyOrderNomorSurat($query, 'DESC');
 
         if ($request->filled('q')) {
             $q = $request->q;
@@ -157,7 +178,8 @@ class SuratKeluarController extends Controller
      */
     public function exportCsv(Request $request): StreamedResponse
     {
-        $query = SuratKeluar::with(['kategori'])->latest('tgl_surat')->latest('id');
+        $query = SuratKeluar::with(['kategori']);
+        $this->applyOrderNomorSurat($query, 'ASC');
 
         if ($request->filled('q')) {
             $q = $request->q;
@@ -267,18 +289,18 @@ class SuratKeluarController extends Controller
             $fileSuratAsliPath = $uploadedWord->storeAs('surat-keluar-word', $fileName, 'public');
         }
 
-        $tglSurat = $validated['tgl_surat'] ?? ($parsedDocx['tgl_surat'] ?? date('Y-m-d'));
-        $tempatSurat = $validated['tempat_surat'] ?? ($parsedDocx['tempat_surat'] ?? 'Putak');
-        $perihal = $validated['perihal'] ?? ($parsedDocx['perihal'] ?? 'Surat Keluar');
-        $lampiranTeks = $validated['lampiran_teks'] ?? ($parsedDocx['lampiran_teks'] ?? '-');
-        $tujuan = $validated['tujuan'] ?? ($parsedDocx['tujuan'] ?? '-');
-        $isi = $validated['isi'] ?? ($parsedDocx['isi_html'] ?? '<p>' . e($perihal) . '</p>');
-        $namaPenandatangan = $validated['nama_penandatangan'] ?? '-';
-        $jabatanPenandatangan = $validated['jabatan_penandatangan'] ?? '-';
+        $tglSurat = $request->input('tgl_surat') ?: ($validated['tgl_surat'] ?? ($parsedDocx['tgl_surat'] ?? date('Y-m-d')));
+        $tempatSurat = $request->input('tempat_surat') ?: ($validated['tempat_surat'] ?? ($parsedDocx['tempat_surat'] ?? 'Putak'));
+        $perihal = $request->input('perihal') ?: ($validated['perihal'] ?? ($parsedDocx['perihal'] ?? 'Surat Keluar'));
+        $lampiranTeks = $request->has('lampiran_teks') ? $request->input('lampiran_teks') : ($validated['lampiran_teks'] ?? ($parsedDocx['lampiran_teks'] ?? '-'));
+        $tujuan = $request->input('tujuan') ?: ($validated['tujuan'] ?? ($parsedDocx['tujuan'] ?? '-'));
+        $isi = $request->input('isi') ?: ($validated['isi'] ?? ($parsedDocx['isi_html'] ?? '<p>' . e($perihal) . '</p>'));
+        $namaPenandatangan = $request->input('nama_penandatangan') ?: ($validated['nama_penandatangan'] ?? '-');
+        $jabatanPenandatangan = $request->input('jabatan_penandatangan') ?: ($validated['jabatan_penandatangan'] ?? '-');
 
-        // Tentukan jenis & kategori surat
+        // Tentukan jenis & kategori surat dari input user
         $jenisSuratInput = trim((string) ($request->input('jenis_surat') ?: ($validated['jenis_surat'] ?? '')));
-        $kodeJenisInput = $validated['kode_jenis_surat'] ?? ($parsedDocx['kode_jenis'] ?? null);
+        $kodeJenisInput = $request->input('kode_jenis_surat') ?: ($validated['kode_jenis_surat'] ?? ($parsedDocx['kode_jenis'] ?? null));
 
         $kategori = null;
         if ($jenisSuratInput !== '') {
@@ -296,11 +318,10 @@ class SuratKeluarController extends Controller
             );
         }
 
-        // Gunakan nomor dari Word/input manual bila lengkap dan belum dipakai; jika kosong/belum lengkap buat otomatis
-        $noSuratCandidate = trim((string) ($request->input('no_surat_manual') ?: ($parsedDocx['no_surat'] ?? '')));
-        $hasPlaceholder = preg_match('/(\.{2,}|_{2,}|\[\s*\]|^\/)/', $noSuratCandidate);
+        // Gunakan nomor dari input manual; jika dikosongkan buat nomor otomatis
+        $noSuratCandidate = trim((string) ($request->input('no_surat_manual') ?: ($request->input('no_surat') ?: ($parsedDocx['no_surat'] ?? ''))));
 
-        if ($noSuratCandidate !== '' && ! $hasPlaceholder && ! SuratKeluar::withTrashed()->where('no_surat', $noSuratCandidate)->exists()) {
+        if ($noSuratCandidate !== '' && ! SuratKeluar::withTrashed()->where('no_surat', $noSuratCandidate)->exists()) {
             $noSurat = $noSuratCandidate;
         } else {
             $noSurat = $this->nomorSuratService->generateNomorSuratKeluar($kategori->kode, $tglSurat);
@@ -377,14 +398,16 @@ class SuratKeluarController extends Controller
         $allDigitalSigned = ($signedCount >= count($penandatangansData));
 
         $aksiSimpan = $request->input('aksi_simpan');
-        $statusAwal = $validated['status'] ?? 'draft';
+        $statusInput = $request->input('status');
 
-        if ($fileSuratAsliPath || $aksiSimpan === 'terbitkan_word') {
-            $statusAwal = 'final';
+        if ($statusInput && in_array($statusInput, ['draft', 'final', 'terkirim'])) {
+            $statusAwal = $statusInput;
         } elseif ($aksiSimpan === 'siap_kirim') {
             $statusAwal = 'terkirim';
-        } elseif ($allDigitalSigned && $statusAwal === 'draft') {
+        } elseif ($fileSuratAsliPath || $aksiSimpan === 'terbitkan_word') {
             $statusAwal = 'final';
+        } else {
+            $statusAwal = $validated['status'] ?? 'draft';
         }
 
         $metodeTtdFinal = null;
