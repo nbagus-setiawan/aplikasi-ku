@@ -270,4 +270,56 @@ class SuratMasukTest extends TestCase
             'perihal' => 'Pemberitahuan Bantuan Operasional',
         ]);
     }
+
+    public function test_filter_kategori_surat_masuk_hanya_menampilkan_kategori_yang_ada_di_indeks(): void
+    {
+        $katAktif = KategoriSurat::create([
+            'nama' => 'Kategori Masuk Aktif',
+            'kode' => 'KMA.01',
+        ]);
+
+        $katKosong = KategoriSurat::create([
+            'nama' => 'Kategori Masuk Tanpa Surat',
+            'kode' => 'KMTS.02',
+        ]);
+
+        $katTerhapus = KategoriSurat::create([
+            'nama' => 'Kategori Masuk Terhapus',
+            'kode' => 'KMT.03',
+        ]);
+
+        // Surat masuk aktif
+        SuratMasuk::create([
+            'no_agenda' => '020',
+            'no_surat' => '201/KMA/2026',
+            'tgl_surat' => '2026-10-25',
+            'tgl_diterima' => '2026-10-25',
+            'pengirim' => 'Kemenag',
+            'perihal' => 'Perihal Surat Masuk Aktif',
+            'kategori_id' => $katAktif->id,
+            'status_disposisi' => 'baru',
+            'user_id' => $this->user->id,
+        ]);
+
+        // Surat masuk yang sudah terhapus (soft delete)
+        $suratTerhapus = SuratMasuk::create([
+            'no_agenda' => '021',
+            'no_surat' => '202/KMT/2026',
+            'tgl_surat' => '2026-10-25',
+            'tgl_diterima' => '2026-10-25',
+            'pengirim' => 'Kemenag',
+            'perihal' => 'Perihal Surat Masuk Dihapus',
+            'kategori_id' => $katTerhapus->id,
+            'status_disposisi' => 'baru',
+            'user_id' => $this->user->id,
+        ]);
+        $suratTerhapus->delete();
+
+        $response = $this->actingAs($this->user)->get(route('admin.surat-masuk.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Kategori Masuk Aktif');
+        $response->assertDontSee('Kategori Masuk Tanpa Surat');
+        $response->assertDontSee('Kategori Masuk Terhapus');
+    }
 }

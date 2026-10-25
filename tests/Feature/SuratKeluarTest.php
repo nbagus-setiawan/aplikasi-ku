@@ -653,6 +653,62 @@ class SuratKeluarTest extends TestCase
             'perihal' => 'Surat Keterangan Mengajar Asatidz',
         ]);
     }
+
+    public function test_filter_kategori_surat_keluar_hanya_menampilkan_kategori_yang_ada_di_indeks(): void
+    {
+        $katAktif = KategoriSurat::create([
+            'nama' => 'Kategori Khusus Aktif',
+            'kode' => 'KKA.01',
+        ]);
+
+        $katKosong = KategoriSurat::create([
+            'nama' => 'Kategori Tanpa Surat',
+            'kode' => 'KTS.02',
+        ]);
+
+        $katTerhapus = KategoriSurat::create([
+            'nama' => 'Kategori Surat Terhapus',
+            'kode' => 'KST.03',
+        ]);
+
+        // Surat aktif
+        SuratKeluar::create([
+            'no_surat' => '101/KKA.01/AF-PA/X/2026',
+            'tgl_surat' => '2026-10-25',
+            'tujuan' => 'Kemenag',
+            'perihal' => 'Perihal Surat Aktif',
+            'kategori_id' => $katAktif->id,
+            'isi' => 'Isi',
+            'nama_penandatangan' => 'Pimpinan',
+            'jabatan_penandatangan' => 'Pimpinan',
+            'status' => 'draft',
+            'kode_verifikasi' => Str::random(32),
+            'user_id' => $this->user->id,
+        ]);
+
+        // Surat yang sudah terhapus (soft delete)
+        $suratTerhapus = SuratKeluar::create([
+            'no_surat' => '102/KST.03/AF-PA/X/2026',
+            'tgl_surat' => '2026-10-25',
+            'tujuan' => 'Kemenag',
+            'perihal' => 'Perihal Surat Dihapus',
+            'kategori_id' => $katTerhapus->id,
+            'isi' => 'Isi',
+            'nama_penandatangan' => 'Pimpinan',
+            'jabatan_penandatangan' => 'Pimpinan',
+            'status' => 'draft',
+            'kode_verifikasi' => Str::random(32),
+            'user_id' => $this->user->id,
+        ]);
+        $suratTerhapus->delete();
+
+        $response = $this->actingAs($this->user)->get(route('admin.surat-keluar.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Kategori Khusus Aktif');
+        $response->assertDontSee('Kategori Tanpa Surat');
+        $response->assertDontSee('Kategori Surat Terhapus');
+    }
 }
 
 

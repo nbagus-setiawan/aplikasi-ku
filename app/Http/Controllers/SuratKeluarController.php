@@ -133,7 +133,13 @@ class SuratKeluarController extends Controller
         }
 
         $suratKeluars = $query->paginate(15)->withQueryString();
-        $kategoriList = KategoriSurat::orderBy('nama')->get();
+
+        // Hanya tampilkan kategori yang saat ini ada datanya di indeks surat keluar (aktif & tidak terhapus)
+        $usedKategoriIds = SuratKeluar::whereNotNull('kategori_id')->distinct()->pluck('kategori_id');
+        if ($request->filled('kategori_id')) {
+            $usedKategoriIds->push((int) $request->kategori_id);
+        }
+        $kategoriList = KategoriSurat::whereIn('id', $usedKategoriIds->unique())->orderBy('nama')->get();
 
         $statistik = [
             'total' => SuratKeluar::count(),

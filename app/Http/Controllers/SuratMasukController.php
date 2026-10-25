@@ -87,7 +87,13 @@ class SuratMasukController extends Controller
         }
 
         $suratMasuks = $query->paginate(15)->withQueryString();
-        $kategoriList = KategoriSurat::orderBy('nama')->get();
+
+        // Hanya tampilkan kategori yang saat ini ada datanya di indeks surat masuk (aktif & tidak terhapus)
+        $usedKategoriIds = SuratMasuk::whereNotNull('kategori_id')->distinct()->pluck('kategori_id');
+        if ($request->filled('kategori_id')) {
+            $usedKategoriIds->push((int) $request->kategori_id);
+        }
+        $kategoriList = KategoriSurat::whereIn('id', $usedKategoriIds->unique())->orderBy('nama')->get();
 
         $statistik = [
             'total' => SuratMasuk::count(),
