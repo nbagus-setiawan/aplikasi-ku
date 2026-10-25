@@ -10,6 +10,9 @@
         fileLampiranName: '',
         errorMsg: '',
 
+        kategoriList: {{ Js::from($kategoriList->map(fn($k) => ['nama' => $k->nama, 'kode' => $k->kode])) }},
+        currentKode: 'SPm.01',
+
         // Hasil deteksi otomatis dari file Word (semua dapat dikoreksi manual bila perlu)
         detected: {
             no_surat: '',
@@ -43,6 +46,37 @@
         setLampiranCepat(val) {
             this.detected.lampiran_teks = val;
             this.evaluasiLampiran();
+        },
+
+        updateJenisSurat() {
+            const val = (this.detected.jenis_surat || '').trim();
+            if (!val) return;
+            const match = this.kategoriList.find(k => k.nama.toLowerCase() === val.toLowerCase() || k.kode.toLowerCase() === val.toLowerCase());
+            let kode = '';
+            if (match) {
+                kode = match.kode;
+            } else if (!val.includes(' ') && val.length <= 10) {
+                kode = val.toUpperCase();
+            } else {
+                const clean = val.replace(/[^a-zA-Z0-9\s]/g, '');
+                const words = clean.split(/\s+/).filter(Boolean);
+                let prefix = words.map(w => w[0].toUpperCase()).join('').substring(0, 5);
+                if (!prefix) prefix = 'SRT';
+                kode = prefix + '.01';
+            }
+            const oldKode = this.currentKode || this.detected.kode_jenis;
+            this.detected.kode_jenis = kode;
+
+            if (this.inputNomorManual) {
+                const parts = this.inputNomorManual.split('/');
+                if (parts.length >= 5) {
+                    parts[1] = kode;
+                    this.inputNomorManual = parts.join('/');
+                } else if (oldKode && this.inputNomorManual.includes(oldKode)) {
+                    this.inputNomorManual = this.inputNomorManual.replace(oldKode, kode);
+                }
+            }
+            this.currentKode = kode;
         },
 
         async handleFileSurat(event) {
@@ -87,6 +121,7 @@
                 this.isAnalyzing = false;
                 this.detected = json.data;
                 this.evaluasiLampiran();
+                this.currentKode = this.detected.kode_jenis || 'SPm.01';
 
                 if (this.detected.is_nomor_lengkap && this.detected.no_surat) {
                     this.inputNomorManual = this.detected.no_surat;
@@ -368,6 +403,8 @@
                                 <span class="text-[10px] text-emerald-700 font-semibold">Ketik Bebas Manual / Rekomendasi</span>
                             </div>
                             <input type="text" list="list-jenis-surat-keluar" x-model="detected.jenis_surat"
+                                   @input="updateJenisSurat()"
+                                   @change="updateJenisSurat()"
                                    placeholder="Ketik jenis surat (contoh: Surat Permohonan, Surat Undangan, Surat Keterangan, dll)..."
                                    class="w-full text-xs font-bold text-gray-900 rounded-lg border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2 px-2.5" />
                             <datalist id="list-jenis-surat-keluar">

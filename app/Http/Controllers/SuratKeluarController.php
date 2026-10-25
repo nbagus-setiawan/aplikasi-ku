@@ -47,44 +47,44 @@ class SuratKeluarController extends Controller
             $parsed = $this->docxParserService->parseUploadedDocument($request->file('file_surat'));
 
             // Buat saran nomor surat otomatis bila di dalam Word nomornya kosong atau belum lengkap
-            $kodeJenis = $parsed['kode_jenis'] ?: 'SPm.01';
+            $kodeJenis = $parsed['kode_jenis'] ?: '';
             $tglSurat = $parsed['tgl_surat'] ?: date('Y-m-d');
-            $pengaturan = Pengaturan::getAllKeyValues();
-            $lembaga = $pengaturan['kode_lembaga'] ?? 'AF-PA';
-            $bulanRomawi = $this->nomorSuratService->toRomanMonth((int) date('n', strtotime($tglSurat)));
-            $tahun = date('Y', strtotime($tglSurat));
-            $urutBerikutnya = str_pad((string) (SuratKeluar::whereYear('tgl_surat', $tahun)->withTrashed()->count() + 1), 3, '0', STR_PAD_LEFT);
-            $saranNomor = "{$urutBerikutnya}/{$kodeJenis}/{$lembaga}/{$bulanRomawi}/{$tahun}";
-            $kat = KategoriSurat::resolveOrCreate($kodeJenis);
+            $kat = !empty($kodeJenis) ? KategoriSurat::resolveOrCreate($kodeJenis) : null;
             $jenisSuratNama = $kat ? $kat->nama : 'Surat Permohonan';
+            $kodeJenis = $kat ? $kat->kode : ($kodeJenis ?: 'SPm.01');
+
+            $tahun = date('Y', strtotime($tglSurat));
+            $urutBerikutnya = (int) (SuratKeluar::whereYear('tgl_surat', $tahun)->withTrashed()->count() + 1);
+            $saranNomor = $this->nomorSuratService->formatNomorSurat($urutBerikutnya, $kodeJenis, $tglSurat);
 
             return response()->json([
                 'success' => true,
                 'data' => array_merge($parsed, [
                     'saran_no_surat' => $saranNomor,
                     'jenis_surat' => $jenisSuratNama,
+                    'kode_jenis' => $kodeJenis,
                 ]),
             ]);
         } catch (\Throwable $e) {
             \Log::warning('Gagal parse otomatis file Word: ' . $e->getMessage(), ['exception' => $e]);
 
-            // Fallback aman agar proses upload tidak gagal server error
+            // Fallback aman jika gagal parse otomatis
             $fileName = pathinfo($request->file('file_surat')->getClientOriginalName(), PATHINFO_FILENAME);
             $tglSurat = date('Y-m-d');
-            $pengaturan = Pengaturan::getAllKeyValues();
-            $lembaga = $pengaturan['kode_lembaga'] ?? 'AF-PA';
-            $bulanRomawi = $this->nomorSuratService->toRomanMonth((int) date('n'));
             $tahun = date('Y');
-            $urutBerikutnya = str_pad((string) (SuratKeluar::whereYear('tgl_surat', $tahun)->withTrashed()->count() + 1), 3, '0', STR_PAD_LEFT);
-            $saranNomor = "{$urutBerikutnya}/SPm.01/{$lembaga}/{$bulanRomawi}/{$tahun}";
+            $urutBerikutnya = (int) (SuratKeluar::whereYear('tgl_surat', $tahun)->withTrashed()->count() + 1);
+            $katFirst = KategoriSurat::first();
+            $kodeJenis = $katFirst ? $katFirst->kode : 'SPm.01';
+            $jenisSuratNama = $katFirst ? $katFirst->nama : 'Surat Permohonan';
+            $saranNomor = $this->nomorSuratService->formatNomorSurat($urutBerikutnya, $kodeJenis, $tglSurat);
 
             return response()->json([
                 'success' => true,
                 'data' => [
                     'no_surat' => '',
                     'is_nomor_lengkap' => false,
-                    'kode_jenis' => 'SPm.01',
-                    'jenis_surat' => 'Surat Permohonan',
+                    'kode_jenis' => $kodeJenis,
+                    'jenis_surat' => $jenisSuratNama,
                     'lampiran_teks' => '-',
                     'ada_lampiran' => false,
                     'perihal' => $fileName,
@@ -672,7 +672,12 @@ class SuratKeluarController extends Controller
     {
         $this->docxParserService->ensureWordQrProcessed($suratKeluar);
         $suratKeluar->refresh();
-        $slugNo = Str::slug(str_replace('/', '-', $suratKeluar->no_surat)) ?: ('surat-' . $suratKeluar->id);
+        $suratKeluar->loadMissing('kategori');
+
+        // Format nama file unduhan: nomor surat - jenis surat (besar/kecil huruf sesuai input)
+        $cleanNo = trim(str_replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], '-', (string) $suratKeluar->no_surat));
+        $jenisNama = trim((string) ($suratKeluar->kategori?->nama ?: 'Surat'));
+        $baseFilename = "{$cleanNo} - {$jenisNama}";
         $isDownload = $request->boolean('download') || $request->query('download') == '1';
 
         // 1. FORMAT WORD (.docx) BER-QR CODE DAN KODE VERIFIKASI
@@ -686,7 +691,7 @@ class SuratKeluarController extends Controller
                 $content = Storage::disk('public')->get($docxPath);
                 return response($content, 200, [
                     'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                    'Content-Disposition' => 'attachment; filename="surat-' . $slugNo . '.docx"',
+                    'Content-Disposition' => 'attachment; filename="' . $baseFilename . '.docx"',
                 ]);
             }
         }
@@ -715,7 +720,7 @@ class SuratKeluarController extends Controller
             $disposition = $isDownload ? 'attachment' : 'inline';
             return response($pdfBinary, 200, [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => $disposition . '; filename="surat-' . $slugNo . '.pdf"',
+                'Content-Disposition' => $disposition . '; filename="' . $baseFilename . '.pdf"',
             ]);
         }
 
@@ -731,12 +736,12 @@ class SuratKeluarController extends Controller
         if ($isDownload || $request->query('format') === 'pdf') {
             return response($pdf->output(), 200, [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="surat-' . $slugNo . '.pdf"',
+                'Content-Disposition' => 'attachment; filename="' . $baseFilename . '.pdf"',
             ]);
         }
 
         // Pratinjau / cetak langsung di peramban
-        return $pdf->stream('surat-' . $slugNo . '.pdf');
+        return $pdf->stream($baseFilename . '.pdf');
     }
 
     /**

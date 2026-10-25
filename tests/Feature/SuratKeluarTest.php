@@ -709,6 +709,38 @@ class SuratKeluarTest extends TestCase
         $response->assertDontSee('Kategori Tanpa Surat');
         $response->assertDontSee('Kategori Surat Terhapus');
     }
+
+    public function test_unduh_surat_menggunakan_format_penamaan_nomor_surat_strip_jenis_surat_sesuai_kapitalisasi(): void
+    {
+        $kategoriCustom = KategoriSurat::create([
+            'nama' => 'SURAT TUGAS PENGABDIAN ASATIDZ',
+            'kode' => 'STPA.01',
+        ]);
+
+        $surat = SuratKeluar::create([
+            'no_surat' => '055/STPA.01/AF-PA/X/2026',
+            'tgl_surat' => '2026-10-25',
+            'tujuan' => 'Pengasuh Pesantren',
+            'perihal' => 'Tugas Pengabdian',
+            'kategori_id' => $kategoriCustom->id,
+            'isi' => 'Isi Surat Tugas',
+            'nama_penandatangan' => 'KH. Syamsuni',
+            'jabatan_penandatangan' => 'Pimpinan',
+            'status' => 'draft',
+            'kode_verifikasi' => Str::random(32),
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.surat-keluar.cetak', [
+            $surat,
+            'unduh' => 1,
+        ]));
+
+        $response->assertStatus(200);
+        $contentDisposition = $response->headers->get('Content-Disposition');
+        $this->assertNotNull($contentDisposition);
+        $this->assertStringContainsString('055-STPA.01-AF-PA-X-2026 - SURAT TUGAS PENGABDIAN ASATIDZ.pdf', $contentDisposition);
+    }
 }
 
 
