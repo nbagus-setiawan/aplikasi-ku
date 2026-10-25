@@ -825,6 +825,46 @@ class SuratKeluarTest extends TestCase
         $this->assertNotFalse($pos002);
         $this->assertTrue($pos001 < $pos002, 'Nomor 001 harus muncul sebelum nomor 002 di unduh CSV');
     }
+
+    public function test_input_nomor_surat_manual_angka_urut_diformat_dan_tidak_ditimpa(): void
+    {
+        // Simulasi surat dengan nomor 001 pernah dibuat lalu dihapus
+        $old = SuratKeluar::create([
+            'no_surat' => '001/SPm.01/AF-PA/X/2026',
+            'tgl_surat' => '2026-10-25',
+            'tujuan' => 'Tujuan Lama',
+            'perihal' => 'Surat Lama Dihapus',
+            'kategori_id' => $this->kategori->id,
+            'isi' => 'Isi',
+            'nama_penandatangan' => 'Pimpinan',
+            'jabatan_penandatangan' => 'Pimpinan',
+            'status' => 'draft',
+            'kode_verifikasi' => Str::random(32),
+            'user_id' => $this->user->id,
+        ]);
+        $old->delete();
+
+        // User membuat surat baru dan mengetik nomor urut '001'
+        $response = $this->actingAs($this->user)->post(route('admin.surat-keluar.store'), [
+            'jenis_surat' => 'Surat Permohonan',
+            'perihal' => 'Permohonan Baru',
+            'tujuan' => 'Instansi Tujuan',
+            'no_surat_manual' => '001',
+            'tgl_surat' => '2026-10-25',
+            'lampiran_teks' => '-',
+            'status' => 'final',
+            'isi' => 'Isi surat...',
+            'nama_penandatangan' => 'Pimpinan',
+            'jabatan_penandatangan' => 'Pimpinan',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('surat_keluars', [
+            'no_surat' => '001/SPm.01/AF-PA/X/2026',
+            'perihal' => 'Permohonan Baru',
+            'deleted_at' => null,
+        ]);
+    }
 }
 
 

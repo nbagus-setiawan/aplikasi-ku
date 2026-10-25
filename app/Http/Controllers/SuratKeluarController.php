@@ -318,12 +318,30 @@ class SuratKeluarController extends Controller
             );
         }
 
-        // Gunakan nomor dari input manual; jika dikosongkan buat nomor otomatis
-        $noSuratCandidate = trim((string) ($request->input('no_surat_manual') ?: ($request->input('no_surat') ?: ($parsedDocx['no_surat'] ?? ''))));
+        // Ambil input nomor surat manual dari user
+        $rawNoSurat = trim((string) ($request->input('no_surat_manual') ?: ($request->input('no_surat') ?: '')));
 
-        if ($noSuratCandidate !== '' && ! SuratKeluar::withTrashed()->where('no_surat', $noSuratCandidate)->exists()) {
-            $noSurat = $noSuratCandidate;
+        if ($rawNoSurat !== '') {
+            // Jika user hanya menginput angka (misal: "001", "1", "002", "2")
+            if (preg_match('/^\d+$/', $rawNoSurat)) {
+                $urutanManual = (int) $rawNoSurat;
+                $noSurat = $this->nomorSuratService->formatNomorSurat($urutanManual, $kategori->kode, $tglSurat);
+            } else {
+                $noSurat = $rawNoSurat;
+            }
+
+            // Bersihkan surat di tong sampah (soft deleted) yang memakai nomor ini agar nomor bisa dipakai kembali
+            SuratKeluar::onlyTrashed()->where('no_surat', $noSurat)->forceDelete();
+
+            // Cek apakah ada surat aktif lain yang sedang memakai nomor ini
+            $existingAktif = SuratKeluar::where('no_surat', $noSurat)->first();
+            if ($existingAktif) {
+                return back()->withInput()->withErrors([
+                    'no_surat_manual' => "Nomor surat '{$noSurat}' sudah digunakan oleh surat lain ({$existingAktif->perihal}). Silakan gunakan nomor lain.",
+                ]);
+            }
         } else {
+            // Hanya buat otomatis jika benar-benar dikosongkan oleh sekretaris
             $noSurat = $this->nomorSuratService->generateNomorSuratKeluar($kategori->kode, $tglSurat);
         }
 

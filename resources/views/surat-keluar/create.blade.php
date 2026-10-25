@@ -212,10 +212,10 @@
                             <label class="block text-gray-700 font-bold text-[11px] uppercase tracking-wider">
                                 4. Nomor Surat (Manual)
                             </label>
-                            <span class="text-[10px] text-gray-500 font-normal">Kosongkan jika ingin dibuatkan nomor otomatis</span>
+                            <span class="text-[10px] text-emerald-700 font-semibold">Bisa ketik angka urut (misal: 001) atau nomor lengkap</span>
                         </div>
                         <input type="text" name="no_surat_manual" x-model="formData.no_surat"
-                               placeholder="Contoh: 001/SPm.01/AF-PA/X/2026"
+                               placeholder="Contoh: 001 atau 001/SPm.01/AF-PA/X/2026 (kosongkan jika ingin nomor otomatis)"
                                class="w-full font-mono text-xs font-bold text-gray-900 rounded-lg border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2.5 px-3 bg-white" />
                     </div>
 
