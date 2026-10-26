@@ -36,9 +36,16 @@
                 <div class="rounded-2xl overflow-hidden border border-emerald-200/90 shadow-md bg-white">
                     <!-- Foto Setengah Badan Abah & Ibuk Sesuai Crop Sempurna -->
                     <div class="w-full bg-slate-50 relative overflow-hidden flex items-center justify-center">
-                        <img src="{{ asset('images/pengasuh.png') }}"
-                             alt="K.H. Mursyidi & Ny. Hj. Aniswatuzzuhriyah — Pengasuh Pondok Pesantren Al-Falah Putak"
-                             class="w-full h-auto object-contain block hover:scale-102 transition duration-500">
+                        <picture class="w-full block">
+                            <source srcset="{{ asset('images/pengasuh.webp') }}" type="image/webp">
+                            <img src="{{ asset('images/pengasuh.png') }}"
+                                 alt="K.H. Mursyidi & Ny. Hj. Aniswatuzzuhriyah — Pengasuh Pondok Pesantren Al-Falah Putak"
+                                 loading="lazy"
+                                 decoding="async"
+                                 width="682"
+                                 height="635"
+                                 class="w-full h-auto object-contain block hover:scale-102 transition duration-500">
+                        </picture>
                     </div>
 
                     <!-- Plakat Keterangan Pengasuh -->

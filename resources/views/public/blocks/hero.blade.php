@@ -15,10 +15,19 @@
 
 <!-- Hero Section: Tinggi Lega, Luas ke Bawah di Mobile & Berbagai Layar -->
 <section class="relative text-white py-16 sm:py-24 lg:py-32 min-h-[75vh] sm:min-h-[82vh] lg:min-h-[88vh] flex items-center justify-center overflow-hidden border-b border-emerald-900/80">
-    <!-- Background Foto Gedung Pesantren -->
-    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat transform scale-105"
-         style="background-image: url('{{ asset('images/hero.jpg') }}');">
-    </div>
+    <!-- Background Foto Gedung Pesantren (LCP Candidate Element dengan Prioritas Tinggi) -->
+    <picture class="absolute inset-0 w-full h-full pointer-events-none select-none">
+        <source media="(max-width: 640px)" srcset="{{ asset('images/hero-mobile.webp') }}" type="image/webp">
+        <source media="(max-width: 640px)" srcset="{{ asset('images/hero-mobile.jpg') }}" type="image/jpeg">
+        <source srcset="{{ asset('images/hero.webp') }}" type="image/webp">
+        <img src="{{ asset('images/hero.jpg') }}"
+             alt="Gedung Utama Pondok Pesantren Al-Falah Putak"
+             fetchpriority="high"
+             decoding="async"
+             width="1280"
+             height="816"
+             class="w-full h-full object-cover object-center transform scale-105">
+    </picture>
 
     <!-- Lapisan Overlay Gradasi Transparan & Elegan (Warna Hijau Lembut & Natural) -->
     <div class="absolute inset-0 bg-gradient-to-b from-slate-950/75 via-emerald-950/65 to-slate-950/80 backdrop-blur-[0.5px]"></div>

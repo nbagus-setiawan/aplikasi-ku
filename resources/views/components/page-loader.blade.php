@@ -104,10 +104,17 @@
 <!-- 2. Badge Pemuatan Mengambang (Floating Glass Badge) yang Tenang & Rapi -->
 <div id="sap-page-transition" class="no-print" role="status" aria-live="polite">
     <div id="sap-transition-badge">
-        <!-- Logo Al-Falah Putra -->
-        <img src="{{ asset('images/logo.png') }}"
-             alt="Logo Al-Falah Putra"
-             class="w-9 h-9 object-contain shrink-0 sap-breathe-logo drop-shadow-sm">
+        <!-- Logo Al-Falah Putak -->
+        <picture class="shrink-0">
+            <source srcset="{{ asset('images/logo-nav.webp') }}" type="image/webp">
+            <img src="{{ asset('images/logo-nav.png') }}"
+                 alt="Logo Al-Falah Putak"
+                 loading="lazy"
+                 decoding="async"
+                 width="36"
+                 height="36"
+                 class="w-9 h-9 object-contain shrink-0 sap-breathe-logo drop-shadow-sm">
+        </picture>
 
         <!-- Teks Informasi & Mini Progress Bar -->
         <div class="flex flex-col">

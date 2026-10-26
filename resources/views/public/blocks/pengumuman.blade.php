@@ -34,6 +34,8 @@
                             @if($item->gambar)
                                 <div class="h-44 sm:h-48 overflow-hidden bg-slate-100 relative">
                                     <img src="{{ asset('storage/' . $item->gambar) }}" alt="{{ $item->judul }}"
+                                         loading="lazy"
+                                         decoding="async"
                                          class="w-full h-full object-cover hover:scale-103 transition duration-300"
                                          style="object-position: {{ $item->posisi_gambar ?? '50% 50%' }};">
                                     @if($item->is_pinned)

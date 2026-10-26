@@ -262,9 +262,16 @@
 
     @yield('extra_schema')
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
+    <!-- Fonts & Resource Preconnect -->
+    <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
+
+    @if($isBeranda)
+    <!-- Preload LCP Hero Image untuk Skor Performa Maksimal 100% di Mobile & Desktop -->
+    <link rel="preload" as="image" href="{{ asset('images/hero-mobile.webp') }}" type="image/webp" media="(max-width: 640px)" fetchpriority="high">
+    <link rel="preload" as="image" href="{{ asset('images/hero.webp') }}" type="image/webp" media="(min-width: 641px)" fetchpriority="high">
+    @endif
 
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -278,7 +285,14 @@
             <div class="flex items-center justify-between h-16 sm:h-20">
                 <!-- Logo & Identitas Lembaga (MEDIA RESMI AL-FALAH PUTAK) -->
                 <a href="{{ url('/') }}" class="flex items-center gap-2.5 sm:gap-3.5 group py-1 min-w-0">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo Pondok Pesantren Al-Falah Putak" class="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 object-contain shrink-0 drop-shadow-xs group-hover:scale-105 transition-transform duration-200">
+                    <picture class="shrink-0">
+                        <source srcset="{{ asset('images/logo-nav.webp') }}" type="image/webp">
+                        <img src="{{ asset('images/logo-nav.png') }}"
+                             alt="Logo Pondok Pesantren Al-Falah Putak"
+                             width="48"
+                             height="48"
+                             class="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 object-contain drop-shadow-xs group-hover:scale-105 transition-transform duration-200">
+                    </picture>
                     <div class="leading-tight min-w-0">
                         <span class="block text-xs xs:text-sm sm:text-base md:text-lg font-black text-emerald-950 tracking-tight group-hover:text-emerald-700 transition truncate">
                             MEDIA RESMI AL-FALAH PUTAK
@@ -376,7 +390,16 @@
                 <!-- Kolom 1: Profil & Identitas Lembaga (MEDIA RESMI AL-FALAH PUTAK) -->
                 <div class="md:col-span-6 space-y-4">
                     <div class="flex items-center gap-3">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo Pondok Pesantren Al-Falah Putak" class="w-12 h-12 sm:w-14 sm:h-14 object-contain shrink-0 drop-shadow-md">
+                        <picture class="shrink-0">
+                            <source srcset="{{ asset('images/logo-nav.webp') }}" type="image/webp">
+                            <img src="{{ asset('images/logo-nav.png') }}"
+                                 alt="Logo Pondok Pesantren Al-Falah Putak"
+                                 loading="lazy"
+                                 decoding="async"
+                                 width="56"
+                                 height="56"
+                                 class="w-12 h-12 sm:w-14 sm:h-14 object-contain shrink-0 drop-shadow-md">
+                        </picture>
                         <div class="leading-tight">
                             <span class="text-base sm:text-lg md:text-xl font-bold text-white tracking-wide block">
                                 MEDIA RESMI AL-FALAH PUTAK
@@ -417,8 +440,8 @@
                                     <span>Buka Panel Admin &rarr;</span>
                                 </a>
                             @else
-                                <a href="{{ route('login') }}" class="text-slate-400 hover:text-emerald-300 transition inline-flex items-center gap-1.5 font-semibold text-xs sm:text-sm min-h-[40px]">
-                                    <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                                <a href="{{ route('login') }}" class="text-emerald-200 hover:text-white transition inline-flex items-center gap-1.5 font-semibold text-xs sm:text-sm min-h-[40px]">
+                                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
                                     <span>Portal Sekretariat (Login) &rarr;</span>
                                 </a>
                             @endauth
@@ -451,10 +474,10 @@
             </div>
 
             <!-- Hak Cipta Resmi Sesuai Arahan Pengguna -->
-            <div class="pt-6 sm:pt-8 text-center text-xs sm:text-sm text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="pt-6 sm:pt-8 text-center text-xs sm:text-sm text-slate-300 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <p>@2026 JAKASTRA OFFICIAL. All Reght Reserved</p>
-                <div class="flex items-center gap-3 text-xs sm:text-sm text-slate-400">
-                    <span class="text-emerald-400/90">Desa Putak, Gelumbang, Muara Enim</span>
+                <div class="flex items-center gap-3 text-xs sm:text-sm text-slate-300">
+                    <span class="text-emerald-300 font-medium">Desa Putak, Gelumbang, Muara Enim</span>
                 </div>
             </div>
         </div>
