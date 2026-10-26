@@ -348,6 +348,7 @@ class PublicController extends Controller
         }
 
         return response($content, 200)
-            ->header('Content-Type', 'application/xml; charset=utf-8');
+            ->header('Content-Type', 'application/xml; charset=utf-8')
+            ->header('X-Robots-Tag', 'noindex');
     }
 }
