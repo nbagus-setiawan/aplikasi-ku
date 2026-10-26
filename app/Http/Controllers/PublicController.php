@@ -69,6 +69,12 @@ class PublicController extends Controller
      */
     public function pengumumanIndex(Request $request)
     {
+        // Alihkan string template literal {search_term_string} dari Google Schema ke URL kanonikal bersih
+        $rawQ = (string) $request->input('q');
+        if (str_contains($rawQ, '{search_term_string}') || str_contains($rawQ, '%7Bsearch_term_string%7D')) {
+            return redirect()->route('publik.pengumuman.index', $request->except('q'), 301);
+        }
+
         $query = Pengumuman::terbitPublik()
             ->withCount(['likes', 'komentars', 'shares']);
 

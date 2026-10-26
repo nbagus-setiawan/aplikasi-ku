@@ -12,5 +12,6 @@ Allow: /robots.txt
 Disallow: /admin/
 Disallow: /login
 Disallow: /tanda-tangan/
+Disallow: /*search_term_string*
 
 Sitemap: https://ponpesalfalahputak.my.id/sitemap.xml
