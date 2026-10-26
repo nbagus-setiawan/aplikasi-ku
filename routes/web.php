@@ -40,6 +40,15 @@ Route::get('/verifikasi/{kode}/unduh', [VerifikasiPublikController::class, 'undu
 Route::get('/tanda-tangan/{token}', [TandaTanganPublikController::class, 'show'])->middleware('throttle:30,1')->name('publik.tanda-tangan.show');
 Route::post('/tanda-tangan/{token}', [TandaTanganPublikController::class, 'sign'])->middleware('throttle:15,1')->name('publik.tanda-tangan.sign');
 
+// Rute Pengalihan 301 (Pencegahan & Validasi Bersih Google Search Console)
+Route::redirect('/cetak', '/', 301);
+Route::redirect('/template', '/', 301);
+Route::redirect('/backup', '/', 301);
+Route::redirect('/pdf', '/', 301);
+Route::redirect('/unduh', '/', 301);
+Route::redirect('/export', '/', 301);
+Route::redirect('/download', '/', 301);
+
 // Rute Admin dengan Middleware auth dan Awalan /admin
 Route::middleware('auth')->prefix('admin')->group(function () {
     // Dashboard Utama
