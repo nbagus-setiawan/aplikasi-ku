@@ -98,7 +98,27 @@ class PublicController extends Controller
         $pengumuman = Pengumuman::terbitPublik()
             ->with(['likes', 'komentars', 'shares'])
             ->where('slug', $slug)
-            ->firstOrFail();
+            ->first();
+
+        if (!$pengumuman) {
+            // Jika dokumen ada tapi berstatus draft, tetap kembalikan 404
+            if (Pengumuman::where('slug', $slug)->exists()) {
+                abort(404);
+            }
+
+            // Cek apakah ada pengumuman terbit dengan slug mirip (potongan 10 huruf awal)
+            $cleanPrefix = substr(preg_replace('/[^a-zA-Z0-9]/', '', $slug), 0, 10);
+            $similar = !empty($cleanPrefix)
+                ? Pengumuman::terbitPublik()->where('slug', 'LIKE', '%' . $cleanPrefix . '%')->first()
+                : null;
+
+            if ($similar) {
+                return redirect()->route('publik.pengumuman.show', $similar->slug, 301);
+            }
+
+            // Fallback: alihkan pengunjung & bot pencari secara permanen (301) ke beranda warta
+            return redirect()->route('publik.pengumuman.index', [], 301);
+        }
 
         $pengaturan = Pengaturan::pluck('value', 'key')->toArray();
 

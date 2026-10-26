@@ -2,6 +2,7 @@ User-agent: *
 Allow: /
 Allow: /pengumuman
 Allow: /pengumuman/*
+Allow: /konsultasi
 Allow: /verifikasi
 Allow: /images/
 Allow: /build/
