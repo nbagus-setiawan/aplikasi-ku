@@ -10,9 +10,8 @@
         $namaSitusPendek = 'PON-PES AL FALAH PUTAK'; // Nama situs resmi yang tampil di atas URL pada hasil Google
         $judulHalaman = trim(html_entity_decode($__env->yieldContent('title'), ENT_QUOTES, 'UTF-8'));
         $isBeranda = request()->is('/') || $judulHalaman === '' || $judulHalaman === 'Beranda';
-        $judulDepan = $isBeranda ? 'HOME' : mb_strtoupper($judulHalaman, 'UTF-8');
-        $judulLengkap = $judulDepan . ' | ' . $namaSitus;
-        $judulOg = $judulLengkap;
+        $judulLengkap = $isBeranda ? ('HOME | ' . $namaSitus) : $judulHalaman;
+        $judulOg = $isBeranda ? $namaSitus : $judulHalaman;
 
         // Deskripsi Lengkap Umum Resmi (Putra & Putri, kurikulum salaf, titik lokasi, pengasuh)
         $deskripsiDefault = 'Website resmi Pondok Pesantren Salafiyah Al-Falah Putak, lembaga pendidikan Islam salafiyah di Desa Putak, Kec. Gelumbang, Kab. Muara Enim, Sumatera Selatan. Menempa insan santri putra dan putri yang berakhlak mulia, berwawasan luas, mandiri, dan berpegang teguh pada Al-Qur\'an dan Sunnah Nabi SAW dengan landasan akidah Ahlussunnah wal Jama\'ah serta madzhab Syafi\'i. Menyelenggarakan pengajian khazanah kitab kuning salaf, tahfidzul Qur\'an, madrasah diniyah takmiliyah, dan pembinaan karakter di bawah bimbingan Pengasuh K.H. Mursyidi dan Ny. Hj. Aniswatuzzuhriyah.';
