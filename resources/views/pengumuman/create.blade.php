@@ -281,55 +281,62 @@
 
                 <!-- Toolbar Format Cepat -->
                 <div x-show="mode === 'write'" class="flex flex-wrap items-center gap-1.5 bg-gray-50 p-2 rounded-xl border border-gray-200">
-                    <button type="button" @click="applyFormat('bold')" title="Tebal (Ctrl+B)"
+                    <button type="button" @mousedown.prevent @click="applyFormat('bold')" title="Tebal (Ctrl+B)"
                             class="px-2.5 py-1 text-xs font-black text-gray-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg border border-gray-200 bg-white transition shadow-2xs">
                         B
                     </button>
-                    <button type="button" @click="applyFormat('italic')" title="Miring (Ctrl+I)"
+                    <button type="button" @mousedown.prevent @click="applyFormat('italic')" title="Miring (Ctrl+I)"
                             class="px-2.5 py-1 text-xs font-serif italic font-bold text-gray-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg border border-gray-200 bg-white transition shadow-2xs">
                         I
                     </button>
-                    <button type="button" @click="applyFormat('underline')" title="Garis Bawah (Ctrl+U)"
+                    <button type="button" @mousedown.prevent @click="applyFormat('underline')" title="Garis Bawah (Ctrl+U)"
                             class="px-2.5 py-1 text-xs underline font-bold text-gray-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg border border-gray-200 bg-white transition shadow-2xs">
                         U
                     </button>
                     <div class="h-4 w-px bg-gray-300 mx-1"></div>
                     <!-- Tombol Perataan Teks (Icon SVG Murni, Tanpa Emoji) -->
-                    <button type="button" @click="applyAlign('left')" title="Rata Kiri (Ctrl+Shift+L)"
+                    <button type="button" @mousedown.prevent @click="applyAlign('left')" title="Rata Kiri (Ctrl+Shift+L)"
                             class="inline-flex items-center justify-center p-1.5 text-gray-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg border border-gray-200 bg-white transition shadow-2xs">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h14"/></svg>
                     </button>
-                    <button type="button" @click="applyAlign('center')" title="Rata Tengah (Ctrl+Shift+E)"
+                    <button type="button" @mousedown.prevent @click="applyAlign('center')" title="Rata Tengah (Ctrl+Shift+E)"
                             class="inline-flex items-center justify-center p-1.5 text-gray-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg border border-gray-200 bg-white transition shadow-2xs">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M7 12h10M5 18h14"/></svg>
                     </button>
-                    <button type="button" @click="applyAlign('right')" title="Rata Kanan (Ctrl+Shift+R)"
+                    <button type="button" @mousedown.prevent @click="applyAlign('right')" title="Rata Kanan (Ctrl+Shift+R)"
                             class="inline-flex items-center justify-center p-1.5 text-gray-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg border border-gray-200 bg-white transition shadow-2xs">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M10 12h10M6 18h14"/></svg>
                     </button>
-                    <button type="button" @click="applyAlign('justify')" title="Rata Kiri-Kanan / Justify (Ctrl+Shift+J)"
+                    <button type="button" @mousedown.prevent @click="applyAlign('justify')" title="Rata Kiri-Kanan / Justify (Ctrl+Shift+J)"
                             class="inline-flex items-center justify-center p-1.5 text-gray-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg border border-gray-200 bg-white transition shadow-2xs">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                     </button>
                     <div class="h-4 w-px bg-gray-300 mx-1"></div>
-                    <button type="button" @click="insertTab()" title="Indentasi Paragraf (Tab)"
+                    <!-- Tombol Teks Arab (RTL & Kaligrafi Santri) -->
+                    <button type="button" @mousedown.prevent @click="applyArab()" title="Teks Arab RTL (Ctrl+Shift+A)"
+                            class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-gray-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg border border-gray-200 bg-white transition shadow-2xs">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 5v14M16 19l4-10 4 10M17.5 15h5"/></svg>
+                        <span>ع Arab</span>
+                    </button>
+                    <div class="h-4 w-px bg-gray-300 mx-1"></div>
+                    <button type="button" @mousedown.prevent @click="insertTab()" title="Indentasi Paragraf (Tab)"
                             class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-bold text-gray-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg border border-gray-200 bg-white transition shadow-2xs">
                         <span>⇥ Tab</span>
                     </button>
-                    <button type="button" @click="applyList('bullet')" title="Daftar Poin"
+                    <button type="button" @mousedown.prevent @click="applyList('bullet')" title="Daftar Poin"
                             class="px-2.5 py-1 text-xs font-bold text-gray-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg border border-gray-200 bg-white transition shadow-2xs">
                         • Poin
                     </button>
-                    <button type="button" @click="applyList('number')" title="Daftar Nomor"
+                    <button type="button" @mousedown.prevent @click="applyList('number')" title="Daftar Nomor"
                             class="px-2.5 py-1 text-xs font-bold text-gray-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg border border-gray-200 bg-white transition shadow-2xs">
                         1. Nomor
                     </button>
-                    <button type="button" @click="applyFormat('quote')" title="Kutipan Maklumat"
+                    <button type="button" @mousedown.prevent @click="applyFormat('quote')" title="Kutipan Maklumat"
                             class="px-2.5 py-1 text-xs font-bold text-gray-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg border border-gray-200 bg-white transition shadow-2xs">
                         Kutipan
                     </button>
                     <div class="h-4 w-px bg-gray-300 mx-1"></div>
-                    <button type="button" @click="clearFormatting()" title="Hapus Format Seleksi"
+                    <button type="button" @mousedown.prevent @click="clearFormatting()" title="Hapus Format Seleksi"
                             class="px-2.5 py-1 text-xs text-rose-700 hover:bg-rose-50 rounded-lg border border-rose-200 bg-white transition shadow-2xs">
                         Bersihkan
                     </button>
@@ -341,11 +348,12 @@
                         x-ref="editor"
                         name="isi"
                         id="isi"
+                        dir="auto"
                         rows="9"
                         required
                         x-model="content"
                         @keydown="handleKeyDown($event)"
-                        placeholder="Tuliskan isi pengumuman secara rinci... Mendukung pintasan keyboard: Ctrl+B (Tebal), Ctrl+I (Miring), Ctrl+U (Garis Bawah), Ctrl+Shift+L (Kiri), Ctrl+Shift+E (Tengah), Ctrl+Shift+R (Kanan), Ctrl+Shift+J (Justify), dan Tab."
+                        placeholder="Tuliskan isi pengumuman secara rinci... Mendukung pintasan keyboard: Ctrl+B (Tebal), Ctrl+I (Miring), Ctrl+U (Garis Bawah), Ctrl+Shift+A (Arab), Ctrl+Shift+L (Kiri), Ctrl+Shift+E (Tengah), Ctrl+Shift+R (Kanan), Ctrl+Shift+J (Justify), dan Tab."
                         class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500 leading-relaxed font-sans placeholder:text-gray-400"
                     ></textarea>
 
@@ -359,6 +367,7 @@
                             <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white border border-gray-200 font-mono text-gray-700 font-semibold"><kbd>Ctrl</kbd>+<kbd>B</kbd> Tebal</span>
                             <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white border border-gray-200 font-mono text-gray-700 font-semibold"><kbd>Ctrl</kbd>+<kbd>I</kbd> Miring</span>
                             <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white border border-gray-200 font-mono text-gray-700 font-semibold"><kbd>Ctrl</kbd>+<kbd>U</kbd> Garis Bawah</span>
+                            <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white border border-gray-200 font-mono text-gray-700 font-semibold"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> Arab</span>
                             <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white border border-gray-200 font-mono text-gray-700 font-semibold"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd> Kiri</span>
                             <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white border border-gray-200 font-mono text-gray-700 font-semibold"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd> Tengah</span>
                             <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white border border-gray-200 font-mono text-gray-700 font-semibold"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> Kanan</span>
@@ -551,13 +560,43 @@ function pengumumanEditor(initialValue = '') {
         mode: 'write',
         content: initialValue,
 
+        // Kunci posisi gulir (scroll lock) & fokus tanpa melempar layar ke akhir kalimat
+        updateEditor(newText, selStart, selEnd, savedScrollTop) {
+            const textarea = this.$refs.editor;
+            if (!textarea) return;
+
+            this.content = newText;
+            textarea.value = newText;
+
+            const restore = () => {
+                textarea.focus({ preventScroll: true });
+                if (typeof selStart === 'number' && typeof selEnd === 'number') {
+                    textarea.setSelectionRange(selStart, selEnd);
+                }
+                if (typeof savedScrollTop === 'number') {
+                    textarea.scrollTop = savedScrollTop;
+                }
+            };
+
+            restore();
+            this.$nextTick(() => {
+                restore();
+                requestAnimationFrame(restore);
+            });
+        },
+
         handleKeyDown(e) {
             const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
             const isModifier = isMac ? e.metaKey : e.ctrlKey;
 
-            // Shortcuts Perataan Teks (Ctrl+Shift+L, Ctrl+Shift+E, Ctrl+Shift+R, Ctrl+Shift+J)
+            // Shortcuts Perataan Teks & Arab (Ctrl+Shift+...)
             if (isModifier && e.shiftKey) {
                 const key = e.key.toLowerCase();
+                if (key === 'a') {
+                    e.preventDefault();
+                    this.applyArab();
+                    return;
+                }
                 if (key === 'l') {
                     e.preventDefault();
                     this.applyAlign('left');
@@ -614,9 +653,36 @@ function pengumumanEditor(initialValue = '') {
 
             // Shift+Enter: Baris baru mulus
             if (e.key === 'Enter' && e.shiftKey) {
-                // Di textarea browser sudah otomatis membuat baris baru, biarkan event jalan
                 return;
             }
+        },
+
+        applyArab() {
+            const textarea = this.$refs.editor;
+            if (!textarea) return;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const savedScrollTop = textarea.scrollTop;
+            const text = this.content;
+            const selected = text.substring(start, end);
+
+            const prefix = '[arab]';
+            const suffix = '[/arab]';
+            const sample = 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ';
+
+            if (selected && selected.startsWith(prefix) && selected.endsWith(suffix)) {
+                const unwrapped = selected.substring(prefix.length, selected.length - suffix.length);
+                const newText = text.substring(0, start) + unwrapped + text.substring(end);
+                this.updateEditor(newText, start, start + unwrapped.length, savedScrollTop);
+                return;
+            }
+
+            const replacement = selected ? (prefix + selected + suffix) : (prefix + sample + suffix);
+            const newText = text.substring(0, start) + replacement + text.substring(end);
+            const selStart = selected ? start + prefix.length : start + prefix.length;
+            const selEnd = selected ? end + prefix.length : start + prefix.length + sample.length;
+
+            this.updateEditor(newText, selStart, selEnd, savedScrollTop);
         },
 
         applyAlign(type) {
@@ -624,6 +690,7 @@ function pengumumanEditor(initialValue = '') {
             if (!textarea) return;
             const start = textarea.selectionStart;
             const end = textarea.selectionEnd;
+            const savedScrollTop = textarea.scrollTop;
             const text = this.content;
             const selected = text.substring(start, end);
 
@@ -649,25 +716,17 @@ function pengumumanEditor(initialValue = '') {
 
             // Toggle: jika tag yang sama sudah membungkus, hapus pembungkusnya
             if (hadSameTag) {
-                this.content = text.substring(0, start) + currentText + text.substring(end);
-                this.$nextTick(() => {
-                    textarea.focus();
-                    textarea.setSelectionRange(start, start + currentText.length);
-                });
+                const newText = text.substring(0, start) + currentText + text.substring(end);
+                this.updateEditor(newText, start, start + currentText.length, savedScrollTop);
                 return;
             }
 
             const replacement = currentText ? (prefix + currentText + suffix) : (prefix + sample + suffix);
-            this.content = text.substring(0, start) + replacement + text.substring(end);
+            const newText = text.substring(0, start) + replacement + text.substring(end);
+            const selStart = currentText ? start + prefix.length : start + prefix.length;
+            const selEnd = currentText ? end + prefix.length : start + prefix.length + sample.length;
 
-            this.$nextTick(() => {
-                textarea.focus();
-                if (currentText) {
-                    textarea.setSelectionRange(start + prefix.length, end + prefix.length);
-                } else {
-                    textarea.setSelectionRange(start + prefix.length, start + prefix.length + sample.length);
-                }
-            });
+            this.updateEditor(newText, selStart, selEnd, savedScrollTop);
         },
 
         applyFormat(type) {
@@ -675,6 +734,7 @@ function pengumumanEditor(initialValue = '') {
             if (!textarea) return;
             const start = textarea.selectionStart;
             const end = textarea.selectionEnd;
+            const savedScrollTop = textarea.scrollTop;
             const text = this.content;
             const selected = text.substring(start, end);
 
@@ -692,25 +752,17 @@ function pengumumanEditor(initialValue = '') {
             // Toggle format jika sudah ada
             if (selected && selected.startsWith(prefix) && selected.endsWith(suffix) && prefix.length > 0) {
                 const unwrapped = selected.substring(prefix.length, selected.length - suffix.length);
-                this.content = text.substring(0, start) + unwrapped + text.substring(end);
-                this.$nextTick(() => {
-                    textarea.focus();
-                    textarea.setSelectionRange(start, start + unwrapped.length);
-                });
+                const newText = text.substring(0, start) + unwrapped + text.substring(end);
+                this.updateEditor(newText, start, start + unwrapped.length, savedScrollTop);
                 return;
             }
 
             const replacement = selected ? (prefix + selected + suffix) : (prefix + sample + suffix);
-            this.content = text.substring(0, start) + replacement + text.substring(end);
+            const newText = text.substring(0, start) + replacement + text.substring(end);
+            const selStart = selected ? start + prefix.length : start + prefix.length;
+            const selEnd = selected ? end + prefix.length : start + prefix.length + sample.length;
 
-            this.$nextTick(() => {
-                textarea.focus();
-                if (selected) {
-                    textarea.setSelectionRange(start + prefix.length, end + prefix.length);
-                } else {
-                    textarea.setSelectionRange(start + prefix.length, start + prefix.length + sample.length);
-                }
-            });
+            this.updateEditor(newText, selStart, selEnd, savedScrollTop);
         },
 
         insertTab() {
@@ -718,23 +770,18 @@ function pengumumanEditor(initialValue = '') {
             if (!textarea) return;
             const start = textarea.selectionStart;
             const end = textarea.selectionEnd;
+            const savedScrollTop = textarea.scrollTop;
             const text = this.content;
 
             if (start === end) {
                 const tabStr = '\t';
-                this.content = text.substring(0, start) + tabStr + text.substring(end);
-                this.$nextTick(() => {
-                    textarea.focus();
-                    textarea.setSelectionRange(start + tabStr.length, start + tabStr.length);
-                });
+                const newText = text.substring(0, start) + tabStr + text.substring(end);
+                this.updateEditor(newText, start + tabStr.length, start + tabStr.length, savedScrollTop);
             } else {
                 const lines = text.substring(start, end).split('\n');
                 const indented = lines.map(line => '\t' + line).join('\n');
-                this.content = text.substring(0, start) + indented + text.substring(end);
-                this.$nextTick(() => {
-                    textarea.focus();
-                    textarea.setSelectionRange(start, start + indented.length);
-                });
+                const newText = text.substring(0, start) + indented + text.substring(end);
+                this.updateEditor(newText, start, start + indented.length, savedScrollTop);
             }
         },
 
@@ -743,6 +790,7 @@ function pengumumanEditor(initialValue = '') {
             if (!textarea) return;
             const start = textarea.selectionStart;
             const end = textarea.selectionEnd;
+            const savedScrollTop = textarea.scrollTop;
             const text = this.content;
 
             const selected = text.substring(start, end);
@@ -759,11 +807,8 @@ function pengumumanEditor(initialValue = '') {
                 return line;
             }).join('\n');
 
-            this.content = text.substring(0, start) + unindented + text.substring(end);
-            this.$nextTick(() => {
-                textarea.focus();
-                textarea.setSelectionRange(start, Math.max(start, end - removedCount));
-            });
+            const newText = text.substring(0, start) + unindented + text.substring(end);
+            this.updateEditor(newText, start, Math.max(start, end - removedCount), savedScrollTop);
         },
 
         applyList(type) {
@@ -771,6 +816,7 @@ function pengumumanEditor(initialValue = '') {
             if (!textarea) return;
             const start = textarea.selectionStart;
             const end = textarea.selectionEnd;
+            const savedScrollTop = textarea.scrollTop;
             const text = this.content;
             const selected = text.substring(start, end) || 'Daftar butir maklumat';
 
@@ -781,11 +827,8 @@ function pengumumanEditor(initialValue = '') {
                 return prefix + cleanLine;
             }).join('\n');
 
-            this.content = text.substring(0, start) + formatted + text.substring(end);
-            this.$nextTick(() => {
-                textarea.focus();
-                textarea.setSelectionRange(start, start + formatted.length);
-            });
+            const newText = text.substring(0, start) + formatted + text.substring(end);
+            this.updateEditor(newText, start, start + formatted.length, savedScrollTop);
         },
 
         clearFormatting() {
@@ -793,6 +836,7 @@ function pengumumanEditor(initialValue = '') {
             if (!textarea) return;
             const start = textarea.selectionStart;
             const end = textarea.selectionEnd;
+            const savedScrollTop = textarea.scrollTop;
             const text = this.content;
             const selected = text.substring(start, end);
             if (!selected) return;
@@ -803,13 +847,11 @@ function pengumumanEditor(initialValue = '') {
                 .replace(/<u>(.*?)<\/u>/gi, '$1')
                 .replace(/<b>(.*?)<\/b>/gi, '$1')
                 .replace(/<i>(.*?)<\/i>/gi, '$1')
+                .replace(/\[arab\](.*?)\[\/arab\]/gis, '$1')
                 .replace(/\[(left|center|right|justify)\](.*?)\[\/\1\]/gis, '$2');
 
-            this.content = text.substring(0, start) + cleaned + text.substring(end);
-            this.$nextTick(() => {
-                textarea.focus();
-                textarea.setSelectionRange(start, start + cleaned.length);
-            });
+            const newText = text.substring(0, start) + cleaned + text.substring(end);
+            this.updateEditor(newText, start, start + cleaned.length, savedScrollTop);
         },
 
         renderPreview(raw) {
@@ -833,11 +875,15 @@ function pengumumanEditor(initialValue = '') {
                 .replace(/&lt;em&gt;/gi, '<em>')
                 .replace(/&lt;\/em&gt;/gi, '</em>');
 
+            // Format tag khusus [arab]...[/arab]
+            escaped = escaped.replace(/\[arab\](.*?)\[\/arab\]/gis, '<div dir="rtl" class="text-right font-arabic text-lg sm:text-xl leading-loose my-2 text-slate-900">$1</div>');
+
             // Format perataan teks [center], [right], [left], [justify]
-            escaped = escaped.replace(/\[center\](.*?)\[\/center\]/gis, '<div class="text-center my-1.5">$1</div>');
-            escaped = escaped.replace(/\[right\](.*?)\[\/right\]/gis, '<div class="text-right my-1.5">$1</div>');
-            escaped = escaped.replace(/\[left\](.*?)\[\/left\]/gis, '<div class="text-left my-1.5">$1</div>');
-            escaped = escaped.replace(/\[justify\](.*?)\[\/justify\]/gis, '<div class="text-justify my-1.5">$1</div>');
+            escaped = escaped.replace(/\[(center|right|left|justify)\](.*?)\[\/\1\]/gis, (m, align, content) => {
+                const isArabic = /[\u0600-\u06FF]/.test(content);
+                const classes = `text-${align} my-1.5` + (isArabic ? ' font-arabic text-lg sm:text-xl leading-loose' : '');
+                return `<div ${isArabic ? 'dir="rtl" ' : ''}class="${classes}">${content}</div>`;
+            });
 
             // Tab -> non-breaking spaces
             escaped = escaped.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
@@ -850,6 +896,17 @@ function pengumumanEditor(initialValue = '') {
 
             // Kutipan > text
             escaped = escaped.replace(/^&gt;\s*(.*)$/gm, '<blockquote class="border-l-4 border-emerald-500 pl-3 my-2 italic text-gray-700 bg-emerald-50/50 py-1 rounded-r">$1</blockquote>');
+
+            // Deteksi otomatis baris yang diawali teks Arab
+            const lines = escaped.split('\n');
+            const processedLines = lines.map(line => {
+                const trimmed = line.trim();
+                if (trimmed !== '' && /^[\u0600-\u06FF]/.test(trimmed) && !/^\s*<(div|blockquote)\b/i.test(trimmed)) {
+                    return `<div dir="rtl" class="text-right font-arabic text-lg sm:text-xl leading-loose my-1.5 text-slate-900">${line}</div>`;
+                }
+                return line;
+            });
+            escaped = processedLines.join('\n');
 
             let html = escaped.replace(/\n/g, '<br>');
             html = html.replace(/(<div[^>]*>)\s*<br\s*\/?>/gi, '$1');

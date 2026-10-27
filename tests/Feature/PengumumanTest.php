@@ -346,6 +346,30 @@ class PengumumanTest extends TestCase
         $this->assertStringContainsString('<div class="text-justify my-1.5">Teks Rata Kanan Kiri</div>', $formatted);
     }
 
+    public function test_formatted_isi_mendukung_format_teks_arab_dan_deteksi_otomatis_rtl()
+    {
+        $pengumuman = new Pengumuman([
+            'isi' => "[arab]بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ[/arab]\n[center]الحمد لله رب العالمين[/center]\nاللهم صل على سيدنا محمد\nPengumuman dalam Bahasa Indonesia.",
+        ]);
+
+        $formatted = $pengumuman->formatted_isi;
+
+        // Tag [arab] memiliki dir="rtl", text-right, dan font-arabic
+        $this->assertStringContainsString('dir="rtl"', $formatted);
+        $this->assertStringContainsString('font-arabic', $formatted);
+        $this->assertStringContainsString('text-right font-arabic', $formatted);
+        $this->assertStringContainsString('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', $formatted);
+
+        // Tag [center] dengan teks Arab otomatis mengadopsi dir="rtl"
+        $this->assertStringContainsString('text-center my-1.5 font-arabic', $formatted);
+
+        // Baris yang diawali huruf Arab otomatis memiliki dir="rtl" dan font-arabic
+        $this->assertStringContainsString('اللهم صل على سيدنا محمد', $formatted);
+
+        // Teks Latin tetap tidak diubah menjadi Arab
+        $this->assertStringContainsString('Pengumuman dalam Bahasa Indonesia.', $formatted);
+    }
+
     public function test_membuat_pengumuman_dengan_judul_yang_sama_dengan_data_soft_delete_tetap_berhasil_dan_slug_unik()
     {
         // Buat pengumuman awal lalu hapus (soft delete)

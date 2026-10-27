@@ -85,11 +85,22 @@ class Pengumuman extends Model
         $clean = preg_replace('/\s+on[a-z]+\s*=\s*(?:\"[^\"]*\"|\'[^\']*\'|[^\s>]+)/is', '', $clean);
         $clean = preg_replace('/javascript\s*:/i', '', $clean);
 
+        // Terjemahkan format tag khusus [arab]...[/arab]
+        $clean = preg_replace('/\[arab\](.*?)\[\/arab\]/is', '<div dir="rtl" class="text-right font-arabic text-lg sm:text-xl leading-loose my-2 text-slate-900">$1</div>', $clean);
+
         // Terjemahkan format perataan teks [center], [right], [left], [justify]
-        $clean = preg_replace('/\[center\](.*?)\[\/center\]/is', '<div class="text-center my-1.5">$1</div>', $clean);
-        $clean = preg_replace('/\[right\](.*?)\[\/right\]/is', '<div class="text-right my-1.5">$1</div>', $clean);
-        $clean = preg_replace('/\[left\](.*?)\[\/left\]/is', '<div class="text-left my-1.5">$1</div>', $clean);
-        $clean = preg_replace('/\[justify\](.*?)\[\/justify\]/is', '<div class="text-justify my-1.5">$1</div>', $clean);
+        // Jika di dalamnya terdapat tulisan Arab, terapkan dir="rtl" dan font-arabic agar harakat dan tanda baca tepat
+        $clean = preg_replace_callback('/\[(center|right|left|justify)\](.*?)\[\/\1\]/is', function ($matches) {
+            $align = $matches[1];
+            $content = $matches[2];
+            $isArabic = preg_match('/\p{Arabic}/u', $content);
+            $classes = "text-{$align} my-1.5";
+            if ($isArabic) {
+                $classes .= " font-arabic text-lg sm:text-xl leading-loose";
+                return '<div dir="rtl" class="' . $classes . '">' . $content . '</div>';
+            }
+            return '<div class="' . $classes . '">' . $content . '</div>';
+        }, $clean);
 
         // Terjemahkan format markdown tebal **teks**
         $clean = preg_replace('/\*\*(.*?)\*\*/s', '<strong>$1</strong>', $clean);
@@ -100,6 +111,19 @@ class Pengumuman extends Model
 
         // Format kutipan maklumat > teks
         $clean = preg_replace('/^>\s*(.*)$/m', '<blockquote class="border-l-4 border-emerald-500 pl-3 my-2 italic text-gray-700 bg-emerald-50/50 py-1 rounded-r">$1</blockquote>', $clean);
+
+        // Deteksi otomatis baris yang diawali teks Arab (belum dibungkus div/blockquote)
+        $lines = explode("\n", $clean);
+        $processedLines = [];
+        foreach ($lines as $line) {
+            $trimmed = trim($line);
+            if ($trimmed !== '' && preg_match('/^\s*[\p{Arabic}]/u', $trimmed) && !preg_match('/^\s*<(div|blockquote)\b/i', $trimmed)) {
+                $processedLines[] = '<div dir="rtl" class="text-right font-arabic text-lg sm:text-xl leading-loose my-1.5 text-slate-900">' . $line . '</div>';
+            } else {
+                $processedLines[] = $line;
+            }
+        }
+        $clean = implode("\n", $processedLines);
 
         $formatted = nl2br($clean);
         $formatted = preg_replace('/(<div[^>]*>)\s*<br\s*\/?>/i', '$1', $formatted);
