@@ -146,7 +146,7 @@
                                 </h2>
 
                                 <p class="text-slate-600 text-xs sm:text-sm line-clamp-2 leading-relaxed">
-                                    {{ Str::limit(strip_tags($item->isi), 110) }}
+                                    {{ $item->cuplikan(110) }}
                                 </p>
                             </div>
                         </div>

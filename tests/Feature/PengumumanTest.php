@@ -370,6 +370,25 @@ class PengumumanTest extends TestCase
         $this->assertStringContainsString('Pengumuman dalam Bahasa Indonesia.', $formatted);
     }
 
+    public function test_cuplikan_membersihkan_semua_tag_format_dan_pengulangan_judul()
+    {
+        $pengumuman = new Pengumuman([
+            'judul' => 'Iseng Bikin Stiker dari Foto Teman, Apa Hukumnya dalam Islam?',
+            'isi' => "**Iseng Bikin Stiker dari Foto Teman, Apa Hukumnya dalam Islam?**\n[justify]Iseng memotret teman yang sedang bengong lalu dijadikan stiker WhatsApp.[/justify]\n[center]Hukumnya adalah makruh tahrim.[/center]",
+        ]);
+
+        $cuplikan = $pengumuman->cuplikan(120);
+
+        // Memastikan tag format markdown dan perataan dibersihkan
+        $this->assertStringNotContainsString('**', $cuplikan);
+        $this->assertStringNotContainsString('[justify]', $cuplikan);
+        $this->assertStringNotContainsString('[/justify]', $cuplikan);
+        $this->assertStringNotContainsString('[center]', $cuplikan);
+
+        // Memastikan pengulangan judul di awal baris isi dibersihkan
+        $this->assertStringStartsWith('Iseng memotret teman yang sedang bengong', $cuplikan);
+    }
+
     public function test_membuat_pengumuman_dengan_judul_yang_sama_dengan_data_soft_delete_tetap_berhasil_dan_slug_unik()
     {
         // Buat pengumuman awal lalu hapus (soft delete)

@@ -32,7 +32,7 @@
                     <article class="bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-xs hover:border-emerald-300 hover:shadow-sm transition duration-200 flex flex-col justify-between h-full">
                         <div>
                             @if($item->gambar)
-                                <div class="h-44 sm:h-48 overflow-hidden bg-slate-100 relative">
+                                <div class="w-full aspect-[16/9] overflow-hidden bg-slate-100 relative">
                                     <img src="{{ asset('storage/' . $item->gambar) }}" alt="{{ $item->judul }}"
                                          loading="lazy"
                                          decoding="async"
@@ -71,7 +71,7 @@
                                 </h3>
 
                                 <p class="text-slate-600 text-xs sm:text-sm line-clamp-3 leading-relaxed">
-                                    {{ Str::limit(strip_tags($item->isi), 120) }}
+                                    {{ $item->cuplikan(120) }}
                                 </p>
                             </div>
                         </div>

@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Pengumuman extends Model
 {
@@ -133,6 +134,42 @@ class Pengumuman extends Model
         $formatted = preg_replace('/<br\s*\/?>\s*(<\/blockquote>)/i', '$1', $formatted);
 
         return $formatted;
+    }
+
+    public function getCuplikanAttribute(): string
+    {
+        return $this->cuplikan(120);
+    }
+
+    public function cuplikan(int $limit = 120): string
+    {
+        if (empty($this->isi)) {
+            return '';
+        }
+
+        $text = $this->isi;
+
+        // Hapus tag format [justify], [center], [left], [right], [arab] dan variannya
+        $text = preg_replace('/\[\/?(justify|center|left|right|arab)\]/is', ' ', $text);
+        $text = preg_replace('/\[.*?\]/', ' ', $text);
+
+        // Hapus format markdown tebal **, miring *, garis bawah _, dan quote >
+        $text = preg_replace('/(\*\*|\*|__|_|`)/', '', $text);
+        $text = preg_replace('/^>\s*/m', '', $text);
+
+        // Hapus elemen HTML
+        $text = strip_tags($text);
+
+        // Ganti spasi/baris baru berlebih dengan spasi tunggal
+        $clean = trim(preg_replace('/\s+/', ' ', $text));
+
+        // Jika awal teks mengulang judul warta persis, lewati judul tersebut agar langsung masuk ke isi
+        if (!empty($this->judul)) {
+            $cleanJudul = preg_quote(trim($this->judul), '/');
+            $clean = trim(preg_replace('/^' . $cleanJudul . '[\s\:\-\?\.\!]*/iu', '', $clean));
+        }
+
+        return Str::limit($clean, $limit);
     }
 
     public function likes()

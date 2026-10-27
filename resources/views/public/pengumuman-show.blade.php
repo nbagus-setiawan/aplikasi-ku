@@ -1,7 +1,7 @@
 @extends('layouts.public')
 
 @section('title', $pengumuman->judul)
-@section('meta_description', Str::limit(strip_tags($pengumuman->isi), 170))
+@section('meta_description', $pengumuman->cuplikan(170))
 @section('og_image', $pengumuman->gambar ? asset('storage/' . $pengumuman->gambar) : asset('images/og-alfalah-putak.jpg'))
 
 @section('extra_schema')
@@ -14,7 +14,7 @@
         "@@id": "{{ url()->current() }}"
     },
     "headline": {{ json_encode($pengumuman->judul) }},
-    "description": {{ json_encode(Str::limit(strip_tags($pengumuman->isi), 170)) }},
+    "description": {{ json_encode($pengumuman->cuplikan(170)) }},
     "image": [
         "{{ $pengumuman->gambar ? asset('storage/' . $pengumuman->gambar) : asset('images/og-alfalah-putak.jpg') }}"
     ],
