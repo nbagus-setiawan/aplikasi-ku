@@ -332,6 +332,20 @@ class PengumumanTest extends TestCase
         $this->assertStringNotContainsString('<script>', $formatted);
     }
 
+    public function test_formatted_isi_mendukung_perataan_teks_kiri_tengah_kanan_dan_justify()
+    {
+        $pengumuman = new Pengumuman([
+            'isi' => "[center]Teks Tengah[/center]\n[right]Teks Kanan[/right]\n[left]Teks Kiri[/left]\n[justify]Teks Rata Kanan Kiri[/justify]",
+        ]);
+
+        $formatted = $pengumuman->formatted_isi;
+
+        $this->assertStringContainsString('<div class="text-center my-1.5">Teks Tengah</div>', $formatted);
+        $this->assertStringContainsString('<div class="text-right my-1.5">Teks Kanan</div>', $formatted);
+        $this->assertStringContainsString('<div class="text-left my-1.5">Teks Kiri</div>', $formatted);
+        $this->assertStringContainsString('<div class="text-justify my-1.5">Teks Rata Kanan Kiri</div>', $formatted);
+    }
+
     public function test_membuat_pengumuman_dengan_judul_yang_sama_dengan_data_soft_delete_tetap_berhasil_dan_slug_unik()
     {
         // Buat pengumuman awal lalu hapus (soft delete)

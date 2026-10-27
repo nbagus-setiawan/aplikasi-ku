@@ -79,11 +79,17 @@ class Pengumuman extends Model
         $text = preg_replace('/<(script|style|iframe|object|embed|form|meta|link)\b[^>]*\/?>/is', '', $text);
 
         // Bersihkan tag berbahaya dan hanya izinkan tag pemformatan aman
-        $clean = strip_tags($text, '<b><strong><i><em><u><br><p><ul><ol><li><blockquote><span>');
+        $clean = strip_tags($text, '<b><strong><i><em><u><br><p><ul><ol><li><blockquote><span><div>');
 
         // Hapus atribut berbahaya (event handlers & javascript pseudo-protocol)
         $clean = preg_replace('/\s+on[a-z]+\s*=\s*(?:\"[^\"]*\"|\'[^\']*\'|[^\s>]+)/is', '', $clean);
         $clean = preg_replace('/javascript\s*:/i', '', $clean);
+
+        // Terjemahkan format perataan teks [center], [right], [left], [justify]
+        $clean = preg_replace('/\[center\](.*?)\[\/center\]/is', '<div class="text-center my-1.5">$1</div>', $clean);
+        $clean = preg_replace('/\[right\](.*?)\[\/right\]/is', '<div class="text-right my-1.5">$1</div>', $clean);
+        $clean = preg_replace('/\[left\](.*?)\[\/left\]/is', '<div class="text-left my-1.5">$1</div>', $clean);
+        $clean = preg_replace('/\[justify\](.*?)\[\/justify\]/is', '<div class="text-justify my-1.5">$1</div>', $clean);
 
         // Terjemahkan format markdown tebal **teks**
         $clean = preg_replace('/\*\*(.*?)\*\*/s', '<strong>$1</strong>', $clean);
@@ -95,7 +101,14 @@ class Pengumuman extends Model
         // Format kutipan maklumat > teks
         $clean = preg_replace('/^>\s*(.*)$/m', '<blockquote class="border-l-4 border-emerald-500 pl-3 my-2 italic text-gray-700 bg-emerald-50/50 py-1 rounded-r">$1</blockquote>', $clean);
 
-        return nl2br($clean);
+        $formatted = nl2br($clean);
+        $formatted = preg_replace('/(<div[^>]*>)\s*<br\s*\/?>/i', '$1', $formatted);
+        $formatted = preg_replace('/<br\s*\/?>\s*(<\/div>)/i', '$1', $formatted);
+        $formatted = preg_replace('/(<\/div>)\s*<br\s*\/?>/i', '$1', $formatted);
+        $formatted = preg_replace('/(<blockquote[^>]*>)\s*<br\s*\/?>/i', '$1', $formatted);
+        $formatted = preg_replace('/<br\s*\/?>\s*(<\/blockquote>)/i', '$1', $formatted);
+
+        return $formatted;
     }
 
     public function likes()

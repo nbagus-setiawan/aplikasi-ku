@@ -294,6 +294,24 @@
                         U
                     </button>
                     <div class="h-4 w-px bg-gray-300 mx-1"></div>
+                    <!-- Tombol Perataan Teks (Icon SVG Murni, Tanpa Emoji) -->
+                    <button type="button" @click="applyAlign('left')" title="Rata Kiri (Ctrl+Shift+L)"
+                            class="inline-flex items-center justify-center p-1.5 text-gray-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg border border-gray-200 bg-white transition shadow-2xs">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h14"/></svg>
+                    </button>
+                    <button type="button" @click="applyAlign('center')" title="Rata Tengah (Ctrl+Shift+E)"
+                            class="inline-flex items-center justify-center p-1.5 text-gray-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg border border-gray-200 bg-white transition shadow-2xs">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M7 12h10M5 18h14"/></svg>
+                    </button>
+                    <button type="button" @click="applyAlign('right')" title="Rata Kanan (Ctrl+Shift+R)"
+                            class="inline-flex items-center justify-center p-1.5 text-gray-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg border border-gray-200 bg-white transition shadow-2xs">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M10 12h10M6 18h14"/></svg>
+                    </button>
+                    <button type="button" @click="applyAlign('justify')" title="Rata Kiri-Kanan / Justify (Ctrl+Shift+J)"
+                            class="inline-flex items-center justify-center p-1.5 text-gray-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg border border-gray-200 bg-white transition shadow-2xs">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    <div class="h-4 w-px bg-gray-300 mx-1"></div>
                     <button type="button" @click="insertTab()" title="Indentasi Paragraf (Tab)"
                             class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-bold text-gray-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg border border-gray-200 bg-white transition shadow-2xs">
                         <span>⇥ Tab</span>
@@ -308,7 +326,7 @@
                     </button>
                     <button type="button" @click="applyFormat('quote')" title="Kutipan Maklumat"
                             class="px-2.5 py-1 text-xs font-bold text-gray-700 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg border border-gray-200 bg-white transition shadow-2xs">
-                        ❝ Kutipan
+                        Kutipan
                     </button>
                     <div class="h-4 w-px bg-gray-300 mx-1"></div>
                     <button type="button" @click="clearFormatting()" title="Hapus Format Seleksi"
@@ -327,7 +345,7 @@
                         required
                         x-model="content"
                         @keydown="handleKeyDown($event)"
-                        placeholder="Tuliskan isi pengumuman secara rinci... Mendukung pintasan keyboard laptop: Ctrl+B (Tebal), Ctrl+I (Miring), Ctrl+U (Garis Bawah), Tab (Indentasi), dan Shift+Enter."
+                        placeholder="Tuliskan isi pengumuman secara rinci... Mendukung pintasan keyboard: Ctrl+B (Tebal), Ctrl+I (Miring), Ctrl+U (Garis Bawah), Ctrl+Shift+L (Kiri), Ctrl+Shift+E (Tengah), Ctrl+Shift+R (Kanan), Ctrl+Shift+J (Justify), dan Tab."
                         class="w-full rounded-xl border-gray-300 text-sm focus:ring-emerald-500 focus:border-emerald-500 leading-relaxed font-sans placeholder:text-gray-400"
                     ></textarea>
 
@@ -336,13 +354,16 @@
                         <div class="flex items-center gap-1.5 flex-wrap">
                             <span class="font-bold text-gray-700 inline-flex items-center gap-1">
                                 <svg class="w-3.5 h-3.5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
-                                Pintasan Laptop:
+                                Pintasan Keyboard:
                             </span>
                             <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white border border-gray-200 font-mono text-gray-700 font-semibold"><kbd>Ctrl</kbd>+<kbd>B</kbd> Tebal</span>
                             <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white border border-gray-200 font-mono text-gray-700 font-semibold"><kbd>Ctrl</kbd>+<kbd>I</kbd> Miring</span>
                             <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white border border-gray-200 font-mono text-gray-700 font-semibold"><kbd>Ctrl</kbd>+<kbd>U</kbd> Garis Bawah</span>
+                            <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white border border-gray-200 font-mono text-gray-700 font-semibold"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd> Kiri</span>
+                            <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white border border-gray-200 font-mono text-gray-700 font-semibold"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd> Tengah</span>
+                            <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white border border-gray-200 font-mono text-gray-700 font-semibold"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> Kanan</span>
+                            <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white border border-gray-200 font-mono text-gray-700 font-semibold"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> Justify</span>
                             <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white border border-gray-200 font-mono text-gray-700 font-semibold"><kbd>Tab</kbd> Indentasi</span>
-                            <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white border border-gray-200 font-mono text-gray-700 font-semibold"><kbd>Shift</kbd>+<kbd>Enter</kbd> Baris Baru</span>
                         </div>
                         <div class="font-mono text-gray-400" x-text="content.length + ' karakter'"></div>
                     </div>
@@ -534,6 +555,31 @@ function pengumumanEditor(initialValue = '') {
             const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
             const isModifier = isMac ? e.metaKey : e.ctrlKey;
 
+            // Shortcuts Perataan Teks (Ctrl+Shift+L, Ctrl+Shift+E, Ctrl+Shift+R, Ctrl+Shift+J)
+            if (isModifier && e.shiftKey) {
+                const key = e.key.toLowerCase();
+                if (key === 'l') {
+                    e.preventDefault();
+                    this.applyAlign('left');
+                    return;
+                }
+                if (key === 'e') {
+                    e.preventDefault();
+                    this.applyAlign('center');
+                    return;
+                }
+                if (key === 'r') {
+                    e.preventDefault();
+                    this.applyAlign('right');
+                    return;
+                }
+                if (key === 'j') {
+                    e.preventDefault();
+                    this.applyAlign('justify');
+                    return;
+                }
+            }
+
             // Ctrl+B: Tebal
             if (isModifier && (e.key === 'b' || e.key === 'B')) {
                 e.preventDefault();
@@ -571,6 +617,57 @@ function pengumumanEditor(initialValue = '') {
                 // Di textarea browser sudah otomatis membuat baris baru, biarkan event jalan
                 return;
             }
+        },
+
+        applyAlign(type) {
+            const textarea = this.$refs.editor;
+            if (!textarea) return;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = this.content;
+            const selected = text.substring(start, end);
+
+            const prefix = `[${type}]`;
+            const suffix = `[/${type}]`;
+            const sample = 'teks perataan';
+
+            // Bersihkan tag perataan lain jika sudah ada
+            const alignTags = ['left', 'center', 'right', 'justify'];
+            let currentText = selected;
+            let hadSameTag = false;
+
+            if (currentText) {
+                alignTags.forEach(tag => {
+                    const p = `[${tag}]`;
+                    const s = `[/${tag}]`;
+                    if (currentText.startsWith(p) && currentText.endsWith(s)) {
+                        if (tag === type) hadSameTag = true;
+                        currentText = currentText.substring(p.length, currentText.length - s.length);
+                    }
+                });
+            }
+
+            // Toggle: jika tag yang sama sudah membungkus, hapus pembungkusnya
+            if (hadSameTag) {
+                this.content = text.substring(0, start) + currentText + text.substring(end);
+                this.$nextTick(() => {
+                    textarea.focus();
+                    textarea.setSelectionRange(start, start + currentText.length);
+                });
+                return;
+            }
+
+            const replacement = currentText ? (prefix + currentText + suffix) : (prefix + sample + suffix);
+            this.content = text.substring(0, start) + replacement + text.substring(end);
+
+            this.$nextTick(() => {
+                textarea.focus();
+                if (currentText) {
+                    textarea.setSelectionRange(start + prefix.length, end + prefix.length);
+                } else {
+                    textarea.setSelectionRange(start + prefix.length, start + prefix.length + sample.length);
+                }
+            });
         },
 
         applyFormat(type) {
@@ -705,7 +802,8 @@ function pengumumanEditor(initialValue = '') {
                 .replace(/\*(.*?)\*/g, '$1')
                 .replace(/<u>(.*?)<\/u>/gi, '$1')
                 .replace(/<b>(.*?)<\/b>/gi, '$1')
-                .replace(/<i>(.*?)<\/i>/gi, '$1');
+                .replace(/<i>(.*?)<\/i>/gi, '$1')
+                .replace(/\[(left|center|right|justify)\](.*?)\[\/\1\]/gis, '$2');
 
             this.content = text.substring(0, start) + cleaned + text.substring(end);
             this.$nextTick(() => {
@@ -735,6 +833,12 @@ function pengumumanEditor(initialValue = '') {
                 .replace(/&lt;em&gt;/gi, '<em>')
                 .replace(/&lt;\/em&gt;/gi, '</em>');
 
+            // Format perataan teks [center], [right], [left], [justify]
+            escaped = escaped.replace(/\[center\](.*?)\[\/center\]/gis, '<div class="text-center my-1.5">$1</div>');
+            escaped = escaped.replace(/\[right\](.*?)\[\/right\]/gis, '<div class="text-right my-1.5">$1</div>');
+            escaped = escaped.replace(/\[left\](.*?)\[\/left\]/gis, '<div class="text-left my-1.5">$1</div>');
+            escaped = escaped.replace(/\[justify\](.*?)\[\/justify\]/gis, '<div class="text-justify my-1.5">$1</div>');
+
             // Tab -> non-breaking spaces
             escaped = escaped.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
 
@@ -747,7 +851,11 @@ function pengumumanEditor(initialValue = '') {
             // Kutipan > text
             escaped = escaped.replace(/^&gt;\s*(.*)$/gm, '<blockquote class="border-l-4 border-emerald-500 pl-3 my-2 italic text-gray-700 bg-emerald-50/50 py-1 rounded-r">$1</blockquote>');
 
-            return escaped.replace(/\n/g, '<br>');
+            let html = escaped.replace(/\n/g, '<br>');
+            html = html.replace(/(<div[^>]*>)\s*<br\s*\/?>/gi, '$1');
+            html = html.replace(/<br\s*\/?>\s*(<\/div>)/gi, '$1');
+            html = html.replace(/(<\/div>)\s*<br\s*\/?>/gi, '$1');
+            return html;
         }
     };
 }
