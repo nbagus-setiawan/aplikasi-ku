@@ -5,35 +5,40 @@
 @section('og_image', $pengumuman->gambar ? asset('storage/' . $pengumuman->gambar) : asset('images/og-alfalah-putak.jpg'))
 
 @section('extra_schema')
+@php
+    $newsSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'NewsArticle',
+        'mainEntityOfPage' => [
+            '@type' => 'WebPage',
+            '@id' => url()->current(),
+        ],
+        'headline' => mb_strtoupper($pengumuman->judul, 'UTF-8'),
+        'description' => $pengumuman->cuplikan(170),
+        'image' => [
+            $pengumuman->gambar ? asset('storage/' . $pengumuman->gambar) : asset('images/og-alfalah-putak.jpg'),
+        ],
+        'datePublished' => $pengumuman->tgl_tayang ? $pengumuman->tgl_tayang->toIso8601String() : $pengumuman->created_at->toIso8601String(),
+        'dateModified' => $pengumuman->updated_at->toIso8601String(),
+        'author' => [
+            [
+                '@type' => 'Organization',
+                'name' => 'Sekretariat Ponpes Al-Falah Putak',
+                'url' => url('/'),
+            ],
+        ],
+        'publisher' => [
+            '@type' => 'Organization',
+            'name' => 'Pondok Pesantren Salafiyah Al-Falah Putak',
+            'logo' => [
+                '@type' => 'ImageObject',
+                'url' => asset('favicon-192x192.png'),
+            ],
+        ],
+    ];
+@endphp
 <script type="application/ld+json">
-{
-    "@@context": "https://schema.org",
-    "@@type": "NewsArticle",
-    "mainEntityOfPage": {
-        "@@type": "WebPage",
-        "@@id": "{{ url()->current() }}"
-    },
-    "headline": {{ json_encode(mb_strtoupper($pengumuman->judul, 'UTF-8')) }},
-    "description": {{ json_encode($pengumuman->cuplikan(170)) }},
-    "image": [
-        "{{ $pengumuman->gambar ? asset('storage/' . $pengumuman->gambar) : asset('images/og-alfalah-putak.jpg') }}"
-    ],
-    "datePublished": "{{ $pengumuman->tgl_tayang ? $pengumuman->tgl_tayang->toIso8601String() : $pengumuman->created_at->toIso8601String() }}",
-    "dateModified": "{{ $pengumuman->updated_at->toIso8601String() }}",
-    "author": {
-        "@@type": "Organization",
-        "name": "Sekretariat Ponpes Al-Falah Putak",
-        "url": "{{ url('/') }}"
-    },
-    "publisher": {
-        "@@type": "EducationalOrganization",
-        "name": "Pondok Pesantren Salafiyah Al-Falah Putak",
-        "logo": {
-            "@@type": "ImageObject",
-            "url": "{{ asset('favicon-192x192.png') }}"
-        }
-    }
-}
+{!! json_encode($newsSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
 </script>
 @endsection
 

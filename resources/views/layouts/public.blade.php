@@ -90,175 +90,178 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v=3">
 
     <!-- Senjata Rahasia SEO: Schema Markup JSON-LD Terstruktur Standar Global Schema.org -->
+    @php
+        $siteSchema = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => ['EducationalOrganization', 'ReligiousOrganization'],
+                    '@id' => $urlBeranda . '#organization',
+                    'name' => 'Pondok Pesantren Salafiyah Al-Falah Putak',
+                    'alternateName' => [
+                        'Pondok Pesantren Al-Falah Putak',
+                        'PP Al-Falah Putak',
+                        'Ponpes Al Falah Putak',
+                        'Pondok Pesantren Putra Putri Al-Falah Putak',
+                        'MEDIA RESMI AL-FALAH PUTAK',
+                    ],
+                    'url' => $urlBeranda,
+                    'logo' => [
+                        '@type' => 'ImageObject',
+                        '@id' => $urlBeranda . '#logo',
+                        'url' => asset('favicon-192x192.png'),
+                        'caption' => 'Logo Pondok Pesantren Al-Falah Putak',
+                        'width' => 192,
+                        'height' => 192,
+                    ],
+                    'image' => [
+                        '@type' => 'ImageObject',
+                        '@id' => $urlBeranda . '#primaryimage',
+                        'url' => $gambarOg,
+                        'width' => 1200,
+                        'height' => 630,
+                    ],
+                    'description' => $deskripsiDefault,
+                    'foundingDate' => '2005-03-05',
+                    'founder' => [
+                        [
+                            '@type' => 'Person',
+                            'name' => 'K.H. Mursyidi',
+                            'jobTitle' => 'Pengasuh Pondok Pesantren',
+                        ],
+                        [
+                            '@type' => 'Person',
+                            'name' => 'Ny. Hj. Aniswatuzzuhriyah',
+                            'jobTitle' => 'Pengasuh Pondok Pesantren',
+                        ],
+                    ],
+                    'address' => [
+                        '@type' => 'PostalAddress',
+                        'streetAddress' => 'Jl. Pesantren Al-Falah, Desa Putak',
+                        'addressLocality' => 'Kecamatan Gelumbang',
+                        'addressRegion' => 'Sumatera Selatan',
+                        'postalCode' => '31171',
+                        'addressCountry' => 'ID',
+                    ],
+                    'geo' => [
+                        '@type' => 'GeoCoordinates',
+                        'latitude' => -3.193732918976179,
+                        'longitude' => 104.48584233774767,
+                    ],
+                    'hasMap' => 'https://maps.app.goo.gl/sVdzFiBgD7VdYKteA',
+                    'telephone' => '+6282118702718',
+                    'email' => 'sekretariat@ponpesalfalahputak.my.id',
+                    'contactPoint' => [
+                        [
+                            '@type' => 'ContactPoint',
+                            'telephone' => '+6282118702718',
+                            'contactType' => 'Informasi & Pendaftaran Santri Baru',
+                            'areaServed' => 'ID',
+                            'availableLanguage' => ['Indonesian', 'Arabic'],
+                        ],
+                    ],
+                    'sameAs' => [
+                        'https://maps.app.goo.gl/sVdzFiBgD7VdYKteA',
+                    ],
+                    'knowsAbout' => [
+                        'Pendidikan Pesantren Salafiyah',
+                        'Pendidikan Santri Putra dan Putri',
+                        'Kajian Khazanah Kitab Kuning',
+                        "Tahfidzul Qur'an",
+                        'Nahwu dan Shorof',
+                        "Fiqih Madzhab Syafi'i",
+                        "Akidah Ahlussunnah wal Jama'ah",
+                        'Madrasah Diniyah Takmiliyah',
+                        'Pembinaan Karakter dan Kemandirian Santri',
+                    ],
+                    'hasOfferCatalog' => [
+                        '@type' => 'OfferCatalog',
+                        'name' => 'Program Pendidikan Pesantren',
+                        'itemListElement' => [
+                            [
+                                '@type' => 'Offer',
+                                'itemOffered' => [
+                                    '@type' => 'Course',
+                                    'name' => 'Pengajian Kitab Kuning (Salafiyah)',
+                                    'description' => "Pendalaman kitab-kitab salaf mu'tabarah meliputi nahwu, shorof, fiqih, tafsir, hadits, tasawuf, dan ushul fiqih.",
+                                    'provider' => [
+                                        '@type' => 'EducationalOrganization',
+                                        'name' => 'Pondok Pesantren Salafiyah Al-Falah Putak',
+                                        'sameAs' => $urlBeranda,
+                                    ],
+                                ],
+                            ],
+                            [
+                                '@type' => 'Offer',
+                                'itemOffered' => [
+                                    '@type' => 'Course',
+                                    'name' => "Program Tahfidz & Tahsin Al-Qur'an",
+                                    'description' => "Bimbingan menghafal Al-Qur'an bersanad dan tajwid tartil untuk santri putra dan santri putri.",
+                                    'provider' => [
+                                        '@type' => 'EducationalOrganization',
+                                        'name' => 'Pondok Pesantren Salafiyah Al-Falah Putak',
+                                        'sameAs' => $urlBeranda,
+                                    ],
+                                ],
+                            ],
+                            [
+                                '@type' => 'Offer',
+                                'itemOffered' => [
+                                    '@type' => 'Course',
+                                    'name' => 'Madrasah Diniyah Takmiliyah',
+                                    'description' => 'Pendidikan klasikal terstruktur berjenjang untuk penguatan ilmu keislaman.',
+                                    'provider' => [
+                                        '@type' => 'EducationalOrganization',
+                                        'name' => 'Pondok Pesantren Salafiyah Al-Falah Putak',
+                                        'sameAs' => $urlBeranda,
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+                [
+                    '@type' => 'WebSite',
+                    '@id' => $urlBeranda . '#website',
+                    'url' => $urlBeranda,
+                    'name' => $namaSitusPendek,
+                    'alternateName' => [
+                        $namaSitus,
+                        'Ponpes Al Falah Putak',
+                        'Website Resmi Ponpes Al Falah Putak',
+                    ],
+                    'publisher' => [
+                        '@id' => $urlBeranda . '#organization',
+                    ],
+                    'inLanguage' => 'id-ID',
+                    'potentialAction' => [
+                        '@type' => 'SearchAction',
+                        'target' => [
+                            '@type' => 'EntryPoint',
+                            'urlTemplate' => url('/pengumuman') . '?q={search_term_string}',
+                        ],
+                        'query-input' => 'required name=search_term_string',
+                    ],
+                ],
+                [
+                    '@type' => 'WebPage',
+                    '@id' => $urlKanonik . '#webpage',
+                    'url' => $urlKanonik,
+                    'name' => $judulOg,
+                    'isPartOf' => [
+                        '@id' => $urlBeranda . '#website',
+                    ],
+                    'about' => [
+                        '@id' => $urlBeranda . '#organization',
+                    ],
+                    'description' => $deskripsi,
+                    'inLanguage' => 'id-ID',
+                ],
+            ],
+        ];
+    @endphp
     <script type="application/ld+json">
-    {
-        "@@context": "https://schema.org",
-        "@@graph": [
-            {
-                "@@type": ["EducationalOrganization", "ReligiousOrganization"],
-                "@@id": "{{ $urlBeranda }}#organization",
-                "name": "Pondok Pesantren Salafiyah Al-Falah Putak",
-                "alternateName": [
-                    "Pondok Pesantren Al-Falah Putak",
-                    "PP Al-Falah Putak",
-                    "Ponpes Al Falah Putak",
-                    "Pondok Pesantren Putra Putri Al-Falah Putak",
-                    "MEDIA RESMI AL-FALAH PUTAK"
-                ],
-                "url": "{{ $urlBeranda }}",
-                "logo": {
-                    "@@type": "ImageObject",
-                    "@@id": "{{ $urlBeranda }}#logo",
-                    "url": "{{ asset('favicon-192x192.png') }}",
-                    "caption": "Logo Pondok Pesantren Al-Falah Putak",
-                    "width": 192,
-                    "height": 192
-                },
-                "image": {
-                    "@@type": "ImageObject",
-                    "@@id": "{{ $urlBeranda }}#primaryimage",
-                    "url": "{{ $gambarOg }}",
-                    "width": 1200,
-                    "height": 630
-                },
-                "description": "{{ $deskripsiDefault }}",
-                "foundingDate": "2005-03-05",
-                "founder": [
-                    {
-                        "@@type": "Person",
-                        "name": "K.H. Mursyidi",
-                        "jobTitle": "Pengasuh Pondok Pesantren"
-                    },
-                    {
-                        "@@type": "Person",
-                        "name": "Ny. Hj. Aniswatuzzuhriyah",
-                        "jobTitle": "Pengasuh Pondok Pesantren"
-                    }
-                ],
-                "address": {
-                    "@@type": "PostalAddress",
-                    "streetAddress": "Jl. Pesantren Al-Falah, Desa Putak",
-                    "addressLocality": "Kecamatan Gelumbang",
-                    "addressRegion": "Sumatera Selatan",
-                    "postalCode": "31171",
-                    "addressCountry": "ID"
-                },
-                "geo": {
-                    "@@type": "GeoCoordinates",
-                    "latitude": -3.193732918976179,
-                    "longitude": 104.48584233774767
-                },
-                "hasMap": "https://maps.app.goo.gl/sVdzFiBgD7VdYKteA",
-                "telephone": "+6282118702718",
-                "email": "sekretariat@ponpesalfalahputak.my.id",
-                "contactPoint": [
-                    {
-                        "@@type": "ContactPoint",
-                        "telephone": "+6282118702718",
-                        "contactType": "Informasi & Pendaftaran Santri Baru",
-                        "areaServed": "ID",
-                        "availableLanguage": ["Indonesian", "Arabic"]
-                    }
-                ],
-                "sameAs": [
-                    "https://maps.app.goo.gl/sVdzFiBgD7VdYKteA"
-                ],
-                "knowsAbout": [
-                    "Pendidikan Pesantren Salafiyah",
-                    "Pendidikan Santri Putra dan Putri",
-                    "Kajian Khazanah Kitab Kuning",
-                    "Tahfidzul Qur'an",
-                    "Nahwu dan Shorof",
-                    "Fiqih Madzhab Syafi'i",
-                    "Akidah Ahlussunnah wal Jama'ah",
-                    "Madrasah Diniyah Takmiliyah",
-                    "Pembinaan Karakter dan Kemandirian Santri"
-                ],
-                "hasOfferCatalog": {
-                    "@@type": "OfferCatalog",
-                    "name": "Program Pendidikan Pesantren",
-                    "itemListElement": [
-                        {
-                            "@@type": "Offer",
-                            "itemOffered": {
-                                "@@type": "Course",
-                                "name": "Pengajian Kitab Kuning (Salafiyah)",
-                                "description": "Pendalaman kitab-kitab salaf mu'tabarah meliputi nahwu, shorof, fiqih, tafsir, hadits, tasawuf, dan ushul fiqih.",
-                                "provider": {
-                                    "@@type": "EducationalOrganization",
-                                    "name": "Pondok Pesantren Salafiyah Al-Falah Putak",
-                                    "sameAs": "{{ $urlBeranda }}"
-                                }
-                            }
-                        },
-                        {
-                            "@@type": "Offer",
-                            "itemOffered": {
-                                "@@type": "Course",
-                                "name": "Program Tahfidz & Tahsin Al-Qur'an",
-                                "description": "Bimbingan menghafal Al-Qur'an bersanad dan tajwid tartil untuk santri putra dan santri putri.",
-                                "provider": {
-                                    "@@type": "EducationalOrganization",
-                                    "name": "Pondok Pesantren Salafiyah Al-Falah Putak",
-                                    "sameAs": "{{ $urlBeranda }}"
-                                }
-                            }
-                        },
-                        {
-                            "@@type": "Offer",
-                            "itemOffered": {
-                                "@@type": "Course",
-                                "name": "Madrasah Diniyah Takmiliyah",
-                                "description": "Pendidikan klasikal terstruktur berjenjang untuk penguatan ilmu keislaman.",
-                                "provider": {
-                                    "@@type": "EducationalOrganization",
-                                    "name": "Pondok Pesantren Salafiyah Al-Falah Putak",
-                                    "sameAs": "{{ $urlBeranda }}"
-                                }
-                            }
-                        }
-                    ]
-                }
-            },
-            {
-                "@@type": "WebSite",
-                "@@id": "{{ $urlBeranda }}#website",
-                "url": "{{ $urlBeranda }}",
-                "name": "{{ $namaSitusPendek }}",
-                "alternateName": [
-                    "{{ $namaSitus }}",
-                    "Ponpes Al Falah Putak",
-                    "Website Resmi Ponpes Al Falah Putak"
-                ],
-                "publisher": {
-                    "@@id": "{{ $urlBeranda }}#organization"
-                },
-                "inLanguage": "id-ID",
-                "potentialAction": {
-                    "@@type": "SearchAction",
-                    "target": {
-                        "@@type": "EntryPoint",
-                        "urlTemplate": "{{ url('/pengumuman') }}?q={search_term_string}"
-                    },
-                    "query-input": "required name=search_term_string"
-                }
-            },
-            {
-                "@@type": "WebPage",
-                "@@id": "{{ $urlKanonik }}#webpage",
-                "url": "{{ $urlKanonik }}",
-                "name": "{{ $judulOg }}",
-                "isPartOf": {
-                    "@@id": "{{ $urlBeranda }}#website"
-                },
-                "about": {
-                    "@@id": "{{ $urlBeranda }}#organization"
-                },
-                "description": "{{ $deskripsi }}",
-                "inLanguage": "id-ID"
-            }
-        ]
-    }
+    {!! json_encode($siteSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
     </script>
 
     @yield('extra_schema')
