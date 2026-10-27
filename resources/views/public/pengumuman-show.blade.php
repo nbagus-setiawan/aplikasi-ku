@@ -13,7 +13,7 @@
         "@@type": "WebPage",
         "@@id": "{{ url()->current() }}"
     },
-    "headline": {{ json_encode($pengumuman->judul) }},
+    "headline": {{ json_encode(mb_strtoupper($pengumuman->judul, 'UTF-8')) }},
     "description": {{ json_encode($pengumuman->cuplikan(170)) }},
     "image": [
         "{{ $pengumuman->gambar ? asset('storage/' . $pengumuman->gambar) : asset('images/og-alfalah-putak.jpg') }}"
