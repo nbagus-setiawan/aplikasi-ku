@@ -86,7 +86,7 @@ class Pengumuman extends Model
         $clean = preg_replace('/javascript\s*:/i', '', $clean);
 
         // Terjemahkan format tag khusus [arab]...[/arab]
-        $clean = preg_replace('/\[arab\](.*?)\[\/arab\]/is', '<div dir="rtl" class="text-right font-arabic text-lg sm:text-xl leading-loose my-2 text-slate-900">$1</div>', $clean);
+        $clean = preg_replace('/\[arab\](.*?)\[\/arab\]/is', '<div dir="rtl" class="text-right font-arabic text-[1.08rem] sm:text-[1.12rem] leading-relaxed my-2 text-slate-900">$1</div>', $clean);
 
         // Terjemahkan format perataan teks [center], [right], [left], [justify]
         // Jika di dalamnya terdapat tulisan Arab, terapkan dir="rtl" dan font-arabic agar harakat dan tanda baca tepat
@@ -96,7 +96,7 @@ class Pengumuman extends Model
             $isArabic = preg_match('/\p{Arabic}/u', $content);
             $classes = "text-{$align} my-1.5";
             if ($isArabic) {
-                $classes .= " font-arabic text-lg sm:text-xl leading-loose";
+                $classes .= " font-arabic text-[1.08rem] sm:text-[1.12rem] leading-relaxed";
                 return '<div dir="rtl" class="' . $classes . '">' . $content . '</div>';
             }
             return '<div class="' . $classes . '">' . $content . '</div>';
@@ -118,7 +118,7 @@ class Pengumuman extends Model
         foreach ($lines as $line) {
             $trimmed = trim($line);
             if ($trimmed !== '' && preg_match('/^\s*[\p{Arabic}]/u', $trimmed) && !preg_match('/^\s*<(div|blockquote)\b/i', $trimmed)) {
-                $processedLines[] = '<div dir="rtl" class="text-right font-arabic text-lg sm:text-xl leading-loose my-1.5 text-slate-900">' . $line . '</div>';
+                $processedLines[] = '<div dir="rtl" class="text-right font-arabic text-[1.08rem] sm:text-[1.12rem] leading-relaxed my-1.5 text-slate-900">' . $line . '</div>';
             } else {
                 $processedLines[] = $line;
             }

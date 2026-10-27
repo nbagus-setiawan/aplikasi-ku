@@ -40,7 +40,8 @@
     /* Tipografi Arab Proporsional & Elegan (Santri/Pesantren) */
     .font-arabic {
         font-family: 'Amiri', 'Traditional Arabic', 'Scheherazade New', 'Noto Naskh Arabic', 'Geeza Pro', 'Al Bayan', Arial, sans-serif;
-        line-height: 2.2 !important;
+        font-size: 1.08rem;
+        line-height: 1.9 !important;
         letter-spacing: 0;
         direction: rtl;
         text-align: right;

@@ -876,12 +876,12 @@ function pengumumanEditor(initialValue = '') {
                 .replace(/&lt;\/em&gt;/gi, '</em>');
 
             // Format tag khusus [arab]...[/arab]
-            escaped = escaped.replace(/\[arab\](.*?)\[\/arab\]/gis, '<div dir="rtl" class="text-right font-arabic text-lg sm:text-xl leading-loose my-2 text-slate-900">$1</div>');
+            escaped = escaped.replace(/\[arab\](.*?)\[\/arab\]/gis, '<div dir="rtl" class="text-right font-arabic text-[1.08rem] sm:text-[1.12rem] leading-relaxed my-2 text-slate-900">$1</div>');
 
             // Format perataan teks [center], [right], [left], [justify]
             escaped = escaped.replace(/\[(center|right|left|justify)\](.*?)\[\/\1\]/gis, (m, align, content) => {
                 const isArabic = /[\u0600-\u06FF]/.test(content);
-                const classes = `text-${align} my-1.5` + (isArabic ? ' font-arabic text-lg sm:text-xl leading-loose' : '');
+                const classes = `text-${align} my-1.5` + (isArabic ? ' font-arabic text-[1.08rem] sm:text-[1.12rem] leading-relaxed' : '');
                 return `<div ${isArabic ? 'dir="rtl" ' : ''}class="${classes}">${content}</div>`;
             });
 
@@ -902,7 +902,7 @@ function pengumumanEditor(initialValue = '') {
             const processedLines = lines.map(line => {
                 const trimmed = line.trim();
                 if (trimmed !== '' && /^[\u0600-\u06FF]/.test(trimmed) && !/^\s*<(div|blockquote)\b/i.test(trimmed)) {
-                    return `<div dir="rtl" class="text-right font-arabic text-lg sm:text-xl leading-loose my-1.5 text-slate-900">${line}</div>`;
+                    return `<div dir="rtl" class="text-right font-arabic text-[1.08rem] sm:text-[1.12rem] leading-relaxed my-1.5 text-slate-900">${line}</div>`;
                 }
                 return line;
             });
