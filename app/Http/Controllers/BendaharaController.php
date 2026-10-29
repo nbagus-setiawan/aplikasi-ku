@@ -313,6 +313,13 @@ class BendaharaController extends Controller
 
             $pengaturans = Pengaturan::getAllKeyValues();
 
+            $logo = null;
+            if (! empty($pengaturans['logo']) && file_exists(storage_path('app/public/' . $pengaturans['logo']))) {
+                $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(storage_path('app/public/' . $pengaturans['logo'])));
+            } elseif (file_exists(public_path('images/logo.png'))) {
+                $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/logo.png')));
+            }
+
             $viewData = [
                 'transaksis' => $transaksis,
                 'saldoAwal' => $saldoAwal,
@@ -327,13 +334,14 @@ class BendaharaController extends Controller
                 'q' => $q,
                 'pengaturan' => $pengaturans,
                 'pengaturans' => $pengaturans,
+                'logo' => $logo,
                 'isHtmlPrint' => false,
             ];
 
-            // Jika ekstensi PHP DOM tersedia, hasilkan berkas PDF murni
+            // Jika ekstensi PHP DOM tersedia, hasilkan berkas PDF murni (Landscape agar lapang & rapi)
             if (class_exists(\DOMImplementation::class)) {
                 $pdf = Pdf::loadView('bendahara.cetak', $viewData)
-                    ->setPaper('a4', 'portrait');
+                    ->setPaper('a4', 'landscape');
 
                 $filename = 'buku-kas-umum-' . date('Ymd-His') . '.pdf';
 
