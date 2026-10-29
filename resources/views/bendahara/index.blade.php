@@ -1,274 +1,244 @@
-@extends('layouts.app')
+<x-app-layout>
+    @section('title', 'Buku Kas Umum Bendahara')
 
-@section('title', 'Bendahara - Buku Kas Umum (Debit & Kredit)')
+    <div class="space-y-6 pb-12" x-data="{
+        modalDebitOpen: false,
+        modalKreditOpen: false,
+        modalEditOpen: false,
+        modalPreviewOpen: false,
+        nominalDebit: '',
+        nominalKredit: '',
+        previewUrl: '',
+        previewTitle: '',
+        editData: {
+            id: '',
+            kode_transaksi: '',
+            tanggal: '',
+            jenis: 'debit',
+            kategori: '',
+            nominal: '',
+            keterangan: '',
+            nama_pihak: '',
+            lampiran: ''
+        },
+        openEdit(item) {
+            this.editData = {
+                id: item.id,
+                kode_transaksi: item.kode_transaksi,
+                tanggal: item.tanggal,
+                jenis: item.jenis,
+                kategori: item.kategori,
+                nominal: item.nominal,
+                keterangan: item.keterangan,
+                nama_pihak: item.nama_pihak || '',
+                lampiran: item.lampiran || ''
+            };
+            this.modalEditOpen = true;
+        },
+        openPreview(url, title) {
+            this.previewUrl = url;
+            this.previewTitle = title;
+            this.modalPreviewOpen = true;
+        }
+    }">
 
-@section('content')
-<div x-data="{
-    modalDebitOpen: false,
-    modalKreditOpen: false,
-    modalEditOpen: false,
-    modalPreviewOpen: false,
-    nominalDebit: '',
-    nominalKredit: '',
-    previewUrl: '',
-    previewTitle: '',
-    editData: {
-        id: '',
-        kode_transaksi: '',
-        tanggal: '',
-        jenis: 'debit',
-        kategori: '',
-        nominal: '',
-        keterangan: '',
-        nama_pihak: '',
-        lampiran: ''
-    },
-    openEdit(item) {
-        this.editData = {
-            id: item.id,
-            kode_transaksi: item.kode_transaksi,
-            tanggal: item.tanggal,
-            jenis: item.jenis,
-            kategori: item.kategori,
-            nominal: item.nominal,
-            keterangan: item.keterangan,
-            nama_pihak: item.nama_pihak || '',
-            lampiran: item.lampiran || ''
-        };
-        this.modalEditOpen = true;
-    },
-    openPreview(url, title) {
-        this.previewUrl = url;
-        this.previewTitle = title;
-        this.modalPreviewOpen = true;
-    }
-}" class="space-y-4 sm:space-y-6">
-
-    <!-- HEADER & AKSI UTAMA (RESPONSIF MOBILE & DESKTOP) -->
-    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3.5 sm:space-y-0 sm:flex sm:items-center sm:justify-between sm:gap-4">
-        <div class="flex items-center gap-3">
-            <span class="p-2 sm:p-2.5 rounded-xl bg-emerald-100 text-emerald-800 shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </span>
-            <div class="min-w-0">
-                <h1 class="text-lg sm:text-2xl font-black text-slate-900 tracking-tight truncate">Buku Kas Bendahara</h1>
-                <p class="text-xs sm:text-sm text-slate-500 font-medium truncate">Mutasi Kas Masuk (Debit) & Kas Keluar (Kredit)</p>
+        <!-- Header Judul & Tombol Aksi (Seragam dengan Modul Surat & Santri) -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-1">
+            <div>
+                <nav class="flex items-center gap-2 text-xs text-gray-500 mb-1.5 font-medium">
+                    <span>Administrasi</span>
+                    <span>/</span>
+                    <span class="text-emerald-800 font-semibold">Buku Kas Bendahara</span>
+                </nav>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Buku Kas Umum Bendahara</h1>
+                <p class="text-xs sm:text-sm text-gray-500 mt-1">Pembukuan mutasi penerimaan (debit) & pengeluaran (kredit) Pondok Pesantren Al-Falah Putra.</p>
             </div>
-        </div>
 
-        <!-- Tombol Aksi Kas (Grid 2 Kolom di Mobile, Sebaris di Laptop) -->
-        <div class="grid grid-cols-2 sm:flex sm:items-center gap-2 pt-1 sm:pt-0">
-            <button @click="modalDebitOpen = true"
-                    type="button"
-                    class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-xs transition transform active:scale-95">
-                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-                <span>Catat Debit</span>
-            </button>
-
-            <button @click="modalKreditOpen = true"
-                    type="button"
-                    class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs sm:text-sm shadow-xs transition transform active:scale-95">
-                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"/></svg>
-                <span>Catat Kredit</span>
-            </button>
-
-            <a href="{{ route('admin.bendahara.word', request()->query()) }}"
-               class="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-xs transition transform active:scale-95"
-               title="Unduh format dokumen Microsoft Word (.doc) lengkap dengan Kop Surat">
-                <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-                <span>Unduh Word (.doc)</span>
-            </a>
-        </div>
-    </div>
-
-    <!-- 4 KARTU RINGKASAN AKUNTANSI (WARNA VIBRAN & RESPONSIF) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
-        <!-- 1. Saldo Kas Riil (Lebar Penuh di HP agar Sangat Menonjol) -->
-        <div class="col-span-2 sm:col-span-1 lg:col-span-1 bg-gradient-to-br from-emerald-800 via-emerald-900 to-teal-950 text-white p-4 sm:p-5 rounded-2xl shadow-sm border border-emerald-700/80 flex flex-col justify-between relative overflow-hidden">
-            <div class="absolute -right-8 -bottom-8 w-28 h-28 bg-emerald-500/10 rounded-full blur-xl pointer-events-none"></div>
-            <div class="relative z-10 flex items-center justify-between">
-                <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-emerald-200">Saldo Kas Riil</span>
-                <span class="p-1.5 sm:p-2 rounded-xl bg-emerald-700/80 text-emerald-200 border border-emerald-600/50 shadow-xs">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-                </span>
-            </div>
-            <div class="relative z-10 mt-2.5 sm:mt-3">
-                <div class="text-xl sm:text-2xl font-black tracking-tight truncate {{ $saldoKasKeseluruhan < 0 ? 'text-rose-300' : 'text-white' }}">
-                    Rp {{ number_format($saldoKasKeseluruhan, 0, ',', '.') }}
-                </div>
-                <p class="text-[10px] sm:text-[11px] text-emerald-200/80 mt-0.5 font-medium">Sisa saldo kas berjalan</p>
-            </div>
-        </div>
-
-        <!-- 2. Total Penerimaan (Debit) - Hijau Segar -->
-        <div class="col-span-1 bg-gradient-to-br from-emerald-50 via-teal-50/60 to-emerald-100/40 p-3.5 sm:p-5 rounded-2xl shadow-xs border-2 border-emerald-200/90 hover:border-emerald-300 transition flex flex-col justify-between">
-            <div class="flex items-center justify-between gap-1">
-                <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-emerald-900 truncate">Penerimaan (Debit)</span>
-                <span class="p-1.5 sm:p-2 rounded-xl bg-emerald-600 text-white shadow-xs shrink-0">
-                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
-                </span>
-            </div>
-            <div class="mt-2 sm:mt-3">
-                <div class="text-base sm:text-xl lg:text-2xl font-black text-emerald-700 tracking-tight truncate">
-                    Rp {{ number_format($totalDebitFiltered, 0, ',', '.') }}
-                </div>
-                <p class="text-[10px] sm:text-[11px] text-emerald-800/80 mt-0.5 font-semibold truncate">Kas masuk periode ini</p>
-            </div>
-        </div>
-
-        <!-- 3. Total Pengeluaran (Kredit) - Merah Mawar Segar -->
-        <div class="col-span-1 bg-gradient-to-br from-rose-50 via-red-50/60 to-rose-100/40 p-3.5 sm:p-5 rounded-2xl shadow-xs border-2 border-rose-200/90 hover:border-rose-300 transition flex flex-col justify-between">
-            <div class="flex items-center justify-between gap-1">
-                <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-rose-900 truncate">Pengeluaran (Kredit)</span>
-                <span class="p-1.5 sm:p-2 rounded-xl bg-rose-600 text-white shadow-xs shrink-0">
-                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg>
-                </span>
-            </div>
-            <div class="mt-2 sm:mt-3">
-                <div class="text-base sm:text-xl lg:text-2xl font-black text-rose-700 tracking-tight truncate">
-                    Rp {{ number_format($totalKreditFiltered, 0, ',', '.') }}
-                </div>
-                <p class="text-[10px] sm:text-[11px] text-rose-800/80 mt-0.5 font-semibold truncate">Kas keluar periode ini</p>
-            </div>
-        </div>
-
-        <!-- 4. Surplus / Defisit - Biru / Amber -->
-        <div class="col-span-2 sm:col-span-1 lg:col-span-1 {{ $surplusDefisitFiltered >= 0 ? 'bg-gradient-to-br from-blue-50 via-indigo-50/60 to-sky-100/40 border-blue-200/90' : 'bg-gradient-to-br from-amber-50 via-orange-50/60 to-amber-100/40 border-amber-200/90' }} p-3.5 sm:p-5 rounded-2xl shadow-xs border-2 hover:shadow-sm transition flex flex-col justify-between">
-            <div class="flex items-center justify-between gap-1">
-                <span class="text-[11px] sm:text-xs font-extrabold uppercase tracking-wider {{ $surplusDefisitFiltered >= 0 ? 'text-blue-900' : 'text-amber-900' }}">Surplus / (Defisit)</span>
-                <span class="p-1.5 sm:p-2 rounded-xl {{ $surplusDefisitFiltered >= 0 ? 'bg-blue-600 text-white' : 'bg-amber-600 text-white' }} shadow-xs shrink-0">
-                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                </span>
-            </div>
-            <div class="mt-2 sm:mt-3">
-                <div class="text-base sm:text-xl lg:text-2xl font-black tracking-tight truncate {{ $surplusDefisitFiltered >= 0 ? 'text-blue-700' : 'text-amber-700' }}">
-                    {{ $surplusDefisitFiltered >= 0 ? '+' : '' }}Rp {{ number_format($surplusDefisitFiltered, 0, ',', '.') }}
-                </div>
-                <p class="text-[10px] sm:text-[11px] {{ $surplusDefisitFiltered >= 0 ? 'text-blue-800/80' : 'text-amber-800/80' }} mt-0.5 font-semibold">{{ $totalCountFiltered }} transaksi periode ini</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- FILTER & PENCARIAN MUTASI -->
-    <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
-        <form method="GET" action="{{ route('admin.bendahara.index') }}" class="space-y-3">
-            <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
-                <div class="flex items-center gap-2">
-                    <span class="p-1.5 rounded-lg bg-emerald-100 text-emerald-800">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
-                    </span>
-                    <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">Filter & Pencarian Jurnal</span>
-                </div>
-                @if($jenis || $kategori || $q || $periode !== 'bulan-ini')
-                <a href="{{ route('admin.bendahara.index') }}" class="text-xs text-rose-600 font-bold hover:underline flex items-center gap-1">
-                    <span>Reset Filter</span>
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            <div class="flex flex-wrap items-center gap-2.5">
+                <!-- Unduh Word (.doc) -->
+                <a href="{{ route('admin.bendahara.word', request()->query()) }}"
+                   class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-bold rounded-xl border border-emerald-300 shadow-xs transition active:scale-95"
+                   title="Unduh Laporan Buku Kas (Word .doc)">
+                    <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    <span>Unduh Word (.doc)</span>
                 </a>
-                @endif
+
+                <!-- Catat Debit -->
+                <button type="button" @click="modalDebitOpen = true"
+                        class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-emerald-700/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>Catat Debit</span>
+                </button>
+
+                <!-- Catat Kredit -->
+                <button type="button" @click="modalKreditOpen = true"
+                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-rose-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4" />
+                    </svg>
+                    <span>Catat Kredit</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 4 Kartu Ringkasan Pembukuan Kas (Seragam dengan Modul Lain) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <!-- 1. Saldo Kas Riil -->
+            <div class="bg-white rounded-2xl border border-gray-200/90 p-4 sm:p-5 shadow-xs flex items-center justify-between">
+                <div class="min-w-0 pr-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Saldo Kas Riil</span>
+                    <div class="text-xl sm:text-2xl lg:text-3xl font-black mt-0.5 truncate {{ $saldoKasKeseluruhan < 0 ? 'text-rose-600' : 'text-emerald-700' }}">
+                        Rp {{ number_format($saldoKasKeseluruhan, 0, ',', '.') }}
+                    </div>
+                    <span class="text-[11px] text-gray-500 font-medium truncate block">Sisa saldo berjalan</span>
+                </div>
+                <div class="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-800 border border-emerald-200/60 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
             </div>
 
-            <div class="grid grid-cols-2 lg:grid-cols-12 gap-2.5 sm:gap-3">
-                @php
-                    $daftarBulan = [1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-                    $bulanIniLabel = ($daftarBulan[(int) date('n')] ?? date('F')) . ' ' . date('Y');
-                @endphp
+            <!-- 2. Penerimaan (Debit) -->
+            <div class="bg-white rounded-2xl border border-gray-200/90 p-4 sm:p-5 shadow-xs flex items-center justify-between">
+                <div class="min-w-0 pr-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-gray-500">Penerimaan (Debit)</span>
+                    <div class="text-xl sm:text-2xl lg:text-3xl font-black text-emerald-700 mt-0.5 truncate">
+                        Rp {{ number_format($totalDebitFiltered, 0, ',', '.') }}
+                    </div>
+                    <span class="text-[11px] text-gray-500 font-medium truncate block">Kas masuk periode ini</span>
+                </div>
+                <div class="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200/60 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                    </svg>
+                </div>
+            </div>
 
-                <!-- Filter Periode Cepat -->
-                <div class="col-span-1 lg:col-span-3">
-                    <label class="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-slate-700 uppercase mb-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                        <span>Periode</span>
-                    </label>
+            <!-- 3. Pengeluaran (Kredit) -->
+            <div class="bg-white rounded-2xl border border-gray-200/90 p-4 sm:p-5 shadow-xs flex items-center justify-between">
+                <div class="min-w-0 pr-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-gray-500">Pengeluaran (Kredit)</span>
+                    <div class="text-xl sm:text-2xl lg:text-3xl font-black text-rose-700 mt-0.5 truncate">
+                        Rp {{ number_format($totalKreditFiltered, 0, ',', '.') }}
+                    </div>
+                    <span class="text-[11px] text-gray-500 font-medium truncate block">Kas keluar periode ini</span>
+                </div>
+                <div class="w-11 h-11 rounded-2xl bg-rose-50 text-rose-700 border border-rose-200/60 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 4. Surplus / Defisit -->
+            <div class="bg-white rounded-2xl border border-gray-200/90 p-4 sm:p-5 shadow-xs flex items-center justify-between">
+                <div class="min-w-0 pr-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-gray-500">Surplus / (Defisit)</span>
+                    <div class="text-xl sm:text-2xl lg:text-3xl font-black {{ $surplusDefisitFiltered >= 0 ? 'text-blue-700' : 'text-amber-700' }} mt-0.5 truncate">
+                        {{ $surplusDefisitFiltered >= 0 ? '+' : '' }}Rp {{ number_format($surplusDefisitFiltered, 0, ',', '.') }}
+                    </div>
+                    <span class="text-[11px] text-gray-500 font-medium truncate block">{{ $totalCountFiltered }} transaksi periode ini</span>
+                </div>
+                <div class="w-11 h-11 rounded-2xl {{ $surplusDefisitFiltered >= 0 ? 'bg-blue-50 text-blue-700 border-blue-200/60' : 'bg-amber-50 text-amber-700 border-amber-200/60' }} border flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter & Pencarian Jurnal Mutasi Kas -->
+        <div class="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-4 sm:p-5 space-y-4">
+            <form method="GET" action="{{ route('admin.bendahara.index') }}" class="space-y-4">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                    <!-- Search Bar Global -->
+                    <div class="relative flex-1">
+                        <input type="text"
+                               name="q"
+                               value="{{ $q }}"
+                               placeholder="Cari uraian transaksi, nomor bukti, atau nama pihak..."
+                               class="w-full text-sm rounded-xl border border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 pl-10 pr-4 py-2.5 shadow-2xs">
+                        <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+
+                    @php
+                        $daftarBulan = [1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                        $bulanIniLabel = ($daftarBulan[(int) date('n')] ?? date('F')) . ' ' . date('Y');
+                    @endphp
+
+                    <!-- Dropdown Periode -->
                     <select name="periode"
                             onchange="this.form.submit()"
-                            class="w-full text-xs sm:text-sm rounded-xl border-slate-300 bg-slate-50/50 hover:bg-white focus:bg-white focus:border-emerald-500 focus:ring-emerald-500">
+                            class="text-xs sm:text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2.5 font-medium text-gray-700 bg-white shadow-2xs">
                         <option value="bulan-ini" {{ $periode === 'bulan-ini' ? 'selected' : '' }}>Bulan Ini ({{ $bulanIniLabel }})</option>
                         <option value="tahun-ini" {{ $periode === 'tahun-ini' ? 'selected' : '' }}>Tahun Ini ({{ date('Y') }})</option>
                         <option value="semua" {{ $periode === 'semua' ? 'selected' : '' }}>Semua Transaksi</option>
-                        <option value="custom" {{ $periode === 'custom' ? 'selected' : '' }}>Rentang Tanggal Kustom...</option>
+                        <option value="custom" {{ $periode === 'custom' ? 'selected' : '' }}>Rentang Kustom...</option>
                     </select>
-                </div>
 
-                <!-- Filter Jenis (Debit / Kredit) -->
-                <div class="col-span-1 lg:col-span-2">
-                    <label class="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-slate-700 uppercase mb-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                        <span>Jenis Akun</span>
-                    </label>
+                    <!-- Dropdown Jenis -->
                     <select name="jenis"
                             onchange="this.form.submit()"
-                            class="w-full text-xs sm:text-sm rounded-xl border-slate-300 bg-slate-50/50 hover:bg-white focus:bg-white focus:border-emerald-500 focus:ring-emerald-500">
+                            class="text-xs sm:text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2.5 font-medium text-gray-700 bg-white shadow-2xs">
                         <option value="">Semua Jenis</option>
                         <option value="debit" {{ $jenis === 'debit' ? 'selected' : '' }}>Debit (Penerimaan)</option>
                         <option value="kredit" {{ $jenis === 'kredit' ? 'selected' : '' }}>Kredit (Pengeluaran)</option>
                     </select>
-                </div>
 
-                <!-- Filter Kategori Pos Akun -->
-                <div class="col-span-2 sm:col-span-1 lg:col-span-3">
-                    <label class="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-slate-700 uppercase mb-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                        <span>Pos Akun / Kategori</span>
-                    </label>
+                    <!-- Dropdown Pos Akun -->
                     <select name="kategori"
                             onchange="this.form.submit()"
-                            class="w-full text-xs sm:text-sm rounded-xl border-slate-300 bg-slate-50/50 hover:bg-white focus:bg-white focus:border-emerald-500 focus:ring-emerald-500">
+                            class="text-xs sm:text-sm rounded-xl border-gray-300 focus:border-emerald-600 focus:ring-emerald-600 py-2.5 font-medium text-gray-700 bg-white shadow-2xs">
                         <option value="">Semua Pos Akun</option>
                         @foreach($kategoriList as $kat)
                             <option value="{{ $kat }}" {{ $kategori === $kat ? 'selected' : '' }}>{{ $kat }}</option>
                         @endforeach
                     </select>
+
+                    <!-- Tombol Reset Filter -->
+                    @if($jenis || $kategori || $q || $periode !== 'bulan-ini')
+                    <a href="{{ route('admin.bendahara.index') }}"
+                       class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-xs sm:text-sm shadow-2xs transition shrink-0"
+                       title="Bersihkan Semua Filter">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        <span class="hidden sm:inline">Reset</span>
+                    </a>
+                    @endif
                 </div>
 
-                <!-- Pencarian Teks -->
-                <div class="col-span-2 sm:col-span-1 lg:col-span-4">
-                    <label class="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-slate-700 uppercase mb-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
-                        <span>Pencarian Kata Kunci</span>
-                    </label>
-                    <div class="relative">
-                        <input type="text"
-                               name="q"
-                               value="{{ $q }}"
-                               placeholder="Cari uraian, no. bukti, pihak..."
-                               class="w-full text-xs sm:text-sm rounded-xl border-slate-300 pl-9 pr-4 bg-slate-50/50 hover:bg-white focus:bg-white focus:border-emerald-500 focus:ring-emerald-500">
-                        <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    </div>
+                <!-- Rentang Tanggal Kustom (Jika dipilih) -->
+                @if($periode === 'custom')
+                <div class="pt-3 border-t border-gray-100 flex flex-wrap items-center gap-2.5 text-xs">
+                    <span class="text-gray-500 font-semibold">Dari Tanggal:</span>
+                    <input type="date" name="dari_tanggal" value="{{ $dari }}" class="text-xs rounded-xl border-gray-300 py-1.5 focus:border-emerald-600 focus:ring-emerald-600">
+                    <span class="text-gray-500 font-semibold">Sampai Tanggal:</span>
+                    <input type="date" name="sampai_tanggal" value="{{ $sampai }}" class="text-xs rounded-xl border-gray-300 py-1.5 focus:border-emerald-600 focus:ring-emerald-600">
+                    <button type="submit" class="px-3.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition">Terapkan</button>
                 </div>
-            </div>
-
-            <!-- Rentang Tanggal Kustom (Jika dipilih) -->
-            @if($periode === 'custom')
-            <div class="pt-2 flex flex-wrap items-center gap-2.5 border-t border-slate-100">
-                <div class="flex items-center gap-2">
-                    <span class="text-xs text-slate-500 font-semibold">Dari:</span>
-                    <input type="date" name="dari_tanggal" value="{{ $dari }}" class="text-xs rounded-xl border-slate-300">
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-xs text-slate-500 font-semibold">Sampai:</span>
-                    <input type="date" name="sampai_tanggal" value="{{ $sampai }}" class="text-xs rounded-xl border-slate-300">
-                </div>
-                <button type="submit" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-xs hover:bg-emerald-700">Terapkan</button>
-            </div>
-            @endif
-        </form>
-    </div>
-
-    <!-- KONTEN MUTASI: DUA TAMPILAN (CARD FEED DI MOBILE, TABEL LENGKAP DI DESKTOP) -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-        <div class="px-4 py-3.5 sm:px-5 sm:py-4 border-b border-slate-200 flex items-center justify-between gap-2 bg-gradient-to-r from-slate-50 to-emerald-50/40">
-            <div>
-                <h2 class="text-sm sm:text-base font-bold text-slate-900">Jurnal Mutasi Kas</h2>
-                <p class="text-[11px] sm:text-xs text-slate-500">Urut dari transaksi terbaru</p>
-            </div>
-            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                {{ $transaksis->total() }} Transaksi
-            </span>
+                @endif
+            </form>
         </div>
+
+        <!-- KONTEN MUTASI: DUA TAMPILAN (CARD FEED DI MOBILE, TABEL LENGKAP DI DESKTOP) -->
+        <div class="bg-white rounded-2xl border border-gray-200/90 shadow-xs overflow-hidden">
+            <div class="px-4 py-3.5 sm:px-5 sm:py-4 border-b border-gray-200/80 flex items-center justify-between gap-2 bg-gray-50/70">
+                <div>
+                    <h2 class="text-sm sm:text-base font-bold text-gray-900">Jurnal Mutasi Kas</h2>
+                    <p class="text-[11px] sm:text-xs text-gray-500">Urut dari transaksi terbaru</p>
+                </div>
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                    {{ $transaksis->total() }} Transaksi
+                </span>
+            </div>
 
         <!-- 1. TAMPILAN MOBILE: KARTU MUTASI ELEGAN (Khusus Layar HP < 768px) -->
         <div class="block md:hidden divide-y divide-slate-100">
@@ -801,5 +771,5 @@
         </div>
     </div>
 
-</div>
-@endsection
+    </div>
+</x-app-layout>
