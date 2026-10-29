@@ -62,90 +62,91 @@
         <div class="grid grid-cols-2 sm:flex sm:items-center gap-2 pt-1 sm:pt-0">
             <button @click="modalDebitOpen = true"
                     type="button"
-                    class="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 sm:px-4 sm:py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-xs transition transform active:scale-95">
+                    class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-xs transition transform active:scale-95">
                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-                <span>+ Catat Debit</span>
+                <span>Catat Debit</span>
             </button>
 
             <button @click="modalKreditOpen = true"
                     type="button"
-                    class="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 sm:px-4 sm:py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs sm:text-sm shadow-xs transition transform active:scale-95">
+                    class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs sm:text-sm shadow-xs transition transform active:scale-95">
                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"/></svg>
-                <span>- Catat Kredit</span>
+                <span>Catat Kredit</span>
             </button>
 
             <a href="{{ route('admin.bendahara.cetak', request()->query()) }}"
                target="_blank"
-               class="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs sm:text-sm border border-slate-300 transition">
-                <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                <span>Cetak PDF</span>
+               class="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-xs border border-blue-600 transition transform active:scale-95">
+                <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                <span>Cetak PDF Kas</span>
             </a>
         </div>
     </div>
 
-    <!-- 4 KARTU RINGKASAN AKUNTANSI (RESPONSIF KARTU COMPACT DI MOBILE) -->
+    <!-- 4 KARTU RINGKASAN AKUNTANSI (WARNA VIBRAN & RESPONSIF) -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
-        <!-- Saldo Kas Riil (Lebar Penuh di HP agar Menonjol) -->
-        <div class="col-span-2 sm:col-span-1 lg:col-span-1 bg-gradient-to-br from-emerald-800 to-emerald-950 text-white p-4 sm:p-5 rounded-2xl shadow-xs border border-emerald-900 flex flex-col justify-between">
-            <div class="flex items-center justify-between">
-                <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-emerald-300/80">Saldo Kas Riil</span>
-                <span class="p-1.5 sm:p-2 rounded-lg bg-emerald-700/60 text-emerald-200">
+        <!-- 1. Saldo Kas Riil (Lebar Penuh di HP agar Sangat Menonjol) -->
+        <div class="col-span-2 sm:col-span-1 lg:col-span-1 bg-gradient-to-br from-emerald-800 via-emerald-900 to-teal-950 text-white p-4 sm:p-5 rounded-2xl shadow-sm border border-emerald-700/80 flex flex-col justify-between relative overflow-hidden">
+            <div class="absolute -right-8 -bottom-8 w-28 h-28 bg-emerald-500/10 rounded-full blur-xl pointer-events-none"></div>
+            <div class="relative z-10 flex items-center justify-between">
+                <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-emerald-200">Saldo Kas Riil</span>
+                <span class="p-1.5 sm:p-2 rounded-xl bg-emerald-700/80 text-emerald-200 border border-emerald-600/50 shadow-xs">
                     <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                 </span>
             </div>
-            <div class="mt-2.5 sm:mt-3">
+            <div class="relative z-10 mt-2.5 sm:mt-3">
                 <div class="text-xl sm:text-2xl font-black tracking-tight truncate {{ $saldoKasKeseluruhan < 0 ? 'text-rose-300' : 'text-white' }}">
                     Rp {{ number_format($saldoKasKeseluruhan, 0, ',', '.') }}
                 </div>
-                <p class="text-[10px] sm:text-[11px] text-emerald-200/70 mt-0.5 font-medium">Sisa saldo kas berjalan</p>
+                <p class="text-[10px] sm:text-[11px] text-emerald-200/80 mt-0.5 font-medium">Sisa saldo kas berjalan</p>
             </div>
         </div>
 
-        <!-- Total Penerimaan (Debit) -->
-        <div class="col-span-1 bg-white p-3.5 sm:p-5 rounded-2xl shadow-xs border border-slate-200 flex flex-col justify-between">
-            <div class="flex items-center justify-between">
-                <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-emerald-700 truncate">Penerimaan (Debit)</span>
-                <span class="p-1 sm:p-2 rounded-lg bg-emerald-50 text-emerald-600 shrink-0">
-                    <svg class="w-3.5 h-3.5 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
+        <!-- 2. Total Penerimaan (Debit) - Hijau Segar -->
+        <div class="col-span-1 bg-gradient-to-br from-emerald-50 via-teal-50/60 to-emerald-100/40 p-3.5 sm:p-5 rounded-2xl shadow-xs border-2 border-emerald-200/90 hover:border-emerald-300 transition flex flex-col justify-between">
+            <div class="flex items-center justify-between gap-1">
+                <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-emerald-900 truncate">Penerimaan (Debit)</span>
+                <span class="p-1.5 sm:p-2 rounded-xl bg-emerald-600 text-white shadow-xs shrink-0">
+                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
                 </span>
             </div>
             <div class="mt-2 sm:mt-3">
-                <div class="text-base sm:text-xl lg:text-2xl font-black text-emerald-600 tracking-tight truncate">
+                <div class="text-base sm:text-xl lg:text-2xl font-black text-emerald-700 tracking-tight truncate">
                     Rp {{ number_format($totalDebitFiltered, 0, ',', '.') }}
                 </div>
-                <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 font-medium truncate">Kas masuk periode ini</p>
+                <p class="text-[10px] sm:text-[11px] text-emerald-800/80 mt-0.5 font-semibold truncate">Kas masuk periode ini</p>
             </div>
         </div>
 
-        <!-- Total Pengeluaran (Kredit) -->
-        <div class="col-span-1 bg-white p-3.5 sm:p-5 rounded-2xl shadow-xs border border-slate-200 flex flex-col justify-between">
-            <div class="flex items-center justify-between">
-                <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-rose-700 truncate">Pengeluaran (Kredit)</span>
-                <span class="p-1 sm:p-2 rounded-lg bg-rose-50 text-rose-600 shrink-0">
-                    <svg class="w-3.5 h-3.5 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg>
+        <!-- 3. Total Pengeluaran (Kredit) - Merah Mawar Segar -->
+        <div class="col-span-1 bg-gradient-to-br from-rose-50 via-red-50/60 to-rose-100/40 p-3.5 sm:p-5 rounded-2xl shadow-xs border-2 border-rose-200/90 hover:border-rose-300 transition flex flex-col justify-between">
+            <div class="flex items-center justify-between gap-1">
+                <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-rose-900 truncate">Pengeluaran (Kredit)</span>
+                <span class="p-1.5 sm:p-2 rounded-xl bg-rose-600 text-white shadow-xs shrink-0">
+                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg>
                 </span>
             </div>
             <div class="mt-2 sm:mt-3">
-                <div class="text-base sm:text-xl lg:text-2xl font-black text-rose-600 tracking-tight truncate">
+                <div class="text-base sm:text-xl lg:text-2xl font-black text-rose-700 tracking-tight truncate">
                     Rp {{ number_format($totalKreditFiltered, 0, ',', '.') }}
                 </div>
-                <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 font-medium truncate">Kas keluar periode ini</p>
+                <p class="text-[10px] sm:text-[11px] text-rose-800/80 mt-0.5 font-semibold truncate">Kas keluar periode ini</p>
             </div>
         </div>
 
-        <!-- Surplus / Defisit -->
-        <div class="col-span-2 sm:col-span-1 lg:col-span-1 bg-white p-3.5 sm:p-5 rounded-2xl shadow-xs border border-slate-200 flex flex-col justify-between">
-            <div class="flex items-center justify-between">
-                <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-600">Surplus / (Defisit)</span>
-                <span class="p-1 sm:p-2 rounded-lg {{ $surplusDefisitFiltered >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600' }}">
-                    <svg class="w-3.5 h-3.5 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        <!-- 4. Surplus / Defisit - Biru / Amber -->
+        <div class="col-span-2 sm:col-span-1 lg:col-span-1 {{ $surplusDefisitFiltered >= 0 ? 'bg-gradient-to-br from-blue-50 via-indigo-50/60 to-sky-100/40 border-blue-200/90' : 'bg-gradient-to-br from-amber-50 via-orange-50/60 to-amber-100/40 border-amber-200/90' }} p-3.5 sm:p-5 rounded-2xl shadow-xs border-2 hover:shadow-sm transition flex flex-col justify-between">
+            <div class="flex items-center justify-between gap-1">
+                <span class="text-[11px] sm:text-xs font-extrabold uppercase tracking-wider {{ $surplusDefisitFiltered >= 0 ? 'text-blue-900' : 'text-amber-900' }}">Surplus / (Defisit)</span>
+                <span class="p-1.5 sm:p-2 rounded-xl {{ $surplusDefisitFiltered >= 0 ? 'bg-blue-600 text-white' : 'bg-amber-600 text-white' }} shadow-xs shrink-0">
+                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                 </span>
             </div>
             <div class="mt-2 sm:mt-3">
-                <div class="text-base sm:text-xl lg:text-2xl font-black tracking-tight truncate {{ $surplusDefisitFiltered >= 0 ? 'text-emerald-700' : 'text-rose-600' }}">
+                <div class="text-base sm:text-xl lg:text-2xl font-black tracking-tight truncate {{ $surplusDefisitFiltered >= 0 ? 'text-blue-700' : 'text-amber-700' }}">
                     {{ $surplusDefisitFiltered >= 0 ? '+' : '' }}Rp {{ number_format($surplusDefisitFiltered, 0, ',', '.') }}
                 </div>
-                <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 font-medium">{{ $totalCountFiltered }} transaksi</p>
+                <p class="text-[10px] sm:text-[11px] {{ $surplusDefisitFiltered >= 0 ? 'text-blue-800/80' : 'text-amber-800/80' }} mt-0.5 font-semibold">{{ $totalCountFiltered }} transaksi periode ini</p>
             </div>
         </div>
     </div>
@@ -236,12 +237,12 @@
 
     <!-- KONTEN MUTASI: DUA TAMPILAN (CARD FEED DI MOBILE, TABEL LENGKAP DI DESKTOP) -->
     <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-        <div class="px-4 py-3.5 sm:px-5 sm:py-4 border-b border-slate-200 flex items-center justify-between gap-2 bg-slate-50/50">
+        <div class="px-4 py-3.5 sm:px-5 sm:py-4 border-b border-slate-200 flex items-center justify-between gap-2 bg-gradient-to-r from-slate-50 to-emerald-50/40">
             <div>
                 <h2 class="text-sm sm:text-base font-bold text-slate-900">Jurnal Mutasi Kas</h2>
                 <p class="text-[11px] sm:text-xs text-slate-500">Urut dari transaksi terbaru</p>
             </div>
-            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold bg-emerald-100 text-emerald-800">
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
                 {{ $transaksis->total() }} Transaksi
             </span>
         </div>
@@ -249,7 +250,7 @@
         <!-- 1. TAMPILAN MOBILE: KARTU MUTASI ELEGAN (Khusus Layar HP < 768px) -->
         <div class="block md:hidden divide-y divide-slate-100">
             @forelse($transaksis as $index => $item)
-            <div class="p-3.5 space-y-2.5 hover:bg-slate-50 transition-colors">
+            <div class="p-3.5 space-y-2.5 hover:bg-slate-50 transition-colors {{ $item->jenis === 'debit' ? 'border-l-4 border-l-emerald-500 bg-emerald-50/15' : 'border-l-4 border-l-rose-500 bg-rose-50/15' }}">
                 <!-- Baris Atas: Kategori & Nominal -->
                 <div class="flex items-center justify-between gap-2">
                     <span class="inline-block px-2 py-0.5 rounded-md text-[11px] font-bold border {{ $item->badge_class }}">
