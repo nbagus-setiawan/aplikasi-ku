@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\KasTransaksi;
 use App\Models\Pengaturan;
+use App\Services\KasDocxService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -388,15 +389,28 @@ class BendaharaController extends Controller
     }
 
     /**
-     * Unduh Laporan Buku Kas Umum Format Microsoft Word (.doc)
+     * Unduh Laporan Buku Kas Format Microsoft Word (.docx) Berdasarkan Template Resmi
      */
-    public function exportWord(Request $request)
+    public function exportWord(Request $request, KasDocxService $docxService)
     {
         try {
             $viewData = $this->prepareReportData($request);
 
+            $docxBinary = $docxService->generateDocx($viewData);
+            if ($docxBinary) {
+                $filename = 'laporan-buku-kas-' . date('Ymd-His') . '.docx';
+
+                return response($docxBinary, 200, [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+                    'Cache-Control' => 'max-age=0, no-cache, no-store, must-revalidate',
+                    'Pragma' => 'public',
+                ]);
+            }
+
+            // Fallback jika file template belum ada di server: gunakan view HTML .doc
             $html = view('bendahara.word', $viewData)->render();
-            $filename = 'buku-kas-umum-' . date('Ymd-His') . '.doc';
+            $filename = 'laporan-buku-kas-' . date('Ymd-His') . '.doc';
 
             return response($html, 200, [
                 'Content-Type' => 'application/vnd.ms-word; charset=UTF-8',

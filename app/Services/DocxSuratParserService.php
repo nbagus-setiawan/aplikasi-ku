@@ -843,7 +843,7 @@ class DocxSuratParserService
      * Baca seluruh berkas di dalam ZIP (.docx) menjadi array asosiatif [nama_file => konten_biner].
      * Mendukung ekstensi ZipArchive, Pure PHP parser (zlib), dan CLI unzip sebagai fallback.
      */
-    protected function readZipEntries(string $filePath): ?array
+    public function readZipEntries(string $filePath): ?array
     {
         if (! is_file($filePath)) {
             return null;
@@ -934,7 +934,7 @@ class DocxSuratParserService
      * Tulis ulang seluruh entri berkas ke file ZIP (.docx).
      * Mendukung ZipArchive, Pure-PHP writer (gzdeflate & pack), dan CLI zip.
      */
-    protected function writeZipEntries(string $filePath, array $entries): bool
+    public function writeZipEntries(string $filePath, array $entries): bool
     {
         if (class_exists(\ZipArchive::class)) {
             $zip = new \ZipArchive();
