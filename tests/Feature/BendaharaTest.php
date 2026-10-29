@@ -89,6 +89,29 @@ class BendaharaTest extends TestCase
         $this->assertStringStartsWith('BKK-', $transaksi->kode_transaksi);
     }
 
+    public function test_bisa_mencatat_transaksi_kas_tanpa_keterangan_opsional(): void
+    {
+        $payload = [
+            'tanggal' => now()->toDateString(),
+            'jenis' => 'debit',
+            'kategori' => 'Donasi & Bantuan',
+            'nominal' => 300000,
+            // keterangan sengaja dikosongkan (opsional)
+        ];
+
+        $response = $this->actingAs($this->user)->post(route('admin.bendahara.store'), $payload);
+
+        $response->assertRedirect(route('admin.bendahara.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('kas_transaksis', [
+            'jenis' => 'debit',
+            'kategori' => 'Donasi & Bantuan',
+            'nominal' => 300000,
+            'keterangan' => null,
+        ]);
+    }
+
     public function test_perhitungan_saldo_kas_debit_dan_kredit_akurat(): void
     {
         KasTransaksi::create([

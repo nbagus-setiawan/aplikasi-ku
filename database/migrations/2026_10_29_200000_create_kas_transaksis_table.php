@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('jenis', ['debit', 'kredit']);
             $table->string('kategori', 100);
             $table->decimal('nominal', 15, 2);
-            $table->text('keterangan');
+            $table->text('keterangan')->nullable();
             $table->string('nama_pihak', 150)->nullable();
             $table->string('lampiran')->nullable();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();

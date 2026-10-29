@@ -576,8 +576,8 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Uraian / Keterangan Transaksi <span class="text-rose-500">*</span></label>
-                        <textarea name="keterangan" rows="3" placeholder="Tuliskan keterangan detail penerimaan kas..." required class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500"></textarea>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Uraian / Keterangan Transaksi <span class="text-xs text-slate-400 font-normal">(Opsional)</span></label>
+                        <textarea name="keterangan" rows="3" placeholder="(Opsional) Tuliskan keterangan detail penerimaan kas..." class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500"></textarea>
                     </div>
 
                     <div>
@@ -668,8 +668,8 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Uraian / Keterangan Transaksi <span class="text-rose-500">*</span></label>
-                        <textarea name="keterangan" rows="3" placeholder="Tuliskan rincian barang/kebutuhan yang dibelanjakan..." required class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-rose-500 focus:ring-rose-500"></textarea>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Uraian / Keterangan Transaksi <span class="text-xs text-slate-400 font-normal">(Opsional)</span></label>
+                        <textarea name="keterangan" rows="3" placeholder="(Opsional) Tuliskan rincian barang/kebutuhan yang dibelanjakan..." class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-rose-500 focus:ring-rose-500"></textarea>
                     </div>
 
                     <div>
@@ -754,8 +754,8 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Uraian Keterangan <span class="text-rose-500">*</span></label>
-                        <textarea name="keterangan" x-model="editData.keterangan" rows="3" required class="w-full text-xs sm:text-sm rounded-xl border-slate-300"></textarea>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Uraian Keterangan <span class="text-xs text-slate-400 font-normal">(Opsional)</span></label>
+                        <textarea name="keterangan" x-model="editData.keterangan" rows="3" placeholder="(Opsional) Keterangan transaksi..." class="w-full text-xs sm:text-sm rounded-xl border-slate-300"></textarea>
                     </div>
 
                     <div>

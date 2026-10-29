@@ -156,7 +156,7 @@ class BendaharaController extends Controller
             'jenis' => ['required', 'in:debit,kredit'],
             'kategori' => ['required', 'string', 'max:100'],
             'nominal' => ['required', 'numeric', 'min:1'],
-            'keterangan' => ['required', 'string', 'max:1000'],
+            'keterangan' => ['nullable', 'string', 'max:1000'],
             'nama_pihak' => ['nullable', 'string', 'max:150'],
             'lampiran' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
         ], [
@@ -165,7 +165,6 @@ class BendaharaController extends Controller
             'kategori.required' => 'Pos Akun / Kategori wajib diisi.',
             'nominal.required' => 'Nominal transaksi wajib diisi.',
             'nominal.min' => 'Nominal minimal Rp 1.',
-            'keterangan.required' => 'Uraian keterangan transaksi wajib diisi.',
             'lampiran.max' => 'Ukuran file bukti transaksi maksimal 5 MB.',
         ]);
 
@@ -182,7 +181,7 @@ class BendaharaController extends Controller
             'jenis' => $validated['jenis'],
             'kategori' => $validated['kategori'],
             'nominal' => $validated['nominal'],
-            'keterangan' => $validated['keterangan'],
+            'keterangan' => $validated['keterangan'] ?? null,
             'nama_pihak' => $validated['nama_pihak'] ?? null,
             'lampiran' => $lampiranPath,
             'user_id' => Auth::id(),
@@ -205,7 +204,7 @@ class BendaharaController extends Controller
             'jenis' => ['required', 'in:debit,kredit'],
             'kategori' => ['required', 'string', 'max:100'],
             'nominal' => ['required', 'numeric', 'min:1'],
-            'keterangan' => ['required', 'string', 'max:1000'],
+            'keterangan' => ['nullable', 'string', 'max:1000'],
             'nama_pihak' => ['nullable', 'string', 'max:150'],
             'lampiran' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
         ], [
@@ -213,7 +212,6 @@ class BendaharaController extends Controller
             'jenis.required' => 'Jenis transaksi wajib dipilih.',
             'kategori.required' => 'Pos Akun / Kategori wajib diisi.',
             'nominal.required' => 'Nominal transaksi wajib diisi.',
-            'keterangan.required' => 'Uraian keterangan transaksi wajib diisi.',
             'lampiran.max' => 'Ukuran file bukti transaksi maksimal 5 MB.',
         ]);
 
@@ -230,7 +228,7 @@ class BendaharaController extends Controller
             'jenis' => $validated['jenis'],
             'kategori' => $validated['kategori'],
             'nominal' => $validated['nominal'],
-            'keterangan' => $validated['keterangan'],
+            'keterangan' => $validated['keterangan'] ?? null,
             'nama_pihak' => $validated['nama_pihak'] ?? null,
             'lampiran' => $lampiranPath,
         ]);
