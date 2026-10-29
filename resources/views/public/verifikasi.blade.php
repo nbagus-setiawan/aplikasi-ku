@@ -218,18 +218,11 @@
                             <div class="flex flex-wrap items-center justify-between gap-3">
                                 <div>
                                     <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-900 block">📄 Dokumen Surat Asli Resmi (Ber-QR Code)</span>
-                                    <span class="text-[11px] text-gray-500 font-medium">Pratinjau naskah dokumen asli langsung dari file Word resmi</span>
+                                    <span class="text-[11px] text-gray-500 font-medium">Hanya untuk pratinjau verifikasi keaslian naskah dokumen</span>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <a href="{{ route('publik.verifikasi.unduh', [$surat->kode_verifikasi, 'format' => 'docx']) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-900 hover:bg-blue-950 text-white rounded-xl text-xs font-bold shadow-xs transition-colors active:scale-95" title="Unduh Dokumen Word (.docx) Asli">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                        <span>Unduh Word (.docx)</span>
-                                    </a>
-                                    <a href="{{ route('publik.verifikasi.unduh', [$surat->kode_verifikasi, 'format' => 'pdf']) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors active:scale-95" title="Unduh Dokumen PDF Resmi">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                        <span>Unduh PDF</span>
-                                    </a>
-                                </div>
+                                <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-semibold">
+                                    Pratinjau Resmi
+                                </span>
                             </div>
 
                             <div class="w-full bg-slate-100/90 p-2 sm:p-5 rounded-2xl border border-slate-200 overflow-x-auto flex flex-col items-center">
