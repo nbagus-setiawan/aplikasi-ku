@@ -254,81 +254,88 @@ class BendaharaController extends Controller
      */
     public function cetak(Request $request)
     {
-        $periode = $request->input('periode', 'bulan-ini');
-        $dari = $request->filled('dari_tanggal') ? $request->input('dari_tanggal') : null;
-        $sampai = $request->filled('sampai_tanggal') ? $request->input('sampai_tanggal') : null;
-        $jenis = $request->filled('jenis') ? $request->input('jenis') : null;
-        $kategori = $request->filled('kategori') ? $request->input('kategori') : null;
-        $q = $request->filled('q') ? $request->input('q') : null;
+        try {
+            $periode = $request->input('periode', 'bulan-ini');
+            $dari = $request->filled('dari_tanggal') ? $request->input('dari_tanggal') : null;
+            $sampai = $request->filled('sampai_tanggal') ? $request->input('sampai_tanggal') : null;
+            $jenis = $request->filled('jenis') ? $request->input('jenis') : null;
+            $kategori = $request->filled('kategori') ? $request->input('kategori') : null;
+            $q = $request->filled('q') ? $request->input('q') : null;
 
-        if ($periode === 'bulan-ini') {
-            $dari = Carbon::now()->startOfMonth()->toDateString();
-            $sampai = Carbon::now()->endOfMonth()->toDateString();
-        } elseif ($periode === 'tahun-ini') {
-            $dari = Carbon::now()->startOfYear()->toDateString();
-            $sampai = Carbon::now()->endOfYear()->toDateString();
+            if ($periode === 'bulan-ini') {
+                $dari = Carbon::now()->startOfMonth()->toDateString();
+                $sampai = Carbon::now()->endOfMonth()->toDateString();
+            } elseif ($periode === 'tahun-ini') {
+                $dari = Carbon::now()->startOfYear()->toDateString();
+                $sampai = Carbon::now()->endOfYear()->toDateString();
+            }
+
+            $query = KasTransaksi::with('user')->orderBy('tanggal', 'asc')->orderBy('id', 'asc');
+
+            if ($dari && $sampai) {
+                $query->whereBetween('tanggal', [$dari, $sampai]);
+            } elseif ($dari) {
+                $query->whereDate('tanggal', '>=', $dari);
+            } elseif ($sampai) {
+                $query->whereDate('tanggal', '<=', $sampai);
+            }
+
+            if ($jenis && in_array($jenis, ['debit', 'kredit'])) {
+                $query->where('jenis', $jenis);
+            }
+
+            if ($kategori) {
+                $query->where('kategori', $kategori);
+            }
+
+            if ($q) {
+                $query->where(function ($w) use ($q) {
+                    $w->where('keterangan', 'like', "%{$q}%")
+                        ->orWhere('kode_transaksi', 'like', "%{$q}%")
+                        ->orWhere('nama_pihak', 'like', "%{$q}%")
+                        ->orWhere('kategori', 'like', "%{$q}%");
+                });
+            }
+
+            $transaksis = $query->get();
+
+            // Hitung Saldo Awal sebelum tanggal $dari (jika ada rentang tanggal)
+            $saldoAwal = 0.0;
+            if ($dari) {
+                $debitSebelumnya = (float) KasTransaksi::debit()->whereDate('tanggal', '<', $dari)->sum('nominal');
+                $kreditSebelumnya = (float) KasTransaksi::kredit()->whereDate('tanggal', '<', $dari)->sum('nominal');
+                $saldoAwal = $debitSebelumnya - $kreditSebelumnya;
+            }
+
+            $totalDebit = (float) $transaksis->where('jenis', 'debit')->sum('nominal');
+            $totalKredit = (float) $transaksis->where('jenis', 'kredit')->sum('nominal');
+            $saldoAkhir = $saldoAwal + $totalDebit - $totalKredit;
+
+            $pengaturans = Pengaturan::getAllKeyValues();
+
+            $pdf = Pdf::loadView('bendahara.cetak', [
+                'transaksis' => $transaksis,
+                'saldoAwal' => $saldoAwal,
+                'totalDebit' => $totalDebit,
+                'totalKredit' => $totalKredit,
+                'saldoAkhir' => $saldoAkhir,
+                'dari' => $dari,
+                'sampai' => $sampai,
+                'jenis' => $jenis,
+                'kategori' => $kategori,
+                'periode' => $periode,
+                'q' => $q,
+                'pengaturan' => $pengaturans,
+                'pengaturans' => $pengaturans,
+            ])->setPaper('a4', 'portrait');
+
+            $filename = 'buku-kas-umum-' . date('Ymd-His') . '.pdf';
+
+            return $pdf->stream($filename);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal cetak buku kas: ' . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
+            return redirect()->route('admin.bendahara.index')
+                ->with('error', 'Gagal memproses cetak PDF: ' . $e->getMessage());
         }
-
-        $query = KasTransaksi::with('user')->orderBy('tanggal', 'asc')->orderBy('id', 'asc');
-
-        if ($dari && $sampai) {
-            $query->whereBetween('tanggal', [$dari, $sampai]);
-        } elseif ($dari) {
-            $query->whereDate('tanggal', '>=', $dari);
-        } elseif ($sampai) {
-            $query->whereDate('tanggal', '<=', $sampai);
-        }
-
-        if ($jenis && in_array($jenis, ['debit', 'kredit'])) {
-            $query->where('jenis', $jenis);
-        }
-
-        if ($kategori) {
-            $query->where('kategori', $kategori);
-        }
-
-        if ($q) {
-            $query->where(function ($w) use ($q) {
-                $w->where('keterangan', 'like', "%{$q}%")
-                    ->orWhere('kode_transaksi', 'like', "%{$q}%")
-                    ->orWhere('nama_pihak', 'like', "%{$q}%")
-                    ->orWhere('kategori', 'like', "%{$q}%");
-            });
-        }
-
-        $transaksis = $query->get();
-
-        // Hitung Saldo Awal sebelum tanggal $dari (jika ada rentang tanggal)
-        $saldoAwal = 0;
-        if ($dari) {
-            $debitSebelumnya = (float) KasTransaksi::debit()->whereDate('tanggal', '<', $dari)->sum('nominal');
-            $kreditSebelumnya = (float) KasTransaksi::kredit()->whereDate('tanggal', '<', $dari)->sum('nominal');
-            $saldoAwal = $debitSebelumnya - $kreditSebelumnya;
-        }
-
-        $totalDebit = (float) $transaksis->where('jenis', 'debit')->sum('nominal');
-        $totalKredit = (float) $transaksis->where('jenis', 'kredit')->sum('nominal');
-        $saldoAkhir = $saldoAwal + $totalDebit - $totalKredit;
-
-        $pengaturan = Pengaturan::getAllKeyValues();
-
-        $pdf = Pdf::loadView('bendahara.cetak', [
-            'transaksis' => $transaksis,
-            'saldoAwal' => $saldoAwal,
-            'totalDebit' => $totalDebit,
-            'totalKredit' => $totalKredit,
-            'saldoAkhir' => $saldoAkhir,
-            'dari' => $dari,
-            'sampai' => $sampai,
-            'jenis' => $jenis,
-            'kategori' => $kategori,
-            'periode' => $periode,
-            'q' => $q,
-            'pengaturan' => $pengaturan,
-        ])->setPaper('a4', 'portrait');
-
-        $filename = 'buku-kas-umum-' . ($dari ? $dari . '-sd-' . $sampai : 'keseluruhan') . '.pdf';
-
-        return $pdf->stream($filename);
     }
 }

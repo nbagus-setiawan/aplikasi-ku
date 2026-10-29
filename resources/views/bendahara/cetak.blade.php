@@ -2,10 +2,10 @@
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <title>Buku Kas Umum - {{ $pengaturan['nama_situs'] ?? 'Pondok Pesantren Al-Falah Putak' }}</title>
+    <title>Buku Kas Umum - {{ $pengaturan['nama_situs'] ?? $pengaturans['nama_situs'] ?? 'Pondok Pesantren Al-Falah Putak' }}</title>
     <style>
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             font-size: 10px;
             color: #1e293b;
             line-height: 1.4;
@@ -20,16 +20,17 @@
         }
         .kop h2 {
             margin: 0;
-            font-size: 15px;
+            font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: #064e3b;
         }
         .kop h3 {
             margin: 2px 0;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: bold;
             color: #334155;
+            text-transform: uppercase;
         }
         .kop p {
             margin: 2px 0 0;
@@ -99,9 +100,9 @@
 
     <!-- KOP RESMI LEMBAGA -->
     <div class="kop">
-        <h2>{{ $pengaturan['nama_situs'] ?? 'PONDOK PESANTREN AL-FALAH PUTAK' }}</h2>
-        <h3>SEKRETARIAT & KEBENDAHARAAN PESANTREN</h3>
-        <p>{{ $pengaturan['alamat'] ?? 'Desa Putak, Kec. Gelumbang, Kab. Muara Enim, Sumatera Selatan' }} | Telp/WA: {{ $pengaturan['telepon'] ?? '082118702718' }}</p>
+        <h2>{{ $pengaturan['kop_yayasan'] ?? $pengaturans['kop_yayasan'] ?? 'YAYASAN PONDOK PESANTREN AL-FALAH PUTAK' }}</h2>
+        <h3>{{ $pengaturan['kop_nama'] ?? $pengaturans['kop_nama'] ?? 'PONDOK PESANTREN AL-FALAH PUTRA' }}</h3>
+        <p>{{ $pengaturan['kop_alamat'] ?? $pengaturans['kop_alamat'] ?? 'Desa Putak, Kec. Gelumbang, Kab. Muara Enim, Sumatera Selatan' }} | Telp: {{ $pengaturan['telepon'] ?? $pengaturans['telepon'] ?? '0812-7890-3117' }}</p>
     </div>
 
     <!-- JUDUL LAPORAN BUKU KAS -->
@@ -110,16 +111,16 @@
         <p>
             Periode: 
             @if($dari && $sampai)
-                {{ \Carbon\Carbon::parse($dari)->format('d/m/Y') }} s.d. {{ \Carbon\Carbon::parse($sampai)->format('d/m/Y') }}
+                {{ date('d/m/Y', strtotime($dari)) }} s.d. {{ date('d/m/Y', strtotime($sampai)) }}
             @elseif($dari)
-                Mulai {{ \Carbon\Carbon::parse($dari)->format('d/m/Y') }}
+                Mulai {{ date('d/m/Y', strtotime($dari)) }}
             @elseif($sampai)
-                Sampai {{ \Carbon\Carbon::parse($sampai)->format('d/m/Y') }}
+                Sampai {{ date('d/m/Y', strtotime($sampai)) }}
             @else
                 Seluruh Transaksi Pembukuan
             @endif
-            @if($kategori) | Pos Akun: {{ $kategori }} @endif
-            @if($jenis) | Jenis: {{ strtoupper($jenis) }} @endif
+            @if(!empty($kategori)) | Pos Akun: {{ $kategori }} @endif
+            @if(!empty($jenis)) | Jenis: {{ strtoupper($jenis) }} @endif
         </p>
     </div>
 
@@ -129,7 +130,7 @@
             <tr>
                 <th class="text-center" style="width: 25px;">No</th>
                 <th class="text-center" style="width: 55px;">Tanggal</th>
-                <th style="width: 75px;">No. Bukti</th>
+                <th style="width: 80px;">No. Bukti</th>
                 <th style="width: 85px;">Pos Akun</th>
                 <th>Uraian / Keterangan Transaksi</th>
                 <th class="text-right" style="width: 75px;">Debit (Rp)</th>
@@ -138,12 +139,12 @@
             </tr>
         </thead>
         <tbody>
-            @php $currentSaldo = $saldoAwal; @endphp
+            @php $currentSaldo = (float) $saldoAwal; @endphp
 
             @if($dari && $saldoAwal != 0)
             <tr class="saldo-row">
                 <td class="text-center">-</td>
-                <td class="text-center">{{ \Carbon\Carbon::parse($dari)->format('d/m/Y') }}</td>
+                <td class="text-center">{{ date('d/m/Y', strtotime($dari)) }}</td>
                 <td colspan="3"><em>SALDO AWAL KAS SEBELUM PERIODE</em></td>
                 <td class="text-right">-</td>
                 <td class="text-right">-</td>
@@ -154,30 +155,31 @@
             @forelse($transaksis as $idx => $t)
                 @php
                     if ($t->jenis === 'debit') {
-                        $currentSaldo += $t->nominal;
+                        $currentSaldo += (float) $t->nominal;
                     } else {
-                        $currentSaldo -= $t->nominal;
+                        $currentSaldo -= (float) $t->nominal;
                     }
+                    $tglDisplay = $t->tanggal ? date('d-m-Y', strtotime($t->tanggal)) : '-';
                 @endphp
                 <tr>
                     <td class="text-center">{{ $idx + 1 }}</td>
-                    <td class="text-center">{{ $t->formatted_tanggal }}</td>
+                    <td class="text-center">{{ $tglDisplay }}</td>
                     <td style="font-family: monospace;">{{ $t->kode_transaksi }}</td>
                     <td>{{ $t->kategori }}</td>
                     <td>
-                        {{ $t->keterangan }}
+                        {{ $t->keterangan ?: '-' }}
                         @if($t->nama_pihak)
                             <br><small style="color: #64748b;">(Pihak: {{ $t->nama_pihak }})</small>
                         @endif
                     </td>
                     <td class="text-right text-debit">
-                        {{ $t->jenis === 'debit' ? 'Rp ' . number_format($t->nominal, 0, ',', '.') : '-' }}
+                        {{ $t->jenis === 'debit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-' }}
                     </td>
                     <td class="text-right text-kredit">
-                        {{ $t->jenis === 'kredit' ? 'Rp ' . number_format($t->nominal, 0, ',', '.') : '-' }}
+                        {{ $t->jenis === 'kredit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-' }}
                     </td>
                     <td class="text-right" style="font-weight: bold;">
-                        Rp {{ number_format($currentSaldo, 0, ',', '.') }}
+                        Rp {{ number_format((float) $currentSaldo, 0, ',', '.') }}
                     </td>
                 </tr>
             @empty
@@ -191,9 +193,9 @@
             <!-- REKAPITULASI TOTAL AKHIR -->
             <tr style="background-color: #e2e8f0; font-weight: bold; font-size: 9.5px;">
                 <td colspan="5" class="text-center" style="letter-spacing: 0.5px;">TOTAL MUTASI & SALDO AKHIR</td>
-                <td class="text-right text-debit">Rp {{ number_format($totalDebit, 0, ',', '.') }}</td>
-                <td class="text-right text-kredit">Rp {{ number_format($totalKredit, 0, ',', '.') }}</td>
-                <td class="text-right" style="color: #0f172a; font-size: 10px;">Rp {{ number_format($currentSaldo, 0, ',', '.') }}</td>
+                <td class="text-right text-debit">Rp {{ number_format((float) $totalDebit, 0, ',', '.') }}</td>
+                <td class="text-right text-kredit">Rp {{ number_format((float) $totalKredit, 0, ',', '.') }}</td>
+                <td class="text-right" style="color: #0f172a; font-size: 10px;">Rp {{ number_format((float) $currentSaldo, 0, ',', '.') }}</td>
             </tr>
         </tbody>
     </table>
