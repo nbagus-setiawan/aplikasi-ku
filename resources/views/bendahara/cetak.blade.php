@@ -94,9 +94,35 @@
             float: right;
         }
         .clear { clear: both; }
+        @media print {
+            .no-print { display: none !important; }
+            body { padding: 0 !important; }
+        }
     </style>
 </head>
 <body>
+
+    @if(!empty($isHtmlPrint))
+    <div class="no-print" style="background: #f8fafc; border-bottom: 2px solid #059669; padding: 12px 18px; margin: -10px -10px 15px -10px; display: flex; align-items: center; justify-content: space-between; font-family: sans-serif; gap: 10px;">
+        <div>
+            <strong style="color: #064e3b; font-size: 13px; display: block;">Pratinjau Cetak Buku Kas Umum</strong>
+            <p style="margin: 2px 0 0; font-size: 11px; color: #475569;">Gunakan tombol berikut atau pilih <strong>Simpan sebagai PDF (Save as PDF)</strong> pada dialog cetak browser Anda.</p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-shrink: 0;">
+            <button onclick="window.print()" type="button" style="background: #059669; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;">
+                <span>🖨️</span> <span>Cetak / Simpan PDF</span>
+            </button>
+            <a href="{{ route('admin.bendahara.index') }}" style="background: #e2e8f0; color: #334155; text-decoration: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; font-size: 12px; display: inline-block;">
+                &larr; Kembali
+            </a>
+        </div>
+    </div>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() { window.print(); }, 400);
+        });
+    </script>
+    @endif
 
     <!-- KOP RESMI LEMBAGA -->
     <div class="kop">

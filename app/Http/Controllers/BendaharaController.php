@@ -313,7 +313,7 @@ class BendaharaController extends Controller
 
             $pengaturans = Pengaturan::getAllKeyValues();
 
-            $pdf = Pdf::loadView('bendahara.cetak', [
+            $viewData = [
                 'transaksis' => $transaksis,
                 'saldoAwal' => $saldoAwal,
                 'totalDebit' => $totalDebit,
@@ -327,15 +327,33 @@ class BendaharaController extends Controller
                 'q' => $q,
                 'pengaturan' => $pengaturans,
                 'pengaturans' => $pengaturans,
-            ])->setPaper('a4', 'portrait');
+                'isHtmlPrint' => false,
+            ];
 
-            $filename = 'buku-kas-umum-' . date('Ymd-His') . '.pdf';
+            // Jika ekstensi PHP DOM tersedia, hasilkan berkas PDF murni
+            if (class_exists(\DOMImplementation::class)) {
+                $pdf = Pdf::loadView('bendahara.cetak', $viewData)
+                    ->setPaper('a4', 'portrait');
 
-            return $pdf->stream($filename);
+                $filename = 'buku-kas-umum-' . date('Ymd-His') . '.pdf';
+
+                return $pdf->stream($filename);
+            }
+
+            // Fallback elegan: Jika PHP di server belum mengaktifkan ekstensi dom/xml,
+            // langsung tampilkan halaman cetak web resmi (siap Simpan ke PDF via browser)
+            $viewData['isHtmlPrint'] = true;
+            return response()->view('bendahara.cetak', $viewData);
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Gagal cetak buku kas: ' . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
+            \Illuminate\Support\Facades\Log::warning('Fallback cetak web karena kendala PDF: ' . $e->getMessage());
+            
+            if (isset($viewData)) {
+                $viewData['isHtmlPrint'] = true;
+                return response()->view('bendahara.cetak', $viewData);
+            }
+
             return redirect()->route('admin.bendahara.index')
-                ->with('error', 'Gagal memproses cetak PDF: ' . $e->getMessage());
+                ->with('error', 'Gagal memproses cetak: ' . $e->getMessage());
         }
     }
 }
