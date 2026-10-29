@@ -127,6 +127,27 @@ class KasDocxService
         $tables = $xpath->query('//w:tbl');
         if ($tables->length > 0) {
             $tbl = $tables->item(0);
+
+            // Tambahkan batas border tabel eksplisit (termasuk bottom border garis bawah)
+            $tblPrList = $xpath->query('.//w:tblPr', $tbl);
+            if ($tblPrList->length > 0) {
+                $tblPr = $tblPrList->item(0);
+                $oldBorders = $xpath->query('.//w:tblBorders', $tblPr);
+                foreach ($oldBorders as $ob) {
+                    $tblPr->removeChild($ob);
+                }
+                $tblBorders = $doc->createElement('w:tblBorders');
+                foreach (['top', 'left', 'bottom', 'right', 'insideH', 'insideV'] as $side) {
+                    $border = $doc->createElement('w:' . $side);
+                    $border->setAttribute('w:val', 'single');
+                    $border->setAttribute('w:sz', '6');
+                    $border->setAttribute('w:space', '0');
+                    $border->setAttribute('w:color', '000000');
+                    $tblBorders->appendChild($border);
+                }
+                $tblPr->appendChild($tblBorders);
+            }
+
             $rows = $xpath->query('.//w:tr', $tbl);
 
             if ($rows->length >= 2) {
@@ -139,7 +160,25 @@ class KasDocxService
                     $rowsToRemove[] = $rows->item($i);
                 }
 
-                $setCellText = function ($cell, string $text) use ($xpath) {
+                $setCellText = function ($cell, string $text) use ($xpath, $doc) {
+                    $tcPr = $xpath->query('.//w:tcPr', $cell)->item(0);
+                    if ($tcPr) {
+                        $oldTcBorders = $xpath->query('.//w:tcBorders', $tcPr);
+                        foreach ($oldTcBorders as $otb) {
+                            $tcPr->removeChild($otb);
+                        }
+                        $tcBorders = $doc->createElement('w:tcBorders');
+                        foreach (['top', 'left', 'bottom', 'right'] as $side) {
+                            $b = $doc->createElement('w:' . $side);
+                            $b->setAttribute('w:val', 'single');
+                            $b->setAttribute('w:sz', '6');
+                            $b->setAttribute('w:space', '0');
+                            $b->setAttribute('w:color', '000000');
+                            $tcBorders->appendChild($b);
+                        }
+                        $tcPr->appendChild($tcBorders);
+                    }
+
                     $tNodes = $xpath->query('.//w:t', $cell);
                     $first = true;
                     foreach ($tNodes as $tn) {
@@ -168,7 +207,7 @@ class KasDocxService
                         $setCellText($cells->item(2), 'SALDO AWAL KAS');
                         $setCellText($cells->item(3), '-');
                         $setCellText($cells->item(4), '-');
-                        $setCellText($cells->item(5), number_format($currentSaldo, 0, ',', '.'));
+                        $setCellText($cells->item(5), 'Rp ' . number_format($currentSaldo, 0, ',', '.'));
                     }
                     $tbl->insertBefore($saldoRow, $totalRow);
                     $rowCount++;
@@ -189,9 +228,9 @@ class KasDocxService
                         $setCellText($cells->item(0), (string) ($idx + 1));
                         $setCellText($cells->item(1), (string) $t->kode_transaksi);
                         $setCellText($cells->item(2), (string) $t->kategori);
-                        $setCellText($cells->item(3), $t->jenis === 'debit' ? number_format((float) $t->nominal, 0, ',', '.') : '-');
-                        $setCellText($cells->item(4), $t->jenis === 'kredit' ? number_format((float) $t->nominal, 0, ',', '.') : '-');
-                        $setCellText($cells->item(5), number_format($currentSaldo, 0, ',', '.'));
+                        $setCellText($cells->item(3), $t->jenis === 'debit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-');
+                        $setCellText($cells->item(4), $t->jenis === 'kredit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-');
+                        $setCellText($cells->item(5), 'Rp ' . number_format($currentSaldo, 0, ',', '.'));
                     }
 
                     $tbl->insertBefore($newRow, $totalRow);
@@ -208,7 +247,7 @@ class KasDocxService
                         $setCellText($cells->item(2), 'Tidak ada data transaksi kas.');
                         $setCellText($cells->item(3), '-');
                         $setCellText($cells->item(4), '-');
-                        $setCellText($cells->item(5), '0');
+                        $setCellText($cells->item(5), 'Rp 0');
                     }
                     $tbl->insertBefore($emptyRow, $totalRow);
                 }
@@ -224,9 +263,30 @@ class KasDocxService
                 $totalKredit = (float) ($data['totalKredit'] ?? 0);
 
                 if ($totalCells->length >= 5) {
-                    $setCellText($totalCells->item(2), number_format($totalDebit, 0, ',', '.'));
-                    $setCellText($totalCells->item(3), number_format($totalKredit, 0, ',', '.'));
-                    $setCellText($totalCells->item(4), number_format($currentSaldo, 0, ',', '.'));
+                    // Beri border juga pada baris total
+                    for ($i = 0; $i < $totalCells->length; $i++) {
+                        $c = $totalCells->item($i);
+                        $tcPr = $xpath->query('.//w:tcPr', $c)->item(0);
+                        if ($tcPr) {
+                            $oldTcBorders = $xpath->query('.//w:tcBorders', $tcPr);
+                            foreach ($oldTcBorders as $otb) {
+                                $tcPr->removeChild($otb);
+                            }
+                            $tcBorders = $doc->createElement('w:tcBorders');
+                            foreach (['top', 'left', 'bottom', 'right'] as $side) {
+                                $b = $doc->createElement('w:' . $side);
+                                $b->setAttribute('w:val', 'single');
+                                $b->setAttribute('w:sz', '6');
+                                $b->setAttribute('w:space', '0');
+                                $b->setAttribute('w:color', '000000');
+                                $tcBorders->appendChild($b);
+                            }
+                            $tcPr->appendChild($tcBorders);
+                        }
+                    }
+                    $setCellText($totalCells->item(2), 'Rp ' . number_format($totalDebit, 0, ',', '.'));
+                    $setCellText($totalCells->item(3), 'Rp ' . number_format($totalKredit, 0, ',', '.'));
+                    $setCellText($totalCells->item(4), 'Rp ' . number_format($currentSaldo, 0, ',', '.'));
                 }
             }
         }

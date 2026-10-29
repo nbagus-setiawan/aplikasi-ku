@@ -139,7 +139,7 @@
                 <td style="border: 1px solid #000000; font-weight: bold;"><em>SALDO AWAL KAS</em></td>
                 <td style="text-align: right; border: 1px solid #000000;">-</td>
                 <td style="text-align: right; border: 1px solid #000000;">-</td>
-                <td style="text-align: right; border: 1px solid #000000; font-weight: bold;">{{ number_format($currentSaldo, 0, ',', '.') }}</td>
+                <td style="text-align: right; border: 1px solid #000000; font-weight: bold;">Rp {{ number_format($currentSaldo, 0, ',', '.') }}</td>
             </tr>
             @endif
 
@@ -158,13 +158,13 @@
                     </td>
                     <td style="border: 1px solid #000000;">{{ $t->kategori }}</td>
                     <td style="text-align: right; border: 1px solid #000000; white-space: nowrap;">
-                        {{ $t->jenis === 'debit' ? number_format((float) $t->nominal, 0, ',', '.') : '-' }}
+                        {{ $t->jenis === 'debit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-' }}
                     </td>
                     <td style="text-align: right; border: 1px solid #000000; white-space: nowrap;">
-                        {{ $t->jenis === 'kredit' ? number_format((float) $t->nominal, 0, ',', '.') : '-' }}
+                        {{ $t->jenis === 'kredit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-' }}
                     </td>
                     <td style="text-align: right; border: 1px solid #000000; font-weight: bold; white-space: nowrap;">
-                        {{ number_format((float) $currentSaldo, 0, ',', '.') }}
+                        Rp {{ number_format((float) $currentSaldo, 0, ',', '.') }}
                     </td>
                 </tr>
             @empty
@@ -178,9 +178,9 @@
             <!-- REKAPITULASI TOTAL MUTASI & SALDO AKHIR -->
             <tr style="font-weight: bold;">
                 <td colspan="3" style="text-align: center; border: 1px solid #000000; font-weight: bold;">TOTAL MUTASI &amp; SALDO AKHIR</td>
-                <td style="text-align: right; border: 1px solid #000000; font-weight: bold; white-space: nowrap;">{{ number_format((float) $totalDebit, 0, ',', '.') }}</td>
-                <td style="text-align: right; border: 1px solid #000000; font-weight: bold; white-space: nowrap;">{{ number_format((float) $totalKredit, 0, ',', '.') }}</td>
-                <td style="text-align: right; border: 1px solid #000000; font-weight: bold; white-space: nowrap;">{{ number_format((float) $currentSaldo, 0, ',', '.') }}</td>
+                <td style="text-align: right; border: 1px solid #000000; font-weight: bold; white-space: nowrap;">Rp {{ number_format((float) $totalDebit, 0, ',', '.') }}</td>
+                <td style="text-align: right; border: 1px solid #000000; font-weight: bold; white-space: nowrap;">Rp {{ number_format((float) $totalKredit, 0, ',', '.') }}</td>
+                <td style="text-align: right; border: 1px solid #000000; font-weight: bold; white-space: nowrap;">Rp {{ number_format((float) $currentSaldo, 0, ',', '.') }}</td>
             </tr>
         </tbody>
     </table>
