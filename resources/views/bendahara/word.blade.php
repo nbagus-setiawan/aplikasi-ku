@@ -12,22 +12,28 @@
     </xml>
     <![endif]-->
     <style>
-        @page Section1 {
-            size: 841.9pt 595.3pt; /* A4 Landscape: 297mm x 210mm */
+        @page {
+            size: 297mm 210mm; /* A4 Landscape murni */
+            margin: 15mm 15mm 15mm 15mm;
             mso-page-orientation: landscape;
-            margin: 0.7in 0.8in 0.7in 0.8in;
+        }
+        @page Section1 {
+            size: 297mm 210mm;
+            margin: 15mm 15mm 15mm 15mm;
             mso-header-margin: 36.0pt;
             mso-footer-margin: 36.0pt;
-            mso-paper-source: 0;
+            mso-page-orientation: landscape;
         }
         div.Section1 {
             page: Section1;
         }
         body {
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 10pt;
+            font-size: 9.5pt;
             color: #0f172a;
             line-height: 1.35;
+            margin: 0;
+            padding: 0;
         }
         .header-kop {
             text-align: center;
@@ -47,17 +53,17 @@
         }
         .judul-laporan p {
             margin: 3px 0 0;
-            font-size: 9.5pt;
+            font-size: 9pt;
             color: #475569;
         }
         table.tabel-kas {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 15px;
-            font-size: 9.5pt;
+            font-size: 9pt;
         }
         table.tabel-kas th, table.tabel-kas td {
-            border: 1px solid #64748b;
+            border: 1px solid #475569;
             padding: 6px 8px;
             text-align: left;
             vertical-align: middle;
@@ -67,7 +73,7 @@
             color: #0f172a;
             font-weight: bold;
             text-transform: uppercase;
-            font-size: 9pt;
+            font-size: 8.5pt;
             text-align: center;
         }
         .bg-strip {
@@ -86,36 +92,20 @@
         .total-row {
             background-color: #e2e8f0;
             font-weight: bold;
-            font-size: 10pt;
-        }
-        table.tabel-ttd {
-            width: 100%;
-            margin-top: 25px;
-            border-collapse: collapse;
-            border: none;
-        }
-        table.tabel-ttd td {
-            border: none;
-            padding: 0;
-            vertical-align: top;
-            font-size: 10pt;
-            line-height: 1.4;
-        }
-        .ttd-space {
-            height: 60px;
+            font-size: 9.5pt;
         }
     </style>
 </head>
 <body>
 <div class="Section1">
 
-    <!-- KOP RESMI LEMBAGA (GAMBAR KOP PNG RESMI) -->
+    <!-- KOP RESMI LEMBAGA (BANNER GAMBAR KOP PNG RESMI) -->
     <div class="header-kop">
         @if (!empty($kopGambar))
-            <img src="{{ $kopGambar }}" style="width: 100%; max-height: 125px; height: auto; display: block; margin: 0 auto;" alt="Kop Surat">
+            <img src="{{ $kopGambar }}" width="980" height="198" style="width: 100%; max-width: 980px; height: auto; display: block; margin: 0 auto;" alt="Kop Surat">
         @else
             <!-- Fallback Teks Resmi jika gambar tidak ditemukan -->
-            <table style="width: 100%; border-collapse: collapse; border-bottom: 3px double #0f172a; padding-bottom: 8px; margin: 0 0 12px 0;">
+            <table width="100%" style="width: 100%; border-collapse: collapse; border-bottom: 3px double #0f172a; padding-bottom: 8px; margin: 0 0 12px 0;">
                 <tr>
                     <td style="text-align: center; border: none; padding: 0;">
                         <div style="font-size: 13pt; font-weight: bold; text-transform: uppercase; color: #0f172a;">
@@ -125,7 +115,7 @@
                             {{ $pengaturans['kop_nama'] ?? 'PONDOK PESANTREN AL-FALAH PUTRA' }}
                         </div>
                         <div style="font-size: 9pt; color: #334155;">
-                            {{ $pengaturans['kop_alamat'] ?? 'Desa Putak, Kecamatan Gelumbang, Kabupaten Muara Enim, Sumatera Selatan 31171' }}
+                            {{ $pengaturans['kop_alamat'] ?? 'Desa Putak, Kecamatan标志, Kabupaten Muara Enim, Sumatera Selatan 31171' }}
                         </div>
                         <div style="font-size: 9pt; color: #475569;">
                             {{ $pengaturans['kop_kontak'] ?? 'Telp/WA: 0812-7890-3117 | Email: sekretariat@alfalahputra.sch.id' }}
@@ -157,31 +147,31 @@
     </div>
 
     <!-- TABEL BUKU KAS UMUM -->
-    <table class="tabel-kas">
+    <table class="tabel-kas" border="1" bordercolor="#475569" cellpadding="6" cellspacing="0">
         <thead>
-            <tr>
-                <th style="width: 4%;">NO</th>
-                <th style="width: 10%;">TANGGAL</th>
-                <th style="width: 14%;">NO. BUKTI</th>
-                <th style="width: 15%;">POS AKUN / KATEGORI</th>
-                <th style="width: 27%;">URAIAN TRANSAKSI & PIHAK TERKAIT</th>
-                <th style="width: 10%;" class="text-right">DEBIT (MASUK)</th>
-                <th style="width: 10%;" class="text-right">KREDIT (KELUAR)</th>
-                <th style="width: 10%;" class="text-right">SALDO KAS (RP)</th>
+            <tr style="background-color: #e2e8f0;">
+                <th style="width: 4%; text-align: center; background-color: #e2e8f0; border: 1px solid #475569;">NO</th>
+                <th style="width: 11%; text-align: center; background-color: #e2e8f0; border: 1px solid #475569;" class="nowrap">TANGGAL</th>
+                <th style="width: 16%; text-align: center; background-color: #e2e8f0; border: 1px solid #475569;" class="nowrap">NO. BUKTI</th>
+                <th style="width: 15%; text-align: left; background-color: #e2e8f0; border: 1px solid #475569;">POS AKUN / KATEGORI</th>
+                <th style="width: 24%; text-align: left; background-color: #e2e8f0; border: 1px solid #475569;">URAIAN TRANSAKSI & PIHAK TERKAIT</th>
+                <th style="width: 10%; text-align: right; background-color: #e2e8f0; border: 1px solid #475569;" class="nowrap">DEBIT (MASUK)</th>
+                <th style="width: 10%; text-align: right; background-color: #e2e8f0; border: 1px solid #475569;" class="nowrap">KREDIT (KELUAR)</th>
+                <th style="width: 10%; text-align: right; background-color: #e2e8f0; border: 1px solid #475569;" class="nowrap">SALDO KAS (RP)</th>
             </tr>
         </thead>
         <tbody>
             @php $currentSaldo = (float) $saldoAwal; @endphp
 
             @if($dari && $saldoAwal != 0)
-            <tr class="saldo-awal-row">
-                <td class="text-center">-</td>
-                <td class="text-center nowrap">{{ date('d/m/Y', strtotime($dari)) }}</td>
-                <td class="text-center nowrap font-mono">-</td>
-                <td colspan="2"><em>SALDO AWAL KAS SEBELUM PERIODE</em></td>
-                <td class="text-right text-debit">-</td>
-                <td class="text-right text-kredit">-</td>
-                <td class="text-right text-saldo nowrap">Rp {{ number_format($currentSaldo, 0, ',', '.') }}</td>
+            <tr class="saldo-awal-row" style="background-color: #f0fdf4;">
+                <td style="text-align: center; border: 1px solid #475569;">-</td>
+                <td style="text-align: center; border: 1px solid #475569; white-space: nowrap;">{{ date('d/m/Y', strtotime($dari)) }}</td>
+                <td style="text-align: center; border: 1px solid #475569; white-space: nowrap; font-family: monospace;">-</td>
+                <td colspan="2" style="border: 1px solid #475569; font-weight: bold;"><em>SALDO AWAL KAS SEBELUM PERIODE</em></td>
+                <td style="text-align: right; border: 1px solid #475569; color: #047857; font-weight: bold; white-space: nowrap;">-</td>
+                <td style="text-align: right; border: 1px solid #475569; color: #b91c1c; font-weight: bold; white-space: nowrap;">-</td>
+                <td style="text-align: right; border: 1px solid #475569; font-weight: bold; white-space: nowrap;">Rp {{ number_format($currentSaldo, 0, ',', '.') }}</td>
             </tr>
             @endif
 
@@ -194,14 +184,14 @@
                     }
                     $tglDisplay = $t->tanggal ? date('d-m-Y', strtotime($t->tanggal)) : '-';
                 @endphp
-                <tr class="{{ $idx % 2 === 1 ? 'bg-strip' : '' }}">
-                    <td class="text-center">{{ $idx + 1 }}</td>
-                    <td class="text-center nowrap">{{ $tglDisplay }}</td>
-                    <td class="text-center nowrap" style="font-family: monospace; font-weight: bold; color: #0f172a;">
+                <tr style="{{ $idx % 2 === 1 ? 'background-color: #f8fafc;' : '' }}">
+                    <td style="text-align: center; border: 1px solid #475569;">{{ $idx + 1 }}</td>
+                    <td style="text-align: center; border: 1px solid #475569; white-space: nowrap;">{{ $tglDisplay }}</td>
+                    <td style="text-align: center; border: 1px solid #475569; font-family: monospace; font-weight: bold; color: #0f172a; white-space: nowrap;">
                         {{ $t->kode_transaksi }}
                     </td>
-                    <td style="font-weight: 600;">{{ $t->kategori }}</td>
-                    <td>
+                    <td style="border: 1px solid #475569; font-weight: bold;">{{ $t->kategori }}</td>
+                    <td style="border: 1px solid #475569;">
                         <div>{{ $t->keterangan ?: '-' }}</div>
                         @if($t->nama_pihak)
                             <div style="font-size: 8pt; color: #64748b; margin-top: 2px;">
@@ -210,53 +200,53 @@
                             </div>
                         @endif
                     </td>
-                    <td class="text-right text-debit nowrap">
+                    <td style="text-align: right; border: 1px solid #475569; font-weight: bold; color: #047857; white-space: nowrap;">
                         {{ $t->jenis === 'debit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-' }}
                     </td>
-                    <td class="text-right text-kredit nowrap">
+                    <td style="text-align: right; border: 1px solid #475569; font-weight: bold; color: #b91c1c; white-space: nowrap;">
                         {{ $t->jenis === 'kredit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-' }}
                     </td>
-                    <td class="text-right text-saldo nowrap">
+                    <td style="text-align: right; border: 1px solid #475569; font-weight: bold; white-space: nowrap;">
                         Rp {{ number_format((float) $currentSaldo, 0, ',', '.') }}
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="text-center" style="padding: 18px; color: #64748b;">
+                    <td colspan="8" style="text-align: center; border: 1px solid #475569; padding: 18px; color: #64748b;">
                         Tidak ada transaksi kas yang tercatat pada periode ini.
                     </td>
                 </tr>
             @endforelse
 
             <!-- REKAPITULASI TOTAL MUTASI & SALDO AKHIR -->
-            <tr class="total-row">
-                <td colspan="5" class="text-center" style="letter-spacing: 0.5px;">TOTAL MUTASI & SALDO AKHIR KAS</td>
-                <td class="text-right text-debit nowrap">Rp {{ number_format((float) $totalDebit, 0, ',', '.') }}</td>
-                <td class="text-right text-kredit nowrap">Rp {{ number_format((float) $totalKredit, 0, ',', '.') }}</td>
-                <td class="text-right text-saldo nowrap" style="font-size: 10pt;">Rp {{ number_format((float) $currentSaldo, 0, ',', '.') }}</td>
+            <tr style="background-color: #e2e8f0; font-weight: bold;">
+                <td colspan="5" style="text-align: center; border: 1px solid #475569; font-weight: bold; letter-spacing: 0.5px;">TOTAL MUTASI & SALDO AKHIR KAS</td>
+                <td style="text-align: right; border: 1px solid #475569; color: #047857; font-weight: bold; white-space: nowrap;">Rp {{ number_format((float) $totalDebit, 0, ',', '.') }}</td>
+                <td style="text-align: right; border: 1px solid #475569; color: #b91c1c; font-weight: bold; white-space: nowrap;">Rp {{ number_format((float) $totalKredit, 0, ',', '.') }}</td>
+                <td style="text-align: right; border: 1px solid #475569; font-weight: bold; white-space: nowrap;">Rp {{ number_format((float) $currentSaldo, 0, ',', '.') }}</td>
             </tr>
         </tbody>
     </table>
 
     <!-- LEMBAR PENGESAHAN DUA TANDA TANGAN SEJAJAR -->
-    <table class="tabel-ttd">
+    <table width="100%" border="0" cellpadding="0" cellspacing="0" style="width: 100%; margin-top: 25px; border-collapse: collapse; border: none;">
         <tr>
-            <td style="width: 50%; text-align: center;">
-                <p style="margin: 0;">Mengetahui,</p>
-                <p style="margin: 2px 0 0; font-weight: bold;">Pengasuh Pondok Pesantren</p>
-                <div class="ttd-space"></div>
-                <p style="margin: 0; font-weight: bold; text-decoration: underline;">K.H. Mursyidi</p>
+            <td width="50%" style="width: 50%; text-align: center; border: none; vertical-align: top;">
+                <p style="margin: 0; font-size: 10pt;">Mengetahui,</p>
+                <p style="margin: 3px 0 0; font-size: 10pt; font-weight: bold;">Pengasuh Pondok Pesantren</p>
+                <div style="height: 55px;"></div>
+                <p style="margin: 0; font-size: 10pt; font-weight: bold; text-decoration: underline;">K.H. Mursyidi</p>
                 <p style="margin: 2px 0 0; font-size: 8.5pt; color: #64748b;">Pengasuh PP Al-Falah Putak</p>
             </td>
-            <td style="width: 50%; text-align: center;">
+            <td width="50%" style="width: 50%; text-align: center; border: none; vertical-align: top;">
                 @php
                     $namaBulanIndo = [1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
                     $tglCetak = date('j') . ' ' . ($namaBulanIndo[(int) date('n')] ?? date('F')) . ' ' . date('Y');
                 @endphp
-                <p style="margin: 0;">Desa Putak, {{ $tglCetak }}</p>
-                <p style="margin: 2px 0 0; font-weight: bold;">Bendahara Pesantren</p>
-                <div class="ttd-space"></div>
-                <p style="margin: 0; font-weight: bold; text-decoration: underline;">( __________________________ )</p>
+                <p style="margin: 0; font-size: 10pt;">Desa Putak, {{ $tglCetak }}</p>
+                <p style="margin: 3px 0 0; font-size: 10pt; font-weight: bold;">Bendahara Pesantren</p>
+                <div style="height: 55px;"></div>
+                <p style="margin: 0; font-size: 10pt; font-weight: bold; text-decoration: underline;">( __________________________ )</p>
                 <p style="margin: 2px 0 0; font-size: 8.5pt; color: #64748b;">Bagian Kebendaharaan</p>
             </td>
         </tr>
