@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\NotifikasiController;
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\ArsipController;
+use App\Http\Controllers\BendaharaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HalamanController;
 use App\Http\Controllers\KategoriSuratController;
@@ -94,6 +95,12 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     // Modul Arsip Dokumen (Fase 4)
     Route::get('/arsip/{arsip}/unduh', [ArsipController::class, 'unduh'])->name('admin.arsip.unduh');
     Route::resource('arsip', ArsipController::class)->names('admin.arsip');
+
+    // Modul Bendahara / Buku Kas Umum (Debit & Kredit)
+    Route::get('/bendahara/cetak', [BendaharaController::class, 'cetak'])->name('admin.bendahara.cetak');
+    Route::resource('bendahara', BendaharaController::class)
+        ->parameters(['bendahara' => 'bendahara'])
+        ->names('admin.bendahara');
 
     // Modul Editor Beranda & Halaman (Fase 5)
     Route::get('/halaman/beranda', [HalamanController::class, 'editBeranda'])->name('admin.halaman.beranda');
