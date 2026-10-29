@@ -210,4 +210,25 @@ class BendaharaTest extends TestCase
         $response->assertStatus(200);
         $this->assertEquals('application/pdf', $response->headers->get('Content-Type'));
     }
+
+    public function test_bisa_mengunduh_buku_kas_umum_format_word_doc(): void
+    {
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202610-0002',
+            'tanggal' => now()->toDateString(),
+            'jenis' => 'debit',
+            'kategori' => 'Infaq',
+            'nominal' => 750000,
+            'keterangan' => 'Infaq Hamba Allah',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.bendahara.word'));
+
+        $response->assertStatus(200);
+        $this->assertStringContainsString('application/vnd.ms-word', $response->headers->get('Content-Type'));
+        $this->assertStringContainsString('attachment; filename=', $response->headers->get('Content-Disposition'));
+        $this->assertStringContainsString('BUKU KAS UMUM', $response->getContent());
+        $this->assertStringContainsString('750.000', $response->getContent());
+    }
 }

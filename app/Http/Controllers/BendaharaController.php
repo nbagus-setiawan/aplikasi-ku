@@ -250,93 +250,115 @@ class BendaharaController extends Controller
     }
 
     /**
+     * Siapkan Data Laporan Buku Kas (Dipakai Bersama oleh Cetak PDF & Ekspor Word)
+     */
+    protected function prepareReportData(Request $request): array
+    {
+        $periode = $request->input('periode', 'bulan-ini');
+        $dari = $request->filled('dari_tanggal') ? $request->input('dari_tanggal') : null;
+        $sampai = $request->filled('sampai_tanggal') ? $request->input('sampai_tanggal') : null;
+        $jenis = $request->filled('jenis') ? $request->input('jenis') : null;
+        $kategori = $request->filled('kategori') ? $request->input('kategori') : null;
+        $q = $request->filled('q') ? $request->input('q') : null;
+
+        if ($periode === 'bulan-ini') {
+            $dari = Carbon::now()->startOfMonth()->toDateString();
+            $sampai = Carbon::now()->endOfMonth()->toDateString();
+        } elseif ($periode === 'tahun-ini') {
+            $dari = Carbon::now()->startOfYear()->toDateString();
+            $sampai = Carbon::now()->endOfYear()->toDateString();
+        }
+
+        $query = KasTransaksi::with('user')->orderBy('tanggal', 'asc')->orderBy('id', 'asc');
+
+        if ($dari && $sampai) {
+            $query->whereBetween('tanggal', [$dari, $sampai]);
+        } elseif ($dari) {
+            $query->whereDate('tanggal', '>=', $dari);
+        } elseif ($sampai) {
+            $query->whereDate('tanggal', '<=', $sampai);
+        }
+
+        if ($jenis && in_array($jenis, ['debit', 'kredit'])) {
+            $query->where('jenis', $jenis);
+        }
+
+        if ($kategori) {
+            $query->where('kategori', $kategori);
+        }
+
+        if ($q) {
+            $query->where(function ($w) use ($q) {
+                $w->where('keterangan', 'like', "%{$q}%")
+                    ->orWhere('kode_transaksi', 'like', "%{$q}%")
+                    ->orWhere('nama_pihak', 'like', "%{$q}%")
+                    ->orWhere('kategori', 'like', "%{$q}%");
+            });
+        }
+
+        $transaksis = $query->get();
+
+        // Hitung Saldo Awal sebelum tanggal $dari (jika ada rentang tanggal)
+        $saldoAwal = 0.0;
+        if ($dari) {
+            $debitSebelumnya = (float) KasTransaksi::debit()->whereDate('tanggal', '<', $dari)->sum('nominal');
+            $kreditSebelumnya = (float) KasTransaksi::kredit()->whereDate('tanggal', '<', $dari)->sum('nominal');
+            $saldoAwal = $debitSebelumnya - $kreditSebelumnya;
+        }
+
+        $totalDebit = (float) $transaksis->where('jenis', 'debit')->sum('nominal');
+        $totalKredit = (float) $transaksis->where('jenis', 'kredit')->sum('nominal');
+        $saldoAkhir = $saldoAwal + $totalDebit - $totalKredit;
+
+        $pengaturans = Pengaturan::getAllKeyValues();
+
+        // 1. Logo Satuan (jika diperlukan)
+        $logo = null;
+        if (! empty($pengaturans['logo']) && file_exists(storage_path('app/public/' . $pengaturans['logo']))) {
+            $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(storage_path('app/public/' . $pengaturans['logo'])));
+        } elseif (file_exists(public_path('images/logo.png'))) {
+            $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/logo.png')));
+        }
+
+        // 2. Banner Kop Surat Lengkap Resmi Pesantren (PNG / JPEG)
+        $kopGambar = null;
+        if (! empty($pengaturans['kop_gambar']) && file_exists(storage_path('app/public/' . $pengaturans['kop_gambar']))) {
+            $ext = pathinfo($pengaturans['kop_gambar'], PATHINFO_EXTENSION);
+            $mime = strtolower($ext) === 'png' ? 'image/png' : 'image/jpeg';
+            $kopGambar = "data:{$mime};base64," . base64_encode(file_get_contents(storage_path('app/public/' . $pengaturans['kop_gambar'])));
+        } elseif (file_exists(public_path('images/kop.png'))) {
+            $kopGambar = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kop.png')));
+        } elseif (file_exists(public_path('images/kop.jpeg'))) {
+            $kopGambar = 'data:image/jpeg;base64,' . base64_encode(file_get_contents(public_path('images/kop.jpeg')));
+        }
+
+        return [
+            'transaksis' => $transaksis,
+            'saldoAwal' => $saldoAwal,
+            'totalDebit' => $totalDebit,
+            'totalKredit' => $totalKredit,
+            'saldoAkhir' => $saldoAkhir,
+            'dari' => $dari,
+            'sampai' => $sampai,
+            'jenis' => $jenis,
+            'kategori' => $kategori,
+            'periode' => $periode,
+            'q' => $q,
+            'pengaturan' => $pengaturans,
+            'pengaturans' => $pengaturans,
+            'logo' => $logo,
+            'kopGambar' => $kopGambar,
+            'isHtmlPrint' => false,
+        ];
+    }
+
+    /**
      * Cetak Buku Kas Umum / Laporan Mutasi Kas (PDF)
      */
     public function cetak(Request $request)
     {
         try {
-            $periode = $request->input('periode', 'bulan-ini');
-            $dari = $request->filled('dari_tanggal') ? $request->input('dari_tanggal') : null;
-            $sampai = $request->filled('sampai_tanggal') ? $request->input('sampai_tanggal') : null;
-            $jenis = $request->filled('jenis') ? $request->input('jenis') : null;
-            $kategori = $request->filled('kategori') ? $request->input('kategori') : null;
-            $q = $request->filled('q') ? $request->input('q') : null;
-
-            if ($periode === 'bulan-ini') {
-                $dari = Carbon::now()->startOfMonth()->toDateString();
-                $sampai = Carbon::now()->endOfMonth()->toDateString();
-            } elseif ($periode === 'tahun-ini') {
-                $dari = Carbon::now()->startOfYear()->toDateString();
-                $sampai = Carbon::now()->endOfYear()->toDateString();
-            }
-
-            $query = KasTransaksi::with('user')->orderBy('tanggal', 'asc')->orderBy('id', 'asc');
-
-            if ($dari && $sampai) {
-                $query->whereBetween('tanggal', [$dari, $sampai]);
-            } elseif ($dari) {
-                $query->whereDate('tanggal', '>=', $dari);
-            } elseif ($sampai) {
-                $query->whereDate('tanggal', '<=', $sampai);
-            }
-
-            if ($jenis && in_array($jenis, ['debit', 'kredit'])) {
-                $query->where('jenis', $jenis);
-            }
-
-            if ($kategori) {
-                $query->where('kategori', $kategori);
-            }
-
-            if ($q) {
-                $query->where(function ($w) use ($q) {
-                    $w->where('keterangan', 'like', "%{$q}%")
-                        ->orWhere('kode_transaksi', 'like', "%{$q}%")
-                        ->orWhere('nama_pihak', 'like', "%{$q}%")
-                        ->orWhere('kategori', 'like', "%{$q}%");
-                });
-            }
-
-            $transaksis = $query->get();
-
-            // Hitung Saldo Awal sebelum tanggal $dari (jika ada rentang tanggal)
-            $saldoAwal = 0.0;
-            if ($dari) {
-                $debitSebelumnya = (float) KasTransaksi::debit()->whereDate('tanggal', '<', $dari)->sum('nominal');
-                $kreditSebelumnya = (float) KasTransaksi::kredit()->whereDate('tanggal', '<', $dari)->sum('nominal');
-                $saldoAwal = $debitSebelumnya - $kreditSebelumnya;
-            }
-
-            $totalDebit = (float) $transaksis->where('jenis', 'debit')->sum('nominal');
-            $totalKredit = (float) $transaksis->where('jenis', 'kredit')->sum('nominal');
-            $saldoAkhir = $saldoAwal + $totalDebit - $totalKredit;
-
-            $pengaturans = Pengaturan::getAllKeyValues();
-
-            $logo = null;
-            if (! empty($pengaturans['logo']) && file_exists(storage_path('app/public/' . $pengaturans['logo']))) {
-                $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(storage_path('app/public/' . $pengaturans['logo'])));
-            } elseif (file_exists(public_path('images/logo.png'))) {
-                $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/logo.png')));
-            }
-
-            $viewData = [
-                'transaksis' => $transaksis,
-                'saldoAwal' => $saldoAwal,
-                'totalDebit' => $totalDebit,
-                'totalKredit' => $totalKredit,
-                'saldoAkhir' => $saldoAkhir,
-                'dari' => $dari,
-                'sampai' => $sampai,
-                'jenis' => $jenis,
-                'kategori' => $kategori,
-                'periode' => $periode,
-                'q' => $q,
-                'pengaturan' => $pengaturans,
-                'pengaturans' => $pengaturans,
-                'logo' => $logo,
-                'isHtmlPrint' => false,
-            ];
+            $viewData = $this->prepareReportData($request);
 
             // Jika ekstensi PHP DOM tersedia, hasilkan berkas PDF murni (Landscape agar lapang & rapi)
             if (class_exists(\DOMImplementation::class)) {
@@ -348,7 +370,7 @@ class BendaharaController extends Controller
                 return $pdf->stream($filename);
             }
 
-            // Fallback elegan: Jika PHP di server belum mengaktifkan ekstensi dom/xml,
+            // Fallback: Jika PHP di server belum mengaktifkan ekstensi dom/xml,
             // langsung tampilkan halaman cetak web resmi (siap Simpan ke PDF via browser)
             $viewData['isHtmlPrint'] = true;
             return response()->view('bendahara.cetak', $viewData);
@@ -362,6 +384,31 @@ class BendaharaController extends Controller
 
             return redirect()->route('admin.bendahara.index')
                 ->with('error', 'Gagal memproses cetak: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Unduh Laporan Buku Kas Umum Format Microsoft Word (.doc)
+     */
+    public function exportWord(Request $request)
+    {
+        try {
+            $viewData = $this->prepareReportData($request);
+
+            $html = view('bendahara.word', $viewData)->render();
+            $filename = 'buku-kas-umum-' . date('Ymd-His') . '.doc';
+
+            return response($html, 200, [
+                'Content-Type' => 'application/vnd.ms-word; charset=UTF-8',
+                'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+                'Cache-Control' => 'max-age=0, no-cache, no-store, must-revalidate',
+                'Pragma' => 'public',
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal ekspor word buku kas: ' . $e->getMessage());
+
+            return redirect()->route('admin.bendahara.index')
+                ->with('error', 'Gagal mengunduh dokumen Word: ' . $e->getMessage());
         }
     }
 }

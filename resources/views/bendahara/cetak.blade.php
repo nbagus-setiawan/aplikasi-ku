@@ -22,6 +22,11 @@
             padding-bottom: 8px;
             margin-bottom: 14px;
         }
+        .header-kop.with-banner {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 12px;
+        }
         .judul-laporan {
             text-align: center;
             margin-bottom: 12px;
@@ -125,34 +130,38 @@
     </script>
     @endif
 
-    <!-- KOP RESMI LEMBAGA DENGAN LOGO PESANTREN -->
-    <div class="header-kop">
-        <table style="width: 100%; border-collapse: collapse; border: none; margin: 0;">
-            <tr>
-                @if (!empty($logo))
-                    <td style="width: 75px; vertical-align: middle; text-align: center; border: none; padding: 0;">
-                        <img src="{{ $logo }}" style="width: 68px; height: auto;" alt="Logo">
+    <!-- KOP RESMI LEMBAGA (BANNER GAMBAR KOP / LOGO PESANTREN) -->
+    <div class="header-kop {{ !empty($kopGambar) ? 'with-banner' : '' }}">
+        @if (!empty($kopGambar))
+            <img src="{{ $kopGambar }}" style="width: 100%; max-height: 120px; height: auto; display: block; margin: 0 auto;" alt="Kop Surat Resmi">
+        @else
+            <table style="width: 100%; border-collapse: collapse; border: none; margin: 0;">
+                <tr>
+                    @if (!empty($logo))
+                        <td style="width: 75px; vertical-align: middle; text-align: center; border: none; padding: 0;">
+                            <img src="{{ $logo }}" style="width: 68px; height: auto;" alt="Logo">
+                        </td>
+                    @endif
+                    <td style="vertical-align: middle; text-align: center; border: none; padding: 0 10px;">
+                        <div style="font-size: 12pt; font-weight: bold; letter-spacing: 0.5px; margin: 0; text-transform: uppercase; color: #0f172a;">
+                            {{ $pengaturans['kop_yayasan'] ?? 'YAYASAN PONDOK PESANTREN AL-FALAH PUTAK' }}
+                        </div>
+                        <div style="font-size: 15pt; font-weight: bold; letter-spacing: 1px; margin: 2px 0; text-transform: uppercase; color: #064e3b;">
+                            {{ $pengaturans['kop_nama'] ?? 'PONDOK PESANTREN AL-FALAH PUTRA' }}
+                        </div>
+                        <div style="font-size: 8.5pt; margin: 1px 0; color: #334155;">
+                            {{ $pengaturans['kop_alamat'] ?? 'Desa Putak, Kecamatan Gelumbang, Kabupaten Muara Enim, Sumatera Selatan 31171' }}
+                        </div>
+                        <div style="font-size: 8.5pt; margin: 1px 0; color: #475569;">
+                            {{ $pengaturans['kop_kontak'] ?? 'Telp/WA: 0812-7890-3117 | Email: sekretariat@alfalahputra.sch.id' }}
+                        </div>
                     </td>
-                @endif
-                <td style="vertical-align: middle; text-align: center; border: none; padding: 0 10px;">
-                    <div style="font-size: 12pt; font-weight: bold; letter-spacing: 0.5px; margin: 0; text-transform: uppercase; color: #0f172a;">
-                        {{ $pengaturans['kop_yayasan'] ?? 'YAYASAN PONDOK PESANTREN AL-FALAH PUTAK' }}
-                    </div>
-                    <div style="font-size: 15pt; font-weight: bold; letter-spacing: 1px; margin: 2px 0; text-transform: uppercase; color: #064e3b;">
-                        {{ $pengaturans['kop_nama'] ?? 'PONDOK PESANTREN AL-FALAH PUTRA' }}
-                    </div>
-                    <div style="font-size: 8.5pt; margin: 1px 0; color: #334155;">
-                        {{ $pengaturans['kop_alamat'] ?? 'Desa Putak, Kecamatan Gelumbang, Kabupaten Muara Enim, Sumatera Selatan 31171' }}
-                    </div>
-                    <div style="font-size: 8.5pt; margin: 1px 0; color: #475569;">
-                        {{ $pengaturans['kop_kontak'] ?? 'Telp/WA: 0812-7890-3117 | Email: sekretariat@alfalahputra.sch.id' }}
-                    </div>
-                </td>
-                @if (!empty($logo))
-                    <td style="width: 75px; border: none; padding: 0;"></td>
-                @endif
-            </tr>
-        </table>
+                    @if (!empty($logo))
+                        <td style="width: 75px; border: none; padding: 0;"></td>
+                    @endif
+                </tr>
+            </table>
+        @endif
     </div>
 
     <!-- JUDUL LAPORAN BUKU KAS -->
