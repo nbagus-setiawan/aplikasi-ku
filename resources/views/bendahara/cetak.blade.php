@@ -147,7 +147,7 @@
                 <td colspan="3"><em>SALDO AWAL KAS SEBELUM PERIODE</em></td>
                 <td class="text-right">-</td>
                 <td class="text-right">-</td>
-                <td class="text-right font-bold">{{ number_format($currentSaldo, 0, ',', '.') }}</td>
+                <td class="text-right font-bold">Rp {{ number_format($currentSaldo, 0, ',', '.') }}</td>
             </tr>
             @endif
 
@@ -171,13 +171,13 @@
                         @endif
                     </td>
                     <td class="text-right text-debit">
-                        {{ $t->jenis === 'debit' ? number_format($t->nominal, 0, ',', '.') : '-' }}
+                        {{ $t->jenis === 'debit' ? 'Rp ' . number_format($t->nominal, 0, ',', '.') : '-' }}
                     </td>
                     <td class="text-right text-kredit">
-                        {{ $t->jenis === 'kredit' ? number_format($t->nominal, 0, ',', '.') : '-' }}
+                        {{ $t->jenis === 'kredit' ? 'Rp ' . number_format($t->nominal, 0, ',', '.') : '-' }}
                     </td>
                     <td class="text-right" style="font-weight: bold;">
-                        {{ number_format($currentSaldo, 0, ',', '.') }}
+                        Rp {{ number_format($currentSaldo, 0, ',', '.') }}
                     </td>
                 </tr>
             @empty
@@ -191,9 +191,9 @@
             <!-- REKAPITULASI TOTAL AKHIR -->
             <tr style="background-color: #e2e8f0; font-weight: bold; font-size: 9.5px;">
                 <td colspan="5" class="text-center" style="letter-spacing: 0.5px;">TOTAL MUTASI & SALDO AKHIR</td>
-                <td class="text-right text-debit">{{ number_format($totalDebit, 0, ',', '.') }}</td>
-                <td class="text-right text-kredit">{{ number_format($totalKredit, 0, ',', '.') }}</td>
-                <td class="text-right" style="color: #0f172a; font-size: 10px;">{{ number_format($currentSaldo, 0, ',', '.') }}</td>
+                <td class="text-right text-debit">Rp {{ number_format($totalDebit, 0, ',', '.') }}</td>
+                <td class="text-right text-kredit">Rp {{ number_format($totalKredit, 0, ',', '.') }}</td>
+                <td class="text-right" style="color: #0f172a; font-size: 10px;">Rp {{ number_format($currentSaldo, 0, ',', '.') }}</td>
             </tr>
         </tbody>
     </table>

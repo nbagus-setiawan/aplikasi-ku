@@ -8,6 +8,8 @@
     modalKreditOpen: false,
     modalEditOpen: false,
     modalPreviewOpen: false,
+    nominalDebit: '',
+    nominalKredit: '',
     previewUrl: '',
     previewTitle: '',
     editData: {
@@ -420,7 +422,18 @@
 
                         <div>
                             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nominal (Rp) <span class="text-rose-500">*</span></label>
-                            <input type="number" name="nominal" placeholder="Contoh: 500000" min="1" step="any" required class="w-full text-xs sm:text-sm rounded-xl border-slate-300 font-mono font-bold text-emerald-700 focus:border-emerald-500 focus:ring-emerald-500">
+                            <div class="relative">
+                                <span class="absolute left-3.5 top-2.5 text-xs font-bold text-slate-400 select-none">Rp</span>
+                                <input type="number"
+                                       name="nominal"
+                                       x-model="nominalDebit"
+                                       placeholder="0"
+                                       min="1"
+                                       step="any"
+                                       required
+                                       class="w-full text-xs sm:text-sm rounded-xl border-slate-300 pl-10 pr-4 font-mono font-bold text-emerald-700 focus:border-emerald-500 focus:ring-emerald-500">
+                            </div>
+                            <p x-show="nominalDebit > 0" class="text-xs text-emerald-700 font-bold mt-1 font-mono" x-text="'Format: Rp ' + Number(nominalDebit || 0).toLocaleString('id-ID')"></p>
                         </div>
                     </div>
 
@@ -501,7 +514,18 @@
 
                         <div>
                             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nominal (Rp) <span class="text-rose-500">*</span></label>
-                            <input type="number" name="nominal" placeholder="Contoh: 250000" min="1" step="any" required class="w-full text-xs sm:text-sm rounded-xl border-slate-300 font-mono font-bold text-rose-700 focus:border-rose-500 focus:ring-rose-500">
+                            <div class="relative">
+                                <span class="absolute left-3.5 top-2.5 text-xs font-bold text-slate-400 select-none">Rp</span>
+                                <input type="number"
+                                       name="nominal"
+                                       x-model="nominalKredit"
+                                       placeholder="0"
+                                       min="1"
+                                       step="any"
+                                       required
+                                       class="w-full text-xs sm:text-sm rounded-xl border-slate-300 pl-10 pr-4 font-mono font-bold text-rose-700 focus:border-rose-500 focus:ring-rose-500">
+                            </div>
+                            <p x-show="nominalKredit > 0" class="text-xs text-rose-700 font-bold mt-1 font-mono" x-text="'Format: Rp ' + Number(nominalKredit || 0).toLocaleString('id-ID')"></p>
                         </div>
                     </div>
 
@@ -592,7 +616,17 @@
 
                         <div>
                             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nominal (Rp) <span class="text-rose-500">*</span></label>
-                            <input type="number" name="nominal" x-model="editData.nominal" min="1" step="any" required class="w-full text-xs sm:text-sm rounded-xl border-slate-300 font-mono font-bold">
+                            <div class="relative">
+                                <span class="absolute left-3.5 top-2.5 text-xs font-bold text-slate-400 select-none">Rp</span>
+                                <input type="number"
+                                       name="nominal"
+                                       x-model="editData.nominal"
+                                       min="1"
+                                       step="any"
+                                       required
+                                       class="w-full text-xs sm:text-sm rounded-xl border-slate-300 pl-10 pr-4 font-mono font-bold focus:border-emerald-500 focus:ring-emerald-500">
+                            </div>
+                            <p x-show="editData.nominal > 0" class="text-xs text-slate-700 font-bold mt-1 font-mono" x-text="'Format: Rp ' + Number(editData.nominal || 0).toLocaleString('id-ID')"></p>
                         </div>
                     </div>
 
