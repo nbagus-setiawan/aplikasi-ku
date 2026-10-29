@@ -154,15 +154,37 @@
     <!-- FILTER & PENCARIAN MUTASI -->
     <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
         <form method="GET" action="{{ route('admin.bendahara.index') }}" class="space-y-3">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2.5 sm:gap-3">
-                
+            <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <span class="p-1.5 rounded-lg bg-emerald-100 text-emerald-800">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                    </span>
+                    <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">Filter & Pencarian Jurnal</span>
+                </div>
+                @if($jenis || $kategori || $q || $periode !== 'bulan-ini')
+                <a href="{{ route('admin.bendahara.index') }}" class="text-xs text-rose-600 font-bold hover:underline flex items-center gap-1">
+                    <span>Reset Filter</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </a>
+                @endif
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-12 gap-2.5 sm:gap-3">
+                @php
+                    $daftarBulan = [1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                    $bulanIniLabel = ($daftarBulan[(int) date('n')] ?? date('F')) . ' ' . date('Y');
+                @endphp
+
                 <!-- Filter Periode Cepat -->
-                <div class="lg:col-span-3">
-                    <label class="block text-[11px] sm:text-xs font-bold text-slate-600 uppercase mb-1">Periode</label>
+                <div class="col-span-1 lg:col-span-3">
+                    <label class="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-slate-700 uppercase mb-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                        <span>Periode</span>
+                    </label>
                     <select name="periode"
                             onchange="this.form.submit()"
-                            class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500">
-                        <option value="bulan-ini" {{ $periode === 'bulan-ini' ? 'selected' : '' }}>Bulan Ini ({{ Carbon\Carbon::now()->translatedFormat('F Y') }})</option>
+                            class="w-full text-xs sm:text-sm rounded-xl border-slate-300 bg-slate-50/50 hover:bg-white focus:bg-white focus:border-emerald-500 focus:ring-emerald-500">
+                        <option value="bulan-ini" {{ $periode === 'bulan-ini' ? 'selected' : '' }}>Bulan Ini ({{ $bulanIniLabel }})</option>
                         <option value="tahun-ini" {{ $periode === 'tahun-ini' ? 'selected' : '' }}>Tahun Ini ({{ date('Y') }})</option>
                         <option value="semua" {{ $periode === 'semua' ? 'selected' : '' }}>Semua Transaksi</option>
                         <option value="custom" {{ $periode === 'custom' ? 'selected' : '' }}>Rentang Tanggal Kustom...</option>
@@ -170,11 +192,14 @@
                 </div>
 
                 <!-- Filter Jenis (Debit / Kredit) -->
-                <div class="lg:col-span-2">
-                    <label class="block text-[11px] sm:text-xs font-bold text-slate-600 uppercase mb-1">Jenis Akun</label>
+                <div class="col-span-1 lg:col-span-2">
+                    <label class="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-slate-700 uppercase mb-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span>Jenis Akun</span>
+                    </label>
                     <select name="jenis"
                             onchange="this.form.submit()"
-                            class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500">
+                            class="w-full text-xs sm:text-sm rounded-xl border-slate-300 bg-slate-50/50 hover:bg-white focus:bg-white focus:border-emerald-500 focus:ring-emerald-500">
                         <option value="">Semua Jenis</option>
                         <option value="debit" {{ $jenis === 'debit' ? 'selected' : '' }}>Debit (Penerimaan)</option>
                         <option value="kredit" {{ $jenis === 'kredit' ? 'selected' : '' }}>Kredit (Pengeluaran)</option>
@@ -182,11 +207,14 @@
                 </div>
 
                 <!-- Filter Kategori Pos Akun -->
-                <div class="lg:col-span-3">
-                    <label class="block text-[11px] sm:text-xs font-bold text-slate-600 uppercase mb-1">Pos Akun / Kategori</label>
+                <div class="col-span-2 sm:col-span-1 lg:col-span-3">
+                    <label class="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-slate-700 uppercase mb-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                        <span>Pos Akun / Kategori</span>
+                    </label>
                     <select name="kategori"
                             onchange="this.form.submit()"
-                            class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500">
+                            class="w-full text-xs sm:text-sm rounded-xl border-slate-300 bg-slate-50/50 hover:bg-white focus:bg-white focus:border-emerald-500 focus:ring-emerald-500">
                         <option value="">Semua Pos Akun</option>
                         @foreach($kategoriList as $kat)
                             <option value="{{ $kat }}" {{ $kategori === $kat ? 'selected' : '' }}>{{ $kat }}</option>
@@ -195,14 +223,17 @@
                 </div>
 
                 <!-- Pencarian Teks -->
-                <div class="sm:col-span-2 lg:col-span-4">
-                    <label class="block text-[11px] sm:text-xs font-bold text-slate-600 uppercase mb-1">Pencarian</label>
+                <div class="col-span-2 sm:col-span-1 lg:col-span-4">
+                    <label class="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-slate-700 uppercase mb-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                        <span>Pencarian Kata Kunci</span>
+                    </label>
                     <div class="relative">
                         <input type="text"
                                name="q"
                                value="{{ $q }}"
                                placeholder="Cari uraian, no. bukti, pihak..."
-                               class="w-full text-xs sm:text-sm rounded-xl border-slate-300 pl-9 pr-4 focus:border-emerald-500 focus:ring-emerald-500">
+                               class="w-full text-xs sm:text-sm rounded-xl border-slate-300 pl-9 pr-4 bg-slate-50/50 hover:bg-white focus:bg-white focus:border-emerald-500 focus:ring-emerald-500">
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </div>
                 </div>
@@ -220,16 +251,6 @@
                     <input type="date" name="sampai_tanggal" value="{{ $sampai }}" class="text-xs rounded-xl border-slate-300">
                 </div>
                 <button type="submit" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-xs hover:bg-emerald-700">Terapkan</button>
-            </div>
-            @endif
-
-            @if($jenis || $kategori || $q || $periode !== 'bulan-ini')
-            <div class="flex items-center gap-2 pt-1">
-                <span class="text-xs text-slate-500">Filter aktif:</span>
-                <a href="{{ route('admin.bendahara.index') }}" class="text-xs text-rose-600 font-bold hover:underline flex items-center gap-1">
-                    <span>Reset Filter</span>
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </a>
             </div>
             @endif
         </form>

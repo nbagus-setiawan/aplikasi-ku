@@ -256,10 +256,20 @@ class BendaharaController extends Controller
      */
     public function cetak(Request $request)
     {
-        $dari = $request->input('dari_tanggal');
-        $sampai = $request->input('sampai_tanggal');
-        $jenis = $request->input('jenis');
-        $kategori = $request->input('kategori');
+        $periode = $request->input('periode', 'bulan-ini');
+        $dari = $request->filled('dari_tanggal') ? $request->input('dari_tanggal') : null;
+        $sampai = $request->filled('sampai_tanggal') ? $request->input('sampai_tanggal') : null;
+        $jenis = $request->filled('jenis') ? $request->input('jenis') : null;
+        $kategori = $request->filled('kategori') ? $request->input('kategori') : null;
+        $q = $request->filled('q') ? $request->input('q') : null;
+
+        if ($periode === 'bulan-ini') {
+            $dari = Carbon::now()->startOfMonth()->toDateString();
+            $sampai = Carbon::now()->endOfMonth()->toDateString();
+        } elseif ($periode === 'tahun-ini') {
+            $dari = Carbon::now()->startOfYear()->toDateString();
+            $sampai = Carbon::now()->endOfYear()->toDateString();
+        }
 
         $query = KasTransaksi::with('user')->orderBy('tanggal', 'asc')->orderBy('id', 'asc');
 
@@ -279,14 +289,23 @@ class BendaharaController extends Controller
             $query->where('kategori', $kategori);
         }
 
+        if ($q) {
+            $query->where(function ($w) use ($q) {
+                $w->where('keterangan', 'like', "%{$q}%")
+                    ->orWhere('kode_transaksi', 'like', "%{$q}%")
+                    ->orWhere('nama_pihak', 'like', "%{$q}%")
+                    ->orWhere('kategori', 'like', "%{$q}%");
+            });
+        }
+
         $transaksis = $query->get();
 
-        // Hitung Saldo Awal sebelum tanggal $dari (jika ada filter tanggal)
+        // Hitung Saldo Awal sebelum tanggal $dari (jika ada rentang tanggal)
         $saldoAwal = 0;
         if ($dari) {
-            $debitSebelumnya = KasTransaksi::debit()->whereDate('tanggal', '<', $dari)->sum('nominal');
-            $kreditSebelumnya = KasTransaksi::kredit()->whereDate('tanggal', '<', $dari)->sum('nominal');
-            $saldoAwal = (float) ($debitSebelumnya - $kreditSebelumnya);
+            $debitSebelumnya = (float) KasTransaksi::debit()->whereDate('tanggal', '<', $dari)->sum('nominal');
+            $kreditSebelumnya = (float) KasTransaksi::kredit()->whereDate('tanggal', '<', $dari)->sum('nominal');
+            $saldoAwal = $debitSebelumnya - $kreditSebelumnya;
         }
 
         $totalDebit = (float) $transaksis->where('jenis', 'debit')->sum('nominal');
@@ -305,6 +324,8 @@ class BendaharaController extends Controller
             'sampai' => $sampai,
             'jenis' => $jenis,
             'kategori' => $kategori,
+            'periode' => $periode,
+            'q' => $q,
             'pengaturan' => $pengaturan,
         ])->setPaper('a4', 'portrait');
 

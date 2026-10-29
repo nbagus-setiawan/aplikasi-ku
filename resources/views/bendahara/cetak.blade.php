@@ -209,7 +209,11 @@
         </div>
 
         <div class="ttd-box right">
-            <p>Desa Putak, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
+            @php
+                $namaBulanIndo = [1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                $tglCetak = date('j') . ' ' . ($namaBulanIndo[(int) date('n')] ?? date('F')) . ' ' . date('Y');
+            @endphp
+            <p>Desa Putak, {{ $tglCetak }}</p>
             <p style="font-weight: bold; margin-top: -5px;">Bendahara Pesantren</p>
             <br><br><br>
             <p style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">( ......................................... )</p>
