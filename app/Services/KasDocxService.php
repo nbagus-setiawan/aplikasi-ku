@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use DOMDocument;
-use DOMXPath;
 use Illuminate\Support\Str;
 
 class KasDocxService
@@ -14,6 +12,7 @@ class KasDocxService
 
     /**
      * Hasilkan file Word (.docx) buku kas menggunakan template resmi LAPORAN BUKU KAS.docx
+     * Murni menggunakan parser string & ZIP PHP (tanpa ketergantungan ekstensi DOMDocument/php-xml).
      */
     public function generateDocx(array $reportData): ?string
     {
@@ -70,150 +69,86 @@ class KasDocxService
     }
 
     /**
-     * Isi placeholder dan perbanyak baris tabel sesuai data transaksi
+     * Isi placeholder dan gandakan baris tabel sesuai data transaksi.
+     * Implementasi murni string/regex tanpa membutuhkan Class DOMDocument.
      */
     protected function populateDocumentXml(string $docXml, array $data): string
     {
-        // 1. Bersihkan penanda ejaan bawaan Word yang sering memecah string placeholder
+        // 1. Bersihkan tanda proofErr jika ada
         $docXml = preg_replace('/<w:proofErr[^>]*\/>/', '', $docXml);
 
-        $doc = new DOMDocument();
-        $doc->preserveWhiteSpace = false;
-        $doc->formatOutput = false;
-
-        $loaded = @$doc->loadXML($docXml);
-        if (! $loaded) {
-            return $docXml;
-        }
-
-        $xpath = new DOMXPath($doc);
-        $xpath->registerNamespace('w', 'http://schemas.openxmlformats.org/wordprocessingml/2006/main');
-
-        // 2. Format Periode Tanggal
+        // 2. Format Rentang Periode Tanggal
         $dari = $data['dari'] ?? null;
         $sampai = $data['sampai'] ?? null;
+
         if ($dari && $sampai) {
-            $periodeText = 'PERIODE : ' . date('d/m/Y', strtotime($dari)) . ' s.d. ' . date('d/m/Y', strtotime($sampai));
+            $tglMulai = date('d/m/Y', strtotime($dari));
+            $tglAkhir = date('d/m/Y', strtotime($sampai));
         } elseif ($dari) {
-            $periodeText = 'PERIODE : Mulai ' . date('d/m/Y', strtotime($dari));
+            $tglMulai = date('d/m/Y', strtotime($dari));
+            $tglAkhir = 'Selesai';
         } elseif ($sampai) {
-            $periodeText = 'PERIODE : Sampai ' . date('d/m/Y', strtotime($sampai));
+            $tglMulai = 'Awal';
+            $tglAkhir = date('d/m/Y', strtotime($sampai));
         } else {
-            $periodeText = 'PERIODE : Semua Transaksi Pembukuan';
+            $tglMulai = 'Awal';
+            $tglAkhir = 'Semua Periode';
         }
 
-        // Terapkan ke paragraf yang memuat kata PERIODE
-        $paragraphs = $xpath->query('//w:p');
-        foreach ($paragraphs as $p) {
-            $textNodes = $xpath->query('.//w:t', $p);
-            $fullText = '';
-            foreach ($textNodes as $tn) {
-                $fullText .= $tn->nodeValue;
-            }
-            if (str_contains(strtoupper($fullText), 'PERIODE')) {
-                $first = true;
-                foreach ($textNodes as $tn) {
-                    if ($first) {
-                        $tn->nodeValue = $periodeText;
-                        $first = false;
-                    } else {
-                        $tn->nodeValue = '';
-                    }
-                }
-            }
-        }
+        $docXml = str_replace(
+            ['{tanggal_mulai}', '{tanggal_akhir}'],
+            [$tglMulai, $tglAkhir],
+            $docXml
+        );
 
-        // 3. Modifikasi Tabel Utama (Tabel Kas)
-        $tables = $xpath->query('//w:tbl');
-        if ($tables->length > 0) {
-            $tbl = $tables->item(0);
+        // 3. Modifikasi Tabel Transaksi Kas
+        if (preg_match('/<w:tbl\b[^>]*>.*?<\/w:tbl>/s', $docXml, $tblMatch)) {
+            $tblXml = $tblMatch[0];
 
-            // Tambahkan batas border tabel eksplisit (termasuk bottom border garis bawah)
-            $tblPrList = $xpath->query('.//w:tblPr', $tbl);
-            if ($tblPrList->length > 0) {
-                $tblPr = $tblPrList->item(0);
-                $oldBorders = $xpath->query('.//w:tblBorders', $tblPr);
-                foreach ($oldBorders as $ob) {
-                    $tblPr->removeChild($ob);
-                }
-                $tblBorders = $doc->createElement('w:tblBorders');
-                foreach (['top', 'left', 'bottom', 'right', 'insideH', 'insideV'] as $side) {
-                    $border = $doc->createElement('w:' . $side);
-                    $border->setAttribute('w:val', 'single');
-                    $border->setAttribute('w:sz', '6');
-                    $border->setAttribute('w:space', '0');
-                    $border->setAttribute('w:color', '000000');
-                    $tblBorders->appendChild($border);
-                }
-                $tblPr->appendChild($tblBorders);
+            // Pastikan tblBorders terpasang pada w:tblPr agar garis tepi tabel (termasuk garis bawah) tegas
+            $borderXml = '<w:tblBorders>'
+                . '<w:top w:val="single" w:sz="6" w:space="0" w:color="000000"/>'
+                . '<w:left w:val="single" w:sz="6" w:space="0" w:color="000000"/>'
+                . '<w:bottom w:val="single" w:sz="6" w:space="0" w:color="000000"/>'
+                . '<w:right w:val="single" w:sz="6" w:space="0" w:color="000000"/>'
+                . '<w:insideH w:val="single" w:sz="6" w:space="0" w:color="000000"/>'
+                . '<w:insideV w:val="single" w:sz="6" w:space="0" w:color="000000"/>'
+                . '</w:tblBorders>';
+
+            if (str_contains($tblXml, '<w:tblBorders>')) {
+                $tblXml = preg_replace('/<w:tblBorders>.*?<\/w:tblBorders>/s', $borderXml, $tblXml);
+            } else {
+                $tblXml = preg_replace('/(<\/w:tblPr>)/', $borderXml . '$1', $tblXml);
             }
 
-            $rows = $xpath->query('.//w:tr', $tbl);
+            // Ekstrak baris tabel
+            if (preg_match_all('/<w:tr\b[^>]*>.*?<\/w:tr>/s', $tblXml, $rowMatches) && count($rowMatches[0]) >= 2) {
+                $rows = $rowMatches[0];
 
-            if ($rows->length >= 2) {
-                $templateRow = $rows->item(1); // Baris yang berisi {No.}, {No._bukti), {akun}, dsb.
-                $totalRow = $rows->item($rows->length - 1); // Baris terakhir (Total Mutasi & Saldo Akhir)
+                $headerRow = $rows[0];
+                $templateRow = $rows[1];
+                $totalRow = $rows[count($rows) - 1];
 
-                // Simpan baris kosong di antara template dan total jika ada untuk dihapus
-                $rowsToRemove = [];
-                for ($i = 1; $i < $rows->length - 1; $i++) {
-                    $rowsToRemove[] = $rows->item($i);
-                }
-
-                $setCellText = function ($cell, string $text) use ($xpath, $doc) {
-                    $tcPr = $xpath->query('.//w:tcPr', $cell)->item(0);
-                    if ($tcPr) {
-                        $oldTcBorders = $xpath->query('.//w:tcBorders', $tcPr);
-                        foreach ($oldTcBorders as $otb) {
-                            $tcPr->removeChild($otb);
-                        }
-                        $tcBorders = $doc->createElement('w:tcBorders');
-                        foreach (['top', 'left', 'bottom', 'right'] as $side) {
-                            $b = $doc->createElement('w:' . $side);
-                            $b->setAttribute('w:val', 'single');
-                            $b->setAttribute('w:sz', '6');
-                            $b->setAttribute('w:space', '0');
-                            $b->setAttribute('w:color', '000000');
-                            $tcBorders->appendChild($b);
-                        }
-                        $tcPr->appendChild($tcBorders);
-                    }
-
-                    $tNodes = $xpath->query('.//w:t', $cell);
-                    $first = true;
-                    foreach ($tNodes as $tn) {
-                        if ($first) {
-                            $tn->nodeValue = htmlspecialchars($text, ENT_XML1, 'UTF-8');
-                            $first = false;
-                        } else {
-                            $tn->nodeValue = '';
-                        }
-                    }
-                };
-
+                // Data transaksi dan perhitungan saldo kas
                 $transaksis = $data['transaksis'] ?? [];
                 $saldoAwal = (float) ($data['saldoAwal'] ?? 0);
+                $totalDebit = (float) ($data['totalDebit'] ?? 0);
+                $totalKredit = (float) ($data['totalKredit'] ?? 0);
                 $currentSaldo = $saldoAwal;
 
-                $rowCount = 0;
+                $generatedRows = [];
 
-                // Jika ada saldo awal sebelum periode
+                // Baris Saldo Awal jika ada
                 if ($dari && $saldoAwal != 0) {
-                    $saldoRow = $templateRow->cloneNode(true);
-                    $cells = $xpath->query('.//w:tc', $saldoRow);
-                    if ($cells->length >= 6) {
-                        $setCellText($cells->item(0), '-');
-                        $setCellText($cells->item(1), '-');
-                        $setCellText($cells->item(2), 'SALDO AWAL KAS');
-                        $setCellText($cells->item(3), '-');
-                        $setCellText($cells->item(4), '-');
-                        $setCellText($cells->item(5), 'Rp ' . number_format($currentSaldo, 0, ',', '.'));
-                    }
-                    $tbl->insertBefore($saldoRow, $totalRow);
-                    $rowCount++;
+                    $saldoRow = str_replace(
+                        ['{No.}', '{No._bukti}', '{akun}', '{debit}', '{kredit}', '{saldo}'],
+                        ['-', '-', 'SALDO AWAL KAS', '-', '-', 'Rp ' . number_format($currentSaldo, 0, ',', '.')],
+                        $templateRow
+                    );
+                    $generatedRows[] = $saldoRow;
                 }
 
-                // Tambahkan setiap transaksi
+                // Baris-baris Transaksi
                 foreach ($transaksis as $idx => $t) {
                     if ($t->jenis === 'debit') {
                         $currentSaldo += (float) $t->nominal;
@@ -221,76 +156,55 @@ class KasDocxService
                         $currentSaldo -= (float) $t->nominal;
                     }
 
-                    $newRow = $templateRow->cloneNode(true);
-                    $cells = $xpath->query('.//w:tc', $newRow);
+                    $debitStr = $t->jenis === 'debit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-';
+                    $kreditStr = $t->jenis === 'kredit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-';
+                    $saldoStr = 'Rp ' . number_format((float) $currentSaldo, 0, ',', '.');
 
-                    if ($cells->length >= 6) {
-                        $setCellText($cells->item(0), (string) ($idx + 1));
-                        $setCellText($cells->item(1), (string) $t->kode_transaksi);
-                        $setCellText($cells->item(2), (string) $t->kategori);
-                        $setCellText($cells->item(3), $t->jenis === 'debit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-');
-                        $setCellText($cells->item(4), $t->jenis === 'kredit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-');
-                        $setCellText($cells->item(5), 'Rp ' . number_format($currentSaldo, 0, ',', '.'));
-                    }
-
-                    $tbl->insertBefore($newRow, $totalRow);
-                    $rowCount++;
+                    $newRow = str_replace(
+                        ['{No.}', '{No._bukti}', '{akun}', '{debit}', '{kredit}', '{saldo}'],
+                        [
+                            (string) ($idx + 1),
+                            htmlspecialchars((string) $t->kode_transaksi, ENT_XML1, 'UTF-8'),
+                            htmlspecialchars((string) $t->kategori, ENT_XML1, 'UTF-8'),
+                            $debitStr,
+                            $kreditStr,
+                            $saldoStr,
+                        ],
+                        $templateRow
+                    );
+                    $generatedRows[] = $newRow;
                 }
 
-                // Jika sama sekali tidak ada data
-                if ($rowCount === 0) {
-                    $emptyRow = $templateRow->cloneNode(true);
-                    $cells = $xpath->query('.//w:tc', $emptyRow);
-                    if ($cells->length >= 6) {
-                        $setCellText($cells->item(0), '-');
-                        $setCellText($cells->item(1), '-');
-                        $setCellText($cells->item(2), 'Tidak ada data transaksi kas.');
-                        $setCellText($cells->item(3), '-');
-                        $setCellText($cells->item(4), '-');
-                        $setCellText($cells->item(5), 'Rp 0');
-                    }
-                    $tbl->insertBefore($emptyRow, $totalRow);
+                // Jika tidak ada data transaksi sama sekali
+                if (empty($generatedRows)) {
+                    $emptyRow = str_replace(
+                        ['{No.}', '{No._bukti}', '{akun}', '{debit}', '{kredit}', '{saldo}'],
+                        ['-', '-', 'Tidak ada data transaksi kas.', '-', '-', 'Rp 0'],
+                        $templateRow
+                    );
+                    $generatedRows[] = $emptyRow;
                 }
 
-                // Hapus template row dan baris kosong perantara
-                foreach ($rowsToRemove as $r) {
-                    $tbl->removeChild($r);
-                }
+                // Format Baris Total Rekapitulasi
+                $cleanTotal = str_replace(
+                    ['{total_debit}', '{total_kredit}', '{total_}'],
+                    [
+                        'Rp ' . number_format($totalDebit, 0, ',', '.'),
+                        'Rp ' . number_format($totalKredit, 0, ',', '.'),
+                        'Rp ' . number_format($currentSaldo, 0, ',', '.'),
+                    ],
+                    $totalRow
+                );
 
-                // 4. Update Baris Total Mutasi & Saldo Akhir
-                $totalCells = $xpath->query('.//w:tc', $totalRow);
-                $totalDebit = (float) ($data['totalDebit'] ?? 0);
-                $totalKredit = (float) ($data['totalKredit'] ?? 0);
+                // Rangkai kembali seluruh isi tabel
+                $tblPrefixPos = strpos($tblXml, '<w:tr');
+                $tblPrefix = substr($tblXml, 0, $tblPrefixPos);
+                $newTbl = $tblPrefix . $headerRow . implode('', $generatedRows) . $cleanTotal . '</w:tbl>';
 
-                if ($totalCells->length >= 5) {
-                    // Beri border juga pada baris total
-                    for ($i = 0; $i < $totalCells->length; $i++) {
-                        $c = $totalCells->item($i);
-                        $tcPr = $xpath->query('.//w:tcPr', $c)->item(0);
-                        if ($tcPr) {
-                            $oldTcBorders = $xpath->query('.//w:tcBorders', $tcPr);
-                            foreach ($oldTcBorders as $otb) {
-                                $tcPr->removeChild($otb);
-                            }
-                            $tcBorders = $doc->createElement('w:tcBorders');
-                            foreach (['top', 'left', 'bottom', 'right'] as $side) {
-                                $b = $doc->createElement('w:' . $side);
-                                $b->setAttribute('w:val', 'single');
-                                $b->setAttribute('w:sz', '6');
-                                $b->setAttribute('w:space', '0');
-                                $b->setAttribute('w:color', '000000');
-                                $tcBorders->appendChild($b);
-                            }
-                            $tcPr->appendChild($tcBorders);
-                        }
-                    }
-                    $setCellText($totalCells->item(2), 'Rp ' . number_format($totalDebit, 0, ',', '.'));
-                    $setCellText($totalCells->item(3), 'Rp ' . number_format($totalKredit, 0, ',', '.'));
-                    $setCellText($totalCells->item(4), 'Rp ' . number_format($currentSaldo, 0, ',', '.'));
-                }
+                $docXml = str_replace($tblMatch[0], $newTbl, $docXml);
             }
         }
 
-        return $doc->saveXML();
+        return $docXml;
     }
 }

@@ -39,11 +39,14 @@ class AgendaTest extends TestCase
 
     public function test_sekretaris_dapat_melihat_daftar_agenda_dan_kalender(): void
     {
+        $mulai = Carbon::now()->startOfMonth()->addDays(5)->setHour(9)->setMinute(0);
+        $selesai = (clone $mulai)->addHours(2);
+
         Agenda::create([
             'judul' => 'Rapat Bulanan Asatidz',
             'deskripsi' => 'Rapat evaluasi kurikulum',
-            'mulai' => Carbon::now()->addDays(2),
-            'selesai' => Carbon::now()->addDays(2)->addHours(2),
+            'mulai' => $mulai,
+            'selesai' => $selesai,
             'lokasi' => 'Aula Pertemuan',
             'pj_id' => $this->pengurus->id,
             'status' => 'rencana',
@@ -57,7 +60,11 @@ class AgendaTest extends TestCase
         $responseDaftar->assertSee('Aula Pertemuan');
 
         // Mode Kalender
-        $responseKalender = $this->actingAs($this->user)->get(route('admin.agenda.index', ['view' => 'kalender']));
+        $responseKalender = $this->actingAs($this->user)->get(route('admin.agenda.index', [
+            'view' => 'kalender',
+            'bulan' => (int) $mulai->month,
+            'tahun' => (int) $mulai->year,
+        ]));
         $responseKalender->assertStatus(200);
         $responseKalender->assertSee('Rapat Bulanan Asatidz');
     }
