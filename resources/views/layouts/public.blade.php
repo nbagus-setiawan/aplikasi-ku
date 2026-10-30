@@ -442,7 +442,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-10 pb-10 sm:pb-12 border-b border-emerald-900/80">
                 <!-- Kolom 1: Profil & Identitas Lembaga (MEDIA RESMI AL-FALAH PUTAK) -->
-                <div class="md:col-span-6 space-y-4">
+                <div class="md:col-span-5 space-y-4">
                     <div class="flex items-center gap-3">
                         <picture class="shrink-0">
                             <source srcset="{{ asset('images/logo-nav.webp') }}" type="image/webp">
@@ -478,33 +478,38 @@
                     </div>
                 </div>
 
-                <!-- Kolom 2: Tautan Navigasi Cepat & Akses Login Petugas di Bawah -->
-                <div class="md:col-span-3">
+                <!-- Kolom 2: Tautan Navigasi Cepat 2 Kolom Rapi -->
+                <div class="md:col-span-4">
                     <h4 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-emerald-300 mb-4">Navigasi Utama</h4>
-                    <ul class="space-y-2.5 text-sm sm:text-base">
-                        <li><a href="{{ url('/') }}" class="hover:text-emerald-400 transition py-1 inline-block">Beranda Utama</a></li>
-                        <li><a href="{{ url('/profil') }}" class="hover:text-emerald-400 transition py-1 inline-block">Profil Pondok</a></li>
-                        <li><a href="{{ url('/program-pendidikan') }}" class="hover:text-emerald-400 transition py-1 inline-block">Program Pendidikan</a></li>
-                        <li><a href="{{ url('/pendaftaran-santri') }}" class="hover:text-emerald-400 transition py-1 inline-block">Pendaftaran Santri Baru</a></li>
-                        <li><a href="{{ url('/kontak') }}" class="hover:text-emerald-400 transition py-1 inline-block">Kontak &amp; Lokasi</a></li>
-                        <li><a href="{{ url('/pengumuman') }}" class="hover:text-emerald-400 transition py-1 inline-block">Pengumuman &amp; Warta</a></li>
-                        <li><a href="{{ url('/konsultasi') }}" class="hover:text-emerald-400 transition py-1 inline-block">Layanan Konsultasi</a></li>
-                        <li><a href="{{ url('/verifikasi') }}" class="hover:text-emerald-400 transition py-1 inline-block">Verifikasi Dokumen</a></li>
-                        <!-- Akses Login Petugas di Letakkan di Bawah Saja -->
-                        <li class="pt-3 border-t border-emerald-900/80">
-                            @auth
-                                <a href="{{ route('dashboard') }}" rel="nofollow" class="text-emerald-400 hover:text-white transition inline-flex items-center gap-1.5 font-bold text-xs sm:text-sm min-h-[40px]">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                                    <span>Buka Panel Admin &rarr;</span>
-                                </a>
-                            @else
-                                <a href="{{ route('login') }}" rel="nofollow" class="text-emerald-200 hover:text-white transition inline-flex items-center gap-1.5 font-semibold text-xs sm:text-sm min-h-[40px]">
-                                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
-                                    <span>Portal Sekretariat (Login) &rarr;</span>
-                                </a>
-                            @endauth
-                        </li>
-                    </ul>
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-xs sm:text-sm">
+                        <div class="space-y-2">
+                            <a href="{{ url('/') }}" class="hover:text-emerald-300 transition block py-0.5">Beranda Utama</a>
+                            <a href="{{ url('/profil') }}" class="hover:text-emerald-300 transition block py-0.5">Profil Pondok</a>
+                            <a href="{{ url('/program-pendidikan') }}" class="hover:text-emerald-300 transition block py-0.5">Program Pendidikan</a>
+                            <a href="{{ url('/pendaftaran-santri') }}" class="hover:text-emerald-300 transition block py-0.5">Pendaftaran Santri</a>
+                        </div>
+                        <div class="space-y-2">
+                            <a href="{{ url('/pengumuman') }}" class="hover:text-emerald-300 transition block py-0.5">Warta &amp; Kabar</a>
+                            <a href="{{ url('/kontak') }}" class="hover:text-emerald-300 transition block py-0.5">Kontak &amp; Peta</a>
+                            <a href="{{ url('/konsultasi') }}" class="hover:text-emerald-300 transition block py-0.5">Konsultasi WA</a>
+                            <a href="{{ url('/verifikasi') }}" class="hover:text-emerald-300 transition block py-0.5">Verifikasi Surat</a>
+                        </div>
+                    </div>
+
+                    <!-- Akses Login Petugas di Bawah Navigasi -->
+                    <div class="pt-3 mt-3 border-t border-emerald-900/80">
+                        @auth
+                            <a href="{{ route('dashboard') }}" rel="nofollow" class="text-emerald-400 hover:text-white transition inline-flex items-center gap-1.5 font-bold text-xs sm:text-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                                <span>Buka Panel Admin &rarr;</span>
+                            </a>
+                        @else
+                            <a href="{{ route('login') }}" rel="nofollow" class="text-emerald-300 hover:text-white transition inline-flex items-center gap-1.5 font-semibold text-xs sm:text-sm">
+                                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                                <span>Portal Sekretariat (Login) &rarr;</span>
+                            </a>
+                        @endauth
+                    </div>
                 </div>
 
                 <!-- Kolom 3: Layanan Sekretariat & Jam Operasional -->

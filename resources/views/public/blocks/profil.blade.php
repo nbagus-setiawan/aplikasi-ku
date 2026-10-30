@@ -80,12 +80,27 @@
                     </p>
                 </div>
 
-                <!-- Badges Program Unggulan -->
-                <div class="pt-1 flex flex-wrap gap-2 text-xs sm:text-sm font-semibold text-slate-700">
-                    <span class="px-3.5 py-1.5 bg-slate-100 rounded-xl">Kitab Kuning Salafiyah</span>
-                    <span class="px-3.5 py-1.5 bg-slate-100 rounded-xl">Tahfidzul Qur'an</span>
-                    <span class="px-3.5 py-1.5 bg-slate-100 rounded-xl">Madrasah Diniyah Ula/Wustho/Ulya</span>
-                    <span class="px-3.5 py-1.5 bg-slate-100 rounded-xl">Pendidikan Formal MI, MTs, MA</span>
+                <!-- Badges Program Unggulan (Desain Kartu Rapi & Berjarak Proporsional) -->
+                <div class="pt-2">
+                    <span class="block text-xs font-bold uppercase tracking-wider text-emerald-800 mb-2">Program Unggulan:</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm font-semibold text-slate-800">
+                        <div class="flex items-center gap-2 px-3.5 py-2.5 bg-slate-50 border border-slate-200/80 rounded-xl shadow-2xs hover:bg-emerald-50/60 transition">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0"></span>
+                            <span>Kitab Kuning Salafiyah</span>
+                        </div>
+                        <div class="flex items-center gap-2 px-3.5 py-2.5 bg-slate-50 border border-slate-200/80 rounded-xl shadow-2xs hover:bg-emerald-50/60 transition">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0"></span>
+                            <span>Tahfidzul Qur'an</span>
+                        </div>
+                        <div class="flex items-center gap-2 px-3.5 py-2.5 bg-slate-50 border border-slate-200/80 rounded-xl shadow-2xs hover:bg-emerald-50/60 transition">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0"></span>
+                            <span>Madrasah Diniyah (Ula, Wustho, Ulya)</span>
+                        </div>
+                        <div class="flex items-center gap-2 px-3.5 py-2.5 bg-slate-50 border border-slate-200/80 rounded-xl shadow-2xs hover:bg-emerald-50/60 transition">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0"></span>
+                            <span>Pendidikan Formal (MI, MTs, MA)</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
