@@ -47,21 +47,43 @@
             </div>
 
             @if(count($pilihanProgram))
-                <div>
-                    <h2 class="text-lg sm:text-2xl font-extrabold text-slate-900 tracking-tight text-center mb-4">
-                        Pilihan Program untuk Calon Santri
-                    </h2>
-                    <ul class="max-w-2xl mx-auto space-y-2 text-sm sm:text-base text-slate-700">
+                <div class="bg-gradient-to-br from-emerald-50/70 via-white to-slate-50 p-6 sm:p-8 rounded-3xl border border-emerald-100/90 shadow-xs max-w-4xl mx-auto">
+                    <div class="text-center space-y-2 mb-6">
+                        <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold text-emerald-800 bg-emerald-100/70 uppercase tracking-wider">
+                            Pilihan Jenjang & Kurikulum
+                        </span>
+                        <h2 class="text-lg sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+                            Pilihan Program untuk Calon Santri
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto">
+                            Tersedia berbagai program unggulan yang dapat dipilih sesuai minat dan jenjang calon santri putra maupun putri.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
                         @foreach($pilihanProgram as $p)
-                            <li class="flex items-start gap-2">
-                                <span class="text-emerald-700 font-bold">&check;</span>
-                                <span>{{ $p }}</span>
-                            </li>
+                            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-emerald-100 shadow-2xs hover:border-emerald-300 hover:shadow-xs transition flex flex-col justify-between">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded-xl bg-emerald-100/80 text-emerald-800 flex items-center justify-center shrink-0 mt-0.5">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                    </div>
+                                    <span class="text-sm sm:text-base font-bold text-slate-800 leading-snug">
+                                        {{ $p }}
+                                    </span>
+                                </div>
+                            </div>
                         @endforeach
-                    </ul>
-                    <p class="text-center mt-4 text-sm">
-                        <a href="{{ url('/program-pendidikan') }}" class="font-semibold text-emerald-800 hover:underline">Baca rincian program pendidikan &rarr;</a>
-                    </p>
+                    </div>
+
+                    <div class="text-center mt-6 pt-5 border-t border-emerald-100/70">
+                        <a href="{{ url('/program-pendidikan') }}"
+                           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-emerald-900 bg-white border border-emerald-200/90 shadow-2xs hover:bg-emerald-50 hover:border-emerald-300 transition">
+                            <span>Pelajari Rincian Lengkap Seluruh Program</span>
+                            <span class="text-emerald-700">&rarr;</span>
+                        </a>
+                    </div>
                 </div>
             @endif
 
