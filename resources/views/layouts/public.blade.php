@@ -26,9 +26,6 @@
         $gambarOg = $gambarOgCustom ?: asset('images/og-alfalah-putak.jpg');
         $urlBeranda = url('/') . '/';
         $urlKanonik = $isBeranda ? $urlBeranda : url()->current();
-
-        // Keywords Lengkap untuk Menguasai Pencarian Lokal & Regional Melawan Pesaing
-        $kataKunciSEO = 'Pondok Pesantren Al-Falah Putak, PP Al Falah Putak, Ponpes Al Falah Putak, Pesantren Salafiyah Sumatera Selatan, Pondok Pesantren Putra Putri Gelumbang, Pondok Pesantren Terbaik di Sumatera Selatan, Pondok Pesantren Muara Enim, Pesantren Terdekat Prabumulih, Pesantren Palembang Ogan Ilir, K.H. Mursyidi, Ny. Hj. Aniswatuzzuhriyah, Media Resmi Al-Falah Putak, Santri Al Falah Putak, Kajian Kitab Kuning Salaf, Nahwu Shorof, Tahfidzul Quran Muara Enim, Madrasah Diniyah Al Falah, Penerimaan Santri Baru Al Falah Putak, Ponpes Gelumbang, Pesantren Ahlussunnah wal Jamaah Sumsel, Sekolah Islam Berasrama Gelumbang';
     @endphp
 
     <title>{{ $judulLengkap }}</title>
@@ -63,7 +60,6 @@
 
     <!-- Meta Dasar & SEO Google Indexing -->
     <meta name="description" content="{{ $deskripsi }}">
-    <meta name="keywords" content="{{ $kataKunciSEO }}">
     <meta name="author" content="{{ $namaSitus }}">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
@@ -271,7 +267,7 @@
                         !$isBeranda ? [
                             '@type' => 'ListItem',
                             'position' => 2,
-                            'name' => $judulHalaman ?: 'Halaman',
+                            'name' => trim($__env->yieldContent('breadcrumb')) ?: ($judulHalaman ?: 'Halaman'),
                             'item' => $urlKanonik,
                         ] : null,
                     ])),
@@ -326,28 +322,51 @@
                     </div>
                 </a>
 
+                @php
+                    // Menu publik utama (PRD 6.12): tautan internal untuk SEO dan kemudahan pengunjung
+                    $menuPublik = [
+                        ['url' => '/', 'label' => 'Beranda', 'pola' => '/'],
+                        ['url' => '/profil', 'label' => 'Profil', 'pola' => 'profil'],
+                        ['url' => '/program-pendidikan', 'label' => 'Program', 'pola' => 'program-pendidikan'],
+                        ['url' => '/pendaftaran-santri', 'label' => 'Pendaftaran', 'pola' => 'pendaftaran-santri'],
+                        ['url' => '/pengumuman', 'label' => 'Pengumuman', 'pola' => 'pengumuman*'],
+                        ['url' => '/kontak', 'label' => 'Kontak', 'pola' => 'kontak'],
+                    ];
+                    $menuLayanan = [
+                        ['url' => '/konsultasi', 'label' => 'Layanan Konsultasi', 'pola' => 'konsultasi*'],
+                        ['url' => '/verifikasi', 'label' => 'Verifikasi Dokumen', 'pola' => 'verifikasi*'],
+                    ];
+                    $layananAktif = request()->is('konsultasi*') || request()->is('verifikasi*');
+                @endphp
+
                 <!-- Navigasi Desktop (Hanya Menu Publik, Tanpa Tombol Login Atas) -->
-                <nav class="hidden md:flex items-center gap-1.5 shrink-0">
-                    <a href="{{ url('/') }}"
-                       class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition {{ request()->is('/') ? 'text-emerald-900 bg-emerald-50 font-bold shadow-xs' : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-100/70' }}">
-                        Beranda
-                    </a>
-                    <a href="{{ url('/pengumuman') }}"
-                       class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition {{ request()->is('pengumuman*') ? 'text-emerald-900 bg-emerald-50 font-bold shadow-xs' : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-100/70' }}">
-                        Pengumuman
-                    </a>
-                    <a href="{{ url('/konsultasi') }}"
-                       class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition {{ request()->is('konsultasi*') ? 'text-emerald-900 bg-emerald-50 font-bold shadow-xs' : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-100/70' }}">
-                        Layanan Konsultasi
-                    </a>
-                    <a href="{{ url('/verifikasi') }}"
-                       class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition {{ request()->is('verifikasi*') ? 'text-emerald-900 bg-emerald-50 font-bold shadow-xs' : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-100/70' }}">
-                        Verifikasi Dokumen
-                    </a>
+                <nav class="hidden lg:flex items-center gap-1 shrink-0" aria-label="Navigasi utama">
+                    @foreach($menuPublik as $menu)
+                        <a href="{{ url($menu['url']) }}"
+                           class="px-3 py-2 rounded-xl text-sm font-semibold transition {{ request()->is($menu['pola']) ? 'text-emerald-900 bg-emerald-50 font-bold shadow-xs' : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-100/70' }}">
+                            {{ $menu['label'] }}
+                        </a>
+                    @endforeach
+                    <div class="relative" x-data="{ layananOpen: false }" @click.outside="layananOpen = false" @keydown.escape="layananOpen = false">
+                        <button type="button" @click="layananOpen = !layananOpen" :aria-expanded="layananOpen"
+                                class="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-semibold transition {{ $layananAktif ? 'text-emerald-900 bg-emerald-50 font-bold shadow-xs' : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-100/70' }}">
+                            <span>Layanan</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div x-show="layananOpen" x-cloak x-transition
+                             class="absolute right-0 mt-2 w-56 bg-white rounded-xl border border-slate-200 shadow-lg py-1.5">
+                            @foreach($menuLayanan as $menu)
+                                <a href="{{ url($menu['url']) }}"
+                                   class="block px-4 py-2.5 text-sm font-semibold transition {{ request()->is($menu['pola']) ? 'text-emerald-900 bg-emerald-50' : 'text-slate-700 hover:bg-slate-100/70' }}">
+                                    {{ $menu['label'] }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
                 </nav>
 
                 <!-- Tombol Hamburger Mobile -->
-                <div class="flex md:hidden items-center shrink-0">
+                <div class="flex lg:hidden items-center shrink-0">
                     <button type="button"
                             @click="mobileOpen = !mobileOpen"
                             class="w-11 h-11 flex items-center justify-center rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 active:scale-95 transition border border-slate-200/90 focus:outline-none"
@@ -372,12 +391,24 @@
                  x-transition:leave="transition ease-in duration-150"
                  x-transition:leave-start="opacity-100 translate-y-0"
                  x-transition:leave-end="opacity-0 -translate-y-3"
-                 class="md:hidden py-3 border-t border-slate-100 space-y-1.5">
+                 class="lg:hidden py-3 border-t border-slate-100 space-y-1.5">
                 <a href="{{ url('/') }}"
                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm sm:text-base font-bold min-h-[46px] transition active:scale-[0.99] {{ request()->is('/') ? 'text-emerald-950 bg-emerald-50' : 'text-slate-700 hover:bg-slate-100/70' }}">
                     <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                     <span>Beranda Utama</span>
                 </a>
+                @foreach([
+                    ['url' => '/profil', 'label' => 'Profil Pondok', 'pola' => 'profil'],
+                    ['url' => '/program-pendidikan', 'label' => 'Program Pendidikan', 'pola' => 'program-pendidikan'],
+                    ['url' => '/pendaftaran-santri', 'label' => 'Pendaftaran Santri Baru', 'pola' => 'pendaftaran-santri'],
+                    ['url' => '/kontak', 'label' => 'Kontak & Lokasi', 'pola' => 'kontak'],
+                ] as $menu)
+                    <a href="{{ url($menu['url']) }}"
+                       class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm sm:text-base font-bold min-h-[46px] transition active:scale-[0.99] {{ request()->is($menu['pola']) ? 'text-emerald-950 bg-emerald-50' : 'text-slate-700 hover:bg-slate-100/70' }}">
+                        <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        <span>{{ $menu['label'] }}</span>
+                    </a>
+                @endforeach
                 <a href="{{ url('/pengumuman') }}"
                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm sm:text-base font-bold min-h-[46px] transition active:scale-[0.99] {{ request()->is('pengumuman*') ? 'text-emerald-950 bg-emerald-50' : 'text-slate-700 hover:bg-slate-100/70' }}">
                     <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
@@ -452,6 +483,10 @@
                     <h4 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-emerald-300 mb-4">Navigasi Utama</h4>
                     <ul class="space-y-2.5 text-sm sm:text-base">
                         <li><a href="{{ url('/') }}" class="hover:text-emerald-400 transition py-1 inline-block">Beranda Utama</a></li>
+                        <li><a href="{{ url('/profil') }}" class="hover:text-emerald-400 transition py-1 inline-block">Profil Pondok</a></li>
+                        <li><a href="{{ url('/program-pendidikan') }}" class="hover:text-emerald-400 transition py-1 inline-block">Program Pendidikan</a></li>
+                        <li><a href="{{ url('/pendaftaran-santri') }}" class="hover:text-emerald-400 transition py-1 inline-block">Pendaftaran Santri Baru</a></li>
+                        <li><a href="{{ url('/kontak') }}" class="hover:text-emerald-400 transition py-1 inline-block">Kontak &amp; Lokasi</a></li>
                         <li><a href="{{ url('/pengumuman') }}" class="hover:text-emerald-400 transition py-1 inline-block">Pengumuman &amp; Warta</a></li>
                         <li><a href="{{ url('/konsultasi') }}" class="hover:text-emerald-400 transition py-1 inline-block">Layanan Konsultasi</a></li>
                         <li><a href="{{ url('/verifikasi') }}" class="hover:text-emerald-400 transition py-1 inline-block">Verifikasi Dokumen</a></li>
@@ -509,6 +544,14 @@
     <!-- Footer Minimalis untuk Halaman Selain Beranda -->
     <footer class="bg-emerald-950 text-slate-400 py-6 border-t border-emerald-900/60">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs sm:text-sm">
+            <nav class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mb-3 text-slate-300" aria-label="Tautan footer">
+                <a href="{{ url('/') }}" class="hover:text-emerald-400 transition">Beranda</a>
+                <a href="{{ url('/profil') }}" class="hover:text-emerald-400 transition">Profil</a>
+                <a href="{{ url('/program-pendidikan') }}" class="hover:text-emerald-400 transition">Program Pendidikan</a>
+                <a href="{{ url('/pendaftaran-santri') }}" class="hover:text-emerald-400 transition">Pendaftaran Santri</a>
+                <a href="{{ url('/pengumuman') }}" class="hover:text-emerald-400 transition">Pengumuman</a>
+                <a href="{{ url('/kontak') }}" class="hover:text-emerald-400 transition">Kontak</a>
+            </nav>
             <p>@2026 JAKASTRA OFFICIAL. All Reght Reserved</p>
         </div>
     </footer>

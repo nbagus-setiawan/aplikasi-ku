@@ -328,27 +328,122 @@ class PublicController extends Controller
     }
 
     /**
-     * Hasilkan Sitemap XML untuk Pengindeksan Mesin Pencari Google.
+     * Ambil satu blok dari beranda yang terbit (atau blok bawaan) berdasarkan tipenya.
+     * Dipakai agar isi halaman informasi tetap bisa diubah sekretaris lewat editor beranda.
      */
-    public function sitemap()
+    protected function blokBeranda(string $tipe): array
     {
-        try {
-            $pengumumans = Pengumuman::terbitPublik()->orderByDesc('updated_at')->get();
-            $content = view('public.sitemap', compact('pengumumans'))->render();
+        $halaman = Halaman::beranda()->terbit()->first();
+        $blocks = $halaman && !empty($halaman->konten) ? $halaman->konten : [];
 
-            // Tulis juga ke berkas fisik public/sitemap.xml agar web server (LiteSpeed/Apache/Nginx) bisa menyajikan langsung
-            @file_put_contents(public_path('sitemap.xml'), $content);
-        } catch (\Throwable $e) {
-            // Fallback: gunakan berkas statis public/sitemap.xml jika ada kendala database
-            if (is_file(public_path('sitemap.xml'))) {
-                $content = file_get_contents(public_path('sitemap.xml'));
-            } else {
-                $content = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"><url><loc>https://ponpesalfalahputak.my.id/</loc><priority>1.0</priority></url></urlset>";
+        foreach ([$blocks, $this->blockService->getDefaultBerandaBlocks()] as $sumber) {
+            foreach ($sumber as $block) {
+                if (($block['type'] ?? '') === $tipe) {
+                    return $block;
+                }
             }
         }
 
+        return ['type' => $tipe, 'data' => []];
+    }
+
+    /**
+     * Ubah nomor telepon lokal menjadi format internasional untuk tautan WhatsApp.
+     */
+    protected function nomorWhatsApp(?string $nomor): string
+    {
+        $bersih = preg_replace('/[^0-9]/', '', (string) $nomor);
+        if (str_starts_with($bersih, '0')) {
+            $bersih = '62' . substr($bersih, 1);
+        }
+
+        return $bersih;
+    }
+
+    /**
+     * Halaman Profil Pondok Pesantren.
+     */
+    public function profil()
+    {
+        $pengaturan = Pengaturan::pluck('value', 'key')->toArray();
+        $blokProfil = $this->blokBeranda('profil');
+
+        return view('public.profil', compact('pengaturan', 'blokProfil'));
+    }
+
+    /**
+     * Halaman Program Pendidikan.
+     */
+    public function programPendidikan()
+    {
+        $pengaturan = Pengaturan::pluck('value', 'key')->toArray();
+        $blokProgram = $this->blokBeranda('program');
+
+        return view('public.program-pendidikan', compact('pengaturan', 'blokProgram'));
+    }
+
+    /**
+     * Halaman Informasi Pendaftaran Santri Baru.
+     */
+    public function pendaftaranSantri()
+    {
+        $pengaturan = Pengaturan::pluck('value', 'key')->toArray();
+        $blokProgram = $this->blokBeranda('program');
+        $blokKontak = $this->blokBeranda('kontak');
+
+        $pengumumanPendaftaran = Pengumuman::terbitPublik()
+            ->where(function ($q) {
+                $q->where('judul', 'like', '%pendaftaran%')
+                    ->orWhere('judul', 'like', '%santri baru%')
+                    ->orWhere('kategori', 'like', '%pendaftaran%');
+            })
+            ->take(3)
+            ->get();
+
+        $nomorWaClean = $this->nomorWhatsApp($blokKontak['data']['telepon'] ?? ($pengaturan['kontak'] ?? ''));
+
+        return view('public.pendaftaran-santri', compact('pengaturan', 'blokProgram', 'blokKontak', 'pengumumanPendaftaran', 'nomorWaClean'));
+    }
+
+    /**
+     * Halaman Kontak dan Lokasi.
+     */
+    public function kontak()
+    {
+        $pengaturan = Pengaturan::pluck('value', 'key')->toArray();
+        $blokKontak = $this->blokBeranda('kontak');
+        $nomorWaClean = $this->nomorWhatsApp($blokKontak['data']['telepon'] ?? ($pengaturan['kontak'] ?? ''));
+
+        return view('public.kontak', compact('pengaturan', 'blokKontak', 'nomorWaClean'));
+    }
+
+    /**
+     * Hasilkan Sitemap XML dinamis untuk pengindeksan Google.
+     * Tidak lagi ditulis ke berkas statis agar selalu memuat pengumuman terbaru.
+     */
+    public function sitemap()
+    {
+        $halamanStatis = ['/profil', '/program-pendidikan', '/pendaftaran-santri', '/kontak', '/konsultasi', '/verifikasi'];
+
+        try {
+            $pengumumans = Pengumuman::terbitPublik()->orderByDesc('updated_at')->get();
+            $beranda = Halaman::beranda()->terbit()->first();
+            $lastmodBeranda = $beranda?->updated_at?->toDateString() ?? now()->toDateString();
+            $terbaru = $pengumumans->max('updated_at');
+            $lastmodPengumuman = $terbaru ? \Illuminate\Support\Carbon::parse($terbaru)->toDateString() : $lastmodBeranda;
+
+            $content = view('public.sitemap', compact('pengumumans', 'halamanStatis', 'lastmodBeranda', 'lastmodPengumuman'))->render();
+        } catch (\Throwable $e) {
+            // Fallback minimal bila database bermasalah: tetap sajikan halaman publik utama
+            $base = rtrim(url('/'), '/');
+            $content = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">";
+            foreach (array_merge(['/', '/pengumuman'], $halamanStatis) as $path) {
+                $content .= '<url><loc>' . $base . $path . '</loc></url>';
+            }
+            $content .= '</urlset>';
+        }
+
         return response($content, 200)
-            ->header('Content-Type', 'application/xml; charset=utf-8')
-            ->header('X-Robots-Tag', 'noindex');
+            ->header('Content-Type', 'application/xml; charset=utf-8');
     }
 }

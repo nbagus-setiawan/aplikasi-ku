@@ -33,6 +33,12 @@ Route::get('/sitemap.xml', [PublicController::class, 'sitemap'])->name('publik.s
 Route::get('/sitemap', [PublicController::class, 'sitemap']);
 Route::get('/sitemap_index.xml', [PublicController::class, 'sitemap']);
 
+// Halaman Informasi Publik untuk SEO (PRD 6.12)
+Route::get('/profil', [PublicController::class, 'profil'])->name('publik.profil');
+Route::get('/program-pendidikan', [PublicController::class, 'programPendidikan'])->name('publik.program');
+Route::get('/pendaftaran-santri', [PublicController::class, 'pendaftaranSantri'])->name('publik.pendaftaran');
+Route::get('/kontak', [PublicController::class, 'kontak'])->name('publik.kontak');
+
 // Rute Publik: Layanan Konsultasi & Verifikasi Surat & Tanda Tangan Jarak Jauh
 Route::get('/konsultasi', [PublicController::class, 'konsultasi'])->name('publik.konsultasi');
 Route::get('/verifikasi', [VerifikasiPublikController::class, 'index'])->name('publik.verifikasi.index');

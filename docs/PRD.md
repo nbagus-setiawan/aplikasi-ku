@@ -118,6 +118,23 @@ Halaman publik di alamat utama website tampil seperti landing page. Sekretaris m
 - **Pengaturan situs:** nama situs **SAP | SEKRETARIS AL-FALAH PUTRA**, logo, warna tema, kontak, dan kop surat dapat diubah sekretaris.
 - **Teknis:** isi halaman disimpan sebagai data blok (JSON) dan dirender dengan Blade; editor memakai GrapesJS atau SortableJS; seluruh HTML disanitasi dan tidak ada input kode bebas.
 
+### 6.12 Halaman Informasi Publik dan SEO (tambahan, disetujui pengguna 31-10-2026)
+
+Tujuan: memperluas kata kunci pencarian Google dan memperbaiki pengindeksan situs. Fitur ini berada di luar cakupan awal dan ditambahkan atas persetujuan pemilik.
+
+- **Halaman publik baru (tanpa login):**
+  - `/profil`: sejarah, visi, misi, dan pengasuh pondok.
+  - `/program-pendidikan`: program pendidikan pesantren dan madrasah.
+  - `/pendaftaran-santri`: informasi penerimaan santri baru, alur pendaftaran, pengumuman pendaftaran terbaru, dan tombol hubungi sekretariat.
+  - `/kontak`: alamat, telepon/WhatsApp, email, jam pelayanan, dan peta lokasi.
+- **Sumber isi:** isi profil, program, dan kontak diambil dari blok beranda yang sudah ada (diubah lewat editor beranda), sehingga sekretaris tidak perlu modul baru dan tidak ada input kode bebas.
+- **SEO teknis:**
+  - Tiap halaman punya judul, meta description, canonical, satu H1, dan schema `BreadcrumbList`.
+  - `sitemap.xml` dibuat dinamis oleh Laravel (bukan file statis), memuat semua halaman publik dan pengumuman terbit, dengan `lastmod` dari tanggal perubahan sebenarnya.
+  - Semua akses `http://` dan `www.` dialihkan permanen (301) ke `https://` tanpa `www`.
+  - Meta `keywords` dihapus karena tidak dipakai Google.
+- Menu navigasi dan footer publik memuat tautan ke halaman-halaman di atas.
+
 ## 7. Kebutuhan Non-Fungsional
 
 - **Keamanan:** hash password, proteksi CSRF, validasi lewat Form Request, otorisasi per role/Policy, file upload dibatasi tipe dan ukuran (maks 5 MB).
@@ -212,6 +229,8 @@ Pola **MVC** Laravel 13:
 
 Rute publik tambahan: `GET/POST /tanda-tangan/{token}` untuk tanda tangan jarak jauh lewat tautan sekali pakai.
 
+Rute publik informasi dan SEO (bagian 6.12): `GET /profil`, `GET /program-pendidikan`, `GET /pendaftaran-santri`, `GET /kontak`, dan `GET /sitemap.xml` (dinamis).
+
 ## 11. Alur Pengguna Utama
 
 1. **Surat masuk:** Sekretaris menerima surat, input data dan pindai lampiran, sistem membuat nomor agenda, pimpinan memberi disposisi, sekretaris memperbarui status hingga selesai.
@@ -268,6 +287,7 @@ Rute publik tambahan: `GET/POST /tanda-tangan/{token}` untuk tanda tangan jarak 
 - Tautan tanda tangan jarak jauh: sekali pakai, berlaku 30 menit.
 - Peran pengguna: satu saja, Sekretaris.
 - Nama website: SAP | SEKRETARIS AL-FALAH PUTRA.
+- Halaman publik Profil, Program Pendidikan, Pendaftaran Santri, dan Kontak ditambahkan untuk SEO (31-10-2026, lihat bagian 6.12).
 
 **Masih perlu dijawab:**
 
