@@ -314,7 +314,7 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                                 </a>
                             @else
-                                <button @click="openPreview('{{ $lampiranUrl }}', 'Bukti {{ $item->kode_transaksi }}')"
+                                <button @click="openPreview({{ \Illuminate\Support\Js::from($lampiranUrl) }}, {{ \Illuminate\Support\Js::from('Bukti ' . $item->kode_transaksi) }})"
                                         type="button"
                                         class="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50"
                                         title="Foto Bukti">
@@ -323,7 +323,7 @@
                             @endif
                         @endif
 
-                        <button @click="openEdit({{ json_encode([
+                        <button @click="openEdit({{ \Illuminate\Support\Js::from([
                             'id' => $item->id,
                             'kode_transaksi' => $item->kode_transaksi,
                             'tanggal' => $item->tanggal->format('Y-m-d'),
@@ -432,7 +432,7 @@
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                                     </a>
                                 @else
-                                    <button @click="openPreview('{{ $lampiranUrl }}', 'Bukti Nota {{ $item->kode_transaksi }}')"
+                                    <button @click="openPreview({{ \Illuminate\Support\Js::from($lampiranUrl) }}, {{ \Illuminate\Support\Js::from('Bukti Nota ' . $item->kode_transaksi) }})"
                                             type="button"
                                             class="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50"
                                             title="Pratinjau Foto Nota">
@@ -445,7 +445,7 @@
                         </td>
                         <td class="px-4 py-3.5 text-center whitespace-nowrap">
                             <div class="flex items-center justify-center gap-1.5">
-                                <button @click="openEdit({{ json_encode([
+                                <button @click="openEdit({{ \Illuminate\Support\Js::from([
                                     'id' => $item->id,
                                     'kode_transaksi' => $item->kode_transaksi,
                                     'tanggal' => $item->tanggal->format('Y-m-d'),
@@ -508,13 +508,12 @@
     <!-- MODAL 1: CATAT DEBIT (PEMASUKAN KAS) -->
     <div x-show="modalDebitOpen"
          x-cloak
-         class="fixed inset-0 z-50 overflow-y-auto"
-         style="display: none;">
+         class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-3 pt-4 pb-20 text-center sm:block sm:p-0">
             <div @click="modalDebitOpen = false" class="fixed inset-0 transition-opacity bg-slate-900/60 backdrop-blur-xs" aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-            <div class="inline-block w-full max-w-lg p-4 sm:p-6 my-4 sm:my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-2xl shadow-2xl border border-slate-200 max-h-[92vh] flex flex-col">
+            <div class="relative z-10 inline-block w-full max-w-lg p-4 sm:p-6 my-4 sm:my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-2xl shadow-2xl border border-slate-200 max-h-[92vh] flex flex-col">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
                     <div class="flex items-center gap-2.5">
                         <span class="p-2 rounded-xl bg-emerald-100 text-emerald-700">
@@ -600,13 +599,12 @@
     <!-- MODAL 2: CATAT KREDIT (PENGELUARAN KAS) -->
     <div x-show="modalKreditOpen"
          x-cloak
-         class="fixed inset-0 z-50 overflow-y-auto"
-         style="display: none;">
+         class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-3 pt-4 pb-20 text-center sm:block sm:p-0">
             <div @click="modalKreditOpen = false" class="fixed inset-0 transition-opacity bg-slate-900/60 backdrop-blur-xs" aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-            <div class="inline-block w-full max-w-lg p-4 sm:p-6 my-4 sm:my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-2xl shadow-2xl border border-slate-200 max-h-[92vh] flex flex-col">
+            <div class="relative z-10 inline-block w-full max-w-lg p-4 sm:p-6 my-4 sm:my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-2xl shadow-2xl border border-slate-200 max-h-[92vh] flex flex-col">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
                     <div class="flex items-center gap-2.5">
                         <span class="p-2 rounded-xl bg-rose-100 text-rose-700">
@@ -692,13 +690,12 @@
     <!-- MODAL 3: UBAH TRANSAKSI KAS -->
     <div x-show="modalEditOpen"
          x-cloak
-         class="fixed inset-0 z-50 overflow-y-auto"
-         style="display: none;">
+         class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-3 pt-4 pb-20 text-center sm:block sm:p-0">
             <div @click="modalEditOpen = false" class="fixed inset-0 transition-opacity bg-slate-900/60 backdrop-blur-xs" aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-            <div class="inline-block w-full max-w-lg p-4 sm:p-6 my-4 sm:my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-2xl shadow-2xl border border-slate-200 max-h-[92vh] flex flex-col">
+            <div class="relative z-10 inline-block w-full max-w-lg p-4 sm:p-6 my-4 sm:my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-2xl shadow-2xl border border-slate-200 max-h-[92vh] flex flex-col">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
                     <div>
                         <h3 class="text-sm sm:text-base font-bold text-slate-900">Ubah Transaksi Kas</h3>
@@ -777,13 +774,12 @@
     <!-- MODAL 4: PRATINJAU FOTO BUKTI NOTA -->
     <div x-show="modalPreviewOpen"
          x-cloak
-         class="fixed inset-0 z-50 overflow-y-auto"
-         style="display: none;">
+         class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-3 pt-4 pb-20 text-center sm:block sm:p-0">
             <div @click="modalPreviewOpen = false" class="fixed inset-0 transition-opacity bg-slate-900/80 backdrop-blur-xs" aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-            <div class="inline-block w-full max-w-2xl p-4 sm:p-5 my-4 sm:my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-2xl shadow-2xl border border-slate-200">
+            <div class="relative z-10 inline-block w-full max-w-2xl p-4 sm:p-5 my-4 sm:my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-2xl shadow-2xl border border-slate-200">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                     <h3 class="text-xs sm:text-sm font-bold text-slate-900 truncate" x-text="previewTitle"></h3>
                     <div class="flex items-center gap-2 shrink-0">

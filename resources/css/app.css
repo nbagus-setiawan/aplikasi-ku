@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer base {
+    [x-cloak] {
+        display: none !important;
+    }
+
     /* Skala proporsional agar pas, rapi, dan tidak kebesaran di layar desktop/laptop */
     @media (min-width: 1024px) {
         html {

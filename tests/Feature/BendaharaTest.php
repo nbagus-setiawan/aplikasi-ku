@@ -234,4 +234,30 @@ class BendaharaTest extends TestCase
         $this->assertStringContainsString('attachment; filename=', $response->headers->get('Content-Disposition'));
         $this->assertTrue(strlen($response->getContent()) > 0);
     }
+
+    public function test_halaman_index_merender_modal_dan_atribut_alpine_dengan_aman(): void
+    {
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202610-0003',
+            'tanggal' => now()->toDateString(),
+            'jenis' => 'debit',
+            'kategori' => 'Infaq "Khusus"',
+            'nominal' => 1250000,
+            'keterangan' => 'Keterangan dengan "tanda kutip" & karakter khusus',
+            'nama_pihak' => 'H. "Fulan"',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.bendahara.index'));
+
+        $response->assertStatus(200);
+        $content = $response->getContent();
+
+        // Pastikan tidak ada raw json_encode yang memecah atribut @click="openEdit({"id":
+        $this->assertStringNotContainsString('@click="openEdit({"id":', $content);
+        $this->assertStringContainsString('modalDebitOpen', $content);
+        $this->assertStringContainsString('modalKreditOpen', $content);
+        $this->assertStringContainsString('Catat Debit', $content);
+        $this->assertStringContainsString('Catat Kredit', $content);
+    }
 }

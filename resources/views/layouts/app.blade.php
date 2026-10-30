@@ -20,6 +20,7 @@
         @stack('styles')
 
         <style>
+            [x-cloak] { display: none !important; }
             @media print {
                 @page {
                     margin: 0 !important; /* Menghilangkan header (tanggal, jam, judul SAP | SEKRETARIS AL-FALAH PUTRA) dan footer otomatis browser */
