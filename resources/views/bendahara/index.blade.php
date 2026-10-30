@@ -401,7 +401,7 @@
                         <td class="px-4 py-3.5">
                             <p class="font-medium text-slate-800 line-clamp-2">{{ $item->keterangan }}</p>
                             @if($item->user)
-                                <span class="text-[10px] text-slate-400 block mt-0.5">Dicatat: {{ $item->user->name }}</span>
+                                <span class="text-[10px] text-slate-400 block mt-0.5">Dicatat: Bendahara Putra</span>
                             @endif
                         </td>
                         <td class="px-4 py-3.5 whitespace-nowrap text-slate-600 font-medium">

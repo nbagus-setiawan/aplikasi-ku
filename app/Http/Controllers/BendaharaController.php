@@ -17,24 +17,10 @@ class BendaharaController extends Controller
      * Kategori Rekomendasi Akun Kas
      */
     protected array $kategoriDebit = [
-        'Infaq & Shodaqoh',
-        'Donasi & Bantuan',
-        'Subsidi Pesantren',
-        'Pendaftaran Santri',
-        'Sumbangan Alumni',
-        'Usaha Mandiri Pondok',
         'Lain-lain (Penerimaan)',
     ];
 
     protected array $kategoriKredit = [
-        'ATK & Kesekretariatan',
-        'Cetak Surat & Formulir',
-        'Konsumsi & Rapat',
-        'Listrik, Air & Internet',
-        'Kebersihan & Kesehatan',
-        'Transportasi & Operasional',
-        'Pemeliharaan Sarana',
-        'Bisyarah / Honorarium',
         'Lain-lain (Pengeluaran)',
     ];
 
