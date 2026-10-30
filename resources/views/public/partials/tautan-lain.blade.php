@@ -9,14 +9,33 @@
 @endphp
 <section class="py-10 sm:py-14 bg-slate-50 border-t border-slate-200/80">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-lg sm:text-2xl font-extrabold text-slate-900 tracking-tight text-center mb-6 sm:mb-8">
-            Informasi Lain Seputar Pondok Pesantren Al-Falah Putak
-        </h2>
+        <div class="text-center max-w-2xl mx-auto mb-8 space-y-1.5">
+            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold text-emerald-800 bg-emerald-100/70 uppercase tracking-wider">
+                Eksplorasi Halaman
+            </span>
+            <h2 class="text-lg sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+                Informasi Lain Seputar Pondok Pesantren
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-500">
+                Pilih menu di bawah untuk melihat rincian informasi dan profil resmi lainnya.
+            </p>
+        </div>
+
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             @foreach($tautanLain as $t)
-                <a href="{{ url($t['url']) }}" class="block bg-white p-5 rounded-2xl border border-slate-200/80 hover:border-emerald-300 hover:shadow-sm transition">
-                    <span class="block text-sm sm:text-base font-bold text-emerald-900">{{ $t['judul'] }} &rarr;</span>
-                    <span class="block text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">{{ $t['desk'] }}</span>
+                <a href="{{ url($t['url']) }}"
+                   class="group block bg-white p-5 rounded-2xl border border-slate-200/80 hover:border-emerald-300 hover:shadow-xs transition duration-200">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm sm:text-base font-bold text-slate-900 group-hover:text-emerald-800 transition">
+                            {{ $t['judul'] }}
+                        </span>
+                        <span class="w-6 h-6 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-xs group-hover:bg-emerald-600 group-hover:text-white transition">
+                            &rarr;
+                        </span>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        {{ $t['desk'] }}
+                    </p>
                 </a>
             @endforeach
         </div>
