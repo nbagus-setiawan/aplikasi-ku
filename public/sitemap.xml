@@ -4,7 +4,7 @@
     <!-- Halaman Beranda Utama -->
     <url>
         <loc>https://ponpesalfalahputak.my.id/</loc>
-        <lastmod>2026-10-24</lastmod>
+        <lastmod>2026-10-30</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
@@ -12,7 +12,7 @@
     <!-- Halaman Warta & Pengumuman Resmi -->
     <url>
         <loc>https://ponpesalfalahputak.my.id/pengumuman</loc>
-        <lastmod>2026-10-24</lastmod>
+        <lastmod>2026-10-30</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.9</priority>
     </url>
@@ -20,7 +20,7 @@
     <!-- Halaman Layanan Konsultasi -->
     <url>
         <loc>https://ponpesalfalahputak.my.id/konsultasi</loc>
-        <lastmod>2026-10-24</lastmod>
+        <lastmod>2026-10-30</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -28,28 +28,28 @@
     <!-- Halaman Verifikasi Dokumen Sah -->
     <url>
         <loc>https://ponpesalfalahputak.my.id/verifikasi</loc>
-        <lastmod>2026-10-24</lastmod>
+        <lastmod>2026-10-30</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
 
     <!-- Seluruh Warta / Pengumuman Publik -->
-            <url>
-            <loc>https://ponpesalfalahputak.my.id/pengumuman/maklumat-pendaftaran-santri-baru-1448-h</loc>
-            <lastmod>2026-10-23</lastmod>
-            <changefreq>weekly</changefreq>
-            <priority>0.8</priority>
-                    </url>
-            <url>
-            <loc>https://ponpesalfalahputak.my.id/pengumuman/pelaksanaan-ujian-caturwulan-i-madrasah-diniyah</loc>
-            <lastmod>2026-10-23</lastmod>
-            <changefreq>weekly</changefreq>
-            <priority>0.8</priority>
-                    </url>
-            <url>
-            <loc>https://ponpesalfalahputak.my.id/pengumuman/jadwal-kepulangan-libur-idul-fitri-1448-h</loc>
-            <lastmod>2026-10-23</lastmod>
-            <changefreq>weekly</changefreq>
-            <priority>0.8</priority>
-                    </url>
-    </urlset>
+    <url>
+        <loc>https://ponpesalfalahputak.my.id/pengumuman/maklumat-pendaftaran-santri-baru-1448-h</loc>
+        <lastmod>2026-10-30</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://ponpesalfalahputak.my.id/pengumuman/pelaksanaan-ujian-caturwulan-i-madrasah-diniyah</loc>
+        <lastmod>2026-10-30</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://ponpesalfalahputak.my.id/pengumuman/jadwal-kepulangan-libur-idul-fitri-1448-h</loc>
+        <lastmod>2026-10-30</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+</urlset>

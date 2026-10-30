@@ -6,14 +6,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @php
-        $namaSitus = 'PONDOK PESANTREN AL-FALAH PUTAK';
-        $namaSitusPendek = 'PON-PES AL FALAH PUTAK'; // Nama situs resmi yang tampil di atas URL pada hasil Google
+        $namaSitus = 'Pondok Pesantren Al-Falah Putak';
+        $namaSitusPendek = 'Pon-Pes Al Falah Putak'; // Nama situs resmi yang tampil di atas URL pada hasil Google
         $judulHalaman = trim(html_entity_decode($__env->yieldContent('title'), ENT_QUOTES, 'UTF-8'));
         $isBeranda = request()->is('/') || $judulHalaman === '' || strcasecmp($judulHalaman, 'Beranda') === 0 || strcasecmp($judulHalaman, 'Home') === 0;
         
-        $judulUpper = mb_strtoupper($judulHalaman, 'UTF-8');
-        $judulLengkap = $isBeranda ? ('BERANDA | ' . $namaSitus) : $judulUpper;
-        $judulOg = $isBeranda ? $namaSitus : $judulUpper;
+        $judulLengkap = $isBeranda 
+            ? 'Pondok Pesantren Al-Falah Putak - Salafiyah Muara Enim Gelumbang' 
+            : ($judulHalaman . ' | ' . $namaSitus);
+        $judulOg = $isBeranda ? 'Pondok Pesantren Al-Falah Putak' : ($judulHalaman . ' | ' . $namaSitus);
 
         // Deskripsi Lengkap Umum Resmi (Putra & Putri, kurikulum salaf, titik lokasi, pengasuh)
         $deskripsiDefault = 'Website resmi Pondok Pesantren Salafiyah Al-Falah Putak, lembaga pendidikan Islam salafiyah di Desa Putak, Kec. Gelumbang, Kab. Muara Enim, Sumatera Selatan. Menempa insan santri putra dan putri yang berakhlak mulia, berwawasan luas, mandiri, dan berpegang teguh pada Al-Qur\'an dan Sunnah Nabi SAW dengan landasan akidah Ahlussunnah wal Jama\'ah serta madzhab Syafi\'i. Menyelenggarakan pengajian khazanah kitab kuning salaf, tahfidzul Qur\'an, madrasah diniyah takmiliyah, dan pembinaan karakter di bawah bimbingan Pengasuh K.H. Mursyidi dan Ny. Hj. Aniswatuzzuhriyah.';
@@ -256,6 +257,24 @@
                     ],
                     'description' => $deskripsi,
                     'inLanguage' => 'id-ID',
+                ],
+                [
+                    '@type' => 'BreadcrumbList',
+                    '@id' => $urlKanonik . '#breadcrumb',
+                    'itemListElement' => array_values(array_filter([
+                        [
+                            '@type' => 'ListItem',
+                            'position' => 1,
+                            'name' => 'Beranda',
+                            'item' => $urlBeranda,
+                        ],
+                        !$isBeranda ? [
+                            '@type' => 'ListItem',
+                            'position' => 2,
+                            'name' => $judulHalaman ?: 'Halaman',
+                            'item' => $urlKanonik,
+                        ] : null,
+                    ])),
                 ],
             ],
         ];
