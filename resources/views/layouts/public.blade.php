@@ -339,25 +339,25 @@
                     $layananAktif = request()->is('konsultasi*') || request()->is('verifikasi*');
                 @endphp
 
-                <!-- Navigasi Desktop (Hanya Menu Publik, Tanpa Tombol Login Atas) -->
-                <nav class="hidden lg:flex items-center gap-1 shrink-0" aria-label="Navigasi utama">
+                <!-- Navigasi Desktop & Tablet (Hanya Menu Publik, Tanpa Tombol Login Atas) -->
+                <nav class="hidden md:flex items-center gap-1 shrink-0" aria-label="Navigasi utama">
                     @foreach($menuPublik as $menu)
                         <a href="{{ url($menu['url']) }}"
-                           class="px-3 py-2 rounded-xl text-sm font-semibold transition {{ request()->is($menu['pola']) ? 'text-emerald-900 bg-emerald-50 font-bold shadow-xs' : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-100/70' }}">
+                           class="px-2.5 lg:px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold transition {{ request()->is($menu['pola']) ? 'text-emerald-900 bg-emerald-50 font-bold shadow-xs' : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-100/70' }}">
                             {{ $menu['label'] }}
                         </a>
                     @endforeach
                     <div class="relative" x-data="{ layananOpen: false }" @click.outside="layananOpen = false" @keydown.escape="layananOpen = false">
                         <button type="button" @click="layananOpen = !layananOpen" :aria-expanded="layananOpen"
-                                class="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-semibold transition {{ $layananAktif ? 'text-emerald-900 bg-emerald-50 font-bold shadow-xs' : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-100/70' }}">
+                                class="inline-flex items-center gap-1 px-2.5 lg:px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold transition {{ $layananAktif ? 'text-emerald-900 bg-emerald-50 font-bold shadow-xs' : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-100/70' }}">
                             <span>Layanan</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div x-show="layananOpen" x-cloak x-transition
-                             class="absolute right-0 mt-2 w-56 bg-white rounded-xl border border-slate-200 shadow-lg py-1.5">
+                             class="absolute right-0 mt-2 w-56 bg-white rounded-xl border border-slate-200 shadow-lg py-1.5 z-50">
                             @foreach($menuLayanan as $menu)
                                 <a href="{{ url($menu['url']) }}"
-                                   class="block px-4 py-2.5 text-sm font-semibold transition {{ request()->is($menu['pola']) ? 'text-emerald-900 bg-emerald-50' : 'text-slate-700 hover:bg-slate-100/70' }}">
+                                   class="block px-4 py-2.5 text-xs lg:text-sm font-semibold transition {{ request()->is($menu['pola']) ? 'text-emerald-900 bg-emerald-50' : 'text-slate-700 hover:bg-slate-100/70' }}">
                                     {{ $menu['label'] }}
                                 </a>
                             @endforeach
@@ -366,7 +366,7 @@
                 </nav>
 
                 <!-- Tombol Hamburger Mobile -->
-                <div class="flex lg:hidden items-center shrink-0">
+                <div class="flex md:hidden items-center shrink-0">
                     <button type="button"
                             @click="mobileOpen = !mobileOpen"
                             class="w-11 h-11 flex items-center justify-center rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 active:scale-95 transition border border-slate-200/90 focus:outline-none"
@@ -391,7 +391,7 @@
                  x-transition:leave="transition ease-in duration-150"
                  x-transition:leave-start="opacity-100 translate-y-0"
                  x-transition:leave-end="opacity-0 -translate-y-3"
-                 class="lg:hidden py-3 border-t border-slate-100 space-y-1.5">
+                 class="md:hidden py-3 border-t border-slate-100 space-y-1.5">
                 <a href="{{ url('/') }}"
                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm sm:text-base font-bold min-h-[46px] transition active:scale-[0.99] {{ request()->is('/') ? 'text-emerald-950 bg-emerald-50' : 'text-slate-700 hover:bg-slate-100/70' }}">
                     <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
