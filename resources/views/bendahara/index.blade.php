@@ -508,291 +508,279 @@
     <!-- MODAL 1: CATAT DEBIT (PEMASUKAN KAS) -->
     <div x-show="modalDebitOpen"
          x-cloak
-         class="fixed inset-0 z-50 overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen px-3 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div @click="modalDebitOpen = false" class="fixed inset-0 transition-opacity bg-slate-900/60 backdrop-blur-xs" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-            <div class="relative z-10 inline-block w-full max-w-lg p-4 sm:p-6 my-4 sm:my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-2xl shadow-2xl border border-slate-200 max-h-[92vh] flex flex-col">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
-                    <div class="flex items-center gap-2.5">
-                        <span class="p-2 rounded-xl bg-emerald-100 text-emerald-700">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-                        </span>
-                        <div>
-                            <h3 class="text-sm sm:text-base font-bold text-slate-900">Catat Debit (Penerimaan Kas)</h3>
-                            <p class="text-[11px] sm:text-xs text-slate-500">Mencatat uang masuk ke kas pesantren</p>
-                        </div>
+         class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4"
+         @click.self="modalDebitOpen = false">
+        <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 sm:p-6 max-h-[90vh] flex flex-col my-auto"
+             @click.stop>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <span class="p-2 rounded-xl bg-emerald-100 text-emerald-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    </span>
+                    <div>
+                        <h3 class="text-sm sm:text-base font-bold text-slate-900">Catat Debit (Penerimaan Kas)</h3>
+                        <p class="text-[11px] sm:text-xs text-slate-500">Mencatat uang masuk ke kas pesantren</p>
                     </div>
-                    <button @click="modalDebitOpen = false" class="text-slate-400 hover:text-slate-600 p-1">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+                </div>
+                <button @click="modalDebitOpen = false" type="button" class="text-slate-400 hover:text-slate-600 p-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <form method="POST" action="{{ route('admin.bendahara.store') }}" enctype="multipart/form-data" class="mt-4 space-y-3.5 overflow-y-auto pr-1">
+                @csrf
+                <input type="hidden" name="jenis" value="debit">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tanggal Transaksi <span class="text-rose-500">*</span></label>
+                        <input type="date" name="tanggal" value="{{ date('Y-m-d') }}" required class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nominal (Rp) <span class="text-rose-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute left-3.5 top-2.5 text-xs font-bold text-slate-400 select-none">Rp</span>
+                            <input type="number"
+                                   name="nominal"
+                                   x-model="nominalDebit"
+                                   placeholder="0"
+                                   min="1"
+                                   step="any"
+                                   required
+                                   class="w-full text-xs sm:text-sm rounded-xl border-slate-300 pl-10 pr-4 font-mono font-bold text-emerald-700 focus:border-emerald-500 focus:ring-emerald-500">
+                        </div>
+                        <p x-show="nominalDebit > 0" class="text-xs text-emerald-700 font-bold mt-1 font-mono" x-text="'Format: Rp ' + Number(nominalDebit || 0).toLocaleString('id-ID')"></p>
+                    </div>
                 </div>
 
-                <form method="POST" action="{{ route('admin.bendahara.store') }}" enctype="multipart/form-data" class="mt-4 space-y-3.5 overflow-y-auto pr-1">
-                    @csrf
-                    <input type="hidden" name="jenis" value="debit">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pos Akun / Kategori <span class="text-rose-500">*</span></label>
+                    <input type="text"
+                           name="kategori"
+                           list="listKategoriDebit"
+                           placeholder="Pilih atau ketik kategori penerimaan..."
+                           required
+                           class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500">
+                    <datalist id="listKategoriDebit">
+                        @foreach($kategoriDebit as $kat)
+                            <option value="{{ $kat }}"></option>
+                        @endforeach
+                    </datalist>
+                </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tanggal Transaksi <span class="text-rose-500">*</span></label>
-                            <input type="date" name="tanggal" value="{{ date('Y-m-d') }}" required class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500">
-                        </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Diterima Dari (Donatur / Pihak Pembayar)</label>
+                    <input type="text" name="nama_pihak" placeholder="Contoh: Hamba Allah / Bpk. H. Ahmad / Wali Santri" class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500">
+                </div>
 
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nominal (Rp) <span class="text-rose-500">*</span></label>
-                            <div class="relative">
-                                <span class="absolute left-3.5 top-2.5 text-xs font-bold text-slate-400 select-none">Rp</span>
-                                <input type="number"
-                                       name="nominal"
-                                       x-model="nominalDebit"
-                                       placeholder="0"
-                                       min="1"
-                                       step="any"
-                                       required
-                                       class="w-full text-xs sm:text-sm rounded-xl border-slate-300 pl-10 pr-4 font-mono font-bold text-emerald-700 focus:border-emerald-500 focus:ring-emerald-500">
-                            </div>
-                            <p x-show="nominalDebit > 0" class="text-xs text-emerald-700 font-bold mt-1 font-mono" x-text="'Format: Rp ' + Number(nominalDebit || 0).toLocaleString('id-ID')"></p>
-                        </div>
-                    </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Uraian / Keterangan Transaksi <span class="text-xs text-slate-400 font-normal">(Opsional)</span></label>
+                    <textarea name="keterangan" rows="3" placeholder="(Opsional) Tuliskan keterangan detail penerimaan kas..." class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500"></textarea>
+                </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pos Akun / Kategori <span class="text-rose-500">*</span></label>
-                        <input type="text"
-                               name="kategori"
-                               list="listKategoriDebit"
-                               placeholder="Pilih atau ketik kategori penerimaan..."
-                               required
-                               class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500">
-                        <datalist id="listKategoriDebit">
-                            @foreach($kategoriDebit as $kat)
-                                <option value="{{ $kat }}"></option>
-                            @endforeach
-                        </datalist>
-                    </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Bukti Kwitansi / Nota (Opsional)</label>
+                    <input type="file" name="lampiran" accept="image/jpeg,image/png,application/pdf" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                    <span class="text-[10px] text-slate-400 block mt-1">Maksimal 5 MB (Format: JPG, PNG, atau PDF)</span>
+                </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Diterima Dari (Donatur / Pihak Pembayar)</label>
-                        <input type="text" name="nama_pihak" placeholder="Contoh: Hamba Allah / Bpk. H. Ahmad / Wali Santri" class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Uraian / Keterangan Transaksi <span class="text-xs text-slate-400 font-normal">(Opsional)</span></label>
-                        <textarea name="keterangan" rows="3" placeholder="(Opsional) Tuliskan keterangan detail penerimaan kas..." class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500"></textarea>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Bukti Kwitansi / Nota (Opsional)</label>
-                        <input type="file" name="lampiran" accept="image/jpeg,image/png,application/pdf" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
-                        <span class="text-[10px] text-slate-400 block mt-1">Maksimal 5 MB (Format: JPG, PNG, atau PDF)</span>
-                    </div>
-
-                    <div class="pt-3 flex justify-end gap-2 border-t border-slate-100 shrink-0">
-                        <button @click="modalDebitOpen = false" type="button" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-600 font-semibold text-xs hover:bg-slate-50">Batal</button>
-                        <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-xs hover:bg-emerald-700">Simpan Debit</button>
-                    </div>
-                </form>
-            </div>
+                <div class="pt-3 flex justify-end gap-2 border-t border-slate-100 shrink-0">
+                    <button @click="modalDebitOpen = false" type="button" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-600 font-semibold text-xs hover:bg-slate-50">Batal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-xs hover:bg-emerald-700">Simpan Debit</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <!-- MODAL 2: CATAT KREDIT (PENGELUARAN KAS) -->
     <div x-show="modalKreditOpen"
          x-cloak
-         class="fixed inset-0 z-50 overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen px-3 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div @click="modalKreditOpen = false" class="fixed inset-0 transition-opacity bg-slate-900/60 backdrop-blur-xs" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-            <div class="relative z-10 inline-block w-full max-w-lg p-4 sm:p-6 my-4 sm:my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-2xl shadow-2xl border border-slate-200 max-h-[92vh] flex flex-col">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
-                    <div class="flex items-center gap-2.5">
-                        <span class="p-2 rounded-xl bg-rose-100 text-rose-700">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"/></svg>
-                        </span>
-                        <div>
-                            <h3 class="text-sm sm:text-base font-bold text-slate-900">Catat Kredit (Pengeluaran Kas)</h3>
-                            <p class="text-[11px] sm:text-xs text-slate-500">Mencatat uang keluar dari kas pesantren</p>
-                        </div>
+         class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4"
+         @click.self="modalKreditOpen = false">
+        <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 sm:p-6 max-h-[90vh] flex flex-col my-auto"
+             @click.stop>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <span class="p-2 rounded-xl bg-rose-100 text-rose-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"/></svg>
+                    </span>
+                    <div>
+                        <h3 class="text-sm sm:text-base font-bold text-slate-900">Catat Kredit (Pengeluaran Kas)</h3>
+                        <p class="text-[11px] sm:text-xs text-slate-500">Mencatat uang keluar dari kas pesantren</p>
                     </div>
-                    <button @click="modalKreditOpen = false" class="text-slate-400 hover:text-slate-600 p-1">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+                </div>
+                <button @click="modalKreditOpen = false" type="button" class="text-slate-400 hover:text-slate-600 p-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <form method="POST" action="{{ route('admin.bendahara.store') }}" enctype="multipart/form-data" class="mt-4 space-y-3.5 overflow-y-auto pr-1">
+                @csrf
+                <input type="hidden" name="jenis" value="kredit">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tanggal Transaksi <span class="text-rose-500">*</span></label>
+                        <input type="date" name="tanggal" value="{{ date('Y-m-d') }}" required class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-rose-500 focus:ring-rose-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nominal (Rp) <span class="text-rose-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute left-3.5 top-2.5 text-xs font-bold text-slate-400 select-none">Rp</span>
+                            <input type="number"
+                                   name="nominal"
+                                   x-model="nominalKredit"
+                                   placeholder="0"
+                                   min="1"
+                                   step="any"
+                                   required
+                                   class="w-full text-xs sm:text-sm rounded-xl border-slate-300 pl-10 pr-4 font-mono font-bold text-rose-700 focus:border-rose-500 focus:ring-rose-500">
+                        </div>
+                        <p x-show="nominalKredit > 0" class="text-xs text-rose-700 font-bold mt-1 font-mono" x-text="'Format: Rp ' + Number(nominalKredit || 0).toLocaleString('id-ID')"></p>
+                    </div>
                 </div>
 
-                <form method="POST" action="{{ route('admin.bendahara.store') }}" enctype="multipart/form-data" class="mt-4 space-y-3.5 overflow-y-auto pr-1">
-                    @csrf
-                    <input type="hidden" name="jenis" value="kredit">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pos Akun / Kategori <span class="text-rose-500">*</span></label>
+                    <input type="text"
+                           name="kategori"
+                           list="listKategoriKredit"
+                           placeholder="Pilih atau ketik kategori pengeluaran..."
+                           required
+                           class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-rose-500 focus:ring-rose-500">
+                    <datalist id="listKategoriKredit">
+                        @foreach($kategoriKredit as $kat)
+                            <option value="{{ $kat }}"></option>
+                        @endforeach
+                    </datalist>
+                </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tanggal Transaksi <span class="text-rose-500">*</span></label>
-                            <input type="date" name="tanggal" value="{{ date('Y-m-d') }}" required class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-rose-500 focus:ring-rose-500">
-                        </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Dibayarkan Kepada (Penerima Kas)</label>
+                    <input type="text" name="nama_pihak" placeholder="Contoh: Toko ATK Berkah / Toko Bangunan / PLN" class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-rose-500 focus:ring-rose-500">
+                </div>
 
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nominal (Rp) <span class="text-rose-500">*</span></label>
-                            <div class="relative">
-                                <span class="absolute left-3.5 top-2.5 text-xs font-bold text-slate-400 select-none">Rp</span>
-                                <input type="number"
-                                       name="nominal"
-                                       x-model="nominalKredit"
-                                       placeholder="0"
-                                       min="1"
-                                       step="any"
-                                       required
-                                       class="w-full text-xs sm:text-sm rounded-xl border-slate-300 pl-10 pr-4 font-mono font-bold text-rose-700 focus:border-rose-500 focus:ring-rose-500">
-                            </div>
-                            <p x-show="nominalKredit > 0" class="text-xs text-rose-700 font-bold mt-1 font-mono" x-text="'Format: Rp ' + Number(nominalKredit || 0).toLocaleString('id-ID')"></p>
-                        </div>
-                    </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Uraian / Keterangan Transaksi <span class="text-xs text-slate-400 font-normal">(Opsional)</span></label>
+                    <textarea name="keterangan" rows="3" placeholder="(Opsional) Tuliskan rincian barang/kebutuhan yang dibelanjakan..." class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-rose-500 focus:ring-rose-500"></textarea>
+                </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pos Akun / Kategori <span class="text-rose-500">*</span></label>
-                        <input type="text"
-                               name="kategori"
-                               list="listKategoriKredit"
-                               placeholder="Pilih atau ketik kategori pengeluaran..."
-                               required
-                               class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-rose-500 focus:ring-rose-500">
-                        <datalist id="listKategoriKredit">
-                            @foreach($kategoriKredit as $kat)
-                                <option value="{{ $kat }}"></option>
-                            @endforeach
-                        </datalist>
-                    </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Bukti Nota / Struk Pembelian (Opsional)</label>
+                    <input type="file" name="lampiran" accept="image/jpeg,image/png,application/pdf" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100">
+                    <span class="text-[10px] text-slate-400 block mt-1">Maksimal 5 MB (Format: JPG, PNG, atau PDF)</span>
+                </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Dibayarkan Kepada (Penerima Kas)</label>
-                        <input type="text" name="nama_pihak" placeholder="Contoh: Toko ATK Berkah / Toko Bangunan / PLN" class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-rose-500 focus:ring-rose-500">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Uraian / Keterangan Transaksi <span class="text-xs text-slate-400 font-normal">(Opsional)</span></label>
-                        <textarea name="keterangan" rows="3" placeholder="(Opsional) Tuliskan rincian barang/kebutuhan yang dibelanjakan..." class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-rose-500 focus:ring-rose-500"></textarea>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Bukti Nota / Struk Pembelian (Opsional)</label>
-                        <input type="file" name="lampiran" accept="image/jpeg,image/png,application/pdf" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100">
-                        <span class="text-[10px] text-slate-400 block mt-1">Maksimal 5 MB (Format: JPG, PNG, atau PDF)</span>
-                    </div>
-
-                    <div class="pt-3 flex justify-end gap-2 border-t border-slate-100 shrink-0">
-                        <button @click="modalKreditOpen = false" type="button" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-600 font-semibold text-xs hover:bg-slate-50">Batal</button>
-                        <button type="submit" class="px-5 py-2 rounded-xl bg-rose-600 text-white font-bold text-xs shadow-xs hover:bg-rose-700">Simpan Kredit</button>
-                    </div>
-                </form>
-            </div>
+                <div class="pt-3 flex justify-end gap-2 border-t border-slate-100 shrink-0">
+                    <button @click="modalKreditOpen = false" type="button" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-600 font-semibold text-xs hover:bg-slate-50">Batal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-rose-600 text-white font-bold text-xs shadow-xs hover:bg-rose-700">Simpan Kredit</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <!-- MODAL 3: UBAH TRANSAKSI KAS -->
     <div x-show="modalEditOpen"
          x-cloak
-         class="fixed inset-0 z-50 overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen px-3 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div @click="modalEditOpen = false" class="fixed inset-0 transition-opacity bg-slate-900/60 backdrop-blur-xs" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+         class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4"
+         @click.self="modalEditOpen = false">
+        <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 sm:p-6 max-h-[90vh] flex flex-col my-auto"
+             @click.stop>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
+                <div>
+                    <h3 class="text-sm sm:text-base font-bold text-slate-900">Ubah Transaksi Kas</h3>
+                    <p class="text-[11px] sm:text-xs text-slate-500">Edit <span class="font-mono font-bold text-slate-700" x-text="editData.kode_transaksi"></span></p>
+                </div>
+                <button @click="modalEditOpen = false" type="button" class="text-slate-400 hover:text-slate-600 p-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
 
-            <div class="relative z-10 inline-block w-full max-w-lg p-4 sm:p-6 my-4 sm:my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-2xl shadow-2xl border border-slate-200 max-h-[92vh] flex flex-col">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
+            <form :action="'{{ url('admin/bendahara') }}/' + editData.id" method="POST" enctype="multipart/form-data" class="mt-4 space-y-3.5 overflow-y-auto pr-1">
+                @csrf
+                @method('PUT')
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <h3 class="text-sm sm:text-base font-bold text-slate-900">Ubah Transaksi Kas</h3>
-                        <p class="text-[11px] sm:text-xs text-slate-500">Edit <span class="font-mono font-bold text-slate-700" x-text="editData.kode_transaksi"></span></p>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Jenis Transaksi <span class="text-rose-500">*</span></label>
+                        <select name="jenis" x-model="editData.jenis" required class="w-full text-xs sm:text-sm rounded-xl border-slate-300">
+                            <option value="debit">Debit (Penerimaan)</option>
+                            <option value="kredit">Kredit (Pengeluaran)</option>
+                        </select>
                     </div>
-                    <button @click="modalEditOpen = false" class="text-slate-400 hover:text-slate-600 p-1">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tanggal Transaksi <span class="text-rose-500">*</span></label>
+                        <input type="date" name="tanggal" x-model="editData.tanggal" required class="w-full text-xs sm:text-sm rounded-xl border-slate-300">
+                    </div>
                 </div>
 
-                <form :action="'{{ url('admin/bendahara') }}/' + editData.id" method="POST" enctype="multipart/form-data" class="mt-4 space-y-3.5 overflow-y-auto pr-1">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Jenis Transaksi <span class="text-rose-500">*</span></label>
-                            <select name="jenis" x-model="editData.jenis" required class="w-full text-xs sm:text-sm rounded-xl border-slate-300">
-                                <option value="debit">Debit (Penerimaan)</option>
-                                <option value="kredit">Kredit (Pengeluaran)</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tanggal Transaksi <span class="text-rose-500">*</span></label>
-                            <input type="date" name="tanggal" x-model="editData.tanggal" required class="w-full text-xs sm:text-sm rounded-xl border-slate-300">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pos Akun / Kategori <span class="text-rose-500">*</span></label>
-                            <input type="text" name="kategori" x-model="editData.kategori" required class="w-full text-xs sm:text-sm rounded-xl border-slate-300">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nominal (Rp) <span class="text-rose-500">*</span></label>
-                            <div class="relative">
-                                <span class="absolute left-3.5 top-2.5 text-xs font-bold text-slate-400 select-none">Rp</span>
-                                <input type="number"
-                                       name="nominal"
-                                       x-model="editData.nominal"
-                                       min="1"
-                                       step="any"
-                                       required
-                                       class="w-full text-xs sm:text-sm rounded-xl border-slate-300 pl-10 pr-4 font-mono font-bold focus:border-emerald-500 focus:ring-emerald-500">
-                            </div>
-                            <p x-show="editData.nominal > 0" class="text-xs text-slate-700 font-bold mt-1 font-mono" x-text="'Format: Rp ' + Number(editData.nominal || 0).toLocaleString('id-ID')"></p>
-                        </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pos Akun / Kategori <span class="text-rose-500">*</span></label>
+                        <input type="text" name="kategori" x-model="editData.kategori" required class="w-full text-xs sm:text-sm rounded-xl border-slate-300">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pihak Terkait (Diterima dari / Kepada)</label>
-                        <input type="text" name="nama_pihak" x-model="editData.nama_pihak" class="w-full text-xs sm:text-sm rounded-xl border-slate-300">
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nominal (Rp) <span class="text-rose-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute left-3.5 top-2.5 text-xs font-bold text-slate-400 select-none">Rp</span>
+                            <input type="number"
+                                   name="nominal"
+                                   x-model="editData.nominal"
+                                   min="1"
+                                   step="any"
+                                   required
+                                   class="w-full text-xs sm:text-sm rounded-xl border-slate-300 pl-10 pr-4 font-mono font-bold focus:border-emerald-500 focus:ring-emerald-500">
+                        </div>
+                        <p x-show="editData.nominal > 0" class="text-xs text-slate-700 font-bold mt-1 font-mono" x-text="'Format: Rp ' + Number(editData.nominal || 0).toLocaleString('id-ID')"></p>
                     </div>
+                </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Uraian Keterangan <span class="text-xs text-slate-400 font-normal">(Opsional)</span></label>
-                        <textarea name="keterangan" x-model="editData.keterangan" rows="3" placeholder="(Opsional) Keterangan transaksi..." class="w-full text-xs sm:text-sm rounded-xl border-slate-300"></textarea>
-                    </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pihak Terkait (Diterima dari / Kepada)</label>
+                    <input type="text" name="nama_pihak" x-model="editData.nama_pihak" class="w-full text-xs sm:text-sm rounded-xl border-slate-300">
+                </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Ganti Bukti Nota (Opsional)</label>
-                        <input type="file" name="lampiran" accept="image/jpeg,image/png,application/pdf" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200">
-                    </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Uraian Keterangan <span class="text-xs text-slate-400 font-normal">(Opsional)</span></label>
+                    <textarea name="keterangan" x-model="editData.keterangan" rows="3" placeholder="(Opsional) Keterangan transaksi..." class="w-full text-xs sm:text-sm rounded-xl border-slate-300"></textarea>
+                </div>
 
-                    <div class="pt-3 flex justify-end gap-2 border-t border-slate-100 shrink-0">
-                        <button @click="modalEditOpen = false" type="button" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-600 font-semibold text-xs hover:bg-slate-50">Batal</button>
-                        <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-xs hover:bg-emerald-700">Simpan Perubahan</button>
-                    </div>
-                </form>
-            </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Ganti Bukti Nota (Opsional)</label>
+                    <input type="file" name="lampiran" accept="image/jpeg,image/png,application/pdf" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200">
+                </div>
+
+                <div class="pt-3 flex justify-end gap-2 border-t border-slate-100 shrink-0">
+                    <button @click="modalEditOpen = false" type="button" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-600 font-semibold text-xs hover:bg-slate-50">Batal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-xs hover:bg-emerald-700">Simpan Perubahan</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <!-- MODAL 4: PRATINJAU FOTO BUKTI NOTA -->
     <div x-show="modalPreviewOpen"
          x-cloak
-         class="fixed inset-0 z-50 overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen px-3 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div @click="modalPreviewOpen = false" class="fixed inset-0 transition-opacity bg-slate-900/80 backdrop-blur-xs" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-            <div class="relative z-10 inline-block w-full max-w-2xl p-4 sm:p-5 my-4 sm:my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-2xl shadow-2xl border border-slate-200">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                    <h3 class="text-xs sm:text-sm font-bold text-slate-900 truncate" x-text="previewTitle"></h3>
-                    <div class="flex items-center gap-2 shrink-0">
-                        <a :href="previewUrl" target="_blank" class="text-xs text-emerald-600 font-bold hover:underline">Buka Asli</a>
-                        <button @click="modalPreviewOpen = false" class="text-slate-400 hover:text-slate-600 p-1">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                    </div>
+         class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4"
+         @click.self="modalPreviewOpen = false">
+        <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 sm:p-5 my-auto"
+             @click.stop>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <h3 class="text-xs sm:text-sm font-bold text-slate-900 truncate" x-text="previewTitle"></h3>
+                <div class="flex items-center gap-2 shrink-0">
+                    <a :href="previewUrl" target="_blank" class="text-xs text-emerald-600 font-bold hover:underline">Buka Asli</a>
+                    <button @click="modalPreviewOpen = false" type="button" class="text-slate-400 hover:text-slate-600 p-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
                 </div>
+            </div>
 
-                <div class="mt-3 max-h-[70vh] overflow-auto flex items-center justify-center bg-slate-50 rounded-xl p-2 border border-slate-100">
-                    <img :src="previewUrl" alt="Foto Bukti Nota" class="max-w-full h-auto object-contain rounded-lg">
-                </div>
+            <div class="mt-3 max-h-[70vh] overflow-auto flex items-center justify-center bg-slate-50 rounded-xl p-2 border border-slate-100">
+                <img :src="previewUrl" alt="Foto Bukti Nota" class="max-w-full h-auto object-contain rounded-lg">
             </div>
         </div>
     </div>
