@@ -340,24 +340,24 @@
                 @endphp
 
                 <!-- Navigasi Desktop & Tablet (Hanya Menu Publik, Tanpa Tombol Login Atas) -->
-                <nav class="hidden md:flex items-center gap-1 shrink-0" aria-label="Navigasi utama">
+                <nav class="hidden md:flex items-center gap-1.5 lg:gap-2 shrink-0" aria-label="Navigasi utama">
                     @foreach($menuPublik as $menu)
                         <a href="{{ url($menu['url']) }}"
-                           class="px-2.5 lg:px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold transition {{ request()->is($menu['pola']) ? 'text-emerald-900 bg-emerald-50 font-bold shadow-xs' : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-100/70' }}">
+                           class="px-3 lg:px-3.5 py-2 rounded-xl text-sm lg:text-[15px] font-bold tracking-normal transition {{ request()->is($menu['pola']) ? 'text-emerald-950 bg-emerald-50/90 shadow-2xs' : 'text-slate-700 hover:text-emerald-900 hover:bg-slate-100/80' }}">
                             {{ $menu['label'] }}
                         </a>
                     @endforeach
                     <div class="relative" x-data="{ layananOpen: false }" @click.outside="layananOpen = false" @keydown.escape="layananOpen = false">
                         <button type="button" @click="layananOpen = !layananOpen" :aria-expanded="layananOpen"
-                                class="inline-flex items-center gap-1 px-2.5 lg:px-3 py-2 rounded-xl text-xs lg:text-sm font-semibold transition {{ $layananAktif ? 'text-emerald-900 bg-emerald-50 font-bold shadow-xs' : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-100/70' }}">
+                                class="inline-flex items-center gap-1.5 px-3 lg:px-3.5 py-2 rounded-xl text-sm lg:text-[15px] font-bold tracking-normal transition {{ $layananAktif ? 'text-emerald-950 bg-emerald-50/90 shadow-2xs' : 'text-slate-700 hover:text-emerald-900 hover:bg-slate-100/80' }}">
                             <span>Layanan</span>
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div x-show="layananOpen" x-cloak x-transition
                              class="absolute right-0 mt-2 w-56 bg-white rounded-xl border border-slate-200 shadow-lg py-1.5 z-50">
                             @foreach($menuLayanan as $menu)
                                 <a href="{{ url($menu['url']) }}"
-                                   class="block px-4 py-2.5 text-xs lg:text-sm font-semibold transition {{ request()->is($menu['pola']) ? 'text-emerald-900 bg-emerald-50' : 'text-slate-700 hover:bg-slate-100/70' }}">
+                                   class="block px-4 py-2.5 text-sm font-semibold transition {{ request()->is($menu['pola']) ? 'text-emerald-900 bg-emerald-50' : 'text-slate-700 hover:bg-slate-100/70' }}">
                                     {{ $menu['label'] }}
                                 </a>
                             @endforeach
