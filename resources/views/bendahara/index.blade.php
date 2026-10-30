@@ -374,11 +374,11 @@
                     <tr>
                         <th class="px-4 py-3.5 text-center w-12">No</th>
                         <th class="px-4 py-3.5">No. Bukti & Tanggal</th>
-                        <th class="px-4 py-3.5">Pos Akun / Kategori</th>
-                        <th class="px-4 py-3.5">Uraian / Keterangan</th>
+                        <th class="px-4 py-3.5">Akun </th>
+                        <th class="px-4 py-3.5">Keterangan</th>
                         <th class="px-4 py-3.5">Pihak Terkait</th>
-                        <th class="px-4 py-3.5 text-right text-emerald-700">Debit (Masuk)</th>
-                        <th class="px-4 py-3.5 text-right text-rose-700">Kredit (Keluar)</th>
+                        <th class="px-4 py-3.5 text-right text-emerald-700">Debit</th>
+                        <th class="px-4 py-3.5 text-right text-rose-700">Kredit</th>
                         <th class="px-4 py-3.5 text-center">Bukti</th>
                         <th class="px-4 py-3.5 text-center w-24">Aksi</th>
                     </tr>
@@ -555,7 +555,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pos Akun / Kategori <span class="text-rose-500">*</span></label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Akun<span class="text-rose-500">*</span></label>
                     <input type="text"
                            name="kategori"
                            list="listKategoriDebit"
@@ -570,17 +570,17 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Diterima Dari (Donatur / Pihak Pembayar)</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pihak Pembayar</label>
                     <input type="text" name="nama_pihak" placeholder="Contoh: Hamba Allah / Bpk. H. Ahmad / Wali Santri" class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Uraian / Keterangan Transaksi <span class="text-xs text-slate-400 font-normal">(Opsional)</span></label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Keterangan Transaksi <span class="text-xs text-slate-400 font-normal">(Opsional)</span></label>
                     <textarea name="keterangan" rows="3" placeholder="(Opsional) Tuliskan keterangan detail penerimaan kas..." class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500"></textarea>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Bukti Kwitansi / Nota (Opsional)</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Notta (Opsional)</label>
                     <input type="file" name="lampiran" accept="image/jpeg,image/png,application/pdf" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
                     <span class="text-[10px] text-slate-400 block mt-1">Maksimal 5 MB (Format: JPG, PNG, atau PDF)</span>
                 </div>
@@ -643,7 +643,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pos Akun / Kategori <span class="text-rose-500">*</span></label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Akun<span class="text-rose-500">*</span></label>
                     <input type="text"
                            name="kategori"
                            list="listKategoriKredit"
@@ -658,17 +658,17 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Dibayarkan Kepada (Penerima Kas)</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Dibayarkan Kepada</label>
                     <input type="text" name="nama_pihak" placeholder="Contoh: Toko ATK Berkah / Toko Bangunan / PLN" class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-rose-500 focus:ring-rose-500">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Uraian / Keterangan Transaksi <span class="text-xs text-slate-400 font-normal">(Opsional)</span></label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Keterangan Transaksi <span class="text-xs text-slate-400 font-normal">(Opsional)</span></label>
                     <textarea name="keterangan" rows="3" placeholder="(Opsional) Tuliskan rincian barang/kebutuhan yang dibelanjakan..." class="w-full text-xs sm:text-sm rounded-xl border-slate-300 focus:border-rose-500 focus:ring-rose-500"></textarea>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Bukti Nota / Struk Pembelian (Opsional)</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Bukti Notta (Opsional)</label>
                     <input type="file" name="lampiran" accept="image/jpeg,image/png,application/pdf" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100">
                     <span class="text-[10px] text-slate-400 block mt-1">Maksimal 5 MB (Format: JPG, PNG, atau PDF)</span>
                 </div>
@@ -719,7 +719,7 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pos Akun / Kategori <span class="text-rose-500">*</span></label>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Akun<span class="text-rose-500">*</span></label>
                         <input type="text" name="kategori" x-model="editData.kategori" required class="w-full text-xs sm:text-sm rounded-xl border-slate-300">
                     </div>
 
@@ -740,7 +740,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pihak Terkait (Diterima dari / Kepada)</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pihak Terkait</label>
                     <input type="text" name="nama_pihak" x-model="editData.nama_pihak" class="w-full text-xs sm:text-sm rounded-xl border-slate-300">
                 </div>
 
