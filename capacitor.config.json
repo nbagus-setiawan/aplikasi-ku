@@ -1,0 +1,15 @@
+{
+  "appId": "id.ponpesalfalahputak.sap",
+  "appName": "SAP Al-Falah Putra",
+  "webDir": "mobile",
+  "server": {
+    "url": "https://ponpesalfalahputak.my.id",
+    "cleartext": true,
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": true
+  }
+}

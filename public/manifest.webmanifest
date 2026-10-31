@@ -1,0 +1,63 @@
+{
+  "name": "SAP | Pondok Pesantren Al-Falah Putak",
+  "short_name": "SAP Al-Falah",
+  "description": "Aplikasi Administrasi Sekretaris & Informasi Resmi Pondok Pesantren Al-Falah Putak",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#064e3b",
+  "lang": "id",
+  "categories": ["education", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/images/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Beranda",
+      "short_name": "Beranda",
+      "description": "Buka Halaman Utama",
+      "url": "/",
+      "icons": [{ "src": "/images/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Pengumuman",
+      "short_name": "Pengumuman",
+      "description": "Lihat Pengumuman Terbaru",
+      "url": "/pengumuman",
+      "icons": [{ "src": "/images/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Pendaftaran Santri",
+      "short_name": "Daftar",
+      "description": "Pendaftaran Santri Baru",
+      "url": "/pendaftaran-santri",
+      "icons": [{ "src": "/images/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Portal Sekretaris",
+      "short_name": "Login",
+      "description": "Masuk ke Panel Administrasi",
+      "url": "/login",
+      "icons": [{ "src": "/images/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

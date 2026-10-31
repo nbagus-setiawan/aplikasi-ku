@@ -8,8 +8,15 @@
 
         <title>{{ \App\Models\Pengaturan::get('nama_situs', 'SAP | SEKRETARIS AL-FALAH PUTRA') }}</title>
 
+        <!-- PWA & Mobile Web App Meta -->
+        <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="theme-color" content="#064e3b">
+
         <!-- Favicon -->
         <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+        <link rel="apple-touch-icon" href="{{ asset('images/icon-192x192.png') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -67,7 +74,7 @@
                 <x-modal-toast />
 
                 <!-- Page Content Slot -->
-                <main class="flex-1 max-w-screen-2xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <main class="flex-1 max-w-screen-2xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-20 lg:py-6">
                     @isset($slot)
                         {{ $slot }}
                     @else
@@ -339,6 +346,18 @@
             });
         </script>
 
+        <!-- Navigasi Bawah Khusus Layar HP / Mobile untuk Admin -->
+        <x-admin-mobile-nav />
+
         @stack('scripts')
+
+        <!-- Registrasi Service Worker PWA -->
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('{{ asset('sw.js') }}').catch(function() {});
+                });
+            }
+        </script>
     </body>
 </html>

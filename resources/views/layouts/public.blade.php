@@ -77,13 +77,19 @@
     <meta name="apple-mobile-web-app-title" content="{{ $namaSitusPendek }}">
     <meta name="theme-color" content="#064e3b">
 
+    <!-- PWA & Mobile Web App Meta -->
+    <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <!-- Favicon Google Search Resmi (Memenuhi Ruang Logo Secara Penuh Tanpa Margin Sisa) -->
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=3">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-32x32.png') }}?v=3">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}?v=3">
     <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon-48x48.png') }}?v=3">
     <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('favicon-96x96.png') }}?v=3">
-    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('favicon-192x192.png') }}?v=3">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/icon-192x192.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v=3">
 
     <!-- Senjata Rahasia SEO: Schema Markup JSON-LD Terstruktur Standar Global Schema.org -->
@@ -295,7 +301,7 @@
     <!-- Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased text-slate-800 bg-slate-50 min-h-screen flex flex-col justify-between selection:bg-emerald-600 selection:text-white">
+<body class="font-sans antialiased text-slate-800 bg-slate-50 min-h-screen flex flex-col justify-between selection:bg-emerald-600 selection:text-white pb-16 lg:pb-0">
     <x-page-loader />
 
     <!-- Navbar Publik Responsif (Desktop & Mobile) -->
@@ -562,6 +568,18 @@
     </footer>
     @endif
 
+    <!-- Navigasi Bawah Khusus Layar HP / Mobile -->
+    <x-public-mobile-nav />
+
     @stack('scripts')
+
+    <!-- Registrasi Service Worker PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('{{ asset('sw.js') }}').catch(function() {});
+            });
+        }
+    </script>
 </body>
 </html>
