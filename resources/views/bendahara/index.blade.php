@@ -342,7 +342,9 @@
 
                         <form method="POST"
                               action="{{ route('admin.bendahara.destroy', $item->id) }}"
-                              onsubmit="return confirm('Hapus transaksi {{ $item->kode_transaksi }} sebesar Rp {{ number_format($item->nominal, 0, ',', '.') }}?');"
+                              data-konfirmasi="Apakah Anda yakin ingin menghapus transaksi {{ $item->kode_transaksi }} (Rp {{ number_format($item->nominal, 0, ',', '.') }}) secara permanen dari pembukuan?"
+                              data-judul="Hapus Transaksi Kas"
+                              data-tombol="Ya, Hapus Transaksi"
                               class="inline">
                             @csrf
                             @method('DELETE')
@@ -464,7 +466,9 @@
 
                                 <form method="POST"
                                       action="{{ route('admin.bendahara.destroy', $item->id) }}"
-                                      onsubmit="return confirm('Hapus transaksi {{ $item->kode_transaksi }} sebesar Rp {{ number_format($item->nominal, 0, ',', '.') }}?');"
+                                      data-konfirmasi="Apakah Anda yakin ingin menghapus transaksi {{ $item->kode_transaksi }} (Rp {{ number_format($item->nominal, 0, ',', '.') }}) secara permanen dari pembukuan?"
+                                      data-judul="Hapus Transaksi Kas"
+                                      data-tombol="Ya, Hapus Transaksi"
                                       class="inline">
                                     @csrf
                                     @method('DELETE')
