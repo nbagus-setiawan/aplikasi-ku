@@ -878,11 +878,10 @@ class SuratKeluarController extends Controller
      */
     public function destroy(SuratKeluar $suratKeluar): RedirectResponse
     {
-        if ($suratKeluar->file && Storage::disk('public')->exists($suratKeluar->file)) {
-            Storage::disk('public')->delete($suratKeluar->file);
-        }
-        if ($suratKeluar->file_surat_asli && Storage::disk('public')->exists($suratKeluar->file_surat_asli)) {
-            Storage::disk('public')->delete($suratKeluar->file_surat_asli);
+        foreach ([$suratKeluar->file, $suratKeluar->file_surat_asli, $suratKeluar->file_final] as $filePath) {
+            if ($filePath && Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+            }
         }
 
         $suratKeluar->tandaTangans()->delete();

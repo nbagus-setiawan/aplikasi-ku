@@ -119,7 +119,7 @@ class PengumumanTest extends TestCase
         $response = $this->actingAs($this->user)->delete(route('admin.pengumuman.destroy', $pengumuman));
         $response->assertRedirect(route('admin.pengumuman.index'));
 
-        $this->assertSoftDeleted('pengumumans', ['id' => $pengumuman->id]);
+        $this->assertDatabaseMissing('pengumumans', ['id' => $pengumuman->id]);
     }
 
     public function test_halaman_publik_pengumuman_hanya_menampilkan_pengumuman_terbit_dan_belum_kedaluwarsa()

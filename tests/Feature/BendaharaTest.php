@@ -190,7 +190,7 @@ class BendaharaTest extends TestCase
             ->delete(route('admin.bendahara.destroy', $transaksi->id));
 
         $response->assertRedirect(route('admin.bendahara.index'));
-        $this->assertSoftDeleted('kas_transaksis', ['id' => $transaksi->id]);
+        $this->assertDatabaseMissing('kas_transaksis', ['id' => $transaksi->id]);
     }
 
     public function test_bisa_mencetak_buku_kas_umum_pdf(): void

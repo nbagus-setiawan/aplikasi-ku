@@ -165,8 +165,7 @@ class SuratMasukTest extends TestCase
         $response = $this->actingAs($this->user)->delete(route('admin.surat-masuk.destroy', $surat));
 
         $response->assertRedirect(route('admin.surat-masuk.index'));
-
-        $this->assertSoftDeleted('surat_masuks', ['id' => $surat->id]);
+        $this->assertDatabaseMissing('surat_masuks', ['id' => $surat->id]);
     }
 
     public function test_sekretaris_dapat_upload_surat_masuk_beserta_lampiran_otomatis(): void

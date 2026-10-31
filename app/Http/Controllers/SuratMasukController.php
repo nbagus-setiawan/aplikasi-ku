@@ -362,11 +362,17 @@ class SuratMasukController extends Controller
     }
 
     /**
-     * Hapus data surat masuk (soft delete).
+     * Hapus data surat masuk (Hard Delete / Permanen).
      */
     public function destroy(SuratMasuk $suratMasuk): RedirectResponse
     {
-        $suratMasuk->delete();
+        foreach ([$suratMasuk->file, $suratMasuk->file_surat_asli, $suratMasuk->file_lampiran] as $filePath) {
+            if ($filePath && Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+            }
+        }
+
+        $suratMasuk->forceDelete();
 
         return redirect()->route('admin.surat-masuk.index')
             ->with('success', 'Surat masuk berhasil dihapus.');

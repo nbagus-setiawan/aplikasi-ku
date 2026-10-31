@@ -140,7 +140,7 @@ class AgendaTest extends TestCase
         $response = $this->actingAs($this->user)->delete(route('admin.agenda.destroy', $agenda));
 
         $response->assertRedirect(route('admin.agenda.index'));
-        $this->assertSoftDeleted('agendas', ['id' => $agenda->id]);
+        $this->assertDatabaseMissing('agendas', ['id' => $agenda->id]);
     }
 
     public function test_peringatan_agenda_h_minus_satu_berfungsi(): void

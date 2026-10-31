@@ -198,11 +198,15 @@ class PengumumanController extends Controller
     }
 
     /**
-     * Hapus pengumuman (soft delete).
+     * Hapus pengumuman (Hard Delete / Permanen).
      */
     public function destroy(Pengumuman $pengumuman)
     {
-        $pengumuman->delete();
+        if ($pengumuman->gambar && Storage::disk('public')->exists($pengumuman->gambar)) {
+            Storage::disk('public')->delete($pengumuman->gambar);
+        }
+
+        $pengumuman->forceDelete();
 
         return redirect()->route('admin.pengumuman.index')
             ->with('success', 'Pengumuman berhasil dihapus.');

@@ -110,8 +110,8 @@ class SantriTest extends TestCase
 
         $response->assertRedirect('/admin/santri');
 
-        // Pastikan masih ada di database (soft delete) tapi deleted_at terisi
-        $this->assertSoftDeleted('santris', [
+        // Pastikan terhapus permanen dari database
+        $this->assertDatabaseMissing('santris', [
             'id' => $santri->id,
             'nis' => '2026300',
         ]);

@@ -204,6 +204,6 @@ class ArsipTest extends TestCase
         $response = $this->actingAs($this->user)->delete(route('admin.arsip.destroy', $arsip));
 
         $response->assertRedirect(route('admin.arsip.index'));
-        $this->assertSoftDeleted('arsips', ['id' => $arsip->id]);
+        $this->assertDatabaseMissing('arsips', ['id' => $arsip->id]);
     }
 }

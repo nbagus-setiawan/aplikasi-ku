@@ -141,11 +141,11 @@ class AgendaController extends Controller
     }
 
     /**
-     * Hapus agenda kegiatan (soft delete).
+     * Hapus agenda kegiatan (Hard Delete / Permanen).
      */
     public function destroy(Agenda $agenda): RedirectResponse
     {
-        $agenda->delete();
+        $agenda->forceDelete();
 
         return redirect()->route('admin.agenda.index')
             ->with('success', 'Agenda kegiatan berhasil dihapus.');

@@ -225,12 +225,17 @@ class BendaharaController extends Controller
     }
 
     /**
-     * Hapus Transaksi Kas (Soft Delete)
+     * Hapus Transaksi Kas (Hard Delete / Permanen)
      */
     public function destroy(KasTransaksi $bendahara)
     {
         $kode = $bendahara->kode_transaksi;
-        $bendahara->delete();
+
+        if ($bendahara->lampiran && Storage::disk('public')->exists($bendahara->lampiran)) {
+            Storage::disk('public')->delete($bendahara->lampiran);
+        }
+
+        $bendahara->forceDelete();
 
         return redirect()->route('admin.bendahara.index')
             ->with('success', "Transaksi kas {$kode} berhasil dihapus dari pembukuan.");

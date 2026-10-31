@@ -283,7 +283,7 @@
 
                                         <!-- Hapus (Merah) -->
                                         <form action="{{ route('admin.santri.destroy', $santri->id) }}" method="POST" class="inline"
-                                              data-konfirmasi="Apakah Anda yakin ingin menghapus data santri ini? Data dapat dipulihkan lewat soft delete."
+                                              data-konfirmasi="Apakah Anda yakin ingin menghapus data santri ini secara permanen?"
                                               data-judul="Hapus Data Santri"
                                               data-tombol="Ya, Hapus Data">
                                             @csrf
@@ -362,7 +362,7 @@
                                 <span>Edit</span>
                             </a>
                             <form action="{{ route('admin.santri.destroy', $santri->id) }}" method="POST" class="inline"
-                                  data-konfirmasi="Apakah Anda yakin ingin menghapus data santri ini? Data dapat dipulihkan lewat soft delete."
+                                  data-konfirmasi="Apakah Anda yakin ingin menghapus data santri ini secara permanen?"
                                   data-judul="Hapus Santri"
                                   data-tombol="Ya, Hapus Data">
                                 @csrf

@@ -140,17 +140,21 @@ class SantriController extends Controller
     }
 
     /**
-     * Hapus data santri (Soft Delete).
+     * Hapus data santri (Hard Delete / Permanen).
      */
     public function destroy(Santri $santri): RedirectResponse
     {
-        $santri->delete();
+        if ($santri->foto && Storage::disk('public')->exists($santri->foto)) {
+            Storage::disk('public')->delete($santri->foto);
+        }
+
+        $santri->forceDelete();
 
         // Tetap berada pada filter aktif setelah menghapus
         $returnUrl = session('santri_filter_url') ?: route('admin.santri.index');
 
         return redirect($returnUrl)
-            ->with('success', 'Data santri berhasil dihapus (soft delete).');
+            ->with('success', 'Data santri berhasil dihapus.');
     }
 
     /**

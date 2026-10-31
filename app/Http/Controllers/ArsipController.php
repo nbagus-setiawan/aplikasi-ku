@@ -146,11 +146,15 @@ class ArsipController extends Controller
     }
 
     /**
-     * Hapus arsip dokumen (soft delete).
+     * Hapus arsip dokumen (Hard Delete / Permanen).
      */
     public function destroy(Arsip $arsip): RedirectResponse
     {
-        $arsip->delete();
+        if ($arsip->file && Storage::disk('public')->exists($arsip->file)) {
+            Storage::disk('public')->delete($arsip->file);
+        }
+
+        $arsip->forceDelete();
 
         return redirect()->route('admin.arsip.index')
             ->with('success', 'Dokumen arsip berhasil dihapus.');
