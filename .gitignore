@@ -28,10 +28,3 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /public/sitemap.xml
-/dist-apk
-/android/.gradle
-/android/app/build
-/android/build
-/android/local.properties
-*.jks
-*.keystore
