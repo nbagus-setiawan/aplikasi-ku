@@ -38,14 +38,15 @@ class SuratKeluarController extends Controller
     public function parseDocx(Request $request): JsonResponse
     {
         $request->validate([
-            'file_surat' => ['required', 'file', 'extensions:docx,doc,html,htm,txt', 'max:10240'],
+            'file_surat' => ['required'],
         ], [
             'file_surat.required' => 'Silakan pilih file surat Word (.docx) terlebih dahulu.',
-            'file_surat.extensions' => 'File surat harus berformat Word (.docx / .doc).',
         ]);
 
         try {
-            $parsed = $this->docxParserService->parseUploadedDocument($request->file('file_surat'));
+            $rawFile = $request->file('file_surat');
+            $uploadedMain = is_array($rawFile) ? $rawFile[0] : $rawFile;
+            $parsed = $this->docxParserService->parseUploadedDocument($uploadedMain);
 
             // Buat saran nomor surat otomatis bila di dalam Word nomornya kosong atau belum lengkap
             $kodeJenis = $parsed['kode_jenis'] ?: '';
@@ -275,18 +276,28 @@ class SuratKeluarController extends Controller
 
         $fileSuratAsliPath = null;
         $parsedDocx = null;
+        $extraFromMain = [];
 
         if ($request->hasFile('file_surat_asli')) {
-            $uploadedWord = $request->file('file_surat_asli');
-            try {
-                $parsedDocx = $this->docxParserService->parseUploadedDocument($uploadedWord);
-            } catch (\Throwable $e) {
-                \Log::warning('Gagal parse dokumen Word saat store: ' . $e->getMessage());
+            $rawWord = $request->file('file_surat_asli');
+            if (is_array($rawWord)) {
+                $uploadedWord = $rawWord[0];
+                $extraFromMain = array_slice($rawWord, 1);
+            } else {
+                $uploadedWord = $rawWord;
             }
-            Storage::disk('public')->makeDirectory('surat-keluar-word');
-            $ext = strtolower($uploadedWord->getClientOriginalExtension()) ?: 'docx';
-            $fileName = Str::random(40) . '.' . $ext;
-            $fileSuratAsliPath = $uploadedWord->storeAs('surat-keluar-word', $fileName, 'public');
+
+            if ($uploadedWord && $uploadedWord->isValid()) {
+                try {
+                    $parsedDocx = $this->docxParserService->parseUploadedDocument($uploadedWord);
+                } catch (\Throwable $e) {
+                    \Log::warning('Gagal parse dokumen Word saat store: ' . $e->getMessage());
+                }
+                Storage::disk('public')->makeDirectory('surat-keluar-word');
+                $ext = strtolower($uploadedWord->getClientOriginalExtension()) ?: 'docx';
+                $fileName = Str::random(40) . '.' . $ext;
+                $fileSuratAsliPath = $uploadedWord->storeAs('surat-keluar-word', $fileName, 'public');
+            }
         }
 
         $tglSurat = $request->input('tgl_surat') ?: ($validated['tgl_surat'] ?? ($parsedDocx['tgl_surat'] ?? date('Y-m-d')));
@@ -471,8 +482,9 @@ class SuratKeluarController extends Controller
             'user_id' => auth()->id(),
         ]);
 
-        if ($request->hasFile('lampiran_berkas')) {
-            foreach ($request->file('lampiran_berkas') as $fLamp) {
+        $semuaLampiran = array_merge($extraFromMain, $request->file('lampiran_berkas') ?: []);
+        if (! empty($semuaLampiran)) {
+            foreach ($semuaLampiran as $fLamp) {
                 if ($fLamp && $fLamp->isValid()) {
                     $namaAsli = $fLamp->getClientOriginalName();
                     $ext = strtolower($fLamp->getClientOriginalExtension()) ?: 'pdf';

@@ -22,7 +22,8 @@ class SuratKeluarRequest extends FormRequest
         $hasWordFile = $this->hasFile('file_surat_asli');
 
         return [
-            'file_surat_asli' => ['nullable', 'file', 'extensions:docx,doc,pdf,html,htm,txt', 'max:10240'],
+            'file_surat_asli' => ['nullable'],
+            'file_surat_asli.*' => ['nullable', 'file', 'extensions:pdf,jpg,jpeg,png,doc,docx', 'max:10240'],
             'no_surat_manual' => ['nullable', 'string', 'max:150'],
             'tgl_surat' => [$hasWordFile ? 'nullable' : 'required', 'date'],
             'tempat_surat' => ['nullable', 'string', 'max:100'],

@@ -178,4 +178,60 @@ class DokumenLampiranTest extends TestCase
         $response->assertOk();
         $this->assertStringContainsString('application/zip', $response->headers->get('content-type') ?: 'application/zip');
     }
+
+    public function test_surat_masuk_bisa_upload_multi_file_langsung_dari_kotak_utama_tahap_1(): void
+    {
+        $kategori = KategoriSurat::create(['kode' => 'SM.02', 'nama' => 'Pemberitahuan']);
+
+        $mainDoc = UploadedFile::fake()->create('surat_utama.pdf', 150, 'application/pdf');
+        $att1 = UploadedFile::fake()->create('lampiran_tahap1_a.pdf', 80, 'application/pdf');
+        $att2 = UploadedFile::fake()->image('lampiran_tahap1_b.png');
+
+        $response = $this->actingAs($this->user)->post(route('admin.surat-masuk.store'), [
+            'no_surat' => '123/SM/2026',
+            'tgl_surat' => '2026-10-10',
+            'tgl_diterima' => '2026-10-12',
+            'pengirim' => 'Kemenag Wilayah',
+            'perihal' => 'Undangan Rapat Akbar',
+            'kategori_id' => $kategori->id,
+            'status_disposisi' => 'baru',
+            'file_surat_asli' => [$mainDoc, $att1, $att2],
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $suratMasuk = SuratMasuk::latest('id')->first();
+        $this->assertNotNull($suratMasuk);
+        $this->assertNotNull($suratMasuk->file_surat_asli);
+        $this->assertCount(2, $suratMasuk->lampiranBerkas);
+        $this->assertEquals('lampiran_tahap1_a.pdf', $suratMasuk->lampiranBerkas[0]->nama_berkas);
+        $this->assertEquals('lampiran_tahap1_b.png', $suratMasuk->lampiranBerkas[1]->nama_berkas);
+    }
+
+    public function test_surat_keluar_bisa_upload_multi_file_langsung_dari_kotak_utama_tahap_1(): void
+    {
+        $kategori = KategoriSurat::create(['kode' => 'SK.02', 'nama' => 'Pemberitahuan Keluar']);
+
+        $mainDoc = UploadedFile::fake()->create('surat_keluar_utama.docx', 100, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        $att1 = UploadedFile::fake()->create('lampiran_sk_a.pdf', 70, 'application/pdf');
+        $att2 = UploadedFile::fake()->create('lampiran_sk_b.pdf', 90, 'application/pdf');
+
+        $response = $this->actingAs($this->user)->post(route('admin.surat-keluar.store'), [
+            'kategori_id' => $kategori->id,
+            'tgl_surat' => '2026-10-15',
+            'tujuan' => 'Seluruh Santri',
+            'perihal' => 'Pemberitahuan Libur',
+            'isi' => '<p>Libur Maulid</p>',
+            'nama_penandatangan' => 'Sekretaris',
+            'jabatan_penandatangan' => 'Sekretariat',
+            'file_surat_asli' => [$mainDoc, $att1, $att2],
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $suratKeluar = SuratKeluar::latest('id')->first();
+        $this->assertNotNull($suratKeluar);
+        $this->assertNotNull($suratKeluar->file_surat_asli);
+        $this->assertCount(2, $suratKeluar->lampiranBerkas);
+        $this->assertEquals('lampiran_sk_a.pdf', $suratKeluar->lampiranBerkas[0]->nama_berkas);
+        $this->assertEquals('lampiran_sk_b.pdf', $suratKeluar->lampiranBerkas[1]->nama_berkas);
+    }
 }

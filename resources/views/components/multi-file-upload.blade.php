@@ -1,12 +1,53 @@
 @props([
     'name' => 'lampiran_berkas[]',
-    'id' => 'multi_file_input_' . uniqid(),
-    'label' => 'Unggah Berkas / Lampiran Tambahan (Multi-File)',
+    'label' => 'Unggah Berkas / Lampiran Dokumen (Multi-File)',
     'hint' => 'Bisa pilih banyak berkas sekaligus (Tahan Ctrl / Shift saat memilih). Format: PDF, Word (.docx), Gambar (.jpg, .png). Maks 10 MB per berkas.',
     'required' => false,
 ])
 
-<div class="space-y-2" x-data="multiFileUploadHandler()">
+<div class="space-y-2" x-data="{
+    isDragging: false,
+    selectedFiles: [],
+    handleFiles(fileList) {
+        if (!fileList || fileList.length === 0) return;
+        this.selectedFiles = Array.from(fileList);
+    },
+    handleDrop(event) {
+        this.isDragging = false;
+        const dt = event.dataTransfer;
+        if (!dt || !dt.files || dt.files.length === 0) return;
+        if (this.$refs.fileInput) {
+            this.$refs.fileInput.files = dt.files;
+        }
+        this.selectedFiles = Array.from(dt.files);
+    },
+    clearFiles() {
+        this.selectedFiles = [];
+        if (this.$refs.fileInput) {
+            this.$refs.fileInput.value = '';
+        }
+    },
+    formatSize(bytes) {
+        if (!bytes) return '0 B';
+        if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + ' MB';
+        if (bytes >= 1024) return Math.round(bytes / 1024) + ' KB';
+        return bytes + ' B';
+    },
+    getExtBadge(name) {
+        const ext = (name.split('.').pop() || '').toLowerCase();
+        if (ext === 'pdf') return 'PDF';
+        if (ext === 'doc' || ext === 'docx') return 'DOCX';
+        if (['jpg', 'jpeg', 'png', 'webp'].includes(ext)) return 'GAMBAR';
+        return ext.toUpperCase() || 'FILE';
+    },
+    getBadgeClass(name) {
+        const ext = (name.split('.').pop() || '').toLowerCase();
+        if (ext === 'pdf') return 'bg-rose-100 text-rose-700';
+        if (ext === 'doc' || ext === 'docx') return 'bg-blue-100 text-blue-700';
+        if (['jpg', 'jpeg', 'png', 'webp'].includes(ext)) return 'bg-emerald-100 text-emerald-700';
+        return 'bg-slate-200 text-slate-700';
+    }
+}">
     <label class="block text-sm font-semibold text-slate-700">
         {{ $label }}
         @if($required) <span class="text-rose-500">*</span> @endif
@@ -22,7 +63,7 @@
         <input 
             type="file" 
             name="{{ $name }}" 
-            id="{{ $id }}" 
+            x-ref="fileInput"
             multiple 
             @if($required) required @endif
             accept=".pdf,.docx,.doc,.jpg,.jpeg,.png,.webp"
@@ -48,7 +89,7 @@
     <template x-if="selectedFiles.length > 0">
         <div class="mt-3 bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
             <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 text-xs font-semibold text-slate-600">
-                <span x-text="selectedFiles.length + ' berkas dipilih untuk diunggah'"></span>
+                <span class="font-bold text-emerald-800" x-text="'✓ ' + selectedFiles.length + ' berkas dipilih siap diunggah'"></span>
                 <button type="button" @click="clearFiles()" class="text-rose-600 hover:text-rose-800 font-bold hover:underline">
                     Reset Pilihan
                 </button>
@@ -67,55 +108,3 @@
         </div>
     </template>
 </div>
-
-@once
-<script>
-    function multiFileUploadHandler() {
-        return {
-            isDragging: false,
-            selectedFiles: [],
-            handleFiles(fileList) {
-                if (!fileList || fileList.length === 0) return;
-                this.selectedFiles = Array.from(fileList);
-            },
-            handleDrop(event) {
-                this.isDragging = false;
-                const dt = event.dataTransfer;
-                if (!dt || !dt.files || dt.files.length === 0) return;
-                
-                // Isi input file asli dengan berkas drop
-                const inputEl = event.currentTarget.querySelector('input[type="file"]');
-                if (inputEl) {
-                    inputEl.files = dt.files;
-                }
-                this.selectedFiles = Array.from(dt.files);
-            },
-            clearFiles() {
-                this.selectedFiles = [];
-                const inputEl = document.getElementById('{{ $id }}');
-                if (inputEl) inputEl.value = '';
-            },
-            formatSize(bytes) {
-                if (!bytes) return '0 B';
-                if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + ' MB';
-                if (bytes >= 1024) return Math.round(bytes / 1024) + ' KB';
-                return bytes + ' B';
-            },
-            getExtBadge(name) {
-                const ext = (name.split('.').pop() || '').toLowerCase();
-                if (ext === 'pdf') return 'PDF';
-                if (ext === 'doc' || ext === 'docx') return 'DOCX';
-                if (['jpg', 'jpeg', 'png', 'webp'].includes(ext)) return 'GAMBAR';
-                return ext.toUpperCase() || 'FILE';
-            },
-            getBadgeClass(name) {
-                const ext = (name.split('.').pop() || '').toLowerCase();
-                if (ext === 'pdf') return 'bg-rose-100 text-rose-700';
-                if (ext === 'doc' || ext === 'docx') return 'bg-blue-100 text-blue-700';
-                if (['jpg', 'jpeg', 'png', 'webp'].includes(ext)) return 'bg-emerald-100 text-emerald-700';
-                return 'bg-slate-200 text-slate-700';
-            }
-        };
-    }
-</script>
-@endonce

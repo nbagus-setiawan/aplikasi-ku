@@ -7,6 +7,7 @@
         progress2: 0,
         isAnalyzing: false,
         fileSuratName: '',
+        selectedMainFiles: [],
         fileLampiranName: '',
         errorMsg: '',
 
@@ -47,14 +48,22 @@
         },
 
         async handleFileSurat(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+            const files = Array.from(event.target.files || []);
+            if (files.length === 0) return;
+            const file = files[0];
 
             this.errorMsg = '';
-            this.fileSuratName = file.name;
+            this.selectedMainFiles = files.map((f, idx) => ({
+                name: f.name,
+                size: (f.size / 1024).toFixed(1) + ' KB',
+                isMain: idx === 0
+            }));
+            this.fileSuratName = files.length === 1 
+                ? file.name 
+                : file.name + ' (+ ' + (files.length - 1) + ' berkas lampiran)';
             this.isAnalyzing = true;
             this.progress1 = 15;
-            this.progress2 = 0;
+            this.progress2 = files.length > 1 ? 100 : 0;
             this.showConfirmModal = false;
 
             const timer = setInterval(() => {
@@ -98,8 +107,8 @@
                     this.inputNomorManual = '';
                 }
 
-                // Jika tidak ada lampiran tertulis, dan nomor + pengirim sudah terbaca -> langsung tampilkan pop-up konfirmasi
-                if (!this.detected.ada_lampiran && this.detected.is_nomor_lengkap && this.inputNomorManual.trim() !== '') {
+                // Jika tidak ada lampiran tertulis dan hanya 1 file, dan nomor + pengirim sudah terbaca -> langsung tampilkan pop-up konfirmasi
+                if (!this.detected.ada_lampiran && this.detected.is_nomor_lengkap && this.inputNomorManual.trim() !== '' && files.length === 1) {
                     setTimeout(() => {
                         this.showConfirmModal = true;
                     }, 350);
@@ -226,21 +235,46 @@
                     </span>
                 </div>
 
-                <!-- Kotak Pilih File Surat Masuk -->
+                <!-- Kotak Pilih File Surat Masuk (Bisa Banyak File Sekaligus) -->
                 <label class="block cursor-pointer border-2 border-dashed rounded-2xl p-6 text-center transition"
                        :class="progress1 === 100 ? 'border-emerald-400 bg-emerald-50/40' : 'border-gray-300 hover:border-emerald-500 bg-gray-50/60 hover:bg-emerald-50/20'">
-                    <input type="file" name="file_surat_asli" accept=".docx,.doc,.pdf,.jpg,.jpeg,.png" required class="hidden" @change="handleFileSurat($event)">
+                    <input type="file" name="file_surat_asli[]" multiple accept=".docx,.doc,.pdf,.jpg,.jpeg,.png" required class="hidden" @change="handleFileSurat($event)">
                     <div class="space-y-2">
                         <div class="w-12 h-12 mx-auto rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                             </svg>
                         </div>
-                        <div x-show="!fileSuratName" class="text-sm font-bold text-gray-800">
-                            Klik untuk memilih file Surat Masuk (<span class="text-emerald-700">.docx / .pdf / .jpg / .png</span>)
+                        <div x-show="selectedMainFiles.length === 0" class="text-sm font-bold text-gray-800">
+                            Klik untuk memilih berkas Surat Masuk (<span class="text-emerald-700">bisa pilih banyak berkas sekaligus</span>)
                         </div>
-                        <div x-show="fileSuratName" class="text-sm font-extrabold text-emerald-900" x-text="fileSuratName"></div>
-                        <p class="text-xs text-gray-500">Sistem otomatis mendeteksi Nomor Surat, Perihal, Lampiran, Pengirim, dan Tanggal Surat.</p>
+                        <p x-show="selectedMainFiles.length === 0" class="text-xs text-gray-500">
+                            Tahan tombol <kbd class="px-1.5 py-0.5 bg-gray-200 border border-gray-300 rounded font-mono text-[11px] font-bold text-gray-700">Ctrl</kbd> atau <kbd class="px-1.5 py-0.5 bg-gray-200 border border-gray-300 rounded font-mono text-[11px] font-bold text-gray-700">Shift</kbd> untuk memilih 2, 3, atau lebih berkas (.docx, .pdf, atau gambar) sekaligus.
+                        </p>
+
+                        <!-- Tampilan Daftar Berkas yang Dipilih -->
+                        <div x-show="selectedMainFiles.length > 0" class="pt-2 text-left max-w-xl mx-auto space-y-2" @click.stop>
+                            <div class="text-xs font-extrabold text-emerald-900 flex items-center justify-between">
+                                <span x-text="'✓ ' + selectedMainFiles.length + ' Berkas Dipilih:'"></span>
+                                <span class="text-[11px] text-gray-500 font-normal">Berkas pertama dibaca otomatis, berkas berikutnya disimpan sebagai lampiran</span>
+                            </div>
+                            <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                                <template x-for="(item, idx) in selectedMainFiles" :key="idx">
+                                    <div class="flex items-center justify-between p-2 rounded-xl border text-xs"
+                                         :class="item.isMain ? 'bg-emerald-100/70 border-emerald-300 text-emerald-950 font-bold' : 'bg-white border-gray-200 text-gray-700 font-medium'">
+                                        <div class="flex items-center gap-2 truncate">
+                                            <span class="px-1.5 py-0.5 rounded text-[10px] font-extrabold uppercase shrink-0"
+                                                  :class="item.isMain ? 'bg-emerald-600 text-white' : 'bg-blue-600 text-white'"
+                                                  x-text="item.isMain ? 'Surat Utama' : 'Lampiran #' + idx"></span>
+                                            <span class="truncate" x-text="item.name"></span>
+                                        </div>
+                                        <span class="text-[11px] text-gray-500 shrink-0 ml-2" x-text="item.size"></span>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-gray-500" x-show="selectedMainFiles.length <= 1">Sistem otomatis mendeteksi Nomor Surat, Perihal, Lampiran, Pengirim, dan Tanggal Surat.</p>
                     </div>
                 </label>
 

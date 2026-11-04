@@ -28,13 +28,14 @@ class SuratMasukController extends Controller
     public function parseDocx(Request $request): JsonResponse
     {
         $request->validate([
-            'file_surat' => ['required', 'file', 'mimes:docx,doc,pdf,jpg,jpeg,png,txt,html,htm', 'max:5120'],
+            'file_surat' => ['required'],
         ], [
             'file_surat.required' => 'Silakan pilih file surat masuk terlebih dahulu.',
-            'file_surat.mimes' => 'File surat harus berformat Word (.docx/.doc), PDF, atau Gambar (JPG/PNG).',
         ]);
 
-        $parsed = $this->docxParserService->parseUploadedDocument($request->file('file_surat'));
+        $rawFile = $request->file('file_surat');
+        $uploadedMain = is_array($rawFile) ? $rawFile[0] : $rawFile;
+        $parsed = $this->docxParserService->parseUploadedDocument($uploadedMain);
         $tahun = date('Y');
         $noAgendaBerikutnya = str_pad((string) (SuratMasuk::whereYear('tgl_diterima', $tahun)->withTrashed()->count() + 1), 3, '0', STR_PAD_LEFT);
 
@@ -198,16 +199,26 @@ class SuratMasukController extends Controller
         $fileTampilanPath = null;
         $fileLampiranPath = null;
         $parsedDocx = null;
+        $extraFromMain = [];
 
         if ($request->hasFile('file_surat_asli')) {
-            $uploadedMain = $request->file('file_surat_asli');
-            $parsedDocx = $this->docxParserService->parseUploadedDocument($uploadedMain);
-            $ext = strtolower($uploadedMain->getClientOriginalExtension()) ?: 'docx';
-            $fileSuratAsliPath = $uploadedMain->storeAs('surat-masuk', \Illuminate\Support\Str::uuid() . '.' . $ext, 'public');
+            $rawFiles = $request->file('file_surat_asli');
+            if (is_array($rawFiles)) {
+                $uploadedMain = $rawFiles[0];
+                $extraFromMain = array_slice($rawFiles, 1);
+            } else {
+                $uploadedMain = $rawFiles;
+            }
 
-            $absPath = storage_path('app/public/' . $fileSuratAsliPath);
-            $renderedPng = $this->docxParserService->renderWordToOriginalPng($absPath);
-            $fileTampilanPath = $renderedPng ?: $fileSuratAsliPath;
+            if ($uploadedMain && $uploadedMain->isValid()) {
+                $parsedDocx = $this->docxParserService->parseUploadedDocument($uploadedMain);
+                $ext = strtolower($uploadedMain->getClientOriginalExtension()) ?: 'docx';
+                $fileSuratAsliPath = $uploadedMain->storeAs('surat-masuk', \Illuminate\Support\Str::uuid() . '.' . $ext, 'public');
+
+                $absPath = storage_path('app/public/' . $fileSuratAsliPath);
+                $renderedPng = $this->docxParserService->renderWordToOriginalPng($absPath);
+                $fileTampilanPath = $renderedPng ?: $fileSuratAsliPath;
+            }
         }
 
         if ($request->hasFile('file_lampiran')) {
@@ -267,8 +278,9 @@ class SuratMasukController extends Controller
             'user_id' => auth()->id(),
         ]);
 
-        if ($request->hasFile('lampiran_berkas')) {
-            foreach ($request->file('lampiran_berkas') as $fLamp) {
+        $allAttachments = array_merge($extraFromMain, $request->file('lampiran_berkas') ?: []);
+        if (! empty($allAttachments)) {
+            foreach ($allAttachments as $fLamp) {
                 if ($fLamp && $fLamp->isValid()) {
                     $namaAsli = $fLamp->getClientOriginalName();
                     $ext = strtolower($fLamp->getClientOriginalExtension()) ?: 'pdf';
