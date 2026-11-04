@@ -26,6 +26,16 @@
             border-bottom: none;
             padding-bottom: 0;
             margin-bottom: 12px;
+            text-align: center;
+        }
+        .header-kop.with-banner img {
+            max-height: 120px;
+            max-width: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
         }
         .judul-laporan {
             text-align: center;
@@ -115,7 +125,7 @@
             <p style="margin: 2px 0 0; font-size: 11px; color: #475569;">Tata letak telah dioptimalkan agar lapang dan rapi. Pilih <strong>Simpan sebagai PDF (Save as PDF)</strong> atau langsung cetak ke printer.</p>
         </div>
         <div style="display: flex; gap: 8px; flex-shrink: 0;">
-            <button onclick="window.print()" type="button" style="background: #059669; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+            <button onclick="sesuaikanUrlCetak(); window.print();" type="button" style="background: #059669; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
                 <span>🖨️</span> <span>Cetak / Simpan PDF</span>
             </button>
             <a href="{{ route('admin.bendahara.index') }}" style="background: #e2e8f0; color: #334155; text-decoration: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 12px; display: inline-block;">
@@ -123,17 +133,33 @@
             </a>
         </div>
     </div>
+    @endif
+
     <script>
+        function sesuaikanUrlCetak() {
+            try {
+                if (window.history && window.history.replaceState) {
+                    window.history.replaceState({}, document.title, '{{ url('/') }}/');
+                }
+            } catch (e) {}
+        }
+        sesuaikanUrlCetak();
+        window.addEventListener('beforeprint', sesuaikanUrlCetak);
         window.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() { window.print(); }, 400);
+            sesuaikanUrlCetak();
+            @if(!empty($isHtmlPrint))
+            setTimeout(function() {
+                sesuaikanUrlCetak();
+                window.print();
+            }, 400);
+            @endif
         });
     </script>
-    @endif
 
     <!-- KOP RESMI LEMBAGA (BANNER GAMBAR KOP / LOGO PESANTREN) -->
     <div class="header-kop {{ !empty($kopGambar) ? 'with-banner' : '' }}">
         @if (!empty($kopGambar))
-            <img src="{{ $kopGambar }}" style="width: 100%; max-height: 120px; height: auto; display: block; margin: 0 auto;" alt="Kop Surat Resmi">
+            <img src="{{ $kopGambar }}" style="max-height: 120px; max-width: 100%; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto;" alt="Kop Surat Resmi">
         @else
             <table style="width: 100%; border-collapse: collapse; border: none; margin: 0;">
                 <tr>
@@ -182,7 +208,7 @@
                 <th style="width: 10%;">TANGGAL</th>
                 <th style="width: 14%;">NO. BUKTI</th>
                 <th style="width: 15%;">POS AKUN / KATEGORI</th>
-                <th style="width: 27%;">URAIAN TRANSAKSI & PIHAK TERKAIT</th>
+                <th style="width: 27%;">URAIAN TRANSAKSI</th>
                 <th style="width: 10%;" class="text-right">DEBIT (MASUK)</th>
                 <th style="width: 10%;" class="text-right">KREDIT (KELUAR)</th>
                 <th style="width: 10%;" class="text-right">SALDO KAS (RP)</th>
@@ -221,12 +247,6 @@
                     <td style="font-weight: 600;">{{ $t->kategori }}</td>
                     <td>
                         <div>{{ $t->keterangan ?: '-' }}</div>
-                        @if($t->nama_pihak)
-                            <div style="font-size: 8pt; color: #64748b; margin-top: 2px;">
-                                <span style="color: #94a3b8;">{{ $t->jenis === 'debit' ? 'Dari:' : 'Kepada:' }}</span>
-                                <strong style="color: #334155;">{{ $t->nama_pihak }}</strong>
-                            </div>
-                        @endif
                     </td>
                     <td class="text-right text-debit nowrap">
                         {{ $t->jenis === 'debit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-' }}

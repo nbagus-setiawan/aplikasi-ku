@@ -211,6 +211,48 @@ class BendaharaTest extends TestCase
         $this->assertEquals('application/pdf', $response->headers->get('Content-Type'));
     }
 
+    public function test_cetak_buku_kas_tidak_menampilkan_teks_kepada_dan_kop_proporsional(): void
+    {
+        $transaksi = KasTransaksi::create([
+            'kode_transaksi' => 'BKK-202610-0001',
+            'tanggal' => '2026-10-01',
+            'jenis' => 'kredit',
+            'kategori' => 'Beban rapat',
+            'nominal' => 15000,
+            'keterangan' => 'Aqua kecil',
+            'nama_pihak' => 'Toko sinar raya',
+            'user_id' => $this->user->id,
+        ]);
+
+        $html = view('bendahara.cetak', [
+            'transaksis' => collect([$transaksi]),
+            'saldoAwal' => 100000,
+            'totalDebit' => 0,
+            'totalKredit' => 15000,
+            'saldoAkhir' => 85000,
+            'dari' => '2026-10-01',
+            'sampai' => '2026-10-29',
+            'jenis' => null,
+            'kategori' => null,
+            'periode' => 'rentang_bulan',
+            'q' => null,
+            'labelPeriode' => '01 Oktober s.d 29 Oktober 2026',
+            'tanggal_awal_teks' => '01 Oktober',
+            'tanggal_akhir_teks' => '29 Oktober 2026',
+            'pengaturan' => [],
+            'pengaturans' => [],
+            'logo' => null,
+            'kopGambar' => 'data:image/png;base64,sample',
+            'isHtmlPrint' => true,
+        ])->render();
+
+        $this->assertStringContainsString('Aqua kecil', $html);
+        $this->assertStringNotContainsString('Kepada:', $html);
+        $this->assertStringNotContainsString('Toko sinar raya', $html);
+        $this->assertStringContainsString('object-fit: contain', $html);
+        $this->assertStringContainsString('replaceState', $html);
+    }
+
     public function test_bisa_mengunduh_buku_kas_umum_format_word_doc(): void
     {
         KasTransaksi::create([
