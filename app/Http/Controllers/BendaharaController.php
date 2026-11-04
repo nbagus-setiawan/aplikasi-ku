@@ -565,9 +565,11 @@ class BendaharaController extends Controller
             $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/logo.png')));
         }
 
-        // Banner Kop Surat Lengkap Resmi Pesantren
+        // Banner Kop Surat Resmi Khusus Laporan Buku Kas (Sesuai Template Word Resmi)
         $kopGambar = null;
-        if (! empty($pengaturans['kop_gambar']) && file_exists(storage_path('app/public/' . $pengaturans['kop_gambar']))) {
+        if (file_exists(public_path('images/kop-kas.png'))) {
+            $kopGambar = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kop-kas.png')));
+        } elseif (! empty($pengaturans['kop_gambar']) && file_exists(storage_path('app/public/' . $pengaturans['kop_gambar']))) {
             $ext = pathinfo($pengaturans['kop_gambar'], PATHINFO_EXTENSION);
             $mime = strtolower($ext) === 'png' ? 'image/png' : 'image/jpeg';
             $kopGambar = "data:{$mime};base64," . base64_encode(file_get_contents(storage_path('app/public/' . $pengaturans['kop_gambar'])));

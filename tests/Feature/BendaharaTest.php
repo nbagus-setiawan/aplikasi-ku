@@ -249,7 +249,11 @@ class BendaharaTest extends TestCase
         $this->assertStringContainsString('Aqua kecil', $html);
         $this->assertStringNotContainsString('Kepada:', $html);
         $this->assertStringNotContainsString('Toko sinar raya', $html);
-        $this->assertStringContainsString('object-fit: contain', $html);
+        $this->assertStringContainsString('Danil Ali Sabila', $html);
+        $this->assertStringContainsString('Ketua Umum', $html);
+        $this->assertStringContainsString('Azwil Yoga Pratama', $html);
+        $this->assertStringContainsString('Bendahara', $html);
+        $this->assertStringNotContainsString('Mursyidi', $html);
         $this->assertStringContainsString('replaceState', $html);
     }
 

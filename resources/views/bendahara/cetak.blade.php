@@ -29,11 +29,9 @@
             text-align: center;
         }
         .header-kop.with-banner img {
-            max-height: 120px;
-            max-width: 100%;
-            width: auto;
+            width: 100%;
             height: auto;
-            object-fit: contain;
+            max-height: 160px;
             display: block;
             margin: 0 auto;
         }
@@ -156,10 +154,10 @@
         });
     </script>
 
-    <!-- KOP RESMI LEMBAGA (BANNER GAMBAR KOP / LOGO PESANTREN) -->
+    <!-- KOP RESMI LEMBAGA (BANNER GAMBAR KOP / LOGO PESANTREN SESUAI WORD) -->
     <div class="header-kop {{ !empty($kopGambar) ? 'with-banner' : '' }}">
         @if (!empty($kopGambar))
-            <img src="{{ $kopGambar }}" style="max-height: 120px; max-width: 100%; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto;" alt="Kop Surat Resmi">
+            <img src="{{ $kopGambar }}" style="width: 100%; height: auto; max-height: 160px; display: block; margin: 0 auto;" alt="Kop Surat Resmi">
         @else
             <table style="width: 100%; border-collapse: collapse; border: none; margin: 0;">
                 <tr>
@@ -276,26 +274,20 @@
         </tbody>
     </table>
 
-    <!-- LEMBAR PENGESAHAN DUA TANDA TANGAN SEJAJAR -->
+    <!-- LEMBAR PENGESAHAN DUA TANDA TANGAN SEJAJAR (PERSIS SESUAI TEMPLATE WORD RESMI) -->
     <table class="tabel-ttd">
         <tr>
-            <td style="width: 50%; text-align: center;">
-                <p style="margin: 0;">Mengetahui,</p>
-                <p style="margin: 2px 0 0; font-weight: bold;">Pengasuh Pondok Pesantren</p>
+            <td style="width: 50%; text-align: center; vertical-align: top;">
+                <p style="margin: 0; font-size: 10pt;">Mengetahui,</p>
                 <div class="ttd-space"></div>
-                <p style="margin: 0; font-weight: bold; text-decoration: underline;">K.H. Mursyidi</p>
-                <p style="margin: 2px 0 0; font-size: 8.5pt; color: #64748b;">Pengasuh PP Al-Falah Putak</p>
+                <p style="margin: 0; font-size: 10pt; font-weight: bold; text-decoration: underline;">Danil Ali Sabila</p>
+                <p style="margin: 2px 0 0; font-size: 10pt; font-weight: bold;">Ketua Umum</p>
             </td>
-            <td style="width: 50%; text-align: center;">
-                @php
-                    $namaBulanIndo = [1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-                    $tglCetak = date('j') . ' ' . ($namaBulanIndo[(int) date('n')] ?? date('F')) . ' ' . date('Y');
-                @endphp
-                <p style="margin: 0;">Desa Putak, {{ $tglCetak }}</p>
-                <p style="margin: 2px 0 0; font-weight: bold;">Bendahara Pesantren</p>
+            <td style="width: 50%; text-align: center; vertical-align: top;">
+                <p style="margin: 0; font-size: 10pt;">&nbsp;</p>
                 <div class="ttd-space"></div>
-                <p style="margin: 0; font-weight: bold; text-decoration: underline;">( __________________________ )</p>
-                <p style="margin: 2px 0 0; font-size: 8.5pt; color: #64748b;">Bagian Kebendaharaan</p>
+                <p style="margin: 0; font-size: 10pt; font-weight: bold; text-decoration: underline;">Azwil Yoga Pratama</p>
+                <p style="margin: 2px 0 0; font-size: 10pt; font-weight: bold;">Bendahara</p>
             </td>
         </tr>
     </table>
