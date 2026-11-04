@@ -142,7 +142,6 @@
             </svg>
             <div class="min-w-0">
                 <span class="block truncate text-sm font-medium">Bendahara</span>
-                <span class="block text-[10px] text-emerald-300/70 font-normal leading-none mt-0.5">Buku Kas (Debit/Kredit)</span>
             </div>
         </a>
 

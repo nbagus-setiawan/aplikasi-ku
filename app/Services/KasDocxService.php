@@ -11,7 +11,7 @@ class KasDocxService
     ) {}
 
     /**
-     * Hasilkan file Word (.docx) buku kas menggunakan template resmi LAPORAN BUKU KAS.docx
+     * Hasilkan file Word (.docx) buku kas menggunakan template resmi template buku kas.docx
      * Murni menggunakan parser string & ZIP PHP (tanpa ketergantungan ekstensi DOMDocument/php-xml).
      */
     public function generateDocx(array $reportData): ?string
@@ -49,14 +49,17 @@ class KasDocxService
     }
 
     /**
-     * Dapatkan path file template laporan buku kas
+     * Dapatkan path file template laporan buku kas yang valid
      */
     protected function getTemplatePath(): ?string
     {
         $candidates = [
-            base_path('LAPORAN BUKU KAS.docx'),
+            base_path('template buku kas.docx'),
+            resource_path('templates/template buku kas.docx'),
             resource_path('templates/laporan-buku-kas.docx'),
+            storage_path('app/templates/template buku kas.docx'),
             storage_path('app/templates/laporan-buku-kas.docx'),
+            base_path('LAPORAN BUKU KAS.docx'),
         ];
 
         foreach ($candidates as $path) {
@@ -70,7 +73,7 @@ class KasDocxService
 
     /**
      * Isi placeholder dan gandakan baris tabel sesuai data transaksi.
-     * Implementasi murni string/regex tanpa membutuhkan Class DOMDocument.
+     * Mendukung template resmi 8 kolom (NO, TANGGAL, NO.BUKTI, AKUN, KETERANGAN, DEBIT, KREDIT, SALDO).
      */
     protected function populateDocumentXml(string $docXml, array $data): string
     {
@@ -86,40 +89,23 @@ class KasDocxService
             $tglAkhir = date('d/m/Y', strtotime($sampai));
         } elseif ($dari) {
             $tglMulai = date('d/m/Y', strtotime($dari));
-            $tglAkhir = 'Selesai';
+            $tglAkhir = 'Sekarang';
         } elseif ($sampai) {
             $tglMulai = 'Awal';
             $tglAkhir = date('d/m/Y', strtotime($sampai));
         } else {
             $tglMulai = 'Awal';
-            $tglAkhir = 'Semua Periode';
+            $tglAkhir = 'Sekarang';
         }
 
-        $docXml = str_replace(
-            ['{tanggal_mulai}', '{tanggal_akhir}'],
-            [$tglMulai, $tglAkhir],
-            $docXml
-        );
+        // Ganti placeholder periode {tanggal_awal} s.d { tanggal_akhir} atau {tanggal_mulai} / {tanggal_akhir}
+        $docXml = preg_replace('/\{[^{}]*tanggal_awal[^{}]*\}/s', $tglMulai, $docXml);
+        $docXml = preg_replace('/\{[^{}]*tanggal_mulai[^{}]*\}/s', $tglMulai, $docXml);
+        $docXml = preg_replace('/\{[^{}]*tanggal_akhir[^{}]*\}/s', $tglAkhir, $docXml);
 
-        // 3. Modifikasi Tabel Transaksi Kas
+        // 3. Modifikasi Tabel Transaksi Kas (Tabel Pertama)
         if (preg_match('/<w:tbl\b[^>]*>.*?<\/w:tbl>/s', $docXml, $tblMatch)) {
             $tblXml = $tblMatch[0];
-
-            // Pastikan tblBorders terpasang pada w:tblPr agar garis tepi tabel (termasuk garis bawah) tegas
-            $borderXml = '<w:tblBorders>'
-                . '<w:top w:val="single" w:sz="6" w:space="0" w:color="000000"/>'
-                . '<w:left w:val="single" w:sz="6" w:space="0" w:color="000000"/>'
-                . '<w:bottom w:val="single" w:sz="6" w:space="0" w:color="000000"/>'
-                . '<w:right w:val="single" w:sz="6" w:space="0" w:color="000000"/>'
-                . '<w:insideH w:val="single" w:sz="6" w:space="0" w:color="000000"/>'
-                . '<w:insideV w:val="single" w:sz="6" w:space="0" w:color="000000"/>'
-                . '</w:tblBorders>';
-
-            if (str_contains($tblXml, '<w:tblBorders>')) {
-                $tblXml = preg_replace('/<w:tblBorders>.*?<\/w:tblBorders>/s', $borderXml, $tblXml);
-            } else {
-                $tblXml = preg_replace('/(<\/w:tblPr>)/', $borderXml . '$1', $tblXml);
-            }
 
             // Ekstrak baris tabel
             if (preg_match_all('/<w:tr\b[^>]*>.*?<\/w:tr>/s', $tblXml, $rowMatches) && count($rowMatches[0]) >= 2) {
@@ -127,7 +113,7 @@ class KasDocxService
 
                 $headerRow = $rows[0];
                 $templateRow = $rows[1];
-                $totalRow = $rows[count($rows) - 1];
+                $totalRow = $rows[count($rows) - 1]; // Baris total mutasi & saldo akhir
 
                 // Data transaksi dan perhitungan saldo kas
                 $transaksis = $data['transaksis'] ?? [];
@@ -140,11 +126,16 @@ class KasDocxService
 
                 // Baris Saldo Awal jika ada
                 if ($dari && $saldoAwal != 0) {
-                    $saldoRow = str_replace(
-                        ['{No.}', '{No._bukti}', '{akun}', '{debit}', '{kredit}', '{saldo}'],
-                        ['-', '-', 'SALDO AWAL KAS', '-', '-', 'Rp ' . number_format($currentSaldo, 0, ',', '.')],
-                        $templateRow
-                    );
+                    $saldoRow = $this->renderRow($templateRow, [
+                        'no' => '-',
+                        'tanggal' => date('d/m/Y', strtotime($dari)),
+                        'no_bukti' => '-',
+                        'akun' => 'SALDO AWAL KAS',
+                        'keterangan' => 'Saldo awal kas periode sebelumnya',
+                        'debit' => '-',
+                        'kredit' => '-',
+                        'saldo' => 'Rp ' . number_format($currentSaldo, 0, ',', '.'),
+                    ]);
                     $generatedRows[] = $saldoRow;
                 }
 
@@ -159,42 +150,38 @@ class KasDocxService
                     $debitStr = $t->jenis === 'debit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-';
                     $kreditStr = $t->jenis === 'kredit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-';
                     $saldoStr = 'Rp ' . number_format((float) $currentSaldo, 0, ',', '.');
+                    $tglStr = $t->tanggal ? date('d/m/Y', strtotime($t->tanggal)) : '-';
 
-                    $newRow = str_replace(
-                        ['{No.}', '{No._bukti}', '{akun}', '{debit}', '{kredit}', '{saldo}'],
-                        [
-                            (string) ($idx + 1),
-                            htmlspecialchars((string) $t->kode_transaksi, ENT_XML1, 'UTF-8'),
-                            htmlspecialchars((string) $t->kategori, ENT_XML1, 'UTF-8'),
-                            $debitStr,
-                            $kreditStr,
-                            $saldoStr,
-                        ],
-                        $templateRow
-                    );
-                    $generatedRows[] = $newRow;
+                    $rowXml = $this->renderRow($templateRow, [
+                        'no' => (string) ($idx + 1),
+                        'tanggal' => $tglStr,
+                        'no_bukti' => (string) $t->kode_transaksi,
+                        'akun' => (string) $t->kategori,
+                        'keterangan' => (string) ($t->keterangan ?: '-'),
+                        'debit' => $debitStr,
+                        'kredit' => $kreditStr,
+                        'saldo' => $saldoStr,
+                    ]);
+                    $generatedRows[] = $rowXml;
                 }
 
                 // Jika tidak ada data transaksi sama sekali
                 if (empty($generatedRows)) {
-                    $emptyRow = str_replace(
-                        ['{No.}', '{No._bukti}', '{akun}', '{debit}', '{kredit}', '{saldo}'],
-                        ['-', '-', 'Tidak ada data transaksi kas.', '-', '-', 'Rp 0'],
-                        $templateRow
-                    );
+                    $emptyRow = $this->renderRow($templateRow, [
+                        'no' => '-',
+                        'tanggal' => '-',
+                        'no_bukti' => '-',
+                        'akun' => '-',
+                        'keterangan' => 'Tidak ada data transaksi kas pada periode ini.',
+                        'debit' => '-',
+                        'kredit' => '-',
+                        'saldo' => 'Rp 0',
+                    ]);
                     $generatedRows[] = $emptyRow;
                 }
 
                 // Format Baris Total Rekapitulasi
-                $cleanTotal = str_replace(
-                    ['{total_debit}', '{total_kredit}', '{total_}'],
-                    [
-                        'Rp ' . number_format($totalDebit, 0, ',', '.'),
-                        'Rp ' . number_format($totalKredit, 0, ',', '.'),
-                        'Rp ' . number_format($currentSaldo, 0, ',', '.'),
-                    ],
-                    $totalRow
-                );
+                $cleanTotal = $this->renderTotalRow($totalRow, $totalDebit, $totalKredit, $currentSaldo);
 
                 // Rangkai kembali seluruh isi tabel
                 $tblPrefixPos = strpos($tblXml, '<w:tr');
@@ -206,5 +193,48 @@ class KasDocxService
         }
 
         return $docXml;
+    }
+
+    /**
+     * Render satu baris data transaksi pada template baris tabel
+     */
+    protected function renderRow(string $rowXml, array $vals): string
+    {
+        $r = $rowXml;
+
+        // Ganti No.bukti terlebih dahulu sebelum No. agar tidak salah timpa
+        $r = preg_replace('/\{[^{}]*No\.?_?bukti[^{}]*\}/i', htmlspecialchars($vals['no_bukti'], ENT_XML1, 'UTF-8'), $r);
+        $r = preg_replace('/\{[^{}]*tanggal_transaksi[^{}]*\}/i', htmlspecialchars($vals['tanggal'], ENT_XML1, 'UTF-8'), $r);
+        $r = preg_replace('/\{[^{}]*akun[^{}]*\}/i', htmlspecialchars($vals['akun'], ENT_XML1, 'UTF-8'), $r);
+        $r = preg_replace('/\{[^{}]*keterangan[^{}]*\}/i', htmlspecialchars($vals['keterangan'], ENT_XML1, 'UTF-8'), $r);
+        $r = preg_replace('/\{[^{}]*debit[^{}]*\}/i', htmlspecialchars($vals['debit'], ENT_XML1, 'UTF-8'), $r);
+        $r = preg_replace('/\{[^{}]*kredit[^{}]*\}/i', htmlspecialchars($vals['kredit'], ENT_XML1, 'UTF-8'), $r);
+        $r = preg_replace('/\{[^{}]*saldo[^{}]*\}/i', htmlspecialchars($vals['saldo'], ENT_XML1, 'UTF-8'), $r);
+        // Terakhir ganti {No.}
+        $r = preg_replace('/\{[^{}]*No\.[^{}]*\}/i', htmlspecialchars($vals['no'], ENT_XML1, 'UTF-8'), $r);
+
+        return $r;
+    }
+
+    /**
+     * Render baris rekapitulasi total mutasi dan saldo akhir
+     */
+    protected function renderTotalRow(string $totalRowXml, float $totalDebit, float $totalKredit, float $saldoAkhir): string
+    {
+        $r = $totalRowXml;
+
+        // Template resmi 'template buku kas.docx' sudah memiliki awalan 'Rp ' sebelum placeholder
+        if (preg_match('/\{[^{}]*jumlah_debit[^{}]*\}/i', $r)) {
+            $r = preg_replace('/\{[^{}]*jumlah_debit[^{}]*\}/i', number_format($totalDebit, 0, ',', '.'), $r);
+            $r = preg_replace('/\{[^{}]*jumlah_kredit[^{}]*\}/i', number_format($totalKredit, 0, ',', '.'), $r);
+            $r = preg_replace('/\{[^{}]*jumlah_[^{}]*saldo[^{}]*\}/i', number_format($saldoAkhir, 0, ',', '.'), $r);
+        } else {
+            // Template alternatif dengan placeholder {total_debit}, {total_kredit}, {total_}
+            $r = preg_replace('/\{[^{}]*total_debit[^{}]*\}/i', 'Rp ' . number_format($totalDebit, 0, ',', '.'), $r);
+            $r = preg_replace('/\{[^{}]*total_kredit[^{}]*\}/i', 'Rp ' . number_format($totalKredit, 0, ',', '.'), $r);
+            $r = preg_replace('/\{[^{}]*total_?[^{}]*\}/i', 'Rp ' . number_format($saldoAkhir, 0, ',', '.'), $r);
+        }
+
+        return $r;
     }
 }

@@ -260,4 +260,56 @@ class BendaharaTest extends TestCase
         $this->assertStringContainsString('Catat Debit', $content);
         $this->assertStringContainsString('Catat Kredit', $content);
     }
+
+    public function test_ekspor_word_menggunakan_template_buku_kas_docx_dengan_data_terisi_otomatis(): void
+    {
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202610-0010',
+            'tanggal' => '2026-10-15',
+            'jenis' => 'debit',
+            'kategori' => 'Penerimaan Sumbangan',
+            'nominal' => 2000000,
+            'keterangan' => 'Donasi operasional pondok',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.bendahara.word', [
+            'periode' => 'kustom',
+            'dari_tanggal' => '2026-10-01',
+            'sampai_tanggal' => '2026-10-31',
+        ]));
+
+        $response->assertStatus(200);
+        $this->assertEquals('application/vnd.openxmlformats-officedocument.wordprocessingml.document', $response->headers->get('Content-Type'));
+
+        // Baca zip docx hasil unduhan menggunakan parser bawaan
+        $binary = $response->getContent();
+        $tempFile = tempnam(sys_get_temp_dir(), 'test_docx_');
+        file_put_contents($tempFile, $binary);
+
+        $parser = app(\App\Services\DocxSuratParserService::class);
+        $entries = $parser->readZipEntries($tempFile);
+        $docXml = $entries['word/document.xml'] ?? '';
+        @unlink($tempFile);
+
+        $this->assertNotEmpty($docXml);
+        // Pastikan placeholder terisi otomatis
+        $this->assertStringContainsString('01/10/2026', $docXml);
+        $this->assertStringContainsString('31/10/2026', $docXml);
+        $this->assertStringContainsString('BKM-202610-0010', $docXml);
+        $this->assertStringContainsString('Penerimaan Sumbangan', $docXml);
+        $this->assertStringContainsString('Donasi operasional pondok', $docXml);
+        $this->assertStringContainsString('2.000.000', $docXml);
+        // Pastikan tidak ada placeholder yang belum terganti
+        $this->assertStringNotContainsString('{No.}', $docXml);
+        $this->assertStringNotContainsString('{tanggal_transaksi}', $docXml);
+        $this->assertStringNotContainsString('{No.bukti}', $docXml);
+        $this->assertStringNotContainsString('{akun}', $docXml);
+        $this->assertStringNotContainsString('{keterangan}', $docXml);
+        $this->assertStringNotContainsString('{debit}', $docXml);
+        $this->assertStringNotContainsString('{kredit}', $docXml);
+        $this->assertStringNotContainsString('{saldo}', $docXml);
+        $this->assertStringNotContainsString('{jumlah_debit}', $docXml);
+        $this->assertStringNotContainsString('{jumlah_kredit}', $docXml);
+    }
 }
