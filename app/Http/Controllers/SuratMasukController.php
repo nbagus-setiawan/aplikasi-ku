@@ -364,8 +364,10 @@ class SuratMasukController extends Controller
     /**
      * Hapus data surat masuk (Hard Delete / Permanen).
      */
-    public function destroy(SuratMasuk $suratMasuk): RedirectResponse
+    public function destroy(Request $request, SuratMasuk $suratMasuk)
     {
+        $perihal = $suratMasuk->perihal;
+
         foreach ([$suratMasuk->file, $suratMasuk->file_surat_asli, $suratMasuk->file_lampiran] as $filePath) {
             if ($filePath && Storage::disk('public')->exists($filePath)) {
                 Storage::disk('public')->delete($filePath);
@@ -373,6 +375,13 @@ class SuratMasukController extends Controller
         }
 
         $suratMasuk->forceDelete();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Surat masuk ({$perihal}) berhasil dihapus permanen.",
+            ]);
+        }
 
         return redirect()->route('admin.surat-masuk.index')
             ->with('success', 'Surat masuk berhasil dihapus.');

@@ -15,23 +15,25 @@
          x-transition:leave-end="opacity-0"
          class="fixed top-20 right-4 z-50 max-w-md w-full pointer-events-auto"
          style="display: none;">
-        <div class="rounded-2xl p-4 shadow-xl border flex items-start gap-3 backdrop-blur-md"
-             :class="toast.type === 'error' ? 'bg-rose-50/95 border-rose-300 text-rose-900' : 'bg-emerald-50/95 border-emerald-300 text-emerald-900'">
-            <span class="p-1.5 rounded-xl shrink-0"
-                  :class="toast.type === 'error' ? 'bg-rose-200 text-rose-700' : 'bg-emerald-200 text-emerald-700'">
+        <div class="rounded-2xl p-4 shadow-2xl border-2 flex items-start gap-3 bg-white"
+             :class="toast.type === 'error' ? 'border-rose-500 border-l-[6px] border-l-rose-600' : 'border-emerald-500 border-l-[6px] border-l-emerald-600'">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                 :class="toast.type === 'error' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'">
                 <template x-if="toast.type === 'error'">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
                 </template>
                 <template x-if="toast.type !== 'error'">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                 </template>
-            </span>
-            <div class="flex-1 pt-0.5">
-                <p class="text-xs font-black uppercase tracking-wider" x-text="toast.title || (toast.type === 'error' ? 'Terjadi Kesalahan' : 'Berhasil')"></p>
-                <p class="text-xs font-medium mt-0.5" x-text="toast.message"></p>
             </div>
-            <button @click="toast.show = false" type="button" class="text-slate-400 hover:text-slate-600 p-1">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            <div class="flex-1 min-w-0 pt-0.5">
+                <p class="text-xs font-black uppercase tracking-wider"
+                   :class="toast.type === 'error' ? 'text-rose-900' : 'text-slate-900'"
+                   x-text="toast.title || (toast.type === 'error' ? 'GAGAL' : 'BERHASIL')"></p>
+                <p class="text-xs font-bold text-slate-800 mt-0.5 leading-snug" x-text="toast.message"></p>
+            </div>
+            <button @click="toast.show = false" type="button" class="text-slate-400 hover:text-slate-700 p-1 font-bold text-base leading-none">
+                &times;
             </button>
         </div>
     </div>

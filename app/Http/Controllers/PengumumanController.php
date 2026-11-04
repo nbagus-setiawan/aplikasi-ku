@@ -200,13 +200,22 @@ class PengumumanController extends Controller
     /**
      * Hapus pengumuman (Hard Delete / Permanen).
      */
-    public function destroy(Pengumuman $pengumuman)
+    public function destroy(Request $request, Pengumuman $pengumuman)
     {
+        $judul = $pengumuman->judul;
+
         if ($pengumuman->gambar && Storage::disk('public')->exists($pengumuman->gambar)) {
             Storage::disk('public')->delete($pengumuman->gambar);
         }
 
         $pengumuman->forceDelete();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Pengumuman ({$judul}) berhasil dihapus permanen.",
+            ]);
+        }
 
         return redirect()->route('admin.pengumuman.index')
             ->with('success', 'Pengumuman berhasil dihapus.');

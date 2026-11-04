@@ -86,11 +86,12 @@ class SantriController extends Controller
             $data['foto'] = $foto->storeAs('foto-santri', $filename, 'public');
         }
 
-        Santri::create($data);
+        $santri = Santri::create($data);
 
         return redirect()
             ->route('admin.santri.index')
-            ->with('success', 'Data santri berhasil ditambahkan.');
+            ->with('success', 'Data santri berhasil ditambahkan.')
+            ->with('highlight_id', $santri->id);
     }
 
     /**
@@ -136,25 +137,35 @@ class SantriController extends Controller
             ?: route('admin.santri.index');
 
         return redirect($returnUrl)
-            ->with('success', 'Data santri berhasil diperbarui.');
+            ->with('success', 'Data santri berhasil diperbarui.')
+            ->with('highlight_id', $santri->id);
     }
 
     /**
      * Hapus data santri (Hard Delete / Permanen).
      */
-    public function destroy(Santri $santri): RedirectResponse
+    public function destroy(Request $request, Santri $santri)
     {
+        $nama = $santri->nama;
+
         if ($santri->foto && Storage::disk('public')->exists($santri->foto)) {
             Storage::disk('public')->delete($santri->foto);
         }
 
         $santri->forceDelete();
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Data santri {$nama} berhasil dihapus permanen.",
+            ]);
+        }
+
         // Tetap berada pada filter aktif setelah menghapus
         $returnUrl = session('santri_filter_url') ?: route('admin.santri.index');
 
         return redirect($returnUrl)
-            ->with('success', 'Data santri berhasil dihapus.');
+            ->with('success', "Data santri {$nama} berhasil dihapus.");
     }
 
     /**

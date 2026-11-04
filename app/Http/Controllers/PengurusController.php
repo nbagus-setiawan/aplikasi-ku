@@ -82,11 +82,12 @@ class PengurusController extends Controller
             $data['foto'] = $foto->storeAs('foto-pengurus', $filename, 'public');
         }
 
-        Pengurus::create($data);
+        $p = Pengurus::create($data);
 
         return redirect()
             ->route('admin.pengurus.index')
-            ->with('success', 'Data pengurus berhasil ditambahkan.');
+            ->with('success', 'Data pengurus berhasil ditambahkan.')
+            ->with('highlight_id', $p->id);
     }
 
     /**
@@ -115,24 +116,34 @@ class PengurusController extends Controller
             ?: route('admin.pengurus.index');
 
         return redirect($returnUrl)
-            ->with('success', 'Data pengurus berhasil diperbarui.');
+            ->with('success', 'Data pengurus berhasil diperbarui.')
+            ->with('highlight_id', $pengurus->id);
     }
 
     /**
      * Hapus data pengurus.
      */
-    public function destroy(Pengurus $pengurus): RedirectResponse
+    public function destroy(Request $request, Pengurus $pengurus)
     {
+        $nama = $pengurus->nama;
+
         if ($pengurus->foto && Storage::disk('public')->exists($pengurus->foto)) {
             Storage::disk('public')->delete($pengurus->foto);
         }
 
         $pengurus->delete();
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Data pengurus {$nama} berhasil dihapus.",
+            ]);
+        }
+
         // Tetap berada pada filter aktif setelah menghapus
         $returnUrl = session('pengurus_filter_url') ?: route('admin.pengurus.index');
 
         return redirect($returnUrl)
-            ->with('success', 'Data pengurus berhasil dihapus.');
+            ->with('success', "Data pengurus {$nama} berhasil dihapus.");
     }
 }

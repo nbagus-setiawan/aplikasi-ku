@@ -143,9 +143,17 @@ class AgendaController extends Controller
     /**
      * Hapus agenda kegiatan (Hard Delete / Permanen).
      */
-    public function destroy(Agenda $agenda): RedirectResponse
+    public function destroy(Request $request, Agenda $agenda)
     {
+        $judul = $agenda->judul;
         $agenda->forceDelete();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Agenda ({$judul}) berhasil dihapus permanen.",
+            ]);
+        }
 
         return redirect()->route('admin.agenda.index')
             ->with('success', 'Agenda kegiatan berhasil dihapus.');

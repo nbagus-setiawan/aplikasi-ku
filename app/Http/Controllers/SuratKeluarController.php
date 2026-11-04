@@ -876,8 +876,10 @@ class SuratKeluarController extends Controller
     /**
      * Hapus permanen surat keluar beserta berkas dan tanda tangannya.
      */
-    public function destroy(SuratKeluar $suratKeluar): RedirectResponse
+    public function destroy(Request $request, SuratKeluar $suratKeluar)
     {
+        $perihal = $suratKeluar->perihal;
+
         foreach ([$suratKeluar->file, $suratKeluar->file_surat_asli, $suratKeluar->file_final] as $filePath) {
             if ($filePath && Storage::disk('public')->exists($filePath)) {
                 Storage::disk('public')->delete($filePath);
@@ -886,6 +888,13 @@ class SuratKeluarController extends Controller
 
         $suratKeluar->tandaTangans()->delete();
         $suratKeluar->forceDelete();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Surat keluar ({$perihal}) berhasil dihapus permanen.",
+            ]);
+        }
 
         return redirect()->route('admin.surat-keluar.index')
             ->with('success', 'Surat keluar berhasil dihapus dari sistem.');
