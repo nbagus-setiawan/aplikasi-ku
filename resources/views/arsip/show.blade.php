@@ -105,9 +105,14 @@
                     </p>
                 </div>
 
+                <!-- Galeri Berkas Lampiran Multi-File -->
+                <div class="md:col-span-2 pt-2 border-t border-gray-100">
+                    <x-galeri-lampiran :model="$arsip" type="arsip" title="Galeri Berkas Dokumen Arsip" />
+                </div>
+
                 <!-- Pratinjau Dokumen -->
                 <div class="md:col-span-2 space-y-2 pt-2 border-t border-gray-100">
-                    <span class="block text-xs font-bold uppercase tracking-wider text-emerald-900">📄 Pratinjau Berkas Dokumen</span>
+                    <span class="block text-xs font-bold uppercase tracking-wider text-emerald-900">📄 Pratinjau Berkas Dokumen Utama</span>
                     @if ($arsip->is_image)
                         <div class="border border-gray-200 rounded-2xl p-3 bg-gray-100 flex items-center justify-center max-h-[600px] overflow-hidden">
                             <img src="{{ asset('storage/' . $arsip->file) }}" alt="{{ $arsip->judul }}" class="max-h-[580px] w-auto rounded-xl shadow-xs object-contain bg-white" />

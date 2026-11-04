@@ -397,9 +397,15 @@
                                 </select>
                             </div>
                             <div class="col-span-2">
-                                <label class="block text-[11px] font-bold text-gray-600 mb-1">Ganti Berkas Lampiran</label>
+                                <label class="block text-[11px] font-bold text-gray-600 mb-1">Ganti Berkas Lampiran Utama</label>
                                 <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                                        class="w-full text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-800 border border-gray-300 rounded-xl" />
+                            </div>
+                            <div class="col-span-2 pt-2 border-t border-gray-100">
+                                <x-multi-file-upload 
+                                    label="Tambah Berkas Lampiran Baru (Bisa Pilih Banyak)"
+                                    hint="Format: PDF, Word (.docx), atau Gambar. File akan ditambahkan ke daftar lampiran surat."
+                                />
                             </div>
                             <div class="col-span-2">
                                 <label class="block text-[11px] font-bold text-gray-600 mb-1">Kode QR Verifikasi</label>

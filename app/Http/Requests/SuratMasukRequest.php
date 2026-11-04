@@ -34,6 +34,8 @@ class SuratMasukRequest extends FormRequest
             'file_surat_asli' => ['nullable', 'file', 'extensions:docx,doc,pdf,jpg,jpeg,png,txt,html,htm', 'max:5120'],
             'file' => ['nullable', 'file', 'extensions:pdf,jpg,jpeg,png,doc,docx', 'max:5120'],
             'file_lampiran' => ['nullable', 'file', 'extensions:pdf,jpg,jpeg,png,doc,docx', 'max:5120'],
+            'lampiran_berkas' => ['nullable', 'array'],
+            'lampiran_berkas.*' => ['nullable', 'file', 'extensions:pdf,jpg,jpeg,png,webp,doc,docx', 'max:10240'],
             'disposisi' => ['nullable', 'string'],
             'status_disposisi' => [$isWordUpload ? 'nullable' : 'required', 'in:baru,diproses,selesai'],
         ];

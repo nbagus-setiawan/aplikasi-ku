@@ -44,6 +44,8 @@ class SuratKeluarRequest extends FormRequest
             'nama_penandatangan' => [$hasWordFile ? 'nullable' : 'required', 'string', 'max:255'],
             'jabatan_penandatangan' => [$hasWordFile ? 'nullable' : 'required', 'string', 'max:255'],
             'file' => ['nullable', 'file', 'extensions:pdf,jpg,jpeg,png,doc,docx', 'max:10240'],
+            'lampiran_berkas' => ['nullable', 'array'],
+            'lampiran_berkas.*' => ['nullable', 'file', 'extensions:pdf,jpg,jpeg,png,webp,doc,docx', 'max:10240'],
             'status' => ['nullable', 'in:draft,final,terkirim'],
             'aksi_simpan' => ['nullable', 'in:draft,cetak,siap_kirim,terbitkan_word'],
             'kode_verifikasi' => [

@@ -113,10 +113,14 @@
         },
 
         handleFileLampiran(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
 
-            this.fileLampiranName = file.name;
+            if (files.length === 1) {
+                this.fileLampiranName = files[0].name;
+            } else {
+                this.fileLampiranName = files.length + ' berkas lampiran dipilih (' + files[0].name + ', dst)';
+            }
             this.progress2 = 25;
 
             const timer = setInterval(() => {
@@ -387,36 +391,38 @@
                 </div>
             </div>
 
-            <!-- TAHAP 2: BAR PROGRES KEDUA UPLOAD LAMPIRAN (HANYA MUNCUL JIKA ADA LAMPIRAN TERTULIS DI SURAT) -->
-            <div x-show="progress1 === 100 && detected.ada_lampiran" x-cloak
+            <!-- TAHAP 2: UPLOAD BERKAS LAMPIRAN (MULTI-FILE) -->
+            <div x-show="progress1 === 100" x-cloak
                  class="bg-white rounded-2xl border-2 p-6 shadow-xs space-y-4 transition"
-                 :class="progress2 === 100 ? 'border-emerald-500' : 'border-blue-400'">
+                 :class="progress2 === 100 ? 'border-emerald-500' : (detected.ada_lampiran ? 'border-blue-400' : 'border-slate-200')">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2.5">
                         <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-extrabold"
-                              :class="progress2 === 100 ? 'bg-emerald-600 text-white' : 'bg-blue-600 text-white'">
+                              :class="progress2 === 100 ? 'bg-emerald-600 text-white' : (detected.ada_lampiran ? 'bg-blue-600 text-white' : 'bg-slate-400 text-white')">
                             2
                         </span>
                         <div>
                             <h2 class="text-sm font-extrabold text-gray-900">
-                                Tahap 2: Upload Berkas Lampiran (<span class="text-blue-700" x-text="detected.lampiran_teks"></span>)
+                                Tahap 2: Upload Berkas Lampiran Multi-File
+                                <span x-show="detected.ada_lampiran" class="text-blue-700" x-text="'(' + detected.lampiran_teks + ' - Wajib)'"></span>
+                                <span x-show="!detected.ada_lampiran" class="text-slate-500 text-xs font-normal">(Opsional jika ada berkas tambahan)</span>
                             </h2>
                             <p class="text-[11px] text-gray-500">
-                                Karena tertulis lampiran <strong x-text="detected.lampiran_teks"></strong>, silakan unggah file lampirannya.
+                                Bisa pilih atau drag banyak berkas sekaligus (PDF, Word, atau Gambar). Tahan tombol <kbd class="px-1 py-0.5 bg-slate-100 border border-slate-300 rounded font-mono text-[10px]">Ctrl</kbd> / <kbd class="px-1 py-0.5 bg-slate-100 border border-slate-300 rounded font-mono text-[10px]">Shift</kbd> saat memilih berkas.
                             </p>
                         </div>
                     </div>
                     <span x-show="progress2 === 100" class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold">
-                        ✓ Lampiran Siap (100%)
+                        ✓ Berkas Lampiran Siap
                     </span>
                 </div>
 
                 <label class="block cursor-pointer border-2 border-dashed rounded-2xl p-5 text-center transition"
                        :class="progress2 === 100 ? 'border-emerald-400 bg-emerald-50/40' : 'border-blue-300 hover:border-blue-500 bg-blue-50/30'">
-                    <input type="file" name="file_lampiran" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="hidden" @change="handleFileLampiran($event)">
+                    <input type="file" name="lampiran_berkas[]" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="hidden" @change="handleFileLampiran($event)">
                     <div class="space-y-1.5">
                         <div class="text-xs font-bold text-blue-900" x-show="!fileLampiranName">
-                            📎 Klik untuk memilih berkas lampiran (Word / Gambar / PDF)
+                            📎 Klik untuk memilih berkas lampiran (Bisa pilih banyak sekaligus: Word / Gambar / PDF)
                         </div>
                         <div class="text-sm font-extrabold text-emerald-900" x-show="fileLampiranName" x-text="fileLampiranName"></div>
                     </div>

@@ -235,6 +235,13 @@
                             </div>
                         </div>
 
+                        <div class="pt-4 border-t border-gray-200">
+                            <x-multi-file-upload 
+                                label="Tambah Berkas Lampiran Baru (Bisa Pilih Banyak Sekaligus)"
+                                hint="Pilih atau seret banyak berkas sekaligus (PDF, Word, atau Gambar). File yang dipilih akan ditambahkan ke galeri lampiran surat."
+                            />
+                        </div>
+
                         <div>
                             <label for="disposisi" class="block text-sm font-semibold text-gray-800 mb-1.5">
                                 Catatan / Instruksi Disposisi Pimpinan

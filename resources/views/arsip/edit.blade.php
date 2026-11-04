@@ -107,6 +107,13 @@
                         @error('file')
                             <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
                         @enderror
+
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <x-multi-file-upload 
+                                label="Tambah Berkas Lampiran Baru (Bisa Banyak Sekaligus)"
+                                hint="Format: PDF, Word (.docx), atau Gambar. File yang dipilih akan otomatis ditambahkan ke dokumen arsip ini."
+                            />
+                        </div>
                     </div>
 
                     <!-- Tautan ke Surat Masuk (Opsional) -->

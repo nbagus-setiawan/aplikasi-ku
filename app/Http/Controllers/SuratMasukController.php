@@ -267,6 +267,22 @@ class SuratMasukController extends Controller
             'user_id' => auth()->id(),
         ]);
 
+        if ($request->hasFile('lampiran_berkas')) {
+            foreach ($request->file('lampiran_berkas') as $fLamp) {
+                if ($fLamp && $fLamp->isValid()) {
+                    $namaAsli = $fLamp->getClientOriginalName();
+                    $ext = strtolower($fLamp->getClientOriginalExtension()) ?: 'pdf';
+                    $path = $fLamp->storeAs('surat-masuk-lampiran', \Illuminate\Support\Str::uuid() . '.' . $ext, 'public');
+                    $suratMasuk->lampiranBerkas()->create([
+                        'nama_berkas' => $namaAsli,
+                        'path_berkas' => $path,
+                        'mime_type' => $fLamp->getClientMimeType() ?: $fLamp->getMimeType(),
+                        'ukuran_byte' => $fLamp->getSize() ?: 0,
+                    ]);
+                }
+            }
+        }
+
         if ($request->input('aksi_simpan') === 'terbitkan_word') {
             return redirect()->route('admin.surat-masuk.index')
                 ->with('success', "Dokumen surat masuk (#{$noAgenda} - {$perihal}) berhasil disimpan asli.");
@@ -281,7 +297,7 @@ class SuratMasukController extends Controller
      */
     public function show(SuratMasuk $suratMasuk): View
     {
-        $suratMasuk->loadMissing(['kategori', 'user']);
+        $suratMasuk->loadMissing(['kategori', 'user', 'lampiranBerkas']);
 
         return view('surat-masuk.show', compact('suratMasuk'));
     }
@@ -336,6 +352,22 @@ class SuratMasukController extends Controller
             $validated['file_lampiran'] = $fLampiran->storeAs('surat-masuk-lampiran', \Illuminate\Support\Str::uuid() . '.' . $extLampiran, 'public');
         }
 
+        if ($request->hasFile('lampiran_berkas')) {
+            foreach ($request->file('lampiran_berkas') as $fLamp) {
+                if ($fLamp && $fLamp->isValid()) {
+                    $namaAsli = $fLamp->getClientOriginalName();
+                    $ext = strtolower($fLamp->getClientOriginalExtension()) ?: 'pdf';
+                    $path = $fLamp->storeAs('surat-masuk-lampiran', \Illuminate\Support\Str::uuid() . '.' . $ext, 'public');
+                    $suratMasuk->lampiranBerkas()->create([
+                        'nama_berkas' => $namaAsli,
+                        'path_berkas' => $path,
+                        'mime_type' => $fLamp->getClientMimeType() ?: $fLamp->getMimeType(),
+                        'ukuran_byte' => $fLamp->getSize() ?: 0,
+                    ]);
+                }
+            }
+        }
+
         $suratMasuk->update($validated);
 
         return redirect()->route('admin.surat-masuk.show', $suratMasuk)
@@ -367,6 +399,11 @@ class SuratMasukController extends Controller
     public function destroy(Request $request, SuratMasuk $suratMasuk)
     {
         $perihal = $suratMasuk->perihal;
+
+        foreach ($suratMasuk->lampiranBerkas as $lampiran) {
+            $lampiran->hapusBerkasFisik();
+            $lampiran->delete();
+        }
 
         foreach ([$suratMasuk->file, $suratMasuk->file_surat_asli, $suratMasuk->file_lampiran] as $filePath) {
             if ($filePath && Storage::disk('public')->exists($filePath)) {

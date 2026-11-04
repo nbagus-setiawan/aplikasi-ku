@@ -34,9 +34,13 @@
         },
 
         handleFileLampiran(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            this.fileLampiranName = file.name;
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+            if (files.length === 1) {
+                this.fileLampiranName = files[0].name;
+            } else {
+                this.fileLampiranName = files.length + ' berkas lampiran dipilih (' + files[0].name + ', dst)';
+            }
         },
 
         setLampiranCepat(val) {
@@ -262,14 +266,12 @@
                         </div>
                     </div>
 
-                    <!-- 8. UPLOAD BERKAS LAMPIRAN TAMBAHAN (OPSIONAL) -->
-                    <div class="sm:col-span-2 space-y-1.5 p-3.5 bg-blue-50/40 rounded-xl border border-blue-200">
-                        <label class="block text-blue-900 font-bold text-[11px] uppercase tracking-wider">
-                            8. Berkas Lampiran Tambahan (Opsional)
-                        </label>
-                        <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" @change="handleFileLampiran($event)"
-                               class="w-full text-xs text-gray-700 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-100 file:text-blue-800 hover:file:bg-blue-200 cursor-pointer" />
-                        <p class="text-[10px] text-blue-700" x-show="fileLampiranName" x-text="'Lampiran dipilih: ' + fileLampiranName"></p>
+                    <!-- 8. UPLOAD BERKAS LAMPIRAN TAMBAHAN (MULTI-FILE) -->
+                    <div class="sm:col-span-2">
+                        <x-multi-file-upload 
+                            label="8. Berkas Lampiran Tambahan (Multi-File - Opsional)"
+                            hint="Bisa pilih atau drag banyak berkas sekaligus (Tahan Ctrl / Shift). Format: PDF, Word, atau Gambar (Maks 10 MB per berkas)."
+                        />
                     </div>
                 </div>
 

@@ -471,6 +471,22 @@ class SuratKeluarController extends Controller
             'user_id' => auth()->id(),
         ]);
 
+        if ($request->hasFile('lampiran_berkas')) {
+            foreach ($request->file('lampiran_berkas') as $fLamp) {
+                if ($fLamp && $fLamp->isValid()) {
+                    $namaAsli = $fLamp->getClientOriginalName();
+                    $ext = strtolower($fLamp->getClientOriginalExtension()) ?: 'pdf';
+                    $path = $fLamp->storeAs('surat-keluar-lampiran', \Illuminate\Support\Str::uuid() . '.' . $ext, 'public');
+                    $suratKeluar->lampiranBerkas()->create([
+                        'nama_berkas' => $namaAsli,
+                        'path_berkas' => $path,
+                        'mime_type' => $fLamp->getClientMimeType() ?: $fLamp->getMimeType(),
+                        'ukuran_byte' => $fLamp->getSize() ?: 0,
+                    ]);
+                }
+            }
+        }
+
         foreach ($penandatangansData as $pData) {
             $hasSig = !empty($pData['data_ttd']);
             TandaTangan::create([
@@ -537,7 +553,7 @@ class SuratKeluarController extends Controller
             $suratKeluar->save();
         }
 
-        $suratKeluar->loadMissing(['kategori', 'user', 'tandaTangan', 'tandaTangans']);
+        $suratKeluar->loadMissing(['kategori', 'user', 'tandaTangan', 'tandaTangans', 'lampiranBerkas']);
         $pengaturan = Pengaturan::getAllKeyValues();
         $qrCodeDataUri = $this->tandaTanganService->generateQrCode(url('/verifikasi/' . $suratKeluar->kode_verifikasi));
         // HANYA render template HTML bawaan jika surat dibuat murni dari form web tanpa berkas asli Word
@@ -692,6 +708,22 @@ class SuratKeluarController extends Controller
         $aksiSimpan = $request->input('aksi_simpan');
         if ($aksiSimpan === 'siap_kirim') {
             $validated['status'] = 'terkirim';
+        }
+
+        if ($request->hasFile('lampiran_berkas')) {
+            foreach ($request->file('lampiran_berkas') as $fLamp) {
+                if ($fLamp && $fLamp->isValid()) {
+                    $namaAsli = $fLamp->getClientOriginalName();
+                    $ext = strtolower($fLamp->getClientOriginalExtension()) ?: 'pdf';
+                    $path = $fLamp->storeAs('surat-keluar-lampiran', \Illuminate\Support\Str::uuid() . '.' . $ext, 'public');
+                    $suratKeluar->lampiranBerkas()->create([
+                        'nama_berkas' => $namaAsli,
+                        'path_berkas' => $path,
+                        'mime_type' => $fLamp->getClientMimeType() ?: $fLamp->getMimeType(),
+                        'ukuran_byte' => $fLamp->getSize() ?: 0,
+                    ]);
+                }
+            }
         }
 
         $suratKeluar->update($validated);
@@ -879,6 +911,11 @@ class SuratKeluarController extends Controller
     public function destroy(Request $request, SuratKeluar $suratKeluar)
     {
         $perihal = $suratKeluar->perihal;
+
+        foreach ($suratKeluar->lampiranBerkas as $lampiran) {
+            $lampiran->hapusBerkasFisik();
+            $lampiran->delete();
+        }
 
         foreach ([$suratKeluar->file, $suratKeluar->file_surat_asli, $suratKeluar->file_final] as $filePath) {
             if ($filePath && Storage::disk('public')->exists($filePath)) {

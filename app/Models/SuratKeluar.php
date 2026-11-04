@@ -80,4 +80,9 @@ class SuratKeluar extends Model
     {
         return $this->tgl_surat ? Carbon::parse($this->tgl_surat)->format('d-m-Y') : '-';
     }
+
+    public function lampiranBerkas(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(DokumenLampiran::class, 'attachable')->orderBy('id', 'asc');
+    }
 }

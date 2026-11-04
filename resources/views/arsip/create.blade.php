@@ -91,15 +91,18 @@
                         @enderror
                     </div>
 
-                    <!-- Berkas File Dokumen -->
+                    <!-- Berkas File Dokumen (Multi-File) -->
                     <div class="sm:col-span-2">
-                        <label for="file" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                            Unggah Berkas Dokumen (PDF, JPG, PNG, DOC, DOCX Maks 5 MB) <span class="text-red-500">*</span>
-                        </label>
-                        <input type="file" name="file" id="file" required accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                               class="w-full text-xs file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-800 hover:file:bg-emerald-100 border border-gray-300 rounded-xl cursor-pointer bg-white shadow-2xs" />
-                        <p class="text-[11px] text-gray-400 mt-1.5">File tersimpan aman dalam pangkalan data digital pesantren.</p>
+                        <x-multi-file-upload 
+                            name="lampiran_berkas[]"
+                            label="Unggah Berkas Dokumen Arsip (Bisa Pilih Banyak Sekaligus)"
+                            hint="Pilih 1 atau lebih berkas sekaligus (PDF, Word .docx, JPG, PNG). Tahan tombol Ctrl / Shift saat memilih. Maks 10 MB per berkas."
+                            :required="true"
+                        />
                         @error('file')
+                            <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
+                        @enderror
+                        @error('lampiran_berkas')
                             <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
                         @enderror
                     </div>

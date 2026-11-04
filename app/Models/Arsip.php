@@ -53,4 +53,9 @@ class Arsip extends Model
     {
         return in_array($this->file_extension, ['jpg', 'jpeg', 'png'], true);
     }
+
+    public function lampiranBerkas(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(DokumenLampiran::class, 'attachable')->orderBy('id', 'asc');
+    }
 }

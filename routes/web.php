@@ -5,6 +5,7 @@ use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\ArsipController;
 use App\Http\Controllers\BendaharaController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DokumenLampiranController;
 use App\Http\Controllers\HalamanController;
 use App\Http\Controllers\KategoriSuratController;
 use App\Http\Controllers\PengaturanController;
@@ -101,6 +102,12 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     // Modul Arsip Dokumen (Fase 4)
     Route::get('/arsip/{arsip}/unduh', [ArsipController::class, 'unduh'])->name('admin.arsip.unduh');
     Route::resource('arsip', ArsipController::class)->names('admin.arsip');
+
+    // Lampiran Dokumen Multi-File (Surat Masuk, Surat Keluar, Arsip)
+    Route::post('/dokumen-lampiran/{type}/{id}', [DokumenLampiranController::class, 'store'])->name('admin.dokumen-lampiran.store');
+    Route::delete('/dokumen-lampiran/{lampiran}', [DokumenLampiranController::class, 'destroy'])->name('admin.dokumen-lampiran.destroy');
+    Route::get('/dokumen-lampiran/{lampiran}/unduh', [DokumenLampiranController::class, 'unduh'])->name('admin.dokumen-lampiran.unduh');
+    Route::get('/dokumen-lampiran/{type}/{id}/unduh-semua', [DokumenLampiranController::class, 'unduhSemua'])->name('admin.dokumen-lampiran.unduh-semua');
 
     // Modul Bendahara / Buku Kas Umum (Debit & Kredit)
     Route::get('/bendahara/cetak', [BendaharaController::class, 'cetak'])->name('admin.bendahara.cetak');

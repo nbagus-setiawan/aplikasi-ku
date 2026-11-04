@@ -76,12 +76,39 @@ class ArsipController extends Controller
         $validated = $request->validated();
 
         $file = $request->file('file');
-        $ext = strtolower($file->getClientOriginalExtension()) ?: 'pdf';
-        $filePath = $file->storeAs('arsip', \Illuminate\Support\Str::uuid() . '.' . $ext, 'public');
-        $validated['file'] = $filePath;
+        $filePath = null;
+        if ($file && $file->isValid()) {
+            $ext = strtolower($file->getClientOriginalExtension()) ?: 'pdf';
+            $filePath = $file->storeAs('arsip', \Illuminate\Support\Str::uuid() . '.' . $ext, 'public');
+        }
+
+        $lampiranFiles = $request->file('lampiran_berkas') ?: [];
+        if (! $filePath && ! empty($lampiranFiles)) {
+            $firstFile = $lampiranFiles[0];
+            $ext = strtolower($firstFile->getClientOriginalExtension()) ?: 'pdf';
+            $filePath = $firstFile->storeAs('arsip', \Illuminate\Support\Str::uuid() . '.' . $ext, 'public');
+        }
+
+        $validated['file'] = $filePath ?: '';
         $validated['user_id'] = auth()->id();
 
         $arsip = Arsip::create($validated);
+
+        if (! empty($lampiranFiles)) {
+            foreach ($lampiranFiles as $fLamp) {
+                if ($fLamp && $fLamp->isValid()) {
+                    $namaAsli = $fLamp->getClientOriginalName();
+                    $ext = strtolower($fLamp->getClientOriginalExtension()) ?: 'pdf';
+                    $path = $fLamp->storeAs('arsip-lampiran', \Illuminate\Support\Str::uuid() . '.' . $ext, 'public');
+                    $arsip->lampiranBerkas()->create([
+                        'nama_berkas' => $namaAsli,
+                        'path_berkas' => $path,
+                        'mime_type' => $fLamp->getClientMimeType() ?: $fLamp->getMimeType(),
+                        'ukuran_byte' => $fLamp->getSize() ?: 0,
+                    ]);
+                }
+            }
+        }
 
         return redirect()->route('admin.arsip.show', $arsip)
             ->with('success', 'Dokumen arsip berhasil diunggah dan disimpan.');
@@ -92,7 +119,7 @@ class ArsipController extends Controller
      */
     public function show(Arsip $arsip): View
     {
-        $arsip->loadMissing(['user', 'suratMasuk', 'suratKeluar']);
+        $arsip->loadMissing(['user', 'suratMasuk', 'suratKeluar', 'lampiranBerkas']);
 
         return view('arsip.show', compact('arsip'));
     }
@@ -124,6 +151,22 @@ class ArsipController extends Controller
             $validated['file'] = $file->storeAs('arsip', \Illuminate\Support\Str::uuid() . '.' . $ext, 'public');
         }
 
+        if ($request->hasFile('lampiran_berkas')) {
+            foreach ($request->file('lampiran_berkas') as $fLamp) {
+                if ($fLamp && $fLamp->isValid()) {
+                    $namaAsli = $fLamp->getClientOriginalName();
+                    $ext = strtolower($fLamp->getClientOriginalExtension()) ?: 'pdf';
+                    $path = $fLamp->storeAs('arsip-lampiran', \Illuminate\Support\Str::uuid() . '.' . $ext, 'public');
+                    $arsip->lampiranBerkas()->create([
+                        'nama_berkas' => $namaAsli,
+                        'path_berkas' => $path,
+                        'mime_type' => $fLamp->getClientMimeType() ?: $fLamp->getMimeType(),
+                        'ukuran_byte' => $fLamp->getSize() ?: 0,
+                    ]);
+                }
+            }
+        }
+
         $arsip->update($validated);
 
         return redirect()->route('admin.arsip.show', $arsip)
@@ -151,6 +194,11 @@ class ArsipController extends Controller
     public function destroy(Request $request, Arsip $arsip)
     {
         $judul = $arsip->judul;
+
+        foreach ($arsip->lampiranBerkas as $lampiran) {
+            $lampiran->hapusBerkasFisik();
+            $lampiran->delete();
+        }
 
         if ($arsip->file && Storage::disk('public')->exists($arsip->file)) {
             Storage::disk('public')->delete($arsip->file);

@@ -141,28 +141,9 @@
                     @endif
                 </div>
 
-                @if ($suratMasuk->file_lampiran)
-                    <div class="md:col-span-2 space-y-2 pt-2">
-                        <span class="block text-xs font-bold uppercase tracking-wider text-blue-900">📎 Berkas Lampiran Tambahan ({{ $suratMasuk->lampiran_teks ?: '1 Berkas' }})</span>
-                        <div class="flex flex-wrap items-center justify-between gap-3 p-4 bg-blue-50/60 rounded-2xl border border-blue-200">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center shrink-0">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                    </svg>
-                                </div>
-                                <div class="min-w-0">
-                                    <p class="text-xs sm:text-sm font-bold text-blue-950 truncate">{{ basename($suratMasuk->file_lampiran) }}</p>
-                                    <p class="text-[11px] text-blue-700">Lampiran pendukung surat masuk</p>
-                                </div>
-                            </div>
-                            <a href="{{ asset('storage/' . $suratMasuk->file_lampiran) }}" target="_blank"
-                               class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold rounded-xl transition shadow-xs">
-                                Buka Lampiran
-                            </a>
-                        </div>
-                    </div>
-                @endif
+                <div class="md:col-span-2 pt-4">
+                    <x-galeri-lampiran :model="$suratMasuk" type="surat-masuk" title="Galeri & Berkas Lampiran Surat Masuk" />
+                </div>
             </div>
 
             <div class="px-6 sm:px-8 py-3 bg-gray-50/60 border-t border-gray-100 text-xs text-gray-500">
