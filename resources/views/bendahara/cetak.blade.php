@@ -168,17 +168,7 @@
     <div class="judul-laporan">
         <h2>BUKU KAS UMUM (MUTASI DEBIT & KREDIT)</h2>
         <p>
-            Periode: <strong>
-            @if($dari && $sampai)
-                {{ date('d/m/Y', strtotime($dari)) }} s.d. {{ date('d/m/Y', strtotime($sampai)) }}
-            @elseif($dari)
-                Mulai {{ date('d/m/Y', strtotime($dari)) }}
-            @elseif($sampai)
-                Sampai {{ date('d/m/Y', strtotime($sampai)) }}
-            @else
-                Seluruh Transaksi Pembukuan
-            @endif
-            </strong>
+            Periode: <strong>{{ $labelPeriode ?? 'Semua Transaksi Pembukuan' }}</strong>
             @if(!empty($kategori)) &bull; Pos Akun: <strong>{{ $kategori }}</strong> @endif
             @if(!empty($jenis)) &bull; Jenis: <strong>{{ strtoupper($jenis) }}</strong> @endif
         </p>

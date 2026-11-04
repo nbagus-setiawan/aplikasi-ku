@@ -293,9 +293,10 @@ class BendaharaTest extends TestCase
         @unlink($tempFile);
 
         $this->assertNotEmpty($docXml);
-        // Pastikan placeholder terisi otomatis
-        $this->assertStringContainsString('01/10/2026', $docXml);
-        $this->assertStringContainsString('31/10/2026', $docXml);
+        // Pastikan placeholder periode terisi tanggal riil bahasa Indonesia (bukan kata Awal/Sekarang)
+        $this->assertStringContainsString('Oktober 2026', $docXml);
+        $this->assertStringNotContainsString('Awal', $docXml);
+        $this->assertStringNotContainsString('Sekarang', $docXml);
         $this->assertStringContainsString('BKM-202610-0010', $docXml);
         $this->assertStringContainsString('Penerimaan Sumbangan', $docXml);
         $this->assertStringContainsString('Donasi operasional pondok', $docXml);
@@ -311,5 +312,157 @@ class BendaharaTest extends TestCase
         $this->assertStringNotContainsString('{saldo}', $docXml);
         $this->assertStringNotContainsString('{jumlah_debit}', $docXml);
         $this->assertStringNotContainsString('{jumlah_kredit}', $docXml);
+    }
+
+    public function test_urutan_transaksi_tanpa_filter_descending_dan_dengan_filter_ascending(): void
+    {
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202610-0001',
+            'tanggal' => '2026-10-03',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq',
+            'nominal' => 100000,
+            'keterangan' => 'Transaksi awal bulan',
+            'user_id' => $this->user->id,
+        ]);
+
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202610-0002',
+            'tanggal' => '2026-10-20',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq',
+            'nominal' => 200000,
+            'keterangan' => 'Transaksi akhir periode',
+            'user_id' => $this->user->id,
+        ]);
+
+        // 1. Tanpa Filter (Mode Semua): Urutan Descending (terbaru ke terlama: 20 Oktober dulu, baru 3 Oktober)
+        $responseNoFilter = $this->actingAs($this->user)->get(route('admin.bendahara.index', ['filter_tipe' => 'semua']));
+        $responseNoFilter->assertStatus(200);
+        $transaksisNoFilter = $responseNoFilter->viewData('transaksis');
+        $this->assertEquals('BKM-202610-0002', $transaksisNoFilter->first()->kode_transaksi);
+        $this->assertEquals('BKM-202610-0001', $transaksisNoFilter->last()->kode_transaksi);
+
+        // 2. Dengan Filter (Mode Bulan Tercatat): Urutan Ascending kronologis buku kas (03 Oktober dulu, baru 20 Oktober)
+        $responseFiltered = $this->actingAs($this->user)->get(route('admin.bendahara.index', [
+            'filter_tipe' => 'bulan',
+            'filter_bulan' => '2026-10',
+        ]));
+        $responseFiltered->assertStatus(200);
+        $transaksisFiltered = $responseFiltered->viewData('transaksis');
+        $this->assertEquals('BKM-202610-0001', $transaksisFiltered->first()->kode_transaksi);
+        $this->assertEquals('BKM-202610-0002', $transaksisFiltered->last()->kode_transaksi);
+    }
+
+    public function test_periode_dinamis_berdasarkan_transaksi_riil(): void
+    {
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202610-0001',
+            'tanggal' => '2026-10-03',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq',
+            'nominal' => 500000,
+            'keterangan' => 'Catatan tgl 3',
+            'user_id' => $this->user->id,
+        ]);
+
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202610-0002',
+            'tanggal' => '2026-10-20',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq',
+            'nominal' => 300000,
+            'keterangan' => 'Catatan tgl 20',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.bendahara.index', [
+            'filter_tipe' => 'bulan',
+            'filter_bulan' => '2026-10',
+        ]));
+
+        $response->assertStatus(200);
+        // Periode harus menampilkan rentang riil 03 Oktober s.d. 20 Oktober 2026
+        $labelPeriode = $response->viewData('labelPeriode');
+        $this->assertStringContainsString('03 Oktober', $labelPeriode);
+        $this->assertStringContainsString('20 Oktober 2026', $labelPeriode);
+        $this->assertStringNotContainsString('Awal', $labelPeriode);
+        $this->assertStringNotContainsString('Sekarang', $labelPeriode);
+    }
+
+    public function test_ajax_store_update_destroy_dan_filter(): void
+    {
+        // 1. Simpan Transaksi via AJAX
+        $storeRes = $this->actingAs($this->user)->postJson(route('admin.bendahara.store'), [
+            'tanggal' => '2026-10-05',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq',
+            'nominal' => 450000,
+            'keterangan' => 'Simpan AJAX',
+        ]);
+
+        $storeRes->assertStatus(200);
+        $storeRes->assertJsonStructure(['success', 'message', 'transaksi_id']);
+        $transaksiId = $storeRes->json('transaksi_id');
+
+        // 2. Update via AJAX
+        $updateRes = $this->actingAs($this->user)->putJson(route('admin.bendahara.update', $transaksiId), [
+            'tanggal' => '2026-10-06',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq',
+            'nominal' => 600000,
+            'keterangan' => 'Update AJAX',
+        ]);
+
+        $updateRes->assertStatus(200);
+        $updateRes->assertJsonStructure(['success', 'message', 'transaksi_id']);
+
+        // 3. Filter via AJAX
+        $filterRes = $this->actingAs($this->user)->getJson(route('admin.bendahara.index', ['filter_tipe' => 'semua']));
+        $filterRes->assertStatus(200);
+        $filterRes->assertJsonStructure([
+            'success',
+            'html_cards' => ['saldo_kas', 'total_debit', 'total_kredit'],
+            'html_mobile',
+            'html_desktop',
+        ]);
+
+        // 4. Hapus via AJAX
+        $deleteRes = $this->actingAs($this->user)->deleteJson(route('admin.bendahara.destroy', $transaksiId));
+        $deleteRes->assertStatus(200);
+        $deleteRes->assertJsonStructure(['success', 'message']);
+        $this->assertDatabaseMissing('kas_transaksis', ['id' => $transaksiId]);
+    }
+
+    public function test_unduh_laporan_dengan_rentang_bulan_dari_modal(): void
+    {
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202608-0001',
+            'tanggal' => '2026-08-10',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq',
+            'nominal' => 1000000,
+            'keterangan' => 'Transaksi Agustus',
+            'user_id' => $this->user->id,
+        ]);
+
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202610-0001',
+            'tanggal' => '2026-10-15',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq',
+            'nominal' => 2000000,
+            'keterangan' => 'Transaksi Oktober',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.bendahara.word', [
+            'mode' => 'rentang_bulan',
+            'bulan_dari' => '2026-08',
+            'bulan_sampai' => '2026-10',
+        ]));
+
+        $response->assertStatus(200);
+        $this->assertEquals('application/vnd.openxmlformats-officedocument.wordprocessingml.document', $response->headers->get('Content-Type'));
     }
 }

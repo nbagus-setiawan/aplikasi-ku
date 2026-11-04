@@ -80,22 +80,32 @@ class KasDocxService
         // 1. Bersihkan tanda proofErr jika ada
         $docXml = preg_replace('/<w:proofErr[^>]*\/>/', '', $docXml);
 
-        // 2. Format Rentang Periode Tanggal
+        // 2. Format Rentang Periode Tanggal Berdasarkan Transaksi Riil (Bahasa Indonesia)
         $dari = $data['dari'] ?? null;
         $sampai = $data['sampai'] ?? null;
+        $tglMulai = $data['tanggal_awal_teks'] ?? null;
+        $tglAkhir = $data['tanggal_akhir_teks'] ?? null;
 
-        if ($dari && $sampai) {
-            $tglMulai = date('d/m/Y', strtotime($dari));
-            $tglAkhir = date('d/m/Y', strtotime($sampai));
-        } elseif ($dari) {
-            $tglMulai = date('d/m/Y', strtotime($dari));
-            $tglAkhir = 'Sekarang';
-        } elseif ($sampai) {
-            $tglMulai = 'Awal';
-            $tglAkhir = date('d/m/Y', strtotime($sampai));
-        } else {
-            $tglMulai = 'Awal';
-            $tglAkhir = 'Sekarang';
+        if (! $tglMulai || ! $tglAkhir) {
+            $transaksisList = collect($data['transaksis'] ?? []);
+            if ($transaksisList->isNotEmpty()) {
+                $minDate = $transaksisList->min('tanggal');
+                $maxDate = $transaksisList->max('tanggal');
+                $cMin = \Carbon\Carbon::parse($minDate)->locale('id');
+                $cMax = \Carbon\Carbon::parse($maxDate)->locale('id');
+
+                if ($cMin->year === $cMax->year) {
+                    $tglMulai = $cMin->translatedFormat('d F');
+                    $tglAkhir = $cMax->translatedFormat('d F Y');
+                } else {
+                    $tglMulai = $cMin->translatedFormat('d F Y');
+                    $tglAkhir = $cMax->translatedFormat('d F Y');
+                }
+            } else {
+                $cNow = \Carbon\Carbon::now()->locale('id');
+                $tglMulai = $cNow->translatedFormat('d F');
+                $tglAkhir = $cNow->translatedFormat('d F Y');
+            }
         }
 
         // Ganti placeholder periode {tanggal_awal} s.d { tanggal_akhir} atau {tanggal_mulai} / {tanggal_akhir}
