@@ -1,72 +1,78 @@
 <x-app-layout>
     @section('title', 'Dashboard Sekretariat')
 
-    <div class="space-y-5 sm:space-y-6">
-        <!-- 1. Banner Sambutan Ringkas & Elegan (Sangat Rapi & Responsif) -->
-        <div class="bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-950 rounded-2xl p-4 sm:p-6 lg:p-7 text-white shadow-xs border border-emerald-800/80 relative overflow-hidden">
-            <!-- Ornamen latar belakang halus -->
-            <div class="absolute -right-10 -bottom-10 w-44 h-44 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+    <div class="space-y-6 sm:space-y-7">
+        <!-- 1. Banner Sambutan Modern & Elegan -->
+        <div class="bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-950 rounded-3xl p-5 sm:p-7 lg:p-8 text-white shadow-sm border border-emerald-800/80 relative overflow-hidden">
+            <!-- Ornamen latar belakang ambient glow -->
+            <div class="absolute -right-12 -bottom-12 w-56 h-56 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute left-1/3 -top-16 w-44 h-44 bg-teal-400/10 rounded-full blur-2xl pointer-events-none"></div>
 
-            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <!-- Teks Sambutan Rata Kiri -->
-                <div class="space-y-2 text-left flex-1 min-w-0">
-                    <div class="flex items-center gap-2">
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-900/90 border border-emerald-700/60 text-emerald-300 text-xs font-semibold rounded-full">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+                <!-- Teks Sambutan & Identitas -->
+                <div class="space-y-2.5 text-left flex-1 min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-900/90 border border-emerald-700/70 text-emerald-300 text-xs font-semibold rounded-full shadow-xs">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                             SAP Al-Falah Putra
                         </span>
-                        <span class="text-xs text-emerald-300/80 font-mono hidden sm:inline">
+                        <span class="text-xs text-emerald-300/80 font-mono hidden sm:inline-flex items-center gap-1.5 bg-emerald-950/40 px-2.5 py-1 rounded-full border border-emerald-800/50">
+                            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
                             {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}
                         </span>
                     </div>
 
-                    <h1 class="text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight text-white leading-snug">
+                    <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white leading-tight">
                         Ahlan wa Sahlan, {{ Auth::user()->name ?? 'Sekretaris' }}
                     </h1>
 
-                    <p class="text-xs sm:text-sm md:text-base text-emerald-100/90 leading-relaxed max-w-xl font-normal">
-                        Sistem pelayanan persuratan resmi, agenda kegiatan santri, dan arsip dokumen Pondok Pesantren Al-Falah Putra.
+                    <p class="text-xs sm:text-sm md:text-base text-emerald-100/90 leading-relaxed max-w-2xl font-normal">
+                        Sistem Informasi & Tata Usaha Sekretariat: Pelayanan persuratan kedinasan, agenda pondok, dan arsip dokumen resmi Pondok Pesantren Al-Falah Putra.
                     </p>
 
-                    <div class="flex items-center gap-2.5 pt-1 text-xs text-emerald-300/80 font-medium sm:hidden">
+                    <div class="flex items-center gap-3 pt-1 text-xs text-emerald-300/80 font-medium sm:hidden">
                         <span>📅 {{ \Carbon\Carbon::now()->translatedFormat('d M Y') }}</span>
                         <span>&bull;</span>
                         <span>Putak, Gelumbang</span>
                     </div>
                 </div>
 
-                <!-- Gambar baner.webp: Hanya Tampil di Layar Tablet & Desktop (Disembunyikan di Ponsel agar Sangat Rapi) -->
+                <!-- Ilustrasi Banner (Tablet & Desktop) -->
                 <div class="hidden md:flex shrink-0 items-center justify-center pl-2">
                     <img src="{{ asset('images/baner.webp') }}"
                          alt="Banner Al-Falah Putra"
-                         class="h-24 lg:h-28 w-auto object-contain select-none drop-shadow-md" />
+                         class="h-24 lg:h-32 w-auto object-contain select-none drop-shadow-lg transition-transform hover:scale-105 duration-300" />
                 </div>
             </div>
         </div>
 
-        <!-- 2. Banner Peringatan Agenda H-1 (Jika Ada Kegiatan Besok) -->
+        <!-- 2. Peringatan Agenda H-1 (Jika Ada Kegiatan Besok) -->
         @if ($agendasBesok->count() > 0)
             <div class="bg-amber-50/90 border border-amber-300/80 rounded-2xl p-4 sm:p-5 shadow-xs space-y-3">
                 <div class="flex flex-wrap items-center justify-between gap-2">
-                    <div class="flex items-center gap-2 text-amber-950 font-bold text-xs sm:text-sm">
-                        <svg class="w-5 h-5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
+                    <div class="flex items-center gap-2.5 text-amber-950 font-bold text-xs sm:text-sm">
+                        <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-700 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
                         <span>Peringatan Agenda H-1: Terdapat {{ $agendasBesok->count() }} Kegiatan Besok Hari</span>
                     </div>
-                    <a href="{{ route('admin.agenda.index', ['view' => 'kalender']) }}" class="text-xs text-blue-600 hover:text-blue-700 font-extrabold hover:underline">
-                        Buka Kalender &rarr;
+                    <a href="{{ route('admin.agenda.index', ['view' => 'kalender']) }}" class="text-xs text-blue-600 hover:text-blue-700 font-extrabold hover:underline flex items-center gap-1">
+                        <span>Buka Kalender</span>
+                        <span>&rarr;</span>
                     </a>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     @foreach ($agendasBesok as $ab)
-                        <div class="p-3.5 bg-white rounded-xl border border-amber-200/90 flex items-center justify-between text-xs gap-3">
+                        <div class="p-3.5 bg-white rounded-xl border border-amber-200/90 flex items-center justify-between text-xs gap-3 shadow-2xs">
                             <div class="min-w-0 flex-1">
                                 <h4 class="font-bold text-slate-900 truncate text-sm">{{ $ab->judul }}</h4>
                                 <p class="text-slate-500 text-xs mt-0.5">Waktu: {{ $ab->mulai->format('H:i') }} WIB &bull; Lokasi: {{ $ab->lokasi }}</p>
                                 <p class="text-xs text-amber-800 font-semibold mt-0.5">PJ: {{ $ab->pj ? $ab->pj->nama : '-' }}</p>
                             </div>
-                            <!-- Tombol Detail Berwarna Biru Sesuai Aturan Sistem -->
                             <a href="{{ route('admin.agenda.show', $ab) }}" class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold rounded-lg text-xs transition shrink-0 shadow-xs">
                                 <span>Detail</span>
                                 <span>&rarr;</span>
@@ -77,7 +83,154 @@
             </div>
         @endif
 
-        <!-- 3. Metrik Statistik Santri (5 Kolom Sejajar Rapi di Desktop, 2 Kolom di HP) -->
+        <!-- 3. Pintasan Cepat Pelayanan (Finora Style Quick Action Cards) -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 lg:p-6 shadow-xs">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                    <h2 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-700">Pintasan Cepat Pelayanan</h2>
+                </div>
+                <span class="text-xs text-slate-400 hidden sm:inline">Total Arsip Dokumen: <strong class="text-slate-700 font-bold">{{ $totalArsip }} Berkas</strong></span>
+            </div>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <!-- 1. Surat Keluar -->
+                <a href="{{ route('admin.surat-keluar.create') }}"
+                   class="flex items-center gap-3 p-3 sm:p-4 rounded-2xl bg-emerald-50/60 hover:bg-emerald-100/70 border border-emerald-200/70 text-emerald-950 font-bold text-xs sm:text-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm active:scale-95 group">
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:bg-emerald-700 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="block truncate font-bold text-slate-900 group-hover:text-emerald-950">Surat Keluar</span>
+                        <span class="text-[11px] sm:text-xs font-normal text-emerald-700 truncate hidden sm:block">Nomor Otomatis & QR</span>
+                    </div>
+                </a>
+
+                <!-- 2. Surat Masuk -->
+                <a href="{{ route('admin.surat-masuk.create') }}"
+                   class="flex items-center gap-3 p-3 sm:p-4 rounded-2xl bg-blue-50/60 hover:bg-blue-100/70 border border-blue-200/70 text-blue-950 font-bold text-xs sm:text-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm active:scale-95 group">
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:bg-blue-700 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="block truncate font-bold text-slate-900 group-hover:text-blue-950">Surat Masuk</span>
+                        <span class="text-[11px] sm:text-xs font-normal text-blue-700 truncate hidden sm:block">Agenda & Disposisi</span>
+                    </div>
+                </a>
+
+                <!-- 3. Jadwal Agenda -->
+                <a href="{{ route('admin.agenda.create') }}"
+                   class="flex items-center gap-3 p-3 sm:p-4 rounded-2xl bg-purple-50/60 hover:bg-purple-100/70 border border-purple-200/70 text-purple-950 font-bold text-xs sm:text-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm active:scale-95 group">
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-purple-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:bg-purple-700 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="block truncate font-bold text-slate-900 group-hover:text-purple-950">Jadwal Agenda</span>
+                        <span class="text-[11px] sm:text-xs font-normal text-purple-700 truncate hidden sm:block">Kalender Kegiatan</span>
+                    </div>
+                </a>
+
+                <!-- 4. Unggah Arsip -->
+                <a href="{{ route('admin.arsip.create') }}"
+                   class="flex items-center gap-3 p-3 sm:p-4 rounded-2xl bg-amber-50/60 hover:bg-amber-100/70 border border-amber-200/70 text-amber-950 font-bold text-xs sm:text-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm active:scale-95 group">
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-amber-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:bg-amber-700 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="block truncate font-bold text-slate-900 group-hover:text-amber-950">Unggah Arsip</span>
+                        <span class="text-[11px] sm:text-xs font-normal text-amber-800 truncate hidden sm:block">Dokumen Digital</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- 4. Metrik Operasional Persuratan & Administrasi Bulan Ini -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+            <!-- Surat Masuk Bulan Ini -->
+            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between gap-2.5 hover:shadow-sm transition">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">Surat Masuk</span>
+                    <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                        </svg>
+                    </span>
+                </div>
+                <div>
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums">{{ number_format($suratMasukBulanIni) }}</h3>
+                    <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1">
+                        <span>Bulan Ini</span>
+                        <a href="{{ route('admin.surat-masuk.index') }}" class="text-blue-600 font-bold hover:underline">Lihat &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Surat Keluar Bulan Ini -->
+            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between gap-2.5 hover:shadow-sm transition">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">Surat Keluar</span>
+                    <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 border border-blue-100 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                    </span>
+                </div>
+                <div>
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums">{{ number_format($suratKeluarBulanIni) }}</h3>
+                    <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1">
+                        <span>Bulan Ini</span>
+                        <a href="{{ route('admin.surat-keluar.index') }}" class="text-blue-600 font-bold hover:underline">Lihat &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Disposisi Pending (Perlu Tindakan) -->
+            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between gap-2.5 hover:shadow-sm transition">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">Disposisi Baru</span>
+                    <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 border border-amber-100 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </span>
+                </div>
+                <div>
+                    <h3 class="text-2xl sm:text-3xl font-black text-amber-600 tabular-nums">{{ number_format($suratMasukBelumDisposisi) }}</h3>
+                    <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1">
+                        <span>Menunggu Disposisi</span>
+                        <a href="{{ route('admin.surat-masuk.index', ['status_disposisi' => 'baru']) }}" class="text-amber-700 font-bold hover:underline">Proses &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agenda Mendatang -->
+            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between gap-2.5 hover:shadow-sm transition">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">Agenda Kegiatan</span>
+                    <span class="w-8 h-8 rounded-xl bg-purple-50 text-purple-700 border border-purple-100 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </span>
+                </div>
+                <div>
+                    <h3 class="text-2xl sm:text-3xl font-black text-purple-600 tabular-nums">{{ number_format($agendaMendatang) }}</h3>
+                    <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1">
+                        <span>Kegiatan Terjadwal</span>
+                        <a href="{{ route('admin.agenda.index') }}" class="text-purple-700 font-bold hover:underline">Kalender &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Metrik Statistik Santri (5 Kolom Sejajar Rapi di Desktop, 2 Kolom di HP) -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
             <!-- 1. Santri Aktif (Semua) -->
             <a href="{{ route('admin.santri.index') }}" class="col-span-2 md:col-span-1 lg:col-span-1 bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover:border-emerald-400 hover:shadow-sm transition flex flex-col justify-between gap-3 group">
@@ -150,7 +303,7 @@
             </a>
         </div>
 
-        <!-- 4. Area Visual Statistik: Komposisi Jenjang Santri & Hunian Asrama -->
+        <!-- 6. Area Visual Statistik: Komposisi Jenjang Santri & Hunian Asrama -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
             <!-- Bagian Kiri: Komposisi Jenjang Santri (Segmented Visual & Detail Cards) -->
             <div class="lg:col-span-6 bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 lg:p-6 shadow-xs flex flex-col">
@@ -292,7 +445,7 @@
                         @php
                             $pctKamar = $maxHunian > 0 ? round(($hk['total'] / $maxHunian) * 100) : 0;
                         @endphp
-                        <div class="p-2 sm:p-2.5 rounded-xl hover:bg-slate-50 transition border border-slate-100/90">
+                        <div class="p-2.5 rounded-xl hover:bg-slate-50 transition border border-slate-100/90">
                             <div class="flex items-center justify-between text-xs mb-1.5">
                                 <span class="font-bold text-slate-800 flex items-center gap-2">
                                     <span class="w-2 h-2 rounded-full" style="background-color: #f59e0b;"></span>
@@ -328,7 +481,7 @@
             </div>
         </div>
 
-        <!-- 5. Area Bagan / Grafik Statistik Persuratan (Chart.js Responsif) -->
+        <!-- 7. Area Bagan / Grafik Statistik Persuratan (Chart.js Responsif) -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
             <!-- Grafik 1: Tren Persuratan Bulanan (Line/Area Chart) -->
             <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 lg:p-6 shadow-xs flex flex-col justify-between">
@@ -337,7 +490,7 @@
                         <h2 class="text-sm sm:text-base font-bold text-slate-900">Tren Persuratan (6 Bulan Terakhir)</h2>
                         <p class="text-xs text-slate-500 mt-0.5">Perbandingan volume surat masuk dan keluar</p>
                     </div>
-                    <!-- Legenda Kustom -->
+                    <!-- Legenda Kustom Elegan -->
                     <div class="flex items-center gap-4 text-xs font-semibold">
                         <span class="inline-flex items-center gap-1.5 text-emerald-800">
                             <span class="w-3 h-3 rounded-full bg-emerald-600"></span>
@@ -351,7 +504,7 @@
                 </div>
 
                 <!-- Canvas Chart Responsif -->
-                <div class="relative w-full h-56 sm:h-64 lg:h-72 pt-3">
+                <div class="relative w-full h-60 sm:h-64 lg:h-72 pt-3">
                     <canvas id="chartSurat"></canvas>
                 </div>
             </div>
@@ -402,59 +555,21 @@
             </div>
         </div>
 
-        <!-- 5. Baris Pintasan Cepat Sekretariat (Touch-Friendly & Responsif) -->
-        <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-xs space-y-3">
-            <div class="flex items-center justify-between">
-                <h2 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-600">Pintasan Cepat Pelayanan</h2>
-                <span class="text-xs text-slate-400 hidden sm:inline">Total Arsip Dokumen: <strong class="text-slate-700 font-bold">{{ $totalArsip }} Berkas</strong></span>
-            </div>
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
-                <a href="{{ route('admin.surat-keluar.create') }}"
-                   class="flex items-center gap-2.5 sm:gap-3 p-3 sm:p-3.5 min-h-[48px] rounded-xl bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200/80 text-emerald-950 font-bold text-xs sm:text-sm transition active:scale-95 shadow-xs">
-                    <span class="w-8 h-8 rounded-lg bg-emerald-700 text-white flex items-center justify-center font-extrabold text-sm shrink-0">+</span>
-                    <div class="min-w-0">
-                        <span class="block truncate">Surat Keluar</span>
-                        <span class="text-[11px] sm:text-xs font-normal text-emerald-700 truncate hidden sm:block">Nomor Otomatis + QR</span>
-                    </div>
-                </a>
-
-                <a href="{{ route('admin.surat-masuk.create') }}"
-                   class="flex items-center gap-2.5 sm:gap-3 p-3 sm:p-3.5 min-h-[48px] rounded-xl bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 text-blue-950 font-bold text-xs sm:text-sm transition active:scale-95 shadow-xs">
-                    <span class="w-8 h-8 rounded-lg bg-blue-700 text-white flex items-center justify-center font-extrabold text-sm shrink-0">+</span>
-                    <div class="min-w-0">
-                        <span class="block truncate">Surat Masuk</span>
-                        <span class="text-[11px] sm:text-xs font-normal text-blue-700 truncate hidden sm:block">Buku Agenda Otomatis</span>
-                    </div>
-                </a>
-
-                <a href="{{ route('admin.agenda.create') }}"
-                   class="flex items-center gap-2.5 sm:gap-3 p-3 sm:p-3.5 min-h-[48px] rounded-xl bg-purple-50/80 hover:bg-purple-100 border border-purple-200/80 text-purple-950 font-bold text-xs sm:text-sm transition active:scale-95 shadow-xs">
-                    <span class="w-8 h-8 rounded-lg bg-purple-700 text-white flex items-center justify-center font-extrabold text-sm shrink-0">+</span>
-                    <div class="min-w-0">
-                        <span class="block truncate">Jadwal Agenda</span>
-                        <span class="text-[11px] sm:text-xs font-normal text-purple-700 truncate hidden sm:block">Kalender Kegiatan</span>
-                    </div>
-                </a>
-
-                <a href="{{ route('admin.arsip.create') }}"
-                   class="flex items-center gap-2.5 sm:gap-3 p-3 sm:p-3.5 min-h-[48px] rounded-xl bg-amber-50/80 hover:bg-amber-100 border border-amber-200/80 text-amber-950 font-bold text-xs sm:text-sm transition active:scale-95 shadow-xs">
-                    <span class="w-8 h-8 rounded-lg bg-amber-600 text-white flex items-center justify-center font-extrabold text-sm shrink-0">+</span>
-                    <div class="min-w-0">
-                        <span class="block truncate">Unggah Arsip</span>
-                        <span class="text-[11px] sm:text-xs font-normal text-amber-800 truncate hidden sm:block">Dokumen Digital</span>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        <!-- 6. Tiga Kolom Aktivitas Terbaru (Tinggi Sejajar, Rapi, & Bersih) -->
+        <!-- 8. Tiga Kolom Aktivitas Terbaru (Modern Feed List, Sangat Rapi di HP & Laptop) -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-start">
             <!-- Kolom 1: 5 Surat Masuk Terbaru -->
             <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs flex flex-col overflow-hidden">
                 <div class="px-4 sm:px-5 py-3.5 sm:py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                    <div>
-                        <h2 class="text-xs sm:text-sm font-bold text-slate-900">Surat Masuk Terbaru</h2>
-                        <p class="text-[11px] sm:text-xs text-slate-500">5 catatan surat masuk terakhir</p>
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-100/80 text-emerald-700 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xs sm:text-sm font-bold text-slate-900">Surat Masuk Terbaru</h2>
+                            <p class="text-[11px] text-slate-500">Catatan surat masuk terakhir</p>
+                        </div>
                     </div>
                     <a href="{{ route('admin.surat-masuk.index') }}" class="text-xs text-blue-600 hover:text-blue-700 font-bold hover:underline">
                         Semua &rarr;
@@ -496,9 +611,16 @@
             <!-- Kolom 2: 5 Surat Keluar Terbaru -->
             <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs flex flex-col overflow-hidden">
                 <div class="px-4 sm:px-5 py-3.5 sm:py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                    <div>
-                        <h2 class="text-xs sm:text-sm font-bold text-slate-900">Surat Keluar Terbaru</h2>
-                        <p class="text-[11px] sm:text-xs text-slate-500">5 surat keluar terakhir</p>
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-blue-100/80 text-blue-700 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xs sm:text-sm font-bold text-slate-900">Surat Keluar Terbaru</h2>
+                            <p class="text-[11px] text-slate-500">Surat keluar terakhir diterbitkan</p>
+                        </div>
                     </div>
                     <a href="{{ route('admin.surat-keluar.index') }}" class="text-xs text-blue-600 hover:text-blue-700 font-bold hover:underline">
                         Semua &rarr;
@@ -533,9 +655,16 @@
             <!-- Kolom 3: 5 Agenda Terdekat -->
             <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs flex flex-col overflow-hidden">
                 <div class="px-4 sm:px-5 py-3.5 sm:py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                    <div>
-                        <h2 class="text-xs sm:text-sm font-bold text-slate-900">Agenda Terdekat</h2>
-                        <p class="text-[11px] sm:text-xs text-slate-500">5 jadwal kegiatan mendatang</p>
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-purple-100/80 text-purple-700 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xs sm:text-sm font-bold text-slate-900">Agenda Terdekat</h2>
+                            <p class="text-[11px] text-slate-500">Jadwal kegiatan mendatang</p>
+                        </div>
                     </div>
                     <a href="{{ route('admin.agenda.index') }}" class="text-xs text-blue-600 hover:text-blue-700 font-bold hover:underline">
                         Semua &rarr;
@@ -570,7 +699,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof window.Chart === 'undefined') return;
 
-            // 1. Inisialisasi Grafik Tren Persuratan (Line/Area Chart)
+            // 1. Inisialisasi Grafik Tren Persuratan (Line/Area Chart dengan kurva mulus)
             const ctxSurat = document.getElementById('chartSurat');
             if (ctxSurat) {
                 new window.Chart(ctxSurat, {
@@ -584,11 +713,13 @@
                                 borderColor: '#059669', // emerald-600
                                 backgroundColor: 'rgba(5, 150, 105, 0.12)',
                                 fill: true,
-                                tension: 0.35,
+                                tension: 0.38,
                                 borderWidth: 2.5,
                                 pointRadius: 4,
                                 pointHoverRadius: 6,
-                                pointBackgroundColor: '#059669'
+                                pointBackgroundColor: '#059669',
+                                pointBorderColor: '#ffffff',
+                                pointBorderWidth: 2
                             },
                             {
                                 label: 'Surat Keluar',
@@ -596,11 +727,13 @@
                                 borderColor: '#2563eb', // blue-600
                                 backgroundColor: 'rgba(37, 99, 235, 0.12)',
                                 fill: true,
-                                tension: 0.35,
+                                tension: 0.38,
                                 borderWidth: 2.5,
                                 pointRadius: 4,
                                 pointHoverRadius: 6,
-                                pointBackgroundColor: '#2563eb'
+                                pointBackgroundColor: '#2563eb',
+                                pointBorderColor: '#ffffff',
+                                pointBorderWidth: 2
                             }
                         ]
                     },
@@ -631,7 +764,7 @@
                                     font: { size: 12 }
                                 },
                                 grid: {
-                                    color: 'rgba(226, 232, 240, 0.6)'
+                                    color: 'rgba(226, 232, 240, 0.7)'
                                 }
                             },
                             x: {
@@ -647,7 +780,7 @@
                 });
             }
 
-            // 2. Inisialisasi Grafik Donut Komposisi Santri
+            // 2. Inisialisasi Grafik Donut Komposisi Status Santri
             const ctxSantri = document.getElementById('chartSantri');
             if (ctxSantri) {
                 new window.Chart(ctxSantri, {
@@ -667,7 +800,7 @@
                                 '#d97706', // amber
                                 '#94a3b8'  // slate
                             ],
-                            borderWidth: 2,
+                            borderWidth: 3,
                             borderColor: '#ffffff',
                             hoverOffset: 4
                         }]
