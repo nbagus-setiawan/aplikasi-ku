@@ -37,7 +37,7 @@
             }
         </style>
     </head>
-    <body class="font-sans antialiased bg-gray-50 text-gray-900" x-data="{ sidebarOpen: false }">
+    <body class="font-sans antialiased text-slate-800" style="background-color: #f0f5f2;" x-data="{ sidebarOpen: false }">
         <x-page-loader />
 
         <div class="min-h-screen flex flex-col lg:flex-row">
