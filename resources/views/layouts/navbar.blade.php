@@ -1,9 +1,9 @@
-<header class="h-16 px-3.5 sm:px-6 flex items-center justify-between sticky top-0 z-30 bg-[#f0f5f2]/95 backdrop-blur-md border-b border-slate-200/60 flex-shrink-0">
-    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+<header class="h-16 bg-white border-b border-gray-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+    <div class="flex items-center gap-3">
         <!-- Toggle button mobile & tablet -->
         <button
             @click="sidebarOpen = !sidebarOpen"
-            class="lg:hidden p-2 rounded-xl text-slate-600 hover:text-emerald-900 hover:bg-white bg-white/80 border border-slate-200/80 focus:outline-none transition shadow-2xs shrink-0"
+            class="lg:hidden p-2 rounded-xl text-gray-600 hover:text-emerald-800 hover:bg-emerald-50 border border-gray-200/80 focus:outline-none transition-colors"
             title="Buka Menu Navigasi"
             aria-label="Buka Navigasi"
         >
@@ -12,27 +12,27 @@
             </svg>
         </button>
 
-        <!-- Brand Title di Layar Mobile (Agar rapi dan tidak meluap) -->
-        <div class="flex md:hidden items-center gap-2 min-w-0">
-            <span class="font-extrabold text-sm text-slate-900 tracking-tight truncate">Al-Falah Putra</span>
-        </div>
-
-        <!-- Search Bar Kapsul (Aktif di layar Desktop/Tablet md: ke atas, rapi dan tidak meluap di mobile) -->
-        <div class="hidden md:flex items-center relative w-72 lg:w-96">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
+        <!-- Judul / Info Singkat Halaman -->
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+            <span class="text-xs sm:text-base font-bold text-gray-800 tracking-tight truncate max-w-[160px] xs:max-w-[200px] sm:max-w-xs md:max-w-md lg:max-w-lg" title="@yield('title', 'Panel Sekretariat')">
+                @yield('title', 'Panel Sekretariat')
             </span>
-            <input type="text"
-                   placeholder="Cari transaksi, surat, santri, atau agenda..."
-                   class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200/80 rounded-full text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 shadow-2xs transition"
-                   @keydown.enter="window.location.href = '{{ route('admin.santri.index') }}?q=' + encodeURIComponent($el.value)">
+            <span class="hidden md:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200 shrink-0">
+                Pondok Pesantren Al-Falah Putra
+            </span>
         </div>
     </div>
 
-    <!-- Sisi Kanan Navbar (Lonceng Notifikasi Bulat & Profil User ala Finora) -->
-    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+    <!-- Sisi Kanan Navbar -->
+    <div class="flex items-center gap-3">
+        <!-- Tautan ke Beranda Publik -->
+        <a href="{{ url('/') }}" target="_blank"
+           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 rounded-xl border border-emerald-200/80 shadow-xs transition">
+            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            <span class="hidden sm:inline">Lihat Web Publik</span>
+        </a>
 
         <!-- LONCENG NOTIFIKASI AKTIVITAS PUBLIK (LIKE, KOMENTAR, SHARE) -->
         <div class="relative"
@@ -224,17 +224,17 @@
             <!-- Tombol Lonceng dengan Badge Angka -->
             <button
                 @click="notifOpen = !notifOpen"
-                class="relative w-10 h-10 rounded-full bg-white border border-slate-200/80 flex items-center justify-center text-slate-600 hover:text-emerald-900 shadow-2xs transition focus:outline-none"
+                class="relative p-2 rounded-xl text-gray-600 hover:text-emerald-800 hover:bg-emerald-50/80 border border-gray-200/80 transition focus:outline-none"
                 title="Notifikasi Aktivitas">
-                <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
 
-                <!-- Badge Angka Bulat Merah -->
+                <!-- Badge Angka Saja -->
                 <span
                     x-show="unreadCount > 0"
                     x-cloak
-                    class="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-extrabold text-white bg-rose-600 rounded-full shadow-2xs"
+                    class="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-extrabold text-white bg-rose-600 rounded-full shadow-sm animate-pulse"
                     x-text="unreadCount > 99 ? '99+' : unreadCount">
                 </span>
             </button>
@@ -349,18 +349,10 @@
                                     'bg-blue-100 text-blue-700': item.tipe === 'share',
                                     'bg-gray-100 text-gray-700': !['like', 'komentar', 'share'].includes(item.tipe)
                                  }">
-                                <template x-if="item.tipe === 'like'">
-                                    <svg class="w-4 h-4 text-rose-600" fill="currentColor" viewBox="0 0 20 20"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" /></svg>
-                                </template>
-                                <template x-if="item.tipe === 'komentar'">
-                                    <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-                                </template>
-                                <template x-if="item.tipe === 'share'">
-                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                                </template>
-                                <template x-if="!['like', 'komentar', 'share'].includes(item.tipe)">
-                                    <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
-                                </template>
+                                <template x-if="item.tipe === 'like'"><span>❤️</span></template>
+                                <template x-if="item.tipe === 'komentar'"><span>💬</span></template>
+                                <template x-if="item.tipe === 'share'"><span>↗️</span></template>
+                                <template x-if="!['like', 'komentar', 'share'].includes(item.tipe)"><span>🔔</span></template>
                             </div>
 
                             <!-- Konten Ringkas -->
@@ -435,18 +427,10 @@
                                         'bg-blue-100 text-blue-700': activeNotif?.tipe === 'share',
                                         'bg-gray-100 text-gray-700': !['like', 'komentar', 'share'].includes(activeNotif?.tipe)
                                      }">
-                                    <template x-if="activeNotif?.tipe === 'like'">
-                                        <svg class="w-5 h-5 text-rose-600" fill="currentColor" viewBox="0 0 20 20"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" /></svg>
-                                    </template>
-                                    <template x-if="activeNotif?.tipe === 'komentar'">
-                                        <svg class="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-                                    </template>
-                                    <template x-if="activeNotif?.tipe === 'share'">
-                                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                                    </template>
-                                    <template x-if="!['like', 'komentar', 'share'].includes(activeNotif?.tipe)">
-                                        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
-                                    </template>
+                                    <template x-if="activeNotif?.tipe === 'like'"><span>❤️</span></template>
+                                    <template x-if="activeNotif?.tipe === 'komentar'"><span>💬</span></template>
+                                    <template x-if="activeNotif?.tipe === 'share'"><span>↗️</span></template>
+                                    <template x-if="!['like', 'komentar', 'share'].includes(activeNotif?.tipe)"><span>🔔</span></template>
                                 </div>
                                 <div>
                                     <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md"
@@ -528,17 +512,14 @@
 
         </div>
 
-        <!-- Profil & Logout Dropdown (Pill Bersih ala Finora) -->
+        <!-- Profil & Logout Dropdown -->
         <div class="relative" x-data="{ open: false }" @click.outside="open = false">
-            <button @click="open = !open" class="flex items-center gap-2 sm:gap-2.5 bg-white pl-1.5 pr-1.5 sm:pr-3 py-1 sm:py-1.5 rounded-full border border-slate-200/80 shadow-2xs hover:bg-slate-50 transition focus:outline-none shrink-0">
-                <div class="w-8 h-8 rounded-full bg-[#064e3b] text-white flex items-center justify-center font-bold text-xs shadow-2xs shrink-0">
+            <button @click="open = !open" class="flex items-center gap-2 text-sm text-gray-700 hover:text-emerald-800 focus:outline-none py-1 px-2 rounded-lg hover:bg-gray-50">
+                <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
                     {{ strtoupper(substr(Auth::user()->name ?? 'S', 0, 1)) }}
                 </div>
-                <div class="hidden sm:block text-left leading-tight">
-                    <span class="block text-xs font-bold text-slate-800 truncate max-w-[120px]">{{ Auth::user()->name ?? 'Sekretaris' }}</span>
-                    <span class="block text-[10px] text-slate-400 font-medium">Sekretariat Al-Falah</span>
-                </div>
-                <svg class="w-3.5 h-3.5 text-slate-400 shrink-0 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <span class="hidden md:inline font-medium text-gray-700">{{ Auth::user()->name ?? 'Sekretaris' }}</span>
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
             </button>
