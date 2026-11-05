@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Agenda;
 use App\Models\Arsip;
+use App\Models\KasTransaksi;
 use App\Models\KategoriSurat;
 use App\Models\Pengaturan;
 use App\Models\Santri;
@@ -21,6 +22,23 @@ class DashboardController extends Controller
     {
         $now = Carbon::now();
 
+        // 1. Data Salam Dinamis Berdasarkan Waktu
+        $hour = (int) $now->format('H');
+        if ($hour >= 5 && $hour < 11) {
+            $greeting = 'Selamat Pagi';
+            $greetingIcon = '🌅';
+        } elseif ($hour >= 11 && $hour < 15) {
+            $greeting = 'Selamat Siang';
+            $greetingIcon = '☀️';
+        } elseif ($hour >= 15 && $hour < 18) {
+            $greeting = 'Selamat Sore';
+            $greetingIcon = '🌤️';
+        } else {
+            $greeting = 'Selamat Malam';
+            $greetingIcon = '🌙';
+        }
+
+        // 2. Data Statistik Santri & Persuratan
         $totalSantriAktif = Santri::where('status', 'aktif')->count();
         $suratMasukBulanIni = SuratMasuk::whereMonth('tgl_diterima', $now->month)
             ->whereYear('tgl_diterima', $now->year)
@@ -29,15 +47,39 @@ class DashboardController extends Controller
             ->whereYear('tgl_surat', $now->year)
             ->count();
         $suratMasukBelumDisposisi = SuratMasuk::where('status_disposisi', 'baru')->count();
+        $suratKeluarDraft = SuratKeluar::where('status', 'draft')->count();
 
-        // Agenda & Arsip (Fase 4)
+        // 3. Data Kas & Keuangan Pesantren (Bendahara)
+        $totalDebitSemua = (float) KasTransaksi::debit()->sum('nominal');
+        $totalKreditSemua = (float) KasTransaksi::kredit()->sum('nominal');
+        $saldoKasRiil = $totalDebitSemua - $totalKreditSemua;
+
+        $debitBulanIni = (float) KasTransaksi::debit()
+            ->whereYear('tanggal', $now->year)
+            ->whereMonth('tanggal', $now->month)
+            ->sum('nominal');
+        $kreditBulanIni = (float) KasTransaksi::kredit()
+            ->whereYear('tanggal', $now->year)
+            ->whereMonth('tanggal', $now->month)
+            ->sum('nominal');
+        $transaksiKasTerbaru = KasTransaksi::latest('tanggal')->latest('id')->take(6)->get();
+
+        // 4. Agenda & Arsip
         $agendaMendatang = Agenda::mendatang()->count();
+        $agendasHariIni = Agenda::whereDate('mulai', '<=', $now->toDateString())
+            ->whereDate('selesai', '>=', $now->toDateString())
+            ->where('status', 'terjadwal')
+            ->with('pj')
+            ->get();
         $agendasBesok = Agenda::hMinusSatu()->with('pj')->get();
-        $agendasTerdekat = Agenda::mendatang()->with('pj')->take(5)->get();
+        $agendasTerdekat = Agenda::mendatang()->with('pj')->take(6)->get();
         $totalArsip = Arsip::count();
 
-        $suratMasukTerbaru = SuratMasuk::with('kategori')->latest('tgl_diterima')->take(5)->get();
-        $suratKeluarTerbaru = SuratKeluar::with('kategori')->latest('tgl_surat')->take(5)->get();
+        // Total Catatan Perlu Perhatian / Tindakan
+        $totalPerluTindakan = $suratMasukBelumDisposisi + $suratKeluarDraft + $agendasBesok->count() + $agendasHariIni->count();
+
+        $suratMasukTerbaru = SuratMasuk::with('kategori')->latest('tgl_diterima')->take(6)->get();
+        $suratKeluarTerbaru = SuratKeluar::with('kategori')->latest('tgl_surat')->take(6)->get();
 
         $pengaturans = Pengaturan::getAllKeyValues();
         $totalKategoriSurat = KategoriSurat::count();
@@ -313,7 +355,16 @@ class DashboardController extends Controller
             'chartAsramaData',
             'totalKamarTerisi',
             'totalSantriBerasrama',
-            'totalSantriTanpaKamar'
+            'totalSantriTanpaKamar',
+            'greeting',
+            'greetingIcon',
+            'saldoKasRiil',
+            'debitBulanIni',
+            'kreditBulanIni',
+            'transaksiKasTerbaru',
+            'suratKeluarDraft',
+            'agendasHariIni',
+            'totalPerluTindakan'
         ));
     }
 }
