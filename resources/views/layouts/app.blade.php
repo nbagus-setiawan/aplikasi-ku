@@ -352,8 +352,13 @@
         </div>
 
         <script>
-            // SISTEM TOAST NOTIFIKASI SOLID KONTRAST TINGGI (100% SOLID PUTIH, SANGAT JELAS TERBACA)
+            // SISTEM TOAST NOTIFIKASI SOLID KONTRAST TINGGI (DI ATAS LAYAR)
             window.sapToast = function(type, title, message) {
+                if (window.tampilNotifikasi) {
+                    const mappedType = (type === 'error' ? 'gagal' : (type === 'warning' ? 'peringatan' : 'berhasil'));
+                    window.tampilNotifikasi({ tipe: mappedType, judul: title, pesan: message });
+                    return;
+                }
                 const container = document.getElementById('sap-toast-container');
                 if (!container) return;
 
@@ -416,17 +421,6 @@
                         }
                     });
                 });
-
-                // Toast otomatis dari Flash Session
-                @if (session('success'))
-                    window.sapToast('success', 'Berhasil', @json(session('success')));
-                @endif
-                @if (session('error'))
-                    window.sapToast('error', 'Terjadi Kesalahan', @json(session('error')));
-                @endif
-                @if (session('warning'))
-                    window.sapToast('error', 'Perhatian', @json(session('warning')));
-                @endif
 
                 // Penanda Baris yang Baru Diubah (Highlight Kilauan Hijau Otomatis di Semua Halaman)
                 const highlightId = @json(session('highlight_id')) || new URLSearchParams(window.location.search).get('highlight');

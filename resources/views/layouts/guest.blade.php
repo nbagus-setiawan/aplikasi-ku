@@ -20,6 +20,7 @@
     </head>
     <body class="font-sans text-gray-900 antialiased bg-slate-100">
         <x-page-loader />
+        <x-modal-toast />
 
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 px-4">
             <div class="text-center mb-4">
