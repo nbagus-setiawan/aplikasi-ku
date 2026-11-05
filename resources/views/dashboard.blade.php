@@ -16,22 +16,29 @@
                             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                             SAP Al-Falah Putra
                         </span>
-                        <span class="text-xs text-slate-300 font-medium hidden sm:inline">
-                            📅 {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}
+                        <span class="inline-flex items-center gap-1.5 text-xs text-slate-300 font-medium hidden sm:inline-flex">
+                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}
                         </span>
                         @if ($totalPerluTindakan > 0)
-                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                                ⚠️ {{ $totalPerluTindakan }} Perlu Tindakan
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                                {{ $totalPerluTindakan }} Perlu Tindakan
                             </span>
                         @else
-                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                                ✓ Tertib Administrasi
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                Tertib Administrasi
                             </span>
                         @endif
                     </div>
 
                     <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white leading-tight">
-                        <span class="mr-1">{{ $greetingIcon }}</span> {{ $greeting }}, {{ Auth::user()->name ?? 'Sekretaris' }}
+                        {{ $greeting }}, {{ Auth::user()->name ?? 'Sekretaris' }}
                     </h1>
 
                     <p class="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl font-normal">
@@ -39,7 +46,12 @@
                     </p>
 
                     <div class="flex items-center gap-2.5 pt-1 text-xs text-slate-400 font-medium sm:hidden">
-                        <span>📅 {{ \Carbon\Carbon::now()->translatedFormat('d M Y') }}</span>
+                        <span class="inline-flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            {{ \Carbon\Carbon::now()->translatedFormat('d M Y') }}
+                        </span>
                         <span>&bull;</span>
                         <span>Gelumbang, Muara Enim</span>
                     </div>
@@ -58,9 +70,11 @@
         @if ($totalPerluTindakan > 0)
             <div class="bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-xs space-y-3">
                 <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-                    <div class="flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0">
-                            ⚡
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-700 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
                         </div>
                         <div>
                             <h2 class="text-xs sm:text-sm font-bold text-slate-900">Pusat Tindakan Sekretariat</h2>
@@ -189,7 +203,10 @@
                         @if ($suratMasukBelumDisposisi > 0)
                             <span class="text-amber-600 font-bold">{{ $suratMasukBelumDisposisi }} perlu disposisi</span>
                         @else
-                            <span class="text-emerald-600 font-semibold">✓ Seluruhnya didisposisi</span>
+                            <span class="inline-flex items-center gap-1 text-emerald-600 font-semibold">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                Seluruhnya didisposisi
+                            </span>
                         @endif
                     </div>
                 </div>
@@ -510,23 +527,35 @@
                 <div class="flex items-center gap-1.5 bg-slate-200/70 p-1 rounded-xl text-xs font-semibold overflow-x-auto">
                     <button @click="tab = 'surat-masuk'"
                             :class="tab === 'surat-masuk' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'"
-                            class="px-3 py-1.5 rounded-lg transition whitespace-nowrap">
-                        📩 Surat Masuk
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition whitespace-nowrap">
+                        <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                        </svg>
+                        Surat Masuk
                     </button>
                     <button @click="tab = 'surat-keluar'"
                             :class="tab === 'surat-keluar' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'"
-                            class="px-3 py-1.5 rounded-lg transition whitespace-nowrap">
-                        📤 Surat Keluar
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition whitespace-nowrap">
+                        <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                        Surat Keluar
                     </button>
                     <button @click="tab = 'kas'"
                             :class="tab === 'kas' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'"
-                            class="px-3 py-1.5 rounded-lg transition whitespace-nowrap">
-                        💰 Kas Bendahara
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition whitespace-nowrap">
+                        <svg class="w-4 h-4 text-emerald-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Kas Bendahara
                     </button>
                     <button @click="tab = 'agenda'"
                             :class="tab === 'agenda' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'"
-                            class="px-3 py-1.5 rounded-lg transition whitespace-nowrap">
-                        📅 Agenda Pondok
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition whitespace-nowrap">
+                        <svg class="w-4 h-4 text-purple-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Agenda Pondok
                     </button>
                 </div>
             </div>

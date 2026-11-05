@@ -26,16 +26,12 @@ class DashboardController extends Controller
         $hour = (int) $now->format('H');
         if ($hour >= 5 && $hour < 11) {
             $greeting = 'Selamat Pagi';
-            $greetingIcon = '🌅';
         } elseif ($hour >= 11 && $hour < 15) {
             $greeting = 'Selamat Siang';
-            $greetingIcon = '☀️';
         } elseif ($hour >= 15 && $hour < 18) {
             $greeting = 'Selamat Sore';
-            $greetingIcon = '🌤️';
         } else {
             $greeting = 'Selamat Malam';
-            $greetingIcon = '🌙';
         }
 
         // 2. Data Statistik Santri & Persuratan
@@ -357,7 +353,6 @@ class DashboardController extends Controller
             'totalSantriBerasrama',
             'totalSantriTanpaKamar',
             'greeting',
-            'greetingIcon',
             'saldoKasRiil',
             'debitBulanIni',
             'kreditBulanIni',
