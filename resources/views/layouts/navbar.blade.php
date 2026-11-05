@@ -349,10 +349,18 @@
                                     'bg-blue-100 text-blue-700': item.tipe === 'share',
                                     'bg-gray-100 text-gray-700': !['like', 'komentar', 'share'].includes(item.tipe)
                                  }">
-                                <template x-if="item.tipe === 'like'"><span>❤️</span></template>
-                                <template x-if="item.tipe === 'komentar'"><span>💬</span></template>
-                                <template x-if="item.tipe === 'share'"><span>↗️</span></template>
-                                <template x-if="!['like', 'komentar', 'share'].includes(item.tipe)"><span>🔔</span></template>
+                                <template x-if="item.tipe === 'like'">
+                                    <svg class="w-4 h-4 text-rose-600" fill="currentColor" viewBox="0 0 20 20"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" /></svg>
+                                </template>
+                                <template x-if="item.tipe === 'komentar'">
+                                    <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                                </template>
+                                <template x-if="item.tipe === 'share'">
+                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                                </template>
+                                <template x-if="!['like', 'komentar', 'share'].includes(item.tipe)">
+                                    <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                                </template>
                             </div>
 
                             <!-- Konten Ringkas -->
@@ -427,10 +435,18 @@
                                         'bg-blue-100 text-blue-700': activeNotif?.tipe === 'share',
                                         'bg-gray-100 text-gray-700': !['like', 'komentar', 'share'].includes(activeNotif?.tipe)
                                      }">
-                                    <template x-if="activeNotif?.tipe === 'like'"><span>❤️</span></template>
-                                    <template x-if="activeNotif?.tipe === 'komentar'"><span>💬</span></template>
-                                    <template x-if="activeNotif?.tipe === 'share'"><span>↗️</span></template>
-                                    <template x-if="!['like', 'komentar', 'share'].includes(activeNotif?.tipe)"><span>🔔</span></template>
+                                    <template x-if="activeNotif?.tipe === 'like'">
+                                        <svg class="w-5 h-5 text-rose-600" fill="currentColor" viewBox="0 0 20 20"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" /></svg>
+                                    </template>
+                                    <template x-if="activeNotif?.tipe === 'komentar'">
+                                        <svg class="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                                    </template>
+                                    <template x-if="activeNotif?.tipe === 'share'">
+                                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                                    </template>
+                                    <template x-if="!['like', 'komentar', 'share'].includes(activeNotif?.tipe)">
+                                        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                                    </template>
                                 </div>
                                 <div>
                                     <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md"
