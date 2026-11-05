@@ -21,6 +21,12 @@
 
         <style>
             [x-cloak] { display: none !important; }
+            /* Mencegah sidebar berkedip/muncul saat reload atau refresh di layar HP */
+            @media (max-width: 1023px) {
+                #sidebar:not(.translate-x-0) {
+                    transform: translateX(-100%) !important;
+                }
+            }
             @media print {
                 @page {
                     margin: 0 !important; /* Menghilangkan header (tanggal, jam, judul SAP | SEKRETARIS AL-FALAH PUTRA) dan footer otomatis browser */

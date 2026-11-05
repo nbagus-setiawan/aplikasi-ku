@@ -2,7 +2,7 @@
     id="sidebar"
     :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen }"
     @keydown.window.escape="sidebarOpen = false"
-    class="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] sm:max-w-[300px] lg:max-w-none lg:w-72 text-white transition-transform duration-300 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen flex flex-col justify-between shadow-2xl overflow-hidden flex-shrink-0 border-r border-emerald-800"
+    class="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] sm:max-w-[300px] lg:max-w-none lg:w-72 -translate-x-full lg:translate-x-0 text-white transition-transform duration-300 ease-in-out lg:sticky lg:top-0 lg:h-screen flex flex-col justify-between shadow-2xl overflow-hidden flex-shrink-0 border-r border-emerald-800"
     style="background-color: #065f46;"
 >
     <!-- Logo & Identitas Lembaga (Font Putih Sekali, Bersahaja & Bersih) -->
