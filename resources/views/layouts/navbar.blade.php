@@ -1,9 +1,9 @@
-<header class="h-16 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 bg-[#f0f5f2]/90 backdrop-blur-md border-b border-slate-200/60">
-    <div class="flex items-center gap-3">
+<header class="h-16 px-3.5 sm:px-6 flex items-center justify-between sticky top-0 z-30 bg-[#f0f5f2]/95 backdrop-blur-md border-b border-slate-200/60 flex-shrink-0">
+    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
         <!-- Toggle button mobile & tablet -->
         <button
             @click="sidebarOpen = !sidebarOpen"
-            class="lg:hidden p-2 rounded-xl text-slate-600 hover:text-emerald-900 hover:bg-white bg-white/70 border border-slate-200/80 focus:outline-none transition shadow-2xs"
+            class="lg:hidden p-2 rounded-xl text-slate-600 hover:text-emerald-900 hover:bg-white bg-white/80 border border-slate-200/80 focus:outline-none transition shadow-2xs shrink-0"
             title="Buka Menu Navigasi"
             aria-label="Buka Navigasi"
         >
@@ -12,8 +12,13 @@
             </svg>
         </button>
 
-        <!-- Search Bar Kapsul (Persis seperti referensi Finora: 'Search transactions, categories, or anything...') -->
-        <div class="relative w-64 xs:w-72 sm:w-80 md:w-96">
+        <!-- Brand Title di Layar Mobile (Agar rapi dan tidak meluap) -->
+        <div class="flex md:hidden items-center gap-2 min-w-0">
+            <span class="font-extrabold text-sm text-slate-900 tracking-tight truncate">Al-Falah Putra</span>
+        </div>
+
+        <!-- Search Bar Kapsul (Aktif di layar Desktop/Tablet md: ke atas, rapi dan tidak meluap di mobile) -->
+        <div class="hidden md:flex items-center relative w-72 lg:w-96">
             <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -27,7 +32,7 @@
     </div>
 
     <!-- Sisi Kanan Navbar (Lonceng Notifikasi Bulat & Profil User ala Finora) -->
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
 
         <!-- LONCENG NOTIFIKASI AKTIVITAS PUBLIK (LIKE, KOMENTAR, SHARE) -->
         <div class="relative"
@@ -525,15 +530,15 @@
 
         <!-- Profil & Logout Dropdown (Pill Bersih ala Finora) -->
         <div class="relative" x-data="{ open: false }" @click.outside="open = false">
-            <button @click="open = !open" class="flex items-center gap-2.5 bg-white pl-1.5 pr-3 py-1.5 rounded-full border border-slate-200/80 shadow-2xs hover:bg-slate-50 transition focus:outline-none">
-                <div class="w-8 h-8 rounded-full bg-[#064e3b] text-white flex items-center justify-center font-bold text-xs shadow-2xs">
+            <button @click="open = !open" class="flex items-center gap-2 sm:gap-2.5 bg-white pl-1.5 pr-1.5 sm:pr-3 py-1 sm:py-1.5 rounded-full border border-slate-200/80 shadow-2xs hover:bg-slate-50 transition focus:outline-none shrink-0">
+                <div class="w-8 h-8 rounded-full bg-[#064e3b] text-white flex items-center justify-center font-bold text-xs shadow-2xs shrink-0">
                     {{ strtoupper(substr(Auth::user()->name ?? 'S', 0, 1)) }}
                 </div>
                 <div class="hidden sm:block text-left leading-tight">
                     <span class="block text-xs font-bold text-slate-800 truncate max-w-[120px]">{{ Auth::user()->name ?? 'Sekretaris' }}</span>
                     <span class="block text-[10px] text-slate-400 font-medium">Sekretariat Al-Falah</span>
                 </div>
-                <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-3.5 h-3.5 text-slate-400 shrink-0 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
             </button>

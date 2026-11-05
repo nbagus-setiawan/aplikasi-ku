@@ -37,10 +37,10 @@
             }
         </style>
     </head>
-    <body class="font-sans antialiased text-slate-800" style="background-color: #f0f5f2;" x-data="{ sidebarOpen: false }">
+    <body class="font-sans antialiased text-slate-800 overflow-x-hidden min-h-screen" style="background-color: #f0f5f2;" x-data="{ sidebarOpen: false }">
         <x-page-loader />
 
-        <div class="min-h-screen flex flex-col lg:flex-row">
+        <div class="min-h-screen flex flex-col lg:flex-row overflow-x-hidden">
             <!-- Sidebar -->
             @include('layouts.sidebar')
 
@@ -59,7 +59,7 @@
             ></div>
 
             <!-- Main Content Area -->
-            <div class="flex-1 flex flex-col min-w-0 min-h-screen">
+            <div class="flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden">
                 <!-- Top Navbar -->
                 @include('layouts.navbar')
 
@@ -67,7 +67,7 @@
                 <x-modal-toast />
 
                 <!-- Page Content Slot -->
-                <main class="flex-1 max-w-screen-2xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <main class="flex-1 max-w-7xl 2xl:max-w-screen-2xl w-full mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6">
                     @isset($slot)
                         {{ $slot }}
                     @else
@@ -76,18 +76,18 @@
                 </main>
 
                 <!-- Footer Bersih & Responsif -->
-                <footer class="bg-white border-t border-gray-200/80 px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 mt-auto">
-                    <div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left text-xs text-gray-500">
+                <footer class="bg-transparent border-t border-slate-200/60 px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 mt-auto">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left text-xs text-slate-500">
                         <div class="flex items-center gap-1.5 flex-wrap justify-center sm:justify-start">
                             <span>&copy; {{ date('Y') }}</span>
-                            <span class="font-bold text-gray-800">SAP Al-Falah Putra</span>
-                            <span class="text-gray-300 hidden sm:inline">&bull;</span>
-                            <span class="text-gray-500">Pondok Pesantren Al-Falah Putak</span>
+                            <span class="font-bold text-slate-800">SAP Al-Falah Putra</span>
+                            <span class="text-slate-300 hidden sm:inline">&bull;</span>
+                            <span class="text-slate-500">Pondok Pesantren Al-Falah Putra</span>
                         </div>
-                        <div class="flex items-center gap-2.5 text-[11px] text-gray-400 font-mono">
+                        <div class="flex items-center gap-2.5 text-[11px] text-slate-400 font-mono">
                             <span>v1.0 Produksi</span>
                             <span>&bull;</span>
-                            <span class="inline-flex items-center gap-1 text-emerald-600 font-semibold">
+                            <span class="inline-flex items-center gap-1 text-emerald-700 font-semibold">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                 Sistem Aktif
                             </span>
