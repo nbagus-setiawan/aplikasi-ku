@@ -28,7 +28,7 @@
     }
 @endphp
 
-{{-- NOTIFIKASI TOAST MENGAMBANG DI ATAS (TOP FLOATING TOAST) - TANPA MODAL TENGAH & TANPA BACKDROP GELAP --}}
+{{-- NOTIFIKASI TOAST RINGKAS DI ATAS KANAN (TOP-RIGHT COMPACT TOAST) --}}
 <div x-data="{
         show: {{ $isActive ? 'true' : 'false' }},
         tipe: '{{ $tipeAwal }}',
@@ -47,13 +47,13 @@
             if (this.timer) clearTimeout(this.timer);
             this.timer = setTimeout(() => {
                 this.tutup();
-            }, 4000);
+            }, 3800);
         },
         init() {
             if (this.show) {
                 this.timer = setTimeout(() => {
                     this.tutup();
-                }, 4000);
+                }, 3800);
             }
             window.tampilNotifikasi = (opsi) => {
                 const tipe = opsi.tipe || 'berhasil';
@@ -69,54 +69,54 @@
     }"
     x-show="show"
     x-cloak
-    class="fixed top-4 sm:top-5 left-1/2 -translate-x-1/2 z-[100000] w-[calc(100%-2rem)] max-w-lg pointer-events-none no-print"
+    class="fixed top-4 right-4 sm:top-5 sm:right-5 z-[100000] w-[calc(100%-2rem)] sm:w-auto max-w-[340px] pointer-events-none no-print"
     x-transition:enter="transition ease-out duration-300"
-    x-transition:enter-start="-translate-y-8 opacity-0 scale-95"
-    x-transition:enter-end="translate-y-0 opacity-100 scale-100"
+    x-transition:enter-start="translate-x-8 opacity-0 scale-95"
+    x-transition:enter-end="translate-x-0 opacity-100 scale-100"
     x-transition:leave="transition ease-in duration-200"
-    x-transition:leave-start="translate-y-0 opacity-100 scale-100"
-    x-transition:leave-end="-translate-y-6 opacity-0 scale-95"
+    x-transition:leave-start="translate-x-0 opacity-100 scale-100"
+    x-transition:leave-end="translate-x-6 opacity-0 scale-95"
     @keydown.escape.window="tutup()"
 >
-    <!-- Kartu Toast Mengambang di Atas (Solid Putih, Bersih & Kontras Tinggi) -->
+    <!-- Kartu Toast Ringkas, Ramping & Solid Putih -->
     <div
-        class="pointer-events-auto relative bg-white rounded-2xl p-4 sm:p-4.5 shadow-2xl border-2 flex items-start gap-3.5 transition-all overflow-hidden"
+        class="pointer-events-auto relative bg-white rounded-xl p-3 sm:py-3 sm:px-3.5 shadow-xl border flex items-start gap-2.5 transition-all overflow-hidden"
         :class="{
-            'border-emerald-500 border-l-[6px] border-l-emerald-600': tipe === 'berhasil',
-            'border-rose-500 border-l-[6px] border-l-rose-600': tipe === 'gagal',
-            'border-amber-500 border-l-[6px] border-l-amber-600': tipe === 'peringatan'
+            'border-emerald-500 border-l-4 border-l-emerald-600': tipe === 'berhasil',
+            'border-rose-500 border-l-4 border-l-rose-600': tipe === 'gagal',
+            'border-amber-500 border-l-4 border-l-amber-600': tipe === 'peringatan'
         }"
         @click.stop
     >
-        <!-- Ikon Status -->
+        <!-- Ikon Status Ringkas -->
         <template x-if="tipe === 'berhasil'">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path class="toast-check-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8" d="M5 13l4 4L19 7" />
                 </svg>
             </div>
         </template>
 
         <template x-if="tipe === 'gagal'">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </div>
         </template>
 
         <template x-if="tipe === 'peringatan'">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
             </div>
         </template>
 
-        <!-- Konten Teks -->
+        <!-- Konten Teks Ringkas -->
         <div class="flex-1 min-w-0 pt-0.5">
             <h4
-                class="text-xs font-black tracking-wider uppercase"
+                class="text-[11px] sm:text-xs font-black tracking-wider uppercase leading-none"
                 :class="{
                     'text-emerald-900': tipe === 'berhasil',
                     'text-rose-900': tipe === 'gagal',
@@ -125,11 +125,11 @@
                 x-text="judul"
             ></h4>
 
-            <p class="text-xs sm:text-sm font-semibold text-slate-800 mt-0.5 leading-snug break-words" x-text="pesan"></p>
+            <p class="text-xs font-semibold text-slate-800 mt-1 leading-snug break-words" x-text="pesan"></p>
 
             @if ($hasFormErrors && count($errors->all()) > 1)
-                <div class="mt-2 text-left w-full max-h-28 overflow-y-auto bg-slate-50 p-2 rounded-lg border border-slate-200">
-                    <ul class="text-[11px] font-medium text-rose-700 space-y-0.5 list-disc list-inside">
+                <div class="mt-1.5 text-left w-full max-h-24 overflow-y-auto bg-slate-50 p-1.5 rounded border border-slate-200">
+                    <ul class="text-[10px] font-medium text-rose-700 space-y-0.5 list-disc list-inside">
                         @foreach ($errors->all() as $err)
                             <li>{{ $err }}</li>
                         @endforeach
@@ -142,14 +142,14 @@
         <button
             type="button"
             @click="tutup()"
-            class="text-slate-400 hover:text-slate-700 hover:bg-slate-100 p-1 rounded-lg shrink-0 font-bold text-lg leading-none transition"
+            class="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-0.5 rounded shrink-0 font-bold text-base leading-none transition"
             aria-label="Tutup Notifikasi"
         >
             &times;
         </button>
 
-        <!-- Progress Bar Timer Otomatis 4 Detik -->
-        <div class="absolute bottom-0 left-0 right-0 h-1 bg-slate-100 overflow-hidden">
+        <!-- Progress Bar Timer Otomatis Tipis -->
+        <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-slate-100 overflow-hidden">
             <div
                 class="h-full toast-progress-bar"
                 :class="{
@@ -181,6 +181,6 @@
         animation: toastCheckmarkDraw 0.45s ease-out forwards;
     }
     .toast-progress-bar {
-        animation: toastTimerShrink 4s linear forwards;
+        animation: toastTimerShrink 3.8s linear forwards;
     }
 </style>
