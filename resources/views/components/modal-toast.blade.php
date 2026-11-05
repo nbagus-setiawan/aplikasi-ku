@@ -69,7 +69,8 @@
     }"
     x-show="show"
     x-cloak
-    class="fixed top-4 right-4 sm:top-5 sm:right-5 z-[100000] w-[calc(100%-2rem)] sm:w-auto max-w-[340px] pointer-events-none no-print"
+    class="fixed right-3 sm:right-5 z-[100000] w-[calc(100%-1.5rem)] sm:w-auto max-w-[340px] pointer-events-none no-print"
+    style="top: max(1rem, env(safe-area-inset-top, 1rem));"
     x-transition:enter="transition ease-out duration-300"
     x-transition:enter-start="translate-x-8 opacity-0 scale-95"
     x-transition:enter-end="translate-x-0 opacity-100 scale-100"
@@ -138,11 +139,11 @@
             @endif
         </div>
 
-        <!-- Tombol Tutup Manual -->
+        <!-- Tombol Tutup Manual (Mudah Disentuh Jempol di HP) -->
         <button
             type="button"
             @click="tutup()"
-            class="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-0.5 rounded shrink-0 font-bold text-base leading-none transition"
+            class="w-7 h-7 sm:w-6 sm:h-6 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:bg-slate-200 rounded-lg shrink-0 font-bold text-lg leading-none transition"
             aria-label="Tutup Notifikasi"
         >
             &times;
