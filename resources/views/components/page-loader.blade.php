@@ -8,32 +8,82 @@
         height: 3px;
         width: 0%;
         background: linear-gradient(90deg, #059669 0%, #10b981 50%, #34d399 100%);
-        box-shadow: 0 0 10px rgba(16, 185, 129, 0.55);
+        box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
         z-index: 100000;
         pointer-events: none;
         opacity: 0;
         transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
     }
 
-    /* Animasi Efek Berkilau (Shimmer Wave) untuk Skeleton */
-    @keyframes sapShimmerWave {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
+    /* Animasi Shimmer Wave Alir Halus (Fluid 60FPS Hardware-Accelerated) */
+    @keyframes sapSmoothGlow {
+        0% {
+            transform: translate3d(-150%, 0, 0);
+        }
+        100% {
+            transform: translate3d(150%, 0, 0);
+        }
     }
 
+    @keyframes sapBasePulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.72;
+        }
+    }
+
+    /* Skeleton Elemen Terang (Halaman Utama) */
     .sap-skeleton-pulse {
         position: relative;
         overflow: hidden;
-        background-color: #e2e8f0;
+        background-color: #f1f5f9; /* Slate-100 lembut */
+        border-radius: inherit;
+        animation: sapBasePulse 2.4s ease-in-out infinite;
+        will-change: opacity;
     }
 
     .sap-skeleton-pulse::after {
         content: "";
         position: absolute;
-        top: 0; right: 0; bottom: 0; left: 0;
-        transform: translateX(-100%);
-        background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.65) 50%, rgba(255,255,255,0) 100%);
-        animation: sapShimmerWave 1.4s infinite ease-in-out;
+        inset: 0;
+        transform: translate3d(-150%, 0, 0);
+        background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.45) 30%,
+            rgba(255, 255, 255, 0.85) 50%,
+            rgba(255, 255, 255, 0.45) 70%,
+            rgba(255, 255, 255, 0) 100%
+        );
+        animation: sapSmoothGlow 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        will-change: transform;
+    }
+
+    /* Skeleton Elemen Gelap (Sidebar Hijau Desktop) */
+    .sap-skeleton-dark {
+        position: relative;
+        overflow: hidden;
+        background-color: rgba(255, 255, 255, 0.12);
+        border-radius: inherit;
+        animation: sapBasePulse 2.4s ease-in-out infinite;
+        will-change: opacity;
+    }
+
+    .sap-skeleton-dark::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        transform: translate3d(-150%, 0, 0);
+        background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.18) 50%,
+            rgba(255, 255, 255, 0) 100%
+        );
+        animation: sapSmoothGlow 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        will-change: transform;
     }
 
     /* Layar Penuh Skeleton Universal Saat Refresh / Reload */
@@ -42,14 +92,17 @@
         inset: 0;
         z-index: 99998;
         background: #f8fafc;
-        transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s ease;
+        transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s ease;
         opacity: 1;
         visibility: visible;
         pointer-events: auto;
+        transform: scale(1);
+        will-change: opacity, transform;
     }
 
     #sap-skeleton-screen.sap-loaded {
         opacity: 0 !important;
+        transform: scale(0.995) !important;
         visibility: hidden !important;
         pointer-events: none !important;
     }
@@ -141,30 +194,30 @@
 
 <!-- 2. SKELETON SCREEN UNIVERSAL SAAT REFRESH / RELOAD SEMUA HALAMAN -->
 <div id="sap-skeleton-screen" class="no-print flex min-h-screen">
-    <!-- Skeleton Sidebar: Hanya muncul di Desktop (lg:flex), di Mobile HIDDEN sehingga 100% TIDAK PERNAH MUNCUL SIDEBAR di HP -->
+    <!-- Skeleton Sidebar: Hanya tampil di Desktop (lg:flex), di Mobile 100% HIDDEN sehingga tidak pernah berkedip di HP -->
     <div class="hidden lg:flex w-72 bg-[#065f46] flex-col justify-between p-4 shrink-0 border-r border-emerald-800">
         <div class="space-y-4">
             <!-- Header Logo Skeleton -->
             <div class="flex items-center gap-3 py-2 border-b border-white/10">
-                <div class="w-10 h-10 rounded-xl bg-white/20 sap-skeleton-pulse shrink-0"></div>
+                <div class="w-10 h-10 rounded-xl sap-skeleton-dark shrink-0"></div>
                 <div class="space-y-1.5 flex-1 min-w-0">
-                    <div class="h-4 w-28 bg-white/25 rounded-md sap-skeleton-pulse"></div>
-                    <div class="h-2.5 w-20 bg-white/15 rounded-md sap-skeleton-pulse"></div>
+                    <div class="h-4 w-28 rounded-md sap-skeleton-dark"></div>
+                    <div class="h-2.5 w-20 rounded-md sap-skeleton-dark"></div>
                 </div>
             </div>
             <!-- Menu Items Skeleton -->
             <div class="pt-2 space-y-2">
-                <div class="h-9 w-full bg-white/20 rounded-xl sap-skeleton-pulse"></div>
-                <div class="h-9 w-full bg-white/10 rounded-xl sap-skeleton-pulse"></div>
-                <div class="h-9 w-full bg-white/10 rounded-xl sap-skeleton-pulse"></div>
-                <div class="h-9 w-full bg-white/10 rounded-xl sap-skeleton-pulse"></div>
-                <div class="h-9 w-full bg-white/10 rounded-xl sap-skeleton-pulse"></div>
-                <div class="h-9 w-full bg-white/10 rounded-xl sap-skeleton-pulse"></div>
-                <div class="h-9 w-full bg-white/10 rounded-xl sap-skeleton-pulse"></div>
+                <div class="h-10 w-full rounded-xl sap-skeleton-dark"></div>
+                <div class="h-10 w-full rounded-xl sap-skeleton-dark"></div>
+                <div class="h-10 w-full rounded-xl sap-skeleton-dark"></div>
+                <div class="h-10 w-full rounded-xl sap-skeleton-dark"></div>
+                <div class="h-10 w-full rounded-xl sap-skeleton-dark"></div>
+                <div class="h-10 w-full rounded-xl sap-skeleton-dark"></div>
+                <div class="h-10 w-full rounded-xl sap-skeleton-dark"></div>
             </div>
         </div>
         <!-- Profile Skeleton -->
-        <div class="h-12 w-full bg-white/15 rounded-xl sap-skeleton-pulse"></div>
+        <div class="h-12 w-full rounded-xl sap-skeleton-dark"></div>
     </div>
 
     <!-- Skeleton Konten Utama (Mobile & Desktop) -->
@@ -173,7 +226,7 @@
         <div class="h-16 px-4 sm:px-6 bg-white border-b border-slate-200/80 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="lg:hidden w-9 h-9 rounded-xl bg-slate-200 sap-skeleton-pulse shrink-0"></div>
-                <div class="h-5 w-32 sm:w-48 bg-slate-200 rounded-md sap-skeleton-pulse"></div>
+                <div class="h-5 w-36 sm:w-48 rounded-md bg-slate-200 sap-skeleton-pulse"></div>
             </div>
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-full bg-slate-200 sap-skeleton-pulse"></div>
@@ -181,26 +234,121 @@
             </div>
         </div>
 
-        <!-- Skeleton Halaman Konten (Hero + Cards + Tabel) -->
+        <!-- Skeleton Halaman Konten (Proporsional & Mirip Asli) -->
         <div class="p-4 sm:p-6 lg:p-8 space-y-5 max-w-7xl w-full mx-auto">
-            <!-- Hero Banner Shimmer -->
-            <div class="h-32 sm:h-40 w-full rounded-3xl bg-slate-200/90 sap-skeleton-pulse"></div>
-
-            <!-- Grid 4 Kartu Shimmer -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
-                <div class="h-24 rounded-2xl bg-slate-200 sap-skeleton-pulse"></div>
-                <div class="h-24 rounded-2xl bg-slate-200 sap-skeleton-pulse"></div>
-                <div class="h-24 rounded-2xl bg-slate-200 sap-skeleton-pulse"></div>
-                <div class="h-24 rounded-2xl bg-slate-200 sap-skeleton-pulse"></div>
+            <!-- 1. Hero Banner Skeleton -->
+            <div class="rounded-3xl p-5 sm:p-7 bg-slate-200/90 border border-slate-300/60 shadow-xs flex flex-col justify-between gap-4 sap-skeleton-pulse min-h-[140px] sm:min-h-[160px]">
+                <div class="space-y-3 max-w-md">
+                    <div class="flex items-center gap-2">
+                        <div class="h-5 w-32 rounded-full bg-white/70"></div>
+                        <div class="h-5 w-28 rounded-full bg-white/50 hidden sm:block"></div>
+                    </div>
+                    <div class="h-7 w-64 sm:w-80 rounded-xl bg-white/80"></div>
+                    <div class="h-4 w-full sm:w-96 rounded-md bg-white/60"></div>
+                </div>
             </div>
 
-            <!-- Kartu Besar Shimmer (Tabel / Grafik) -->
-            <div class="h-56 sm:h-72 rounded-3xl bg-slate-200 sap-skeleton-pulse"></div>
+            <!-- 2. Quick Actions Skeleton -->
+            <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-xs">
+                <div class="h-4 w-40 rounded-md bg-slate-200 sap-skeleton-pulse mb-3.5"></div>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <div class="h-16 rounded-2xl bg-slate-100 border border-slate-200/60 flex items-center gap-3 p-3 sap-skeleton-pulse">
+                        <div class="w-10 h-10 rounded-2xl bg-slate-200 shrink-0"></div>
+                        <div class="space-y-1.5 flex-1 min-w-0">
+                            <div class="h-3.5 w-20 rounded bg-slate-200"></div>
+                            <div class="h-2.5 w-16 rounded bg-slate-200"></div>
+                        </div>
+                    </div>
+                    <div class="h-16 rounded-2xl bg-slate-100 border border-slate-200/60 flex items-center gap-3 p-3 sap-skeleton-pulse">
+                        <div class="w-10 h-10 rounded-2xl bg-slate-200 shrink-0"></div>
+                        <div class="space-y-1.5 flex-1 min-w-0">
+                            <div class="h-3.5 w-20 rounded bg-slate-200"></div>
+                            <div class="h-2.5 w-16 rounded bg-slate-200"></div>
+                        </div>
+                    </div>
+                    <div class="h-16 rounded-2xl bg-slate-100 border border-slate-200/60 flex items-center gap-3 p-3 sap-skeleton-pulse">
+                        <div class="w-10 h-10 rounded-2xl bg-slate-200 shrink-0"></div>
+                        <div class="space-y-1.5 flex-1 min-w-0">
+                            <div class="h-3.5 w-20 rounded bg-slate-200"></div>
+                            <div class="h-2.5 w-16 rounded bg-slate-200"></div>
+                        </div>
+                    </div>
+                    <div class="h-16 rounded-2xl bg-slate-100 border border-slate-200/60 flex items-center gap-3 p-3 sap-skeleton-pulse">
+                        <div class="w-10 h-10 rounded-2xl bg-slate-200 shrink-0"></div>
+                        <div class="space-y-1.5 flex-1 min-w-0">
+                            <div class="h-3.5 w-20 rounded bg-slate-200"></div>
+                            <div class="h-2.5 w-16 rounded bg-slate-200"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. KPI Metric Cards Skeleton -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between gap-3 min-h-[105px]">
+                    <div class="flex items-center justify-between">
+                        <div class="h-3.5 w-20 rounded bg-slate-200 sap-skeleton-pulse"></div>
+                        <div class="w-7 h-7 rounded-lg bg-slate-200 sap-skeleton-pulse"></div>
+                    </div>
+                    <div class="h-7 w-16 rounded-lg bg-slate-200 sap-skeleton-pulse"></div>
+                    <div class="h-2.5 w-24 rounded bg-slate-200 sap-skeleton-pulse"></div>
+                </div>
+                <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between gap-3 min-h-[105px]">
+                    <div class="flex items-center justify-between">
+                        <div class="h-3.5 w-20 rounded bg-slate-200 sap-skeleton-pulse"></div>
+                        <div class="w-7 h-7 rounded-lg bg-slate-200 sap-skeleton-pulse"></div>
+                    </div>
+                    <div class="h-7 w-16 rounded-lg bg-slate-200 sap-skeleton-pulse"></div>
+                    <div class="h-2.5 w-24 rounded bg-slate-200 sap-skeleton-pulse"></div>
+                </div>
+                <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between gap-3 min-h-[105px]">
+                    <div class="flex items-center justify-between">
+                        <div class="h-3.5 w-20 rounded bg-slate-200 sap-skeleton-pulse"></div>
+                        <div class="w-7 h-7 rounded-lg bg-slate-200 sap-skeleton-pulse"></div>
+                    </div>
+                    <div class="h-7 w-16 rounded-lg bg-slate-200 sap-skeleton-pulse"></div>
+                    <div class="h-2.5 w-24 rounded bg-slate-200 sap-skeleton-pulse"></div>
+                </div>
+                <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between gap-3 min-h-[105px]">
+                    <div class="flex items-center justify-between">
+                        <div class="h-3.5 w-20 rounded bg-slate-200 sap-skeleton-pulse"></div>
+                        <div class="w-7 h-7 rounded-lg bg-slate-200 sap-skeleton-pulse"></div>
+                    </div>
+                    <div class="h-7 w-16 rounded-lg bg-slate-200 sap-skeleton-pulse"></div>
+                    <div class="h-2.5 w-24 rounded bg-slate-200 sap-skeleton-pulse"></div>
+                </div>
+            </div>
+
+            <!-- 4. Area Visual Chart & Analytics Skeleton -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-xs space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                        <div class="h-4 w-44 rounded bg-slate-200 sap-skeleton-pulse"></div>
+                        <div class="h-4 w-28 rounded bg-slate-200 sap-skeleton-pulse"></div>
+                    </div>
+                    <div class="h-52 sm:h-60 rounded-xl bg-slate-100/80 border border-slate-200/50 p-4 flex items-end justify-between gap-3 sap-skeleton-pulse">
+                        <div class="w-full h-1/3 rounded-t-lg bg-slate-200"></div>
+                        <div class="w-full h-2/3 rounded-t-lg bg-slate-200"></div>
+                        <div class="w-full h-1/2 rounded-t-lg bg-slate-200"></div>
+                        <div class="w-full h-4/5 rounded-t-lg bg-slate-200"></div>
+                        <div class="w-full h-3/5 rounded-t-lg bg-slate-200"></div>
+                        <div class="w-full h-full rounded-t-lg bg-slate-200"></div>
+                    </div>
+                </div>
+                <div class="lg:col-span-4 bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-xs space-y-4 flex flex-col justify-between">
+                    <div class="h-4 w-36 rounded bg-slate-200 sap-skeleton-pulse pb-3 border-b border-slate-100"></div>
+                    <div class="w-36 h-36 rounded-full border-8 border-slate-200 sap-skeleton-pulse mx-auto my-auto"></div>
+                    <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                        <div class="h-7 rounded-lg bg-slate-200 sap-skeleton-pulse"></div>
+                        <div class="h-7 rounded-lg bg-slate-200 sap-skeleton-pulse"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- 3. Badge Pemuatan Mengambang (Floating Glass Badge) Saat Submit / Pindah -->
+<!-- 3. Badge Pemuatan Mengambang (Floating Glass Badge) Saat Submit / Pindah Halaman -->
 <div id="sap-page-transition" class="no-print" role="status" aria-live="polite">
     <div id="sap-transition-badge">
         <picture class="shrink-0">
@@ -233,26 +381,26 @@
 
 <script>
     (function () {
-        // Hilangkan Skeleton Screen Universal secara halus setelah halaman siap
+        // Hilangkan Skeleton Screen Universal secara sangat halus begitu halaman siap
         function dismissSkeleton() {
             const skeleton = document.getElementById('sap-skeleton-screen');
-            if (skeleton) {
+            if (skeleton && !skeleton.classList.contains('sap-loaded')) {
                 skeleton.classList.add('sap-loaded');
                 setTimeout(() => {
                     if (skeleton.parentNode) skeleton.parentNode.removeChild(skeleton);
-                }, 350);
+                }, 450);
             }
         }
 
         if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            setTimeout(dismissSkeleton, 180);
+            setTimeout(dismissSkeleton, 150);
         } else {
             document.addEventListener('DOMContentLoaded', () => {
-                setTimeout(dismissSkeleton, 180);
+                setTimeout(dismissSkeleton, 150);
             });
         }
         window.addEventListener('load', () => {
-            setTimeout(dismissSkeleton, 100);
+            setTimeout(dismissSkeleton, 80);
         });
 
         // Fail-safe jika load event lambat
@@ -280,28 +428,30 @@
         }
 
         function showTransition(text, onComplete) {
-            if (isTransitioning) return;
+            if (!overlay) return;
+
+            if (statusText) statusText.textContent = text || 'Memuat Halaman...';
+            overlay.classList.add('sap-active');
             isTransitioning = true;
 
-            if (text && statusText) statusText.textContent = text;
+            if (topBar) {
+                topBar.style.opacity = '1';
+                topBar.style.width = '15%';
+            }
 
             updateProgress(25);
-            if (topBar) topBar.style.opacity = '1';
-            if (overlay) overlay.classList.add('sap-active');
 
             clearInterval(progressInterval);
             progressInterval = setInterval(() => {
-                if (progressValue < 65) {
-                    updateProgress(progressValue + 12);
-                } else if (progressValue < 88) {
-                    updateProgress(progressValue + 4);
+                if (progressValue < 85) {
+                    updateProgress(progressValue + (88 - progressValue) * 0.18);
                 }
-            }, 80);
+            }, 120);
 
             if (typeof onComplete === 'function') {
                 setTimeout(() => {
                     onComplete();
-                }, 400);
+                }, 350);
             }
 
             clearTimeout(safetyTimeout);
@@ -311,17 +461,21 @@
         }
 
         function hideTransition() {
+            if (!isTransitioning && !overlay?.classList.contains('sap-active')) return;
+
             clearInterval(progressInterval);
-            clearTimeout(safetyTimeout);
             updateProgress(100);
 
             setTimeout(() => {
                 if (overlay) overlay.classList.remove('sap-active');
-                if (topBar) topBar.style.opacity = '0';
-                setTimeout(() => {
-                    updateProgress(0);
-                    isTransitioning = false;
-                }, 300);
+                if (topBar) {
+                    topBar.style.opacity = '0';
+                    setTimeout(() => {
+                        topBar.style.width = '0%';
+                    }, 300);
+                }
+                isTransitioning = false;
+                clearTimeout(safetyTimeout);
             }, 180);
         }
 
@@ -333,58 +487,37 @@
             if (e.defaultPrevented) return;
             if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
 
-            const link = e.target.closest('a');
-            if (!link) return;
+            let anchor = e.target.closest('a');
+            if (!anchor) return;
 
-            const href = link.getAttribute('href');
-            if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) {
-                return;
-            }
-
-            if (link.hasAttribute('download') || link.getAttribute('target') === '_blank' || link.hasAttribute('data-no-loader')) {
-                return;
-            }
-
-            const lowerHref = href.toLowerCase();
-            if (
-                lowerHref.includes('/pdf') ||
-                lowerHref.includes('/cetak') ||
-                lowerHref.includes('/unduh') ||
-                lowerHref.includes('/download') ||
-                lowerHref.includes('/template') ||
-                lowerHref.includes('/export') ||
-                lowerHref.includes('/backup')
-            ) {
-                return;
-            }
+            let href = anchor.getAttribute('href');
+            if (!href || href === '#' || href.startsWith('#') || href.startsWith('javascript:')) return;
+            if (anchor.getAttribute('target') === '_blank') return;
+            if (anchor.hasAttribute('download')) return;
+            if (anchor.classList.contains('no-loader')) return;
 
             try {
-                const targetUrl = new URL(link.href, window.location.origin);
-                if (targetUrl.origin !== window.location.origin) return;
-                if (targetUrl.pathname === window.location.pathname && targetUrl.search === window.location.search) {
+                let url = new URL(anchor.href, window.location.origin);
+                if (url.origin !== window.location.origin) return;
+                if (url.pathname === window.location.pathname && url.search === window.location.search && url.hash) return;
+
+                let ext = url.pathname.split('.').pop().toLowerCase();
+                if (['pdf', 'xlsx', 'xls', 'csv', 'zip', 'doc', 'docx', 'png', 'jpg'].includes(ext)) {
                     return;
                 }
 
-                e.preventDefault();
-                showTransition('Memuat Halaman...', function () {
-                    window.location.href = link.href;
-                });
-            } catch (err) {
-                // Abaikan jika URL tidak valid
-            }
+                showTransition('Membuka Halaman...');
+            } catch (err) {}
         });
 
         // Tangkap submit formulir
         document.addEventListener('submit', function (e) {
-            if (e.defaultPrevented) return;
-            const form = e.target;
-            if (!form || form.tagName !== 'FORM') return;
-            if (form.getAttribute('target') === '_blank' || form.hasAttribute('data-no-loader') || form.hasAttribute('data-konfirmasi')) return;
+            let form = e.target;
+            if (form.classList.contains('no-loader')) return;
+            if (form.getAttribute('target') === '_blank') return;
 
-            const action = (form.getAttribute('action') || '').toLowerCase();
-            if (action.includes('/pdf') || action.includes('/cetak') || action.includes('/unduh') || action.includes('/backup')) {
-                return;
-            }
+            let submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+            if (submitBtn && submitBtn.hasAttribute('data-confirm')) return;
 
             showTransition('Menyimpan Data...');
         });
@@ -392,6 +525,7 @@
         window.addEventListener('pageshow', function (event) {
             if (event.persisted) {
                 hideTransition();
+                dismissSkeleton();
             }
         });
     })();
