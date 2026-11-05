@@ -15,7 +15,6 @@
 /auth.json
 /database/seeders/sekretaris.local.php
 /node_modules
-/public/build
 /public/fonts-manifest.dev.json
 /public/hot
 /public/storage

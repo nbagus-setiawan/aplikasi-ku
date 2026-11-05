@@ -2,8 +2,9 @@
     @section('title', 'Dashboard Sekretariat')
 
     <div class="space-y-5 sm:space-y-6">
-        <!-- 1. Executive Greeting Header (Modern Slate Gradient Banner) -->
-        <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-5 sm:p-6 lg:p-7 text-white shadow-xs border border-slate-800 relative overflow-hidden">
+        <!-- 1. Executive Greeting Header (Modern Dark Slate Banner dengan Fallback Solid) -->
+        <div class="rounded-2xl p-5 sm:p-6 lg:p-7 shadow-sm border border-slate-800 relative overflow-hidden"
+             style="background: #0f172a; background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); color: #ffffff;">
             <!-- Ornamen latar belakang halus -->
             <div class="absolute -right-10 -bottom-10 w-52 h-52 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
             <div class="absolute right-1/3 -top-10 w-44 h-44 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
@@ -12,24 +13,27 @@
                 <!-- Teks Sambutan Rata Kiri -->
                 <div class="space-y-2 text-left flex-1 min-w-0">
                     <div class="flex items-center gap-2 flex-wrap">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-800/90 border border-slate-700/80 text-emerald-400 text-xs font-semibold rounded-full shadow-xs">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold shadow-xs"
+                              style="background-color: rgba(30, 41, 59, 0.95); border: 1px solid rgba(51, 65, 85, 0.9); color: #34d399;">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" style="background-color: #34d399;"></span>
                             SAP Al-Falah Putra
                         </span>
-                        <span class="inline-flex items-center gap-1.5 text-xs text-slate-300 font-medium hidden sm:inline-flex">
-                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <span class="inline-flex items-center gap-1.5 text-xs font-medium hidden sm:inline-flex" style="color: #94a3b8;">
+                            <svg class="w-3.5 h-3.5" style="color: #94a3b8;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                             </svg>
                             {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}
                         </span>
                         @if ($totalPerluTindakan > 0)
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold"
+                                  style="background-color: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); color: #fcd34d;">
+                                <span class="w-1.5 h-1.5 rounded-full" style="background-color: #fbbf24;"></span>
                                 {{ $totalPerluTindakan }} Perlu Tindakan
                             </span>
                         @else
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                                <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold"
+                                  style="background-color: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #6ee7b7;">
+                                <svg class="w-3.5 h-3.5" style="color: #34d399;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                 </svg>
                                 Tertib Administrasi
@@ -37,17 +41,17 @@
                         @endif
                     </div>
 
-                    <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white leading-tight">
+                    <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight leading-tight" style="color: #ffffff;">
                         {{ $greeting }}, {{ Auth::user()->name ?? 'Sekretaris' }}
                     </h1>
 
-                    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl font-normal">
+                    <p class="text-xs sm:text-sm leading-relaxed max-w-2xl font-normal" style="color: #cbd5e1;">
                         Pusat kendali terpadu administrasi kesekretariatan, persuratan resmi, data santri, keuangan kas pondok, dan jadwal agenda Pondok Pesantren Al-Falah Putra.
                     </p>
 
-                    <div class="flex items-center gap-2.5 pt-1 text-xs text-slate-400 font-medium sm:hidden">
+                    <div class="flex items-center gap-2.5 pt-1 text-xs font-medium sm:hidden" style="color: #94a3b8;">
                         <span class="inline-flex items-center gap-1">
-                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-3.5 h-3.5" style="color: #94a3b8;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                             </svg>
                             {{ \Carbon\Carbon::now()->translatedFormat('d M Y') }}
@@ -57,11 +61,17 @@
                     </div>
                 </div>
 
-                <!-- Gambar Logo Banner: Tampil di Layar Tablet & Desktop -->
-                <div class="hidden md:flex shrink-0 items-center justify-center pl-2">
-                    <img src="{{ asset('images/baner.webp') }}"
-                         alt="Banner Al-Falah Putra"
-                         class="h-24 lg:h-28 w-auto object-contain select-none drop-shadow-md" />
+                <!-- Lencana Lembaga Resmi: Tampil Bersih & Proporsional di Layar Tablet & Desktop -->
+                <div class="hidden md:flex shrink-0 items-center gap-3.5 px-4 py-3 rounded-2xl shadow-inner"
+                     style="background-color: rgba(30, 41, 59, 0.9); border: 1px solid rgba(51, 65, 85, 0.8);">
+                    <img src="{{ asset('images/logo.png') }}"
+                         alt="Logo Pondok Pesantren Al Falah Putra"
+                         class="w-12 h-12 object-contain drop-shadow"
+                         style="width: 48px; height: 48px;" />
+                    <div class="leading-tight text-right">
+                        <span class="block text-xs font-black uppercase tracking-wider" style="color: #ffffff;">Sekretariat</span>
+                        <span class="block text-[11px] font-semibold mt-0.5" style="color: #34d399;">Al-Falah Putra</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -253,9 +263,13 @@
                         Rp {{ number_format($saldoKasRiil, 0, ',', '.') }}
                     </h3>
                     <div class="flex items-center gap-1.5 text-[11px] font-medium mt-1 truncate">
-                        <span class="text-emerald-700 font-semibold">+{{ number_format($debitBulanIni, 0, ',', '.') }}</span>
-                        <span class="text-slate-300">•</span>
-                        <span class="text-rose-600 font-semibold">-{{ number_format($kreditBulanIni, 0, ',', '.') }}</span>
+                        @if ($debitBulanIni > 0 || $kreditBulanIni > 0)
+                            <span class="text-emerald-700 font-semibold">+Rp {{ number_format($debitBulanIni, 0, ',', '.') }}</span>
+                            <span class="text-slate-300">•</span>
+                            <span class="text-rose-600 font-semibold">-Rp {{ number_format($kreditBulanIni, 0, ',', '.') }}</span>
+                        @else
+                            <span class="text-slate-400">Belum ada mutasi bulan ini</span>
+                        @endif
                     </div>
                 </div>
             </a>
