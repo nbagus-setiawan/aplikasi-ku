@@ -47,6 +47,8 @@ class SuratUksTest extends TestCase
         $response->assertSee('Surat Tercetak');
         $response->assertSee('Kas Masuk');
         $response->assertSee('Sisa Stok Blangko');
+        $response->assertViewHas('santris');
+        $response->assertViewHas('santriJson');
     }
 
     public function test_secretary_can_generate_batch_blank_forms(): void

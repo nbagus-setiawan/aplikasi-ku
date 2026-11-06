@@ -34,15 +34,44 @@
             margin: 0;
             padding: 0;
             font-size: 9pt;
+            @if (!empty($isHtmlPrint))
+            background: #f1f5f9;
+            padding-bottom: 30px;
+            @endif
         }
 
         .page-container {
             page-break-after: always;
             box-sizing: border-box;
             height: 100%;
+            @if (!empty($isHtmlPrint))
+            background: #ffffff;
+            max-width: 210mm;
+            margin: 15px auto;
+            padding: 10mm 14mm;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 4px;
+            @endif
         }
         .page-container:last-child {
             page-break-after: avoid;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: #ffffff !important; padding: 0 !important; margin: 0 !important; }
+            .page-container {
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                max-width: 100% !important;
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
+            .page-container:last-child {
+                page-break-after: auto;
+            }
         }
 
         .slip-box {
@@ -225,6 +254,30 @@
     </style>
 </head>
 <body>
+
+@if (!empty($isHtmlPrint))
+    <div class="no-print" style="position: sticky; top: 0; z-index: 9999; background: #064e3b; color: #ffffff; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; font-family: sans-serif; box-shadow: 0 2px 10px rgba(0,0,0,0.25);">
+        <div>
+            <strong style="font-size: 13.5px; display: block; color: #ecfdf5;">🖨️ Mode Pratinjau Cetak Blangko Surat UKS</strong>
+            <p style="margin: 2px 0 0; font-size: 11px; color: #a7f3d0;">Gunakan menu cetak browser (Ctrl+P). Pilih printer fisik atau <strong>Simpan sebagai PDF (Save as PDF)</strong>.</p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button onclick="window.print();" type="button" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                <span>🖨️</span> <span>Cetak / Simpan PDF</span>
+            </button>
+            <a href="{{ route('admin.surat-uks.index') }}" style="background: rgba(255,255,255,0.18); color: white; text-decoration: none; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 500;">
+                &larr; Kembali
+            </a>
+        </div>
+    </div>
+    <script>
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                window.print();
+            }, 600);
+        });
+    </script>
+@endif
 
 @foreach ($suratList as $suratUk)
     <div class="page-container">

@@ -66,10 +66,24 @@ class SuratUksController extends Controller
         $stokPulang = SuratUks::pulang()->tersedia()->count();
         $stokSakit = SuratUks::sakit()->tersedia()->count();
 
+        $santris = Santri::where('status', 'aktif')
+            ->orderBy('nama')
+            ->get(['id', 'nama', 'kelas', 'kamar']);
+
+        $santriJson = $santris->map(function ($s) {
+            return [
+                'nama' => $s->nama,
+                'kelas' => $s->kelas ?? '',
+                'asrama' => $s->kamar ?? '',
+            ];
+        })->values()->all();
+
         $pengaturans = Pengaturan::getAllKeyValues();
 
         return view('surat-uks.index', compact(
             'suratUks',
+            'santris',
+            'santriJson',
             'totalTercetak',
             'totalCetakPulang',
             'totalCetakSakit',
@@ -351,35 +365,46 @@ class SuratUksController extends Controller
     }
 
     /**
-     * Cetak surat UKS tunggal ke PDF.
+     * Cetak surat UKS tunggal ke PDF (atau pratinjau cetak browser jika PHP DOM belum aktif di cPanel).
      */
-    public function cetakPdf(Request $request, mixed $suratUk): Response|RedirectResponse
+    public function cetakPdf(Request $request, mixed $suratUk): Response|RedirectResponse|View
     {
         try {
             $suratUk = $this->resolveSuratUks($suratUk);
             $pengaturans = Pengaturan::getAllKeyValues();
             $suratList = collect([$suratUk]);
 
-            $pdf = Pdf::loadView('surat-uks.pdf', compact('suratList', 'pengaturans'))
-                ->setPaper('a4', 'portrait');
+            if (class_exists(\DOMImplementation::class)) {
+                $pdf = Pdf::loadView('surat-uks.pdf', compact('suratList', 'pengaturans'))
+                    ->setPaper('a4', 'portrait');
 
-            $slug = Str::slug($suratUk->nomor_surat);
-            $filename = "surat-uks-{$suratUk->kode_verifikasi}-{$slug}.pdf";
+                $slug = Str::slug($suratUk->nomor_surat);
+                $filename = "surat-uks-{$suratUk->kode_verifikasi}-{$slug}.pdf";
 
-            return $pdf->stream($filename);
+                return $pdf->stream($filename);
+            }
+
+            // Fallback pratinjau cetak browser jika server hosting belum mengaktifkan ekstensi DOM
+            $isHtmlPrint = true;
+            return response()->view('surat-uks.pdf', compact('suratList', 'pengaturans', 'isHtmlPrint'));
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Gagal cetak PDF Surat UKS: ' . $e->getMessage(), [
+            \Illuminate\Support\Facades\Log::warning('Fallback cetak web Surat UKS karena kendala PDF: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
+
+            if (isset($suratList) && isset($pengaturans)) {
+                $isHtmlPrint = true;
+                return response()->view('surat-uks.pdf', compact('suratList', 'pengaturans', 'isHtmlPrint'));
+            }
 
             return back()->with('error', 'Gagal memproses cetak PDF: ' . $e->getMessage());
         }
     }
 
     /**
-     * Cetak surat UKS massal (batch) ke satu berkas PDF.
+     * Cetak surat UKS massal (batch) ke satu berkas PDF (atau pratinjau cetak browser jika PHP DOM belum aktif).
      */
-    public function cetakBatch(Request $request): Response|RedirectResponse
+    public function cetakBatch(Request $request): Response|RedirectResponse|View
     {
         try {
             $pengaturans = Pengaturan::getAllKeyValues();
@@ -405,14 +430,24 @@ class SuratUksController extends Controller
                 return back()->with('error', 'Tidak ada surat blangko yang ditemukan untuk dicetak.');
             }
 
-            $pdf = Pdf::loadView('surat-uks.pdf', compact('suratList', 'pengaturans'))
-                ->setPaper('a4', 'portrait');
+            if (class_exists(\DOMImplementation::class)) {
+                $pdf = Pdf::loadView('surat-uks.pdf', compact('suratList', 'pengaturans'))
+                    ->setPaper('a4', 'portrait');
 
-            $filename = "blangko-surat-uks-batch-" . date('Ymd-His') . ".pdf";
+                $filename = "blangko-surat-uks-batch-" . date('Ymd-His') . ".pdf";
 
-            return $pdf->stream($filename);
+                return $pdf->stream($filename);
+            }
+
+            $isHtmlPrint = true;
+            return response()->view('surat-uks.pdf', compact('suratList', 'pengaturans', 'isHtmlPrint'));
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Gagal cetak batch PDF Surat UKS: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('Fallback cetak batch web Surat UKS karena kendala PDF: ' . $e->getMessage());
+
+            if (isset($suratList) && isset($pengaturans)) {
+                $isHtmlPrint = true;
+                return response()->view('surat-uks.pdf', compact('suratList', 'pengaturans', 'isHtmlPrint'));
+            }
 
             return back()->with('error', 'Gagal memproses cetak batch PDF: ' . $e->getMessage());
         }

@@ -380,21 +380,25 @@
                     </p>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Nama Santri *</label>
-                    <input type="text" name="nama_santri" required placeholder="Contoh: Muhammad Ali"
+                <div class="relative">
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Nama Santri *</label>
+                        <span class="text-[10.5px] text-emerald-700 font-medium">🔍 Ketik untuk saran otomatis</span>
+                    </div>
+                    <input type="text" id="input-nama-santri-id" name="nama_santri" required autocomplete="off" placeholder="Ketik nama santri..."
                            class="w-full text-sm rounded-xl border-slate-300 focus:ring-emerald-500 focus:border-emerald-500">
+                    <div id="dropdown-santri-id" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-52 overflow-y-auto z-50 divide-y divide-slate-100 text-xs"></div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Kelas *</label>
-                        <input type="text" name="kelas" required placeholder="Contoh: 3 Aliyah"
+                        <input type="text" id="input-kelas-id" name="kelas" required placeholder="Contoh: 3 Aliyah"
                                class="w-full text-sm rounded-xl border-slate-300 focus:ring-emerald-500 focus:border-emerald-500">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Asrama / Kamar *</label>
-                        <input type="text" name="asrama" required placeholder="Contoh: Kamar B-04"
+                        <input type="text" id="input-asrama-id" name="asrama" required placeholder="Contoh: Kamar B-04"
                                class="w-full text-sm rounded-xl border-slate-300 focus:ring-emerald-500 focus:border-emerald-500">
                     </div>
                 </div>
@@ -440,21 +444,25 @@
                            class="w-full text-base font-mono font-bold uppercase rounded-xl border-slate-300 focus:ring-amber-500 focus:border-amber-500">
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Nama Santri *</label>
-                    <input type="text" name="nama_santri" required placeholder="Contoh: Muhammad Ali"
+                <div class="relative">
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Nama Santri *</label>
+                        <span class="text-[10.5px] text-amber-700 font-medium">🔍 Ketik untuk saran otomatis</span>
+                    </div>
+                    <input type="text" id="input-nama-santri-kode" name="nama_santri" required autocomplete="off" placeholder="Ketik nama santri..."
                            class="w-full text-sm rounded-xl border-slate-300 focus:ring-amber-500 focus:border-amber-500">
+                    <div id="dropdown-santri-kode" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-52 overflow-y-auto z-50 divide-y divide-slate-100 text-xs"></div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Kelas *</label>
-                        <input type="text" name="kelas" required placeholder="Contoh: 3 Aliyah"
+                        <input type="text" id="input-kelas-kode" name="kelas" required placeholder="Contoh: 3 Aliyah"
                                class="w-full text-sm rounded-xl border-slate-300 focus:ring-amber-500 focus:border-amber-500">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Asrama / Kamar *</label>
-                        <input type="text" name="asrama" required placeholder="Contoh: Kamar B-04"
+                        <input type="text" id="input-asrama-kode" name="asrama" required placeholder="Contoh: Kamar B-04"
                                class="w-full text-sm rounded-xl border-slate-300 focus:ring-amber-500 focus:border-amber-500">
                     </div>
                 </div>
@@ -473,6 +481,92 @@
 
     @push('scripts')
     <script>
+        const santriList = {!! json_encode($santriJson ?? []) !!};
+
+        function setupSantriAutocomplete(inputId, dropdownId, kelasId, asramaId) {
+            const inputNama = document.getElementById(inputId);
+            const dropdown = document.getElementById(dropdownId);
+            const inputKelas = document.getElementById(kelasId);
+            const inputAsrama = document.getElementById(asramaId);
+
+            if (!inputNama || !dropdown) return;
+
+            function renderSuggestions(query) {
+                const q = query.trim().toLowerCase();
+                if (q.length < 1) {
+                    dropdown.innerHTML = '';
+                    dropdown.classList.add('hidden');
+                    return;
+                }
+
+                const matches = santriList.filter(s => s.nama.toLowerCase().includes(q)).slice(0, 8);
+                if (matches.length === 0) {
+                    dropdown.innerHTML = `
+                        <div class="px-3 py-2 text-slate-400 italic">
+                            Nama santri tidak ditemukan di master data (bisa tetap diketik manual).
+                        </div>
+                    `;
+                    dropdown.classList.remove('hidden');
+                    return;
+                }
+
+                dropdown.innerHTML = matches.map(s => `
+                    <button type="button" class="w-full text-left px-3 py-2 hover:bg-emerald-50 hover:text-emerald-950 transition flex items-center justify-between group cursor-pointer"
+                            onclick="pilihSantri('${escapeJs(s.nama)}', '${escapeJs(s.kelas)}', '${escapeJs(s.asrama)}', '${inputId}', '${dropdownId}', '${kelasId}', '${asramaId}')">
+                        <div>
+                            <div class="font-bold text-slate-800 group-hover:text-emerald-800">${s.nama}</div>
+                            <div class="text-[11px] text-slate-500">${s.kelas ? 'Kelas ' + s.kelas : '-'} &bull; ${s.asrama ? s.asrama : '-'}</div>
+                        </div>
+                        <span class="text-[10px] text-emerald-700 bg-emerald-100 group-hover:bg-emerald-200 px-1.5 py-0.5 rounded font-semibold">Pilih</span>
+                    </button>
+                `).join('');
+                dropdown.classList.remove('hidden');
+            }
+
+            inputNama.addEventListener('input', function() {
+                renderSuggestions(this.value);
+                // Jika user mengetik nama lengkap yang persis sama
+                const exact = santriList.find(s => s.nama.toLowerCase() === this.value.trim().toLowerCase());
+                if (exact) {
+                    if (inputKelas) inputKelas.value = exact.kelas;
+                    if (inputAsrama) inputAsrama.value = exact.asrama;
+                }
+            });
+
+            inputNama.addEventListener('focus', function() {
+                if (this.value.trim().length >= 1) {
+                    renderSuggestions(this.value);
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!inputNama.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        function escapeJs(str) {
+            return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        function pilihSantri(nama, kelas, asrama, inputId, dropdownId, kelasId, asramaId) {
+            const inputNama = document.getElementById(inputId);
+            const dropdown = document.getElementById(dropdownId);
+            const inputKelas = document.getElementById(kelasId);
+            const inputAsrama = document.getElementById(asramaId);
+
+            if (inputNama) inputNama.value = nama;
+            if (inputKelas) inputKelas.value = kelas;
+            if (inputAsrama) inputAsrama.value = asrama;
+            if (dropdown) dropdown.classList.add('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setupSantriAutocomplete('input-nama-santri-id', 'dropdown-santri-id', 'input-kelas-id', 'input-asrama-id');
+            setupSantriAutocomplete('input-nama-santri-kode', 'dropdown-santri-kode', 'input-kelas-kode', 'input-asrama-kode');
+        });
+
         function openModalGenerate() {
             document.getElementById('modal-generate').classList.remove('hidden');
         }
@@ -484,13 +578,30 @@
             const form = document.getElementById('form-catat-id');
             form.action = `/admin/surat-uks/${id}/catat-terjual`;
             document.getElementById('catat-info').innerText = `${jenisLabel} No: ${noSurat} (Kode: ${kode})`;
+            const inputNama = document.getElementById('input-nama-santri-id');
+            const inputKelas = document.getElementById('input-kelas-id');
+            const inputAsrama = document.getElementById('input-asrama-id');
+            const dropdown = document.getElementById('dropdown-santri-id');
+            if (inputNama) inputNama.value = '';
+            if (inputKelas) inputKelas.value = '';
+            if (inputAsrama) inputAsrama.value = '';
+            if (dropdown) dropdown.classList.add('hidden');
             document.getElementById('modal-catat-id').classList.remove('hidden');
+            if (inputNama) setTimeout(() => inputNama.focus(), 100);
         }
         function closeModalCatatId() {
             document.getElementById('modal-catat-id').classList.add('hidden');
         }
 
         function openModalCatatKode() {
+            const inputNama = document.getElementById('input-nama-santri-kode');
+            const inputKelas = document.getElementById('input-kelas-kode');
+            const inputAsrama = document.getElementById('input-asrama-kode');
+            const dropdown = document.getElementById('dropdown-santri-kode');
+            if (inputNama) inputNama.value = '';
+            if (inputKelas) inputKelas.value = '';
+            if (inputAsrama) inputAsrama.value = '';
+            if (dropdown) dropdown.classList.add('hidden');
             document.getElementById('modal-catat-kode').classList.remove('hidden');
         }
         function closeModalCatatKode() {
