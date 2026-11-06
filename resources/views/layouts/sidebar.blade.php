@@ -112,7 +112,7 @@
                 <span class="truncate text-sm text-white font-medium">Surat Izin UKS</span>
             </div>
             @php
-                $badgeUksAktif = \App\Models\SuratUks::where('status', 'aktif')->count();
+                $badgeUksAktif = \App\Models\SuratUks::where('status', 'terjual')->count();
             @endphp
             @if ($badgeUksAktif > 0)
                 <span class="ml-2 px-2 py-0.5 rounded-md text-[11px] font-bold bg-white text-emerald-900 tabular-nums" title="{{ $badgeUksAktif }} santri sedang izin">

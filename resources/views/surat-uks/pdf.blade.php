@@ -57,6 +57,42 @@
             page-break-after: avoid;
         }
 
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 0 !important;
+            }
+            .page-container {
+                margin: 8px 4px !important;
+                padding: 8px 10px !important;
+                max-width: 100% !important;
+                border-radius: 8px !important;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+            }
+            .header-kop .kop-logo img {
+                width: 36px !important;
+            }
+            .header-kop .kop-instansi {
+                font-size: 9.5pt !important;
+            }
+            .header-kop .kop-unit {
+                font-size: 8.5pt !important;
+            }
+            .header-kop .kop-alamat {
+                font-size: 6.5pt !important;
+            }
+            .slip-badge {
+                font-size: 6pt !important;
+                padding: 1px 3px !important;
+            }
+            .judul-surat h2 {
+                font-size: 9.5pt !important;
+            }
+            .kode-tag {
+                font-size: 7.5pt !important;
+                padding: 1px 4px !important;
+            }
+        }
+
         @media print {
             .no-print { display: none !important; }
             body { background: #ffffff !important; padding: 0 !important; margin: 0 !important; }
@@ -256,16 +292,16 @@
 <body>
 
 @if (!empty($isHtmlPrint))
-    <div class="no-print" style="position: sticky; top: 0; z-index: 9999; background: #064e3b; color: #ffffff; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; font-family: sans-serif; box-shadow: 0 2px 10px rgba(0,0,0,0.25);">
-        <div>
-            <strong style="font-size: 13.5px; display: block; color: #ecfdf5;">🖨️ Mode Pratinjau Cetak Blangko Surat UKS</strong>
-            <p style="margin: 2px 0 0; font-size: 11px; color: #a7f3d0;">Gunakan menu cetak browser (Ctrl+P). Pilih printer fisik atau <strong>Simpan sebagai PDF (Save as PDF)</strong>.</p>
+    <div class="no-print" style="position: sticky; top: 0; z-index: 9999; background: #064e3b; color: #ffffff; padding: 10px 14px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; font-family: sans-serif; box-shadow: 0 2px 10px rgba(0,0,0,0.25);">
+        <div style="flex: 1 1 240px;">
+            <strong style="font-size: 13px; display: block; color: #ecfdf5;">🖨️ Mode Pratinjau Cetak Blangko Surat UKS</strong>
+            <p style="margin: 2px 0 0; font-size: 10.5px; color: #a7f3d0;">Gunakan menu cetak browser (Ctrl+P) untuk cetak atau Simpan sebagai PDF.</p>
         </div>
-        <div style="display: flex; gap: 8px;">
-            <button onclick="window.print();" type="button" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                <span>🖨️</span> <span>Cetak / Simpan PDF</span>
+        <div style="display: flex; gap: 6px; flex-shrink: 0;">
+            <button onclick="window.print();" type="button" style="background: #10b981; color: white; border: none; padding: 7px 14px; border-radius: 6px; font-weight: bold; font-size: 11.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                <span>🖨️</span> <span>Cetak / PDF</span>
             </button>
-            <a href="{{ route('admin.surat-uks.index') }}" style="background: rgba(255,255,255,0.18); color: white; text-decoration: none; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 500;">
+            <a href="{{ route('admin.surat-uks.index') }}" style="background: rgba(255,255,255,0.18); color: white; text-decoration: none; padding: 7px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 500;">
                 &larr; Kembali
             </a>
         </div>
