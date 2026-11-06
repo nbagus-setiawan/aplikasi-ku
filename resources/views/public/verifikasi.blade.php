@@ -252,6 +252,98 @@
                             @endif
                         </div>
                     @endif
+            </div>
+
+        @elseif (!empty($suratUks))
+            <!-- Dokumen Surat UKS Terverifikasi Sah -->
+            <div class="bg-white rounded-2xl border border-emerald-300 shadow-md overflow-hidden">
+                <!-- Status Banner Sah -->
+                <div class="bg-emerald-950 p-6 sm:p-7 text-white text-center space-y-2 border-b border-emerald-900">
+                    <div class="w-12 h-12 mx-auto bg-emerald-900 border border-emerald-700 rounded-full flex items-center justify-center text-emerald-300 shadow-xs">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <span class="inline-block px-3 py-0.5 rounded-full bg-emerald-900 text-amber-300 text-[10px] font-bold uppercase tracking-wider border border-emerald-800">
+                        Status Validasi Sah
+                    </span>
+                    <h3 class="text-base sm:text-lg font-extrabold tracking-wide text-white uppercase">DOKUMEN RESMI TERVERIFIKASI SAH</h3>
+                    <p class="text-xs text-emerald-200/90 max-w-md mx-auto leading-relaxed">
+                        Dokumen fisik resmi diterbitkan oleh Sekretariat Pondok Pesantren Al-Falah Putak.
+                    </p>
+                </div>
+
+                <!-- Rincian Data Surat UKS Sesuai Ketentuan -->
+                <div class="p-5 sm:p-8 space-y-4 text-xs sm:text-sm text-gray-700">
+                    <div class="border-b border-gray-100 pb-4 flex flex-wrap items-center justify-between gap-4">
+                        <div>
+                            <span class="block text-slate-500 font-semibold uppercase text-xs tracking-wider">Nomor Surat</span>
+                            <span class="block text-base sm:text-lg font-mono font-bold text-emerald-950 mt-0.5">{{ $suratUks->nomor_surat }}</span>
+                        </div>
+                        <div class="bg-emerald-50/70 border border-emerald-200 px-4 py-2 rounded-xl text-right">
+                            <span class="block text-[10px] font-bold uppercase text-emerald-800">Kode Verifikasi (4 Digit):</span>
+                            <span class="font-mono text-lg font-extrabold text-emerald-950 tracking-widest">{{ $suratUks->kode_verifikasi }}</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-3">
+                        <div>
+                            <span class="block text-slate-500 font-semibold uppercase text-xs tracking-wider">Jenis Surat</span>
+                            <span class="block text-sm font-bold text-gray-900 mt-0.5">{{ $suratUks->jenis_label }}</span>
+                        </div>
+                        <div>
+                            <span class="block text-slate-500 font-semibold uppercase text-xs tracking-wider">Status Dokumen</span>
+                            @if ($suratUks->status === 'tersedia')
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 mt-0.5">
+                                    Blangko Resmi (Belum Terpakai / Tersedia)
+                                </span>
+                            @elseif ($suratUks->status === 'terjual')
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mt-0.5">
+                                    Terpakai / Sedang Izin
+                                </span>
+                            @else
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200 mt-0.5">
+                                    Telah Kembali ke Pondok
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-3">
+                        <div>
+                            <span class="block text-slate-500 font-semibold uppercase text-xs tracking-wider">Tanggal Cetak Blangko</span>
+                            <span class="block text-xs sm:text-sm font-semibold text-gray-800 mt-0.5">{{ $suratUks->tanggal_cetak ? $suratUks->tanggal_cetak->format('d-m-Y') : '-' }}</span>
+                        </div>
+                        <div>
+                            <span class="block text-slate-500 font-semibold uppercase text-xs tracking-wider">Tanggal Pembelian / Izin</span>
+                            <span class="block text-xs sm:text-sm font-semibold text-gray-800 mt-0.5">
+                                {{ $suratUks->tanggal_pembelian ? $suratUks->tanggal_pembelian->format('d-m-Y') : 'Belum Dicatat Pembelian' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Data Santri Pemegang Surat (Jika sudah dicatat terjual) -->
+                    @if ($suratUks->status !== 'tersedia' && !empty($suratUks->nama_santri))
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3">
+                            <span class="block text-slate-700 font-bold uppercase text-xs tracking-wider">Data Santri Pemegang Surat Izin</span>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div>
+                                    <span class="block text-slate-400 text-[11px] font-medium">Nama Santri:</span>
+                                    <span class="block text-sm font-bold text-slate-900">{{ $suratUks->nama_santri }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-slate-400 text-[11px] font-medium">Kelas:</span>
+                                    <span class="block text-sm font-semibold text-slate-800">{{ $suratUks->kelas ?: '-' }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-slate-400 text-[11px] font-medium">Asrama / Kamar:</span>
+                                    <span class="block text-sm font-semibold text-slate-800">{{ $suratUks->asrama ?: '-' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs">
+                            ℹ️ Blangko fisik ini sah dan telah terbit dengan nomor resmi, namun belum dicatat pemakaian / pembelian atas nama santri tertentu.
+                        </div>
+                    @endif
                 </div>
             </div>
 

@@ -18,6 +18,7 @@ use App\Http\Controllers\SantriController;
 use App\Http\Controllers\SantriImportController;
 use App\Http\Controllers\SuratKeluarController;
 use App\Http\Controllers\SuratMasukController;
+use App\Http\Controllers\SuratUksController;
 use App\Http\Controllers\TandaTanganPublikController;
 use App\Http\Controllers\VerifikasiPublikController;
 use Illuminate\Support\Facades\Route;
@@ -95,6 +96,18 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::post('/surat-keluar/{suratKeluar}/ttd-basah', [SuratKeluarController::class, 'finalisasiBasah'])->name('admin.surat-keluar.ttd-basah');
     Route::patch('/surat-keluar/{suratKeluar}/status', [SuratKeluarController::class, 'updateStatus'])->name('admin.surat-keluar.status');
     Route::resource('surat-keluar', SuratKeluarController::class)->names('admin.surat-keluar');
+
+    // Modul Surat UKS (Izin Pulang & Izin Sakit)
+    Route::post('/surat-uks/generate-blangko', [SuratUksController::class, 'generateBlangko'])->name('admin.surat-uks.generate-blangko');
+    Route::post('/surat-uks/catat-terjual-kode', [SuratUksController::class, 'catatTerjualKode'])->name('admin.surat-uks.catat-terjual-kode');
+    Route::get('/surat-uks/cetak-batch', [SuratUksController::class, 'cetakBatch'])->name('admin.surat-uks.cetak-batch');
+    Route::post('/surat-uks/{suratUk}/catat-terjual', [SuratUksController::class, 'catatTerjual'])->name('admin.surat-uks.catat-terjual');
+    Route::post('/surat-uks/{suratUk}/kembali', [SuratUksController::class, 'tandaiKembali'])->name('admin.surat-uks.kembali');
+    Route::get('/surat-uks/{suratUk}/cetak', [SuratUksController::class, 'cetakPdf'])->name('admin.surat-uks.cetak');
+    Route::get('/surat-uks/{suratUk}/word', [SuratUksController::class, 'exportWord'])->name('admin.surat-uks.word');
+    Route::resource('surat-uks', SuratUksController::class)
+        ->parameters(['surat-uks' => 'suratUk'])
+        ->names('admin.surat-uks');
 
     // Modul Agenda Kegiatan (Fase 4)
     Route::resource('agenda', AgendaController::class)->names('admin.agenda');

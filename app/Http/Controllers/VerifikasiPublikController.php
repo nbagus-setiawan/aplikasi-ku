@@ -26,6 +26,7 @@ class VerifikasiPublikController extends Controller
     {
         $kode = trim($request->input('kode', ''));
         $surat = null;
+        $suratUks = null;
         $qrCodeDataUri = null;
 
         if (!empty($kode)) {
@@ -37,6 +38,10 @@ class VerifikasiPublikController extends Controller
             if ($surat) {
                 $this->docxParserService->ensureWordQrProcessed($surat);
                 $qrCodeDataUri = $this->tandaTanganService->generateQrCode(url('/verifikasi/' . $surat->kode_verifikasi));
+            } else {
+                $suratUks = \App\Models\SuratUks::where('kode_verifikasi', strtoupper($kode))
+                    ->orWhere('nomor_surat', $kode)
+                    ->first();
             }
         }
 
@@ -44,6 +49,7 @@ class VerifikasiPublikController extends Controller
 
         return view('public.verifikasi', [
             'surat' => $surat,
+            'suratUks' => $suratUks,
             'kode' => $kode,
             'qrCodeDataUri' => $qrCodeDataUri,
             'isSearch' => true,
@@ -60,16 +66,22 @@ class VerifikasiPublikController extends Controller
             ->where('kode_verifikasi', $kode)
             ->first();
 
+        $suratUks = null;
         $qrCodeDataUri = null;
         if ($surat) {
             $this->docxParserService->ensureWordQrProcessed($surat);
             $qrCodeDataUri = $this->tandaTanganService->generateQrCode(url('/verifikasi/' . $surat->kode_verifikasi));
+        } else {
+            $suratUks = \App\Models\SuratUks::where('kode_verifikasi', strtoupper($kode))
+                ->orWhere('nomor_surat', $kode)
+                ->first();
         }
 
         $pengaturan = Pengaturan::pluck('value', 'key')->toArray();
 
         return view('public.verifikasi', [
             'surat' => $surat,
+            'suratUks' => $suratUks,
             'kode' => $kode,
             'qrCodeDataUri' => $qrCodeDataUri,
             'isSearch' => false,

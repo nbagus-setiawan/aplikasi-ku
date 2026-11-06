@@ -114,4 +114,36 @@ class NomorSuratService
             return str_pad((string) $urutan, 3, '0', STR_PAD_LEFT);
         });
     }
+
+    /**
+     * Buat nomor surat izin UKS (pulang/sakit) berikutnya secara atomik per tahun.
+     */
+    public function generateNomorSuratUks(string $jenis, Carbon|string|null $tanggal = null): string
+    {
+        $date = $tanggal ? Carbon::parse($tanggal) : Carbon::now();
+        $tahun = (int) $date->format('Y');
+        $kategoriKode = ($jenis === 'sakit') ? 'UKS-SIS' : 'UKS-SIP';
+
+        return DB::transaction(function () use ($kategoriKode, $date, $tahun) {
+            $counter = NomorSuratCounter::where('tahun', $tahun)
+                ->where('tipe', 'uks')
+                ->lockForUpdate()
+                ->first();
+
+            if (! $counter) {
+                $counter = NomorSuratCounter::create([
+                    'tahun' => $tahun,
+                    'tipe' => 'uks',
+                    'urutan' => 1,
+                ]);
+                $urutan = 1;
+            } else {
+                $counter->urutan += 1;
+                $counter->save();
+                $urutan = $counter->urutan;
+            }
+
+            return $this->formatNomorSurat($urutan, $kategoriKode, $date);
+        });
+    }
 }
