@@ -38,7 +38,7 @@
                             @click.outside="open = false"
                             class="w-full h-10 px-3 sm:px-4 bg-emerald-800 hover:bg-emerald-900 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95 inline-flex items-center justify-center gap-1.5 whitespace-nowrap">
                         <svg class="w-4 h-4 shrink-0 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        <span>Unduh Excel</span>
+                        <span>Unduh Excel / CSV</span>
                         <svg class="w-3.5 h-3.5 shrink-0 opacity-70 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                     </button>
                     <div x-show="open"
@@ -48,33 +48,61 @@
                          x-transition:leave="transition ease-in duration-100"
                          x-transition:leave-start="opacity-100 scale-100 translate-y-0"
                          x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
-                         class="absolute right-0 sm:left-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-40 text-xs divide-y divide-slate-100"
+                         class="absolute right-0 sm:left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-40 text-xs divide-y divide-slate-100"
                          style="display: none;">
-                        <div class="px-3 py-1.5 bg-slate-50 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                            Pilih Stok Tersedia:
+                        <div>
+                            <div class="px-3 py-1.5 bg-emerald-50 text-[10px] font-bold text-emerald-800 uppercase tracking-wider flex items-center justify-between">
+                                <span>Format Excel (.xls) - Kolom Rapi</span>
+                                <span class="text-[9px] font-normal text-emerald-600">Disarankan</span>
+                            </div>
+                            <div class="py-1">
+                                <a href="{{ route('admin.surat-uks.export-excel', ['format' => 'xls']) }}"
+                                   @click="open = false"
+                                   class="flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 font-semibold transition">
+                                    <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                                    <span>Semua Stok Tersedia</span>
+                                </a>
+                                <a href="{{ route('admin.surat-uks.export-excel', ['format' => 'xls', 'jenis' => 'pulang']) }}"
+                                   @click="open = false"
+                                   class="flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 font-semibold transition">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                    <span>Stok Surat Pulang (SIP)</span>
+                                </a>
+                                <a href="{{ route('admin.surat-uks.export-excel', ['format' => 'xls', 'jenis' => 'sakit']) }}"
+                                   @click="open = false"
+                                   class="flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 font-semibold transition">
+                                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                    <span>Stok Surat Sakit (SIS)</span>
+                                </a>
+                            </div>
                         </div>
-                        <div class="py-1">
-                            <a href="{{ route('admin.surat-uks.export-excel') }}"
-                               @click="open = false"
-                               class="flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 font-semibold transition">
-                                <span class="w-2 h-2 rounded-full bg-slate-400"></span>
-                                <span>Semua Stok Tersedia</span>
-                            </a>
-                            <a href="{{ route('admin.surat-uks.export-excel', ['jenis' => 'pulang']) }}"
-                               @click="open = false"
-                               class="flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 font-semibold transition">
-                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                                <span>Stok Surat Pulang (SIP)</span>
-                            </a>
-                            <a href="{{ route('admin.surat-uks.export-excel', ['jenis' => 'sakit']) }}"
-                               @click="open = false"
-                               class="flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 font-semibold transition">
-                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                                <span>Stok Surat Sakit (SIS)</span>
-                            </a>
+                        <div>
+                            <div class="px-3 py-1.5 bg-slate-50 text-[10px] font-bold text-slate-600 uppercase tracking-wider">
+                                <span>Format CSV (.csv)</span>
+                            </div>
+                            <div class="py-1">
+                                <a href="{{ route('admin.surat-uks.export-excel', ['format' => 'csv']) }}"
+                                   @click="open = false"
+                                   class="flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-slate-100 hover:text-slate-900 font-semibold transition">
+                                    <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                                    <span>Semua Stok Tersedia</span>
+                                </a>
+                                <a href="{{ route('admin.surat-uks.export-excel', ['format' => 'csv', 'jenis' => 'pulang']) }}"
+                                   @click="open = false"
+                                   class="flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-slate-100 hover:text-slate-900 font-semibold transition">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                    <span>Stok Surat Pulang (SIP)</span>
+                                </a>
+                                <a href="{{ route('admin.surat-uks.export-excel', ['format' => 'csv', 'jenis' => 'sakit']) }}"
+                                   @click="open = false"
+                                   class="flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-slate-100 hover:text-slate-900 font-semibold transition">
+                                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                    <span>Stok Surat Sakit (SIS)</span>
+                                </a>
+                            </div>
                         </div>
-                        <div class="px-3 py-1.5 text-[10.5px] text-slate-400 bg-slate-50">
-                            *Hanya mengekspor Kode & Jenis status Tersedia.
+                        <div class="px-3 py-1.5 text-[10px] text-slate-500 bg-slate-50 leading-relaxed">
+                            Format .xls langsung terbagi rapi di kolom A, B, C Excel tanpa tanda kutip. Khusus status Tersedia.
                         </div>
                     </div>
                 </div>

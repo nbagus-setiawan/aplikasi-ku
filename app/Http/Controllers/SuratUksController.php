@@ -616,12 +616,15 @@ class SuratUksController extends Controller
     }
 
     /**
-     * Unduh berkas Excel (CSV dengan UTF-8 BOM) yang berisi Kode Surat & Jenis Surat
-     * dengan status TERSEDIA saja (stok blangko), dengan opsi filter jenis pulang atau sakit.
+     * Unduh berkas Excel (.xls) atau CSV (.csv) berisi Kode Surat & Jenis Surat
+     * khusus yang berstatus TERSEDIA saja (stok blangko).
+     * Format .xls menggunakan tabel spreadsheet resmi sehingga langsung terbuka rapi di Excel
+     * dengan kolom NO, KODE SURAT, dan JENIS SURAT yang terpisah sempurna tanpa tanda kutip.
      */
     public function exportExcel(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
     {
         $jenis = $request->query('jenis');
+        $format = strtolower($request->query('format', 'xls'));
 
         $query = SuratUks::where('status', 'tersedia')->latest('id');
 
@@ -629,35 +632,74 @@ class SuratUksController extends Controller
             $query->where('jenis', $jenis);
             $suffix = $jenis === 'pulang' ? 'sip-pulang' : 'sis-sakit';
         } else {
-            $suffix = 'semua';
+            $suffix = 'semua-stok';
         }
 
-        $filename = "stok-kode-surat-uks-{$suffix}-" . date('Ymd-His') . ".csv";
+        if ($format === 'csv') {
+            $filename = "stok-kode-surat-uks-{$suffix}-" . date('Ymd-His') . ".csv";
+
+            return response()->streamDownload(function () use ($query) {
+                $output = fopen('php://output', 'w');
+                // UTF-8 BOM agar terbaca karakter khusus
+                fputs($output, "\xEF\xBB\xBF");
+                // Penentu separator koma untuk Excel Windows agar otomatis terbagi menjadi kolom A, B, C
+                fputs($output, "sep=,\r\n");
+                // Header murni tanpa tanda kutip ganda
+                fputs($output, "NO,KODE SURAT,JENIS SURAT\r\n");
+
+                $no = 1;
+                $query->chunk(200, function ($surats) use ($output, &$no) {
+                    foreach ($surats as $surat) {
+                        $kode = str_replace([",", "\r", "\n", '"'], '', (string) $surat->kode_verifikasi);
+                        $label = str_replace([",", "\r", "\n", '"'], '', (string) $surat->jenis_label);
+                        fputs($output, "{$no},{$kode},{$label}\r\n");
+                        $no++;
+                    }
+                });
+
+                fclose($output);
+            }, $filename, [
+                'Content-Type' => 'text/csv; charset=UTF-8',
+                'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            ]);
+        }
+
+        // Format Asli Excel (.xls) dengan tabel bergaris dan kolom terpisah rapi
+        $filename = "stok-kode-surat-uks-{$suffix}-" . date('Ymd-His') . ".xls";
 
         return response()->streamDownload(function () use ($query) {
             $output = fopen('php://output', 'w');
-            // Tambahkan UTF-8 BOM agar langsung rapi saat dibuka di Microsoft Excel
             fputs($output, "\xEF\xBB\xBF");
-            fputcsv($output, [
-                'No',
-                'Kode Surat',
-                'Jenis Surat',
-            ]);
+            fputs($output, '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' . "\n");
+            fputs($output, '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . "\n");
+            fputs($output, "<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Stok Surat</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->\n");
+            fputs($output, "<style>\n");
+            fputs($output, "table { border-collapse: collapse; font-family: Calibri, Arial, sans-serif; font-size: 11pt; }\n");
+            fputs($output, "th { background-color: #047857; color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #1f2937; padding: 8px 14px; }\n");
+            fputs($output, "td { border: 1px solid #d1d5db; padding: 6px 12px; }\n");
+            fputs($output, ".text-center { text-align: center; }\n");
+            fputs($output, ".kode { font-family: 'Courier New', monospace; font-weight: bold; text-align: center; mso-number-format: '\\@'; }\n");
+            fputs($output, "</style></head><body>\n");
+            fputs($output, "<table><thead><tr>\n");
+            fputs($output, '<th style="width: 50px;">NO</th>' . "\n");
+            fputs($output, '<th style="width: 140px;">KODE SURAT</th>' . "\n");
+            fputs($output, '<th style="width: 220px;">JENIS SURAT</th>' . "\n");
+            fputs($output, "</tr></thead><tbody>\n");
 
             $no = 1;
             $query->chunk(200, function ($surats) use ($output, &$no) {
                 foreach ($surats as $surat) {
-                    fputcsv($output, [
-                        $no++,
-                        $surat->kode_verifikasi,
-                        $surat->jenis_label,
-                    ]);
+                    $kode = htmlspecialchars($surat->kode_verifikasi, ENT_QUOTES, 'UTF-8');
+                    $label = htmlspecialchars($surat->jenis_label, ENT_QUOTES, 'UTF-8');
+                    fputs($output, "<tr><td class=\"text-center\">{$no}</td><td class=\"kode\">{$kode}</td><td>{$label}</td></tr>\n");
+                    $no++;
                 }
             });
 
+            fputs($output, "</tbody></table></body></html>\n");
             fclose($output);
         }, $filename, [
-            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
         ]);
     }

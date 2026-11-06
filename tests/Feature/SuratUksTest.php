@@ -559,7 +559,7 @@ class SuratUksTest extends TestCase
         $this->assertEquals(1, $response->json('total_sisa_stok'));
     }
 
-    public function test_secretary_can_export_available_letters_to_excel_csv(): void
+    public function test_secretary_can_export_available_letters_to_excel_xls(): void
     {
         // 1. Surat tersedia pulang & sakit
         SuratUks::create([
@@ -591,18 +591,51 @@ class SuratUksTest extends TestCase
         $response = $this->actingAs($this->user)->get('/admin/surat-uks/export-excel');
 
         $response->assertStatus(200);
-        $this->assertStringContainsString('text/csv', $response->headers->get('Content-Type'));
+        $this->assertStringContainsString('application/vnd.ms-excel', $response->headers->get('Content-Type'));
 
         $content = $response->streamedContent();
 
-        // Header CSV
-        $this->assertStringContainsString('Kode Surat', $content);
-        $this->assertStringContainsString('Jenis Surat', $content);
+        // Header tabel Excel
+        $this->assertStringContainsString('KODE SURAT', $content);
+        $this->assertStringContainsString('JENIS SURAT', $content);
 
         // Hanya memuat stok tersedia
         $this->assertStringContainsString('EX01', $content);
         $this->assertStringContainsString('EX02', $content);
         $this->assertStringNotContainsString('EX99', $content);
+    }
+
+    public function test_secretary_can_export_available_letters_to_csv(): void
+    {
+        SuratUks::create([
+            'nomor_surat' => 'CSV01',
+            'kode_verifikasi' => 'CSV01',
+            'jenis' => 'pulang',
+            'tanggal_cetak' => Carbon::today(),
+            'status' => 'tersedia',
+        ]);
+
+        SuratUks::create([
+            'nomor_surat' => 'CSV99',
+            'kode_verifikasi' => 'CSV99',
+            'jenis' => 'pulang',
+            'tanggal_cetak' => Carbon::today(),
+            'nama_santri' => 'Santri Terjual',
+            'status' => 'terjual',
+        ]);
+
+        $response = $this->actingAs($this->user)->get('/admin/surat-uks/export-excel?format=csv');
+
+        $response->assertStatus(200);
+        $this->assertStringContainsString('text/csv', $response->headers->get('Content-Type'));
+
+        $content = $response->streamedContent();
+
+        // Header CSV tanpa tanda kutip
+        $this->assertStringContainsString('NO,KODE SURAT,JENIS SURAT', $content);
+        $this->assertStringContainsString('CSV01,Surat Izin Pulang', $content);
+        $this->assertStringNotContainsString('"CSV01"', $content);
+        $this->assertStringNotContainsString('CSV99', $content);
     }
 
     public function test_secretary_can_filter_export_excel_by_jenis(): void
