@@ -55,7 +55,7 @@ class SuratUksController extends Controller
         $totalCetakPulang = SuratUks::pulang()->count();
         $totalCetakSakit = SuratUks::sakit()->count();
 
-        // 2. Metrik Kas Masuk (Terjual Rp 5.000 x jumlah terjual, otomatis sinkron ke buku kas bendahara)
+        // 2. Metrik Kas Masuk (Terjual Rp 5.000 x jumlah terjual bulanan terakumulasi)
         $jumlahTerjual = SuratUks::whereIn('status', ['terjual', 'kembali'])->count();
         $totalKasMasuk = $jumlahTerjual * 5000;
         $kasMasukPulang = SuratUks::pulang()->whereIn('status', ['terjual', 'kembali'])->count() * 5000;
@@ -129,9 +129,101 @@ class SuratUksController extends Controller
     }
 
     /**
+     * Sinkronkan Kas Bulanan ke Buku Kas Bendahara secara Terakumulasi:
+     * Menghitung total lembar terjual pada bulan & tahun tersebut,
+     * lalu mencatat 1 transaksi kas masuk (Debit) di Bendahara dengan keterangan:
+     * "Penjualan [X] lbr [Jenis] Bulan [Bulan Tahun] ([X] lbr x Rp 5.000)".
+     */
+    public static function syncKasBulanan(string $jenis, int $year, int $month): ?KasTransaksi
+    {
+        $akunKategori = ($jenis === 'sakit') ? 'Pendapatan Surat Izin Sakit' : 'Pendapatan Surat Izin Pulang';
+        $jenisLabel = ($jenis === 'sakit') ? 'Surat Izin Sakit' : 'Surat Izin Pulang';
+
+        $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfMonth()->toDateString();
+        $endOfMonth = Carbon::createFromDate($year, $month, 1)->endOfMonth()->toDateString();
+
+        // Ambil semua surat yang terjual/kembali di bulan & tahun bersangkutan
+        $suratList = SuratUks::where('jenis', $jenis)
+            ->whereIn('status', ['terjual', 'kembali'])
+            ->whereBetween('tanggal_pembelian', [$startOfMonth, $endOfMonth])
+            ->get();
+
+        $totalLembar = $suratList->count();
+        $carbonBulan = Carbon::createFromDate($year, $month, 1)->locale('id');
+        $namaBulan = $carbonBulan->translatedFormat('F Y');
+
+        // Cari transaksi kas bulanan yang sudah ada di modul Bendahara
+        $kas = KasTransaksi::where('kategori', $akunKategori)
+            ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
+            ->first();
+
+        // Jika tidak ada lembar terjual di bulan ini, hapus transaksi kas jika pernah ada
+        if ($totalLembar === 0) {
+            if ($kas) {
+                $kas->delete();
+            }
+            return null;
+        }
+
+        $nominal = $totalLembar * 5000;
+        $keterangan = "Penjualan {$totalLembar} lbr {$jenisLabel} Bulan {$namaBulan} ({$totalLembar} lbr x Rp 5.000)";
+        $tanggalTerakhir = $suratList->max('tanggal_pembelian') ? Carbon::parse($suratList->max('tanggal_pembelian'))->toDateString() : $endOfMonth;
+
+        if (! $kas) {
+            $kodeKas = KasTransaksi::generateKode('debit', (string) $tanggalTerakhir);
+            $kas = KasTransaksi::create([
+                'kode_transaksi' => $kodeKas,
+                'tanggal' => $tanggalTerakhir,
+                'jenis' => 'debit',
+                'kategori' => $akunKategori,
+                'nominal' => $nominal,
+                'nama_pihak' => 'Unit Kesehatan Santri (UKS)',
+                'keterangan' => $keterangan,
+                'user_id' => Auth::id(),
+            ]);
+        } else {
+            $kas->update([
+                'tanggal' => $tanggalTerakhir,
+                'nominal' => $nominal,
+                'keterangan' => $keterangan,
+            ]);
+        }
+
+        // Tautkan kas_transaksi_id di seluruh surat pada bulan tersebut
+        SuratUks::whereIn('id', $suratList->pluck('id'))
+            ->update(['kas_transaksi_id' => $kas->id]);
+
+        return $kas;
+    }
+
+    /**
+     * Sinkronkan seluruh rekap kas penjualan UKS per bulan ke Buku Kas Bendahara.
+     */
+    public function syncSemuaKas(): RedirectResponse
+    {
+        $suratList = SuratUks::whereIn('status', ['terjual', 'kembali'])
+            ->whereNotNull('tanggal_pembelian')
+            ->get(['jenis', 'tanggal_pembelian']);
+
+        $periods = [];
+        foreach ($suratList as $s) {
+            $y = (int) $s->tanggal_pembelian->format('Y');
+            $m = (int) $s->tanggal_pembelian->format('m');
+            $key = "{$s->jenis}_{$y}_{$m}";
+            $periods[$key] = [$s->jenis, $y, $m];
+        }
+
+        foreach ($periods as [$jenis, $y, $m]) {
+            self::syncKasBulanan($jenis, $y, $m);
+        }
+
+        return back()->with('success', 'Alhamdulillah, seluruh data kas masuk bulanan berhasil disinkronkan ke Buku Kas Bendahara.');
+    }
+
+    /**
      * Catat Surat Terjual / Terpakai berdasarkan ID surat.
      * Cukup input: nama_santri, kelas, asrama.
-     * Otomatis membuat Kas Masuk (Debit Rp 5.000) di modul Bendahara.
+     * Otomatis mengupdate kas masuk bulanan di modul Bendahara.
      */
     public function catatTerjual(Request $request, SuratUks $suratUk): RedirectResponse
     {
@@ -151,36 +243,24 @@ class SuratUksController extends Controller
         ]);
 
         $tanggal = !empty($validated['tanggal_pembelian']) ? Carbon::parse($validated['tanggal_pembelian']) : Carbon::today();
-        $akunKategori = ($suratUk->jenis === 'sakit') ? 'Pendapatan Surat Izin Sakit' : 'Pendapatan Surat Izin Pulang';
 
-        DB::transaction(function () use ($suratUk, $validated, $tanggal, $akunKategori) {
-            // 1. Buat transaksi kas masuk (Debit Rp 5.000) di kas bendahara
-            $kodeKas = KasTransaksi::generateKode('debit', $tanggal->toDateString());
-            $kas = KasTransaksi::create([
-                'kode_transaksi' => $kodeKas,
-                'tanggal' => $tanggal,
-                'jenis' => 'debit',
-                'kategori' => $akunKategori,
-                'nominal' => 5000,
-                'nama_pihak' => $validated['nama_santri'] . ' (' . $validated['kelas'] . ' / ' . $validated['asrama'] . ')',
-                'keterangan' => "Penjualan 1 lbr {$suratUk->jenis_label} No. {$suratUk->nomor_surat} (Kode: {$suratUk->kode_verifikasi}) a.n {$validated['nama_santri']} (1 x Rp 5.000)",
-                'user_id' => Auth::id(),
-            ]);
-
-            // 2. Update status surat UKS
+        DB::transaction(function () use ($suratUk, $validated, $tanggal) {
+            // 1. Update status surat UKS
             $suratUk->update([
                 'nama_santri' => $validated['nama_santri'],
                 'kelas' => $validated['kelas'],
                 'asrama' => $validated['asrama'],
                 'tanggal_pembelian' => $tanggal,
                 'status' => 'terjual',
-                'kas_transaksi_id' => $kas->id,
             ]);
+
+            // 2. Akumulasikan dan perbarui catatan kas bulanan di buku kas bendahara
+            self::syncKasBulanan($suratUk->jenis, (int) $tanggal->format('Y'), (int) $tanggal->format('m'));
         });
 
         return redirect()
             ->route('admin.surat-uks.index')
-            ->with('success', "Surat No. {$suratUk->nomor_surat} (Kode: {$suratUk->kode_verifikasi}) berhasil dicatat terjual untuk {$validated['nama_santri']}. Kas masuk Rp 5.000 otomatis tercatat di Bendahara.");
+            ->with('success', "Surat No. {$suratUk->nomor_surat} (Kode: {$suratUk->kode_verifikasi}) berhasil dicatat terjual untuk {$validated['nama_santri']}. Kas penjualan bulan ini otomatis diakumulasikan di Buku Kas Bendahara.");
     }
 
     /**
@@ -230,17 +310,26 @@ class SuratUksController extends Controller
     }
 
     /**
-     * Hapus surat UKS (soft delete) beserta hapus kas jika ada.
+     * Hapus surat UKS (soft delete) beserta update akumulasi kas bulanan jika ada.
      */
     public function destroy(SuratUks $suratUk): RedirectResponse
     {
         $nomor = $suratUk->nomor_surat;
 
         DB::transaction(function () use ($suratUk) {
-            if ($suratUk->kas_transaksi_id && $suratUk->kasTransaksi) {
-                $suratUk->kasTransaksi->delete();
-            }
+            $tgl = $suratUk->tanggal_pembelian;
+            $jenis = $suratUk->jenis;
+            $kasId = $suratUk->kas_transaksi_id;
             $suratUk->delete();
+
+            if ($tgl) {
+                self::syncKasBulanan($jenis, (int) $tgl->format('Y'), (int) $tgl->format('m'));
+            } elseif ($kasId) {
+                $kas = KasTransaksi::find($kasId);
+                if ($kas) {
+                    $kas->delete();
+                }
+            }
         });
 
         return redirect()

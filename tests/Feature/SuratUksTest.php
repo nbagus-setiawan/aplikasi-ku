@@ -94,13 +94,67 @@ class SuratUksTest extends TestCase
         $this->assertEquals('Kamar Barokah 03', $surat->asrama);
         $this->assertNotNull($surat->kas_transaksi_id);
 
-        // Verifikasi otomatis masuk ke kas bendahara
+        // Verifikasi otomatis masuk ke kas bendahara secara terakumulasi per bulan
         $kas = KasTransaksi::find($surat->kas_transaksi_id);
         $this->assertNotNull($kas);
         $this->assertEquals('debit', $kas->jenis);
         $this->assertEquals('Pendapatan Surat Izin Pulang', $kas->kategori);
         $this->assertEquals(5000, $kas->nominal);
-        $this->assertStringContainsString('Muhammad Zaidan', $kas->keterangan);
+        $this->assertStringContainsString('1 lbr x Rp 5.000', $kas->keterangan);
+    }
+
+    public function test_cash_is_consolidated_per_month_in_bendahara_with_count_times_five_thousand(): void
+    {
+        $surat1 = SuratUks::create([
+            'nomor_surat' => '010/UKS-SIP/AF-PA/X/2026',
+            'kode_verifikasi' => 'OCT1',
+            'jenis' => 'pulang',
+            'tanggal_cetak' => '2026-10-01',
+            'status' => 'tersedia',
+        ]);
+
+        $surat2 = SuratUks::create([
+            'nomor_surat' => '011/UKS-SIP/AF-PA/X/2026',
+            'kode_verifikasi' => 'OCT2',
+            'jenis' => 'pulang',
+            'tanggal_cetak' => '2026-10-02',
+            'status' => 'tersedia',
+        ]);
+
+        // Jual surat 1 di bulan Oktober
+        $this->actingAs($this->user)->post("/admin/surat-uks/{$surat1->id}/catat-terjual", [
+            'nama_santri' => 'Santri Satu',
+            'kelas' => '1 Aliyah',
+            'asrama' => 'A-01',
+            'tanggal_pembelian' => '2026-10-10',
+        ]);
+
+        // Jual surat 2 di bulan Oktober
+        $this->actingAs($this->user)->post("/admin/surat-uks/{$surat2->id}/catat-terjual", [
+            'nama_santri' => 'Santri Dua',
+            'kelas' => '2 Aliyah',
+            'asrama' => 'A-02',
+            'tanggal_pembelian' => '2026-10-15',
+        ]);
+
+        // Pastikan hanya ada 1 baris transaksi kas di bulan Oktober untuk Pendapatan Surat Izin Pulang
+        $transaksis = KasTransaksi::where('kategori', 'Pendapatan Surat Izin Pulang')
+            ->whereYear('tanggal', 2026)
+            ->whereMonth('tanggal', 10)
+            ->get();
+
+        $this->assertCount(1, $transaksis);
+        $kas = $transaksis->first();
+
+        // Nominal terakumulasi: 2 lembar x Rp 5.000 = Rp 10.000
+        $this->assertEquals(10000, $kas->nominal);
+        $this->assertStringContainsString('2 lbr x Rp 5.000', $kas->keterangan);
+
+        // Jika 1 surat dihapus, nominal otomatis menyusut menjadi 1 lbr x Rp 5.000 = Rp 5.000
+        $this->actingAs($this->user)->delete("/admin/surat-uks/{$surat2->id}");
+        $kas->refresh();
+        $this->assertEquals(5000, $kas->nominal);
+        $this->assertStringContainsString('1 lbr x Rp 5.000', $kas->keterangan);
     }
 
     public function test_secretary_can_catat_terjual_via_4_digit_verification_code(): void
@@ -132,6 +186,7 @@ class SuratUksTest extends TestCase
         $this->assertNotNull($kas);
         $this->assertEquals('Pendapatan Surat Izin Sakit', $kas->kategori);
         $this->assertEquals(5000, $kas->nominal);
+        $this->assertStringContainsString('1 lbr x Rp 5.000', $kas->keterangan);
     }
 
     public function test_public_verification_displays_official_authenticity_and_santri_data_without_showing_letter(): void
