@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Laporan Neraca - {{ $labelPeriode }}</title>
+    <title></title>
     <style>
         @page {
             size: A4 portrait;
@@ -21,9 +21,9 @@
 
         .header-kop {
             text-align: center;
-            border-bottom: 2.5px solid #000000;
+            border-bottom: 2pt solid #000000;
             padding-bottom: 10px;
-            margin-bottom: 22px;
+            margin-bottom: 20px;
         }
 
         .header-kop table {
@@ -34,7 +34,7 @@
         .judul-laporan {
             text-align: center;
             margin-top: 10px;
-            margin-bottom: 18px;
+            margin-bottom: 16px;
         }
 
         .judul-laporan h2 {
@@ -52,6 +52,7 @@
             color: #334155;
         }
 
+        /* BADGE STATUS SEIMBANG */
         .badge-balance {
             text-align: center;
             margin-bottom: 12px;
@@ -59,22 +60,23 @@
 
         .badge-balance span {
             display: inline-block;
-            background-color: #ecfdf5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
-            padding: 3px 10px;
-            border-radius: 4px;
-            font-size: 8.5pt;
+            font-size: 8pt;
             font-weight: bold;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
+            background-color: #f0fdf4;
+            color: #166534;
+            border: 1pt solid #86efac;
+            padding: 4px 12px;
+            border-radius: 4px;
         }
 
         /* TABEL SKONTRO DUA SISI (ASET VS PASIVA) */
         table.tabel-skontro {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
             font-size: 8.5pt;
+            border: 1pt solid #94a3b8;
         }
 
         table.tabel-skontro th {
@@ -83,58 +85,71 @@
             font-weight: bold;
             text-transform: uppercase;
             font-size: 8.5pt;
-            letter-spacing: 0.3px;
-            border: 1px solid #94a3b8;
-            padding: 6px 8px;
+            letter-spacing: 0.4px;
+            border: 1pt solid #94a3b8;
+            padding: 8px 10px;
             text-align: left;
+            vertical-align: middle;
         }
 
         table.tabel-skontro td {
-            border: 1px solid #cbd5e1;
-            padding: 5px 7px;
+            border: 1pt solid #cbd5e1;
+            padding: 8px 10px;
             vertical-align: top;
+            background-color: #ffffff;
         }
 
         .section-title {
             font-weight: bold;
-            background-color: #f8fafc;
-            color: #1e293b;
-            padding: 4px 6px;
-            margin-bottom: 4px;
-            border-left: 3px solid #0f172a;
+            font-size: 8pt;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            padding: 5px 8px;
+            margin-bottom: 6px;
+            border: 1pt solid #cbd5e1;
+            border-left: 3pt solid #047857;
         }
 
         table.sub-tabel {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         table.sub-tabel td {
             border: none;
-            padding: 3px 2px;
+            border-bottom: 1pt solid #f1f5f9;
+            padding: 4.5px 4px;
             font-size: 8.5pt;
+            color: #0f172a;
         }
 
         table.sub-tabel tr.subtotal td {
-            border-top: 1px solid #cbd5e1;
+            border-top: 1pt solid #94a3b8;
+            border-bottom: 1pt solid #94a3b8;
             font-weight: bold;
-            padding-top: 4px;
+            padding: 6px 4px;
+            background-color: #f8fafc;
+            color: #0f172a;
         }
 
         .total-box {
-            background-color: #f1f5f9;
+            background-color: #f1f5f9 !important;
             font-weight: bold;
             font-size: 9.5pt;
-            border-top: 2px solid #0f172a;
-            border-bottom: 2.5px double #0f172a;
-            padding: 6px 8px;
+            border-top: 1pt solid #000000 !important;
+            border-bottom: 1pt solid #000000 !important;
+            padding: 8px 10px !important;
+            color: #0f172a !important;
         }
 
         .text-center { text-align: center; }
         .text-right { text-align: right; }
         .nowrap { white-space: nowrap; }
-        .font-mono { font-family: 'Courier New', Courier, monospace; }
+        .font-mono { font-family: Consolas, 'Courier New', Courier, monospace; }
+        .text-nominal { color: #047857; font-weight: bold; font-family: Consolas, 'Courier New', Courier, monospace; }
 
         /* LEMBAR TANDA TANGAN (2 DI ATAS, 1 DI BAWAH TENGAH) */
         .pengesahan-container {
@@ -204,42 +219,54 @@
             }
         }
     </style>
+    <script>
+        function sesuaikanUrlCetak() {
+            document.title = '';
+            if (window.history && window.history.replaceState) {
+                try {
+                    window.history.replaceState({}, '', 'https://ponpesalfalahputak.my.id');
+                } catch (e) {}
+            }
+        }
+        window.addEventListener('DOMContentLoaded', sesuaikanUrlCetak);
+        window.addEventListener('beforeprint', sesuaikanUrlCetak);
+    </script>
 </head>
 <body>
 
     @if(!empty($isHtmlPrint))
     <div class="no-print">
-        <button onclick="window.print()">Cetak Dokumen</button>
+        <button onclick="sesuaikanUrlCetak(); window.print()">Cetak Dokumen</button>
         <a href="{{ route('admin.bendahara.neraca') }}" style="color: #cbd5e1; text-decoration: none; margin-left: 10px; font-size: 9pt;">Kembali</a>
     </div>
     @endif
 
-    <!-- KOP RESMI PONDOK PESANTREN AL-FALAH PUTRA -->
+    <!-- KOP RESMI PONDOK PESANTREN AL-FALAH PUTRA (SIMETRIS & RATA TENGAH) -->
     @if (!empty($kopGambar))
-        <div style="text-align: center; margin-bottom: 22px;">
+        <div style="text-align: center; margin-bottom: 20px;">
             <img src="{{ $kopGambar }}" style="width: 100%; max-height: 115px; height: auto; display: block;" alt="Kop Surat">
         </div>
     @else
         <div class="header-kop">
             <table>
                 <tr>
-                    <td style="width: 75px; text-align: left; vertical-align: middle;">
+                    <td style="width: 80px; text-align: center; vertical-align: middle;">
                         @if(!empty($logo))
-                            <img src="{{ $logo }}" style="width: 68px; height: auto;" alt="Logo">
+                            <img src="{{ $logo }}" style="width: 70px; height: auto;" alt="Logo">
                         @elseif(file_exists(public_path('images/logo-pesantren.png')))
-                            <img src="{{ public_path('images/logo-pesantren.png') }}" style="width: 68px; height: auto;" alt="Logo">
+                            <img src="{{ public_path('images/logo-pesantren.png') }}" style="width: 70px; height: auto;" alt="Logo">
                         @else
-                            <img src="{{ public_path('images/logo.png') }}" style="width: 68px; height: auto;" alt="Logo">
+                            <img src="{{ public_path('images/logo.png') }}" style="width: 70px; height: auto;" alt="Logo">
                         @endif
                     </td>
-                    <td style="text-align: center; vertical-align: middle; padding: 0 8px;">
+                    <td style="text-align: center; vertical-align: middle; padding: 0 10px;">
                         @if(!empty($kaligrafi))
-                            <div style="margin-bottom: 2px;">
-                                <img src="{{ $kaligrafi }}" style="height: 20px; width: auto;" alt="Kaligrafi">
+                            <div style="margin-bottom: 3px;">
+                                <img src="{{ $kaligrafi }}" style="height: 22px; width: auto;" alt="Kaligrafi">
                             </div>
                         @elseif(file_exists(public_path('images/kaligrafi-kop.png')))
-                            <div style="margin-bottom: 2px;">
-                                <img src="{{ public_path('images/kaligrafi-kop.png') }}" style="height: 20px; width: auto;" alt="Kaligrafi">
+                            <div style="margin-bottom: 3px;">
+                                <img src="{{ public_path('images/kaligrafi-kop.png') }}" style="height: 22px; width: auto;" alt="Kaligrafi">
                             </div>
                         @endif
                         <div style="font-size: 11pt; font-weight: bold; letter-spacing: 0.5px; margin: 0; text-transform: uppercase; color: #000000;">
@@ -252,10 +279,10 @@
                             Dusun II Ds. Putak Kec. Gelumbang Kab. Muara Enim Sumatera Selatan Kode Pos 31171
                         </div>
                         <div style="font-size: 8pt; margin: 1px 0; color: #334155;">
-                            Telepon: 6282118702717 &nbsp;&nbsp;&nbsp; E-mail: pengurusalfalahputra@gmail.com
+                            Telepon: 6282118702717 &nbsp;&bull;&nbsp; E-mail: pengurusalfalahputra@gmail.com
                         </div>
                     </td>
-                    <td style="width: 75px;"></td>
+                    <td style="width: 80px;"></td>
                 </tr>
             </table>
         </div>
@@ -297,7 +324,7 @@
                         @endforeach
                         <tr class="subtotal">
                             <td>Jumlah Aset Lancar</td>
-                            <td class="text-right font-mono nowrap" style="color: #065f46;">
+                            <td class="text-right font-mono nowrap" style="color: #047857;">
                                 Rp {{ number_format($totalAsetLancar, 0, ',', '.') }}
                             </td>
                         </tr>
@@ -357,7 +384,7 @@
                         @endforeach
                         <tr class="subtotal">
                             <td>Jumlah Ekuitas Dana</td>
-                            <td class="text-right font-mono nowrap" style="color: #065f46;">
+                            <td class="text-right font-mono nowrap" style="color: #047857;">
                                 Rp {{ number_format($totalEkuitas, 0, ',', '.') }}
                             </td>
                         </tr>
@@ -371,7 +398,7 @@
                     <table style="width: 100%; border-collapse: collapse;">
                         <tr>
                             <td>TOTAL ASET (AKTIVA):</td>
-                            <td class="text-right font-mono nowrap" style="color: #065f46; font-size: 10.5pt;">
+                            <td class="text-right font-mono nowrap" style="color: #047857; font-size: 10.5pt;">
                                 Rp {{ number_format($totalAset, 0, ',', '.') }}
                             </td>
                         </tr>
@@ -381,7 +408,7 @@
                     <table style="width: 100%; border-collapse: collapse;">
                         <tr>
                             <td>TOTAL KEWAJIBAN &amp; EKUITAS:</td>
-                            <td class="text-right font-mono nowrap" style="color: #065f46; font-size: 10.5pt;">
+                            <td class="text-right font-mono nowrap" style="color: #047857; font-size: 10.5pt;">
                                 Rp {{ number_format($totalPasiva, 0, ',', '.') }}
                             </td>
                         </tr>

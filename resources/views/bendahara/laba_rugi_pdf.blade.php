@@ -2,16 +2,16 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Laporan Laba Rugi - {{ $labelPeriode }}</title>
+    <title></title>
     <style>
         @page {
             size: A4 portrait;
-            margin: 1.2cm 1.5cm 1.5cm 1.5cm;
+            margin: 1cm 1.2cm 1.2cm 1.2cm;
         }
 
         body {
             font-family: 'Times New Roman', Times, serif;
-            font-size: 10pt;
+            font-size: 9.5pt;
             line-height: 1.35;
             color: #0f172a;
             background-color: #ffffff;
@@ -20,25 +20,33 @@
         }
 
         .header-kop {
-            text-align: center;
-            border-bottom: 2.5px solid #000000;
-            padding-bottom: 10px;
-            margin-bottom: 22px;
+            width: 100%;
+            border-bottom: 2pt solid #000000;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
         }
 
         .header-kop table {
             width: 100%;
             border-collapse: collapse;
+            border: none;
+            margin: 0;
+        }
+
+        .header-kop td {
+            border: none;
+            padding: 0;
+            vertical-align: middle;
         }
 
         .judul-laporan {
             text-align: center;
             margin-top: 10px;
-            margin-bottom: 18px;
+            margin-bottom: 16px;
         }
 
         .judul-laporan h2 {
-            font-size: 13pt;
+            font-size: 12.5pt;
             font-weight: bold;
             margin: 0;
             text-transform: uppercase;
@@ -47,14 +55,14 @@
         }
 
         .judul-laporan p {
-            font-size: 9.5pt;
+            font-size: 9pt;
             margin: 3px 0 0;
             color: #334155;
         }
 
         .ringkasan-box {
             width: 100%;
-            border: 1px solid #cbd5e1;
+            border: 1pt solid #cbd5e1;
             background-color: #f8fafc;
             border-radius: 4px;
             margin-bottom: 14px;
@@ -62,10 +70,10 @@
         }
 
         .ringkasan-box td {
-            padding: 8px 12px;
-            font-size: 9.5pt;
+            padding: 7px 10px;
+            font-size: 9pt;
             text-align: center;
-            border-right: 1px solid #e2e8f0;
+            border-right: 1pt solid #e2e8f0;
         }
 
         .ringkasan-box td:last-child {
@@ -73,81 +81,81 @@
         }
 
         .ringkasan-box .nilai {
-            font-size: 11pt;
+            font-size: 10.5pt;
             font-weight: bold;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: Consolas, 'Courier New', Courier, monospace;
             display: block;
             margin-top: 2px;
         }
 
         .text-surplus {
-            color: #065f46;
+            color: #047857;
         }
 
         .text-defisit {
-            color: #9f1239;
+            color: #b91c1c;
         }
 
         table.tabel-data {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 14px;
-            font-size: 9pt;
+            font-size: 8.5pt;
         }
 
-        table.tabel-data th {
+        table.tabel-data th, table.tabel-data td {
+            border: 1pt solid #cbd5e1;
+            padding: 5px 7px;
+            vertical-align: middle;
+        }
+
+        table.tabel-data thead th {
             background-color: #f1f5f9;
             color: #0f172a;
             font-weight: bold;
             text-transform: uppercase;
             font-size: 8pt;
             letter-spacing: 0.3px;
-            border: 1px solid #94a3b8;
-            padding: 6px 8px;
+            border: 1pt solid #94a3b8;
+            padding: 6px 7px;
             text-align: left;
-        }
-
-        table.tabel-data td {
-            border: 1px solid #cbd5e1;
-            padding: 5px 8px;
-            vertical-align: middle;
         }
 
         table.tabel-data tr.section-header td {
             background-color: #e2e8f0;
             font-weight: bold;
-            font-size: 9.5pt;
+            font-size: 8.5pt;
             color: #0f172a;
-            border-top: 1.5px solid #64748b;
-            border-bottom: 1.5px solid #64748b;
-            padding: 6px 8px;
+            border: 1pt solid #94a3b8;
+            padding: 6px 7px;
+            letter-spacing: 0.3px;
         }
 
         table.tabel-data tr.subtotal-row td {
             background-color: #f8fafc;
             font-weight: bold;
-            border-top: 1.5px solid #94a3b8;
-            border-bottom: 1.5px solid #94a3b8;
-            padding: 6px 8px;
+            border-top: 1pt solid #94a3b8;
+            border-bottom: 1pt solid #94a3b8;
+            padding: 6px 7px;
         }
 
         table.tabel-data tr.total-akhir-row td {
             background-color: #f1f5f9;
             font-weight: bold;
-            font-size: 10pt;
-            border-top: 2px solid #0f172a;
-            border-bottom: 2.5px double #0f172a;
-            padding: 7px 8px;
+            font-size: 9pt;
+            border-top: 1pt solid #000000;
+            border-bottom: 1pt solid #000000;
+            padding: 7px 7px;
         }
 
         .text-center { text-align: center; }
         .text-right { text-align: right; }
         .nowrap { white-space: nowrap; }
-        .font-mono { font-family: 'Courier New', Courier, monospace; }
+        .font-mono { font-family: Consolas, 'Courier New', Courier, monospace; }
 
         /* LEMBAR TANDA TANGAN (2 DI ATAS, 1 DI BAWAH TENGAH) */
         .pengesahan-container {
-            margin-top: 20px;
+            margin-top: 18px;
             page-break-inside: avoid;
         }
 
@@ -163,7 +171,7 @@
         }
 
         .ttd-space {
-            height: 55px;
+            height: 50px;
         }
 
         .ttd-nama {
@@ -218,37 +226,59 @@
 
     @if(!empty($isHtmlPrint))
     <div class="no-print">
-        <button onclick="window.print()">Cetak Dokumen</button>
+        <button onclick="sesuaikanUrlCetak(); window.print();">Cetak Dokumen</button>
         <a href="{{ route('admin.bendahara.laba-rugi') }}" style="color: #cbd5e1; text-decoration: none; margin-left: 10px; font-size: 9pt;">Kembali</a>
     </div>
     @endif
 
+    <script>
+        function sesuaikanUrlCetak() {
+            try {
+                document.title = '';
+                if (window.history && window.history.replaceState) {
+                    window.history.replaceState({}, '', 'https://ponpesalfalahputak.my.id');
+                }
+            } catch (e) {}
+        }
+        sesuaikanUrlCetak();
+        window.addEventListener('beforeprint', sesuaikanUrlCetak);
+        window.addEventListener('DOMContentLoaded', function() {
+            sesuaikanUrlCetak();
+            @if(!empty($isHtmlPrint))
+            setTimeout(function() {
+                sesuaikanUrlCetak();
+                window.print();
+            }, 400);
+            @endif
+        });
+    </script>
+
     <!-- KOP RESMI PONDOK PESANTREN AL-FALAH PUTRA -->
     @if (!empty($kopGambar))
-        <div style="text-align: center; margin-bottom: 22px;">
+        <div style="text-align: center; margin-bottom: 20px;">
             <img src="{{ $kopGambar }}" style="width: 100%; max-height: 115px; height: auto; display: block;" alt="Kop Surat">
         </div>
     @else
         <div class="header-kop">
             <table>
                 <tr>
-                    <td style="width: 75px; text-align: left; vertical-align: middle;">
+                    <td style="width: 80px; text-align: center; vertical-align: middle;">
                         @if(!empty($logo))
-                            <img src="{{ $logo }}" style="width: 68px; height: auto;" alt="Logo">
+                            <img src="{{ $logo }}" style="width: 70px; height: auto; display: block; margin: 0 auto;" alt="Logo">
                         @elseif(file_exists(public_path('images/logo-pesantren.png')))
-                            <img src="{{ public_path('images/logo-pesantren.png') }}" style="width: 68px; height: auto;" alt="Logo">
+                            <img src="{{ asset('images/logo-pesantren.png') }}" style="width: 70px; height: auto; display: block; margin: 0 auto;" alt="Logo">
                         @else
-                            <img src="{{ public_path('images/logo.png') }}" style="width: 68px; height: auto;" alt="Logo">
+                            <img src="{{ asset('images/logo.png') }}" style="width: 70px; height: auto; display: block; margin: 0 auto;" alt="Logo">
                         @endif
                     </td>
-                    <td style="text-align: center; vertical-align: middle; padding: 0 8px;">
+                    <td style="text-align: center; vertical-align: middle; padding: 0 10px;">
                         @if(!empty($kaligrafi))
-                            <div style="margin-bottom: 2px;">
-                                <img src="{{ $kaligrafi }}" style="height: 20px; width: auto;" alt="Kaligrafi">
+                            <div style="margin-bottom: 3px;">
+                                <img src="{{ $kaligrafi }}" style="height: 22px; width: auto; display: inline-block;" alt="Kaligrafi">
                             </div>
                         @elseif(file_exists(public_path('images/kaligrafi-kop.png')))
-                            <div style="margin-bottom: 2px;">
-                                <img src="{{ public_path('images/kaligrafi-kop.png') }}" style="height: 20px; width: auto;" alt="Kaligrafi">
+                            <div style="margin-bottom: 3px;">
+                                <img src="{{ asset('images/kaligrafi-kop.png') }}" style="height: 22px; width: auto; display: inline-block;" alt="Kaligrafi">
                             </div>
                         @endif
                         <div style="font-size: 11pt; font-weight: bold; letter-spacing: 0.5px; margin: 0; text-transform: uppercase; color: #000000;">
@@ -261,10 +291,10 @@
                             Dusun II Ds. Putak Kec. Gelumbang Kab. Muara Enim Sumatera Selatan Kode Pos 31171
                         </div>
                         <div style="font-size: 8pt; margin: 1px 0; color: #334155;">
-                            Telepon: 6282118702717 &nbsp;&nbsp;&nbsp; E-mail: pengurusalfalahputra@gmail.com
+                            Telepon: 6282118702717 &nbsp;&bull;&nbsp; E-mail: pengurusalfalahputra@gmail.com
                         </div>
                     </td>
-                    <td style="width: 75px;"></td>
+                    <td style="width: 80px;"></td>
                 </tr>
             </table>
         </div>
@@ -280,15 +310,15 @@
     <table class="ringkasan-box">
         <tr>
             <td style="width: 33.3%;">
-                <span style="color: #475569; font-size: 8.5pt; text-transform: uppercase;">Total Pendapatan (Debit)</span>
+                <span style="color: #475569; font-size: 8pt; text-transform: uppercase;">Total Pendapatan (Debit)</span>
                 <span class="nilai text-surplus">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</span>
             </td>
             <td style="width: 33.3%;">
-                <span style="color: #475569; font-size: 8.5pt; text-transform: uppercase;">Total Beban (Kredit)</span>
+                <span style="color: #475569; font-size: 8pt; text-transform: uppercase;">Total Beban (Kredit)</span>
                 <span class="nilai text-defisit">Rp {{ number_format($totalBeban, 0, ',', '.') }}</span>
             </td>
             <td style="width: 33.3%;">
-                <span style="color: #475569; font-size: 8.5pt; text-transform: uppercase;">{{ $isSurplus ? 'Surplus Bersih' : 'Defisit Bersih' }}</span>
+                <span style="color: #475569; font-size: 8pt; text-transform: uppercase;">{{ $isSurplus ? 'Surplus Bersih' : 'Defisit Bersih' }}</span>
                 <span class="nilai {{ $isSurplus ? 'text-surplus' : 'text-defisit' }}">
                     {{ $isSurplus ? '+' : '' }}Rp {{ number_format($surplusDefisit, 0, ',', '.') }}
                 </span>
@@ -296,14 +326,14 @@
         </tr>
     </table>
 
-    <!-- TABEL UTAMA LAPORAN LABA RUGI -->
+    <!-- TABEL UTAMA LAPORAN LABA RUGI (STANDAR LAPORAN KEUANGAN RESMI) -->
     <table class="tabel-data">
         <thead>
             <tr>
                 <th style="width: 6%; text-align: center;">NO</th>
-                <th style="width: 54%;">KOMPONEN / POS AKUN KEUANGAN</th>
-                <th style="width: 14%; text-align: center;">TRANSAKSI</th>
-                <th style="width: 16%; text-align: right;">NOMINAL (RP)</th>
+                <th style="width: 52%;">KOMPONEN / POS AKUN KEUANGAN</th>
+                <th style="width: 15%; text-align: center;">TRANSAKSI</th>
+                <th style="width: 17%; text-align: right;">NOMINAL (RP)</th>
                 <th style="width: 10%; text-align: right;">RASIO</th>
             </tr>
         </thead>
@@ -315,21 +345,21 @@
             @forelse($pendapatans as $idx => $item)
                 <tr>
                     <td class="text-center">{{ $idx + 1 }}</td>
-                    <td>{{ $item->kategori }}</td>
+                    <td style="font-weight: 500;">{{ $item->kategori }}</td>
                     <td class="text-center">{{ $item->jumlah_transaksi }} transaksi</td>
-                    <td class="text-right font-mono nowrap">Rp {{ number_format($item->total, 0, ',', '.') }}</td>
+                    <td class="text-right font-mono nowrap text-nominal">Rp {{ number_format($item->total, 0, ',', '.') }}</td>
                     <td class="text-right font-mono">{{ $item->persentase }}%</td>
                 </tr>
             @empty
                 <tr>
                     <td class="text-center">-</td>
-                    <td colspan="4" style="font-style: italic; color: #64748b;">Tidak ada data penerimaan pada periode ini.</td>
+                    <td colspan="4" style="font-style: italic; color: #64748b; padding: 10px;">Tidak ada data penerimaan pada periode ini.</td>
                 </tr>
             @endforelse
             <tr class="subtotal-row">
-                <td colspan="3" class="text-right">JUMLAH PENDAPATAN (A)</td>
-                <td class="text-right font-mono nowrap" style="color: #065f46;">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</td>
-                <td class="text-right font-mono">100.0%</td>
+                <td colspan="3" class="text-right" style="letter-spacing: 0.3px;">JUMLAH PENDAPATAN OPERASIONAL (A)</td>
+                <td class="text-right font-mono nowrap" style="color: #047857;">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</td>
+                <td class="text-right font-mono" style="color: #047857;">100.0%</td>
             </tr>
 
             <!-- BAGIAN II: BEBAN (PENGELUARAN KAS) -->
@@ -339,7 +369,7 @@
             @forelse($bebans as $idx => $item)
                 <tr>
                     <td class="text-center">{{ $idx + 1 }}</td>
-                    <td>{{ $item->kategori }}</td>
+                    <td style="font-weight: 500;">{{ $item->kategori }}</td>
                     <td class="text-center">{{ $item->jumlah_transaksi }} transaksi</td>
                     <td class="text-right font-mono nowrap">Rp {{ number_format($item->total, 0, ',', '.') }}</td>
                     <td class="text-right font-mono">{{ $item->persentase }}%</td>
@@ -347,24 +377,24 @@
             @empty
                 <tr>
                     <td class="text-center">-</td>
-                    <td colspan="4" style="font-style: italic; color: #64748b;">Tidak ada data pengeluaran pada periode ini.</td>
+                    <td colspan="4" style="font-style: italic; color: #64748b; padding: 10px;">Tidak ada data pengeluaran pada periode ini.</td>
                 </tr>
             @endforelse
             <tr class="subtotal-row">
-                <td colspan="3" class="text-right">JUMLAH BEBAN (B)</td>
-                <td class="text-right font-mono nowrap" style="color: #9f1239;">Rp {{ number_format($totalBeban, 0, ',', '.') }}</td>
-                <td class="text-right font-mono">100.0%</td>
+                <td colspan="3" class="text-right" style="letter-spacing: 0.3px;">JUMLAH BEBAN OPERASIONAL (B)</td>
+                <td class="text-right font-mono nowrap" style="color: #b91c1c;">Rp {{ number_format($totalBeban, 0, ',', '.') }}</td>
+                <td class="text-right font-mono" style="color: #b91c1c;">100.0%</td>
             </tr>
 
             <!-- BAGIAN III: HASIL AKHIR (SURPLUS / DEFISIT BERSIH) -->
             <tr class="total-akhir-row">
-                <td colspan="3" class="text-right">
+                <td colspan="3" class="text-right" style="letter-spacing: 0.3px;">
                     HASIL BERSIH OPERASIONAL: {{ $isSurplus ? 'SURPLUS KAS (A - B)' : 'DEFISIT KAS (A - B)' }}
                 </td>
-                <td class="text-right font-mono nowrap {{ $isSurplus ? 'text-surplus' : 'text-defisit' }}" style="font-size: 10.5pt;">
+                <td class="text-right font-mono nowrap" style="font-size: 9.5pt; color: {{ $isSurplus ? '#047857' : '#b91c1c' }};">
                     {{ $isSurplus ? '+' : '' }}Rp {{ number_format($surplusDefisit, 0, ',', '.') }}
                 </td>
-                <td class="text-right font-mono {{ $isSurplus ? 'text-surplus' : 'text-defisit' }}">
+                <td class="text-right font-mono" style="color: {{ $isSurplus ? '#047857' : '#b91c1c' }};">
                     {{ $marginSurplusDefisit }}%
                 </td>
             </tr>

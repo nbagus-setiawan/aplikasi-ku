@@ -732,18 +732,12 @@ class BendaharaController extends Controller
             $kaligrafi = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kaligrafi-kop.png')));
         }
 
-        // Banner Kop Surat Resmi Khusus Laporan Buku Kas (Sesuai Template Word Resmi)
+        // Banner Kop Surat Kustom (Hanya jika pengguna mengunggah gambar kop di halaman Pengaturan)
         $kopGambar = null;
-        if (file_exists(public_path('images/kop-kas.png'))) {
-            $kopGambar = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kop-kas.png')));
-        } elseif (! empty($pengaturans['kop_gambar']) && file_exists(storage_path('app/public/' . $pengaturans['kop_gambar']))) {
+        if (! empty($pengaturans['kop_gambar']) && file_exists(storage_path('app/public/' . $pengaturans['kop_gambar']))) {
             $ext = pathinfo($pengaturans['kop_gambar'], PATHINFO_EXTENSION);
             $mime = strtolower($ext) === 'png' ? 'image/png' : 'image/jpeg';
             $kopGambar = "data:{$mime};base64," . base64_encode(file_get_contents(storage_path('app/public/' . $pengaturans['kop_gambar'])));
-        } elseif (file_exists(public_path('images/kop.png'))) {
-            $kopGambar = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kop.png')));
-        } elseif (file_exists(public_path('images/kop.jpeg'))) {
-            $kopGambar = 'data:image/jpeg;base64,' . base64_encode(file_get_contents(public_path('images/kop.jpeg')));
         }
 
         return [
@@ -1010,18 +1004,12 @@ class BendaharaController extends Controller
             $kaligrafi = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kaligrafi-kop.png')));
         }
 
-        // Banner Kop Surat Resmi
+        // Banner Kop Surat Kustom (Hanya jika pengguna mengunggah gambar kop di halaman Pengaturan)
         $kopGambar = null;
-        if (file_exists(public_path('images/kop-kas.png'))) {
-            $kopGambar = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kop-kas.png')));
-        } elseif (! empty($pengaturans['kop_gambar']) && file_exists(storage_path('app/public/' . $pengaturans['kop_gambar']))) {
+        if (! empty($pengaturans['kop_gambar']) && file_exists(storage_path('app/public/' . $pengaturans['kop_gambar']))) {
             $ext = pathinfo($pengaturans['kop_gambar'], PATHINFO_EXTENSION);
             $mime = strtolower($ext) === 'png' ? 'image/png' : 'image/jpeg';
             $kopGambar = "data:{$mime};base64," . base64_encode(file_get_contents(storage_path('app/public/' . $pengaturans['kop_gambar'])));
-        } elseif (file_exists(public_path('images/kop.png'))) {
-            $kopGambar = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kop.png')));
-        } elseif (file_exists(public_path('images/kop.jpeg'))) {
-            $kopGambar = 'data:image/jpeg;base64,' . base64_encode(file_get_contents(public_path('images/kop.jpeg')));
         }
 
         return [
@@ -1241,18 +1229,12 @@ class BendaharaController extends Controller
             $kaligrafi = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kaligrafi-kop.png')));
         }
 
-        // Banner Kop Surat Resmi
+        // Banner Kop Surat Kustom (Hanya jika pengguna mengunggah gambar kop di halaman Pengaturan)
         $kopGambar = null;
-        if (file_exists(public_path('images/kop-kas.png'))) {
-            $kopGambar = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kop-kas.png')));
-        } elseif (! empty($pengaturans['kop_gambar']) && file_exists(storage_path('app/public/' . $pengaturans['kop_gambar']))) {
+        if (! empty($pengaturans['kop_gambar']) && file_exists(storage_path('app/public/' . $pengaturans['kop_gambar']))) {
             $ext = pathinfo($pengaturans['kop_gambar'], PATHINFO_EXTENSION);
             $mime = strtolower($ext) === 'png' ? 'image/png' : 'image/jpeg';
             $kopGambar = "data:{$mime};base64," . base64_encode(file_get_contents(storage_path('app/public/' . $pengaturans['kop_gambar'])));
-        } elseif (file_exists(public_path('images/kop.png'))) {
-            $kopGambar = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kop.png')));
-        } elseif (file_exists(public_path('images/kop.jpeg'))) {
-            $kopGambar = 'data:image/jpeg;base64,' . base64_encode(file_get_contents(public_path('images/kop.jpeg')));
         }
 
         return [

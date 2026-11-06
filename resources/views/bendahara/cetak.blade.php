@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <title>Buku Kas Umum - {{ $pengaturans['nama_situs'] ?? 'Pondok Pesantren Al-Falah Putak' }}</title>
+    <title></title>
     <style>
         @page {
             size: A4 landscape;
@@ -18,9 +18,9 @@
         }
         .header-kop {
             width: 100%;
-            border-bottom: 2.5px solid #000000;
-            padding-bottom: 10px;
-            margin-bottom: 22px;
+            border-bottom: 2pt solid #000000;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
         }
         .header-kop table {
             width: 100%;
@@ -58,7 +58,7 @@
             font-size: 8.5pt;
         }
         table.tabel-kas th, table.tabel-kas td {
-            border: 1px solid #334155;
+            border: 1pt solid #cbd5e1;
             padding: 5px 6px;
             text-align: left;
             vertical-align: middle;
@@ -70,6 +70,7 @@
             font-size: 8pt;
             text-align: center;
             letter-spacing: 0.3px;
+            border: 1pt solid #94a3b8;
         }
         thead {
             display: table-header-group;
@@ -77,23 +78,31 @@
         tr {
             page-break-inside: avoid;
         }
-        .bg-strip {
+        .bg-strip td {
             background-color: #f8fafc;
         }
         .text-center { text-align: center !important; }
         .text-right { text-align: right !important; }
-        .text-debit { color: #047857; font-weight: bold; }
-        .text-kredit { color: #b91c1c; font-weight: bold; }
-        .text-saldo { color: #0f172a; font-weight: bold; }
+        .font-mono { font-family: Consolas, 'Courier New', Courier, monospace; }
+        .text-debit { color: #047857; font-weight: bold; font-family: Consolas, 'Courier New', Courier, monospace; }
+        .text-kredit { color: #b91c1c; font-weight: bold; font-family: Consolas, 'Courier New', Courier, monospace; }
+        .text-saldo { color: #0f172a; font-weight: bold; font-family: Consolas, 'Courier New', Courier, monospace; }
         .nowrap { white-space: nowrap !important; }
-        .saldo-awal-row {
-            background-color: #f0fdf4;
+        .saldo-awal-row td {
+            background-color: #f0fdf4 !important;
             font-weight: bold;
+            border-top: 1pt solid #86efac !important;
+            border-bottom: 1pt solid #86efac !important;
+            color: #047857;
         }
-        .total-row {
-            background-color: #e2e8f0;
+        .total-row td {
+            background-color: #e2e8f0 !important;
             font-weight: bold;
-            font-size: 9pt;
+            font-size: 8.5pt;
+            border-top: 1pt solid #000000 !important;
+            border-bottom: 1pt solid #000000 !important;
+            color: #0f172a !important;
+            padding: 6px 6px;
         }
         .pengesahan-container {
             width: 100%;
@@ -141,12 +150,14 @@
             </a>
         </div>
     </div>
+    @endif
 
     <script>
         function sesuaikanUrlCetak() {
             try {
+                document.title = '';
                 if (window.history && window.history.replaceState) {
-                    window.history.replaceState({}, document.title, '{{ url('/') }}/');
+                    window.history.replaceState({}, '', 'https://ponpesalfalahputak.my.id');
                 }
             } catch (e) {}
         }
@@ -162,7 +173,6 @@
             @endif
         });
     </script>
-    @endif
 
     <!-- KOP RESMI LEMBAGA (SESUAI DOKUMEN RESMI PONDOK PESANTREN) -->
     @if (!empty($kopGambar))
