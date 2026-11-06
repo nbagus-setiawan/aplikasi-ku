@@ -518,8 +518,8 @@
                     <div class="border-2 border-dashed border-emerald-300 hover:border-emerald-500 bg-emerald-50/30 rounded-2xl p-4 text-center cursor-pointer transition">
                         <input type="file" id="berkas-surat-input" name="berkas_surat[]" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp"
                                class="w-full text-xs text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-700 file:text-white hover:file:bg-emerald-800 cursor-pointer">
-                        <p class="text-[11px] text-slate-500 mt-2">
-                            Bisa pilih banyak berkas sekaligus (PDF, Word, atau Gambar). Setiap berkas akan otomatis diterbitkan <strong>1 Kode 4-Digit</strong> unik resmi tanpa mengubah berkas aslinya.
+                        <p class="text-[11px] text-slate-600 mt-2">
+                            Pilih banyak berkas (PDF, Word, Gambar). Tiap berkas otomatis dapat <strong>1 Kode 4-Digit</strong>.
                         </p>
                     </div>
                 </div>
@@ -531,7 +531,10 @@
                     <input type="number" name="jumlah" value="0" min="0" max="100"
                            class="w-full text-sm rounded-xl border-slate-300 focus:ring-emerald-500 focus:border-emerald-500"
                            placeholder="Isi angka lembar jika hanya ingin menerbitkan kode tanpa upload berkas">
-                    <span class="text-[10.5px] text-slate-400 mt-0.5 block">Biarkan 0 jika Anda memilih berkas di atas.</span>
+                    <p class="text-xs font-bold text-rose-600 mt-1.5 flex items-center gap-1.5 bg-rose-50 border border-rose-200 rounded-lg px-2.5 py-1.5">
+                        <svg class="w-4 h-4 shrink-0 text-rose-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                        <span><strong>PERHATIAN:</strong> Biarkan angka <strong>0</strong> jika Anda memilih/mengunggah berkas di atas.</span>
+                    </p>
                 </div>
 
                 <div>
