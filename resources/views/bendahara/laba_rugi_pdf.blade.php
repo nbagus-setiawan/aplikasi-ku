@@ -224,45 +224,51 @@
     @endif
 
     <!-- KOP RESMI PONDOK PESANTREN AL-FALAH PUTRA -->
-    <div class="header-kop">
-        <table>
-            <tr>
-                <td style="width: 17%; text-align: right; vertical-align: middle; padding-right: 14px;">
-                    @if(!empty($logo))
-                        <img src="{{ $logo }}" style="width: 68px; height: auto;" alt="Logo">
-                    @elseif(file_exists(public_path('images/logo-pesantren.png')))
-                        <img src="{{ public_path('images/logo-pesantren.png') }}" style="width: 68px; height: auto;" alt="Logo">
-                    @else
-                        <img src="{{ public_path('images/logo.png') }}" style="width: 68px; height: auto;" alt="Logo">
-                    @endif
-                </td>
-                <td style="width: 66%; text-align: center; vertical-align: middle; padding: 0 5px;">
-                    @if(!empty($kaligrafi))
-                        <div style="margin-bottom: 2px;">
-                            <img src="{{ $kaligrafi }}" style="height: 20px; width: auto;" alt="Kaligrafi">
+    @if (!empty($kopGambar))
+        <div style="text-align: center; margin-bottom: 22px;">
+            <img src="{{ $kopGambar }}" style="width: 100%; max-height: 115px; height: auto; display: block;" alt="Kop Surat">
+        </div>
+    @else
+        <div class="header-kop">
+            <table>
+                <tr>
+                    <td style="width: 75px; text-align: left; vertical-align: middle;">
+                        @if(!empty($logo))
+                            <img src="{{ $logo }}" style="width: 68px; height: auto;" alt="Logo">
+                        @elseif(file_exists(public_path('images/logo-pesantren.png')))
+                            <img src="{{ public_path('images/logo-pesantren.png') }}" style="width: 68px; height: auto;" alt="Logo">
+                        @else
+                            <img src="{{ public_path('images/logo.png') }}" style="width: 68px; height: auto;" alt="Logo">
+                        @endif
+                    </td>
+                    <td style="text-align: center; vertical-align: middle; padding: 0 8px;">
+                        @if(!empty($kaligrafi))
+                            <div style="margin-bottom: 2px;">
+                                <img src="{{ $kaligrafi }}" style="height: 20px; width: auto;" alt="Kaligrafi">
+                            </div>
+                        @elseif(file_exists(public_path('images/kaligrafi-kop.png')))
+                            <div style="margin-bottom: 2px;">
+                                <img src="{{ public_path('images/kaligrafi-kop.png') }}" style="height: 20px; width: auto;" alt="Kaligrafi">
+                            </div>
+                        @endif
+                        <div style="font-size: 11pt; font-weight: bold; letter-spacing: 0.5px; margin: 0; text-transform: uppercase; color: #000000;">
+                            YAYASAN PONDOK PESANTREN SALAFIYAH AL-FALAH
                         </div>
-                    @elseif(file_exists(public_path('images/kaligrafi-kop.png')))
-                        <div style="margin-bottom: 2px;">
-                            <img src="{{ public_path('images/kaligrafi-kop.png') }}" style="height: 20px; width: auto;" alt="Kaligrafi">
+                        <div style="font-size: 14pt; font-weight: bold; letter-spacing: 0.8px; margin: 2px 0; text-transform: uppercase; color: #064e3b;">
+                            PONDOK PUTRA
                         </div>
-                    @endif
-                    <div style="font-size: 11pt; font-weight: bold; letter-spacing: 0.5px; margin: 0; text-transform: uppercase; color: #000000;">
-                        YAYASAN PONDOK PESANTREN SALAFIYAH AL-FALAH
-                    </div>
-                    <div style="font-size: 14pt; font-weight: bold; letter-spacing: 0.8px; margin: 2px 0; text-transform: uppercase; color: #064e3b;">
-                        PONDOK PUTRA
-                    </div>
-                    <div style="font-size: 8pt; margin: 1px 0; color: #1e293b;">
-                        Dusun II Ds. Putak Kec. Gelumbang Kab. Muara Enim Sumatera Selatan Kode Pos 31171
-                    </div>
-                    <div style="font-size: 8pt; margin: 1px 0; color: #334155;">
-                        Telepon: 6282118702717 &nbsp;&nbsp;&nbsp; E-mail: pengurusalfalahputra@gmail.com
-                    </div>
-                </td>
-                <td style="width: 17%;"></td>
-            </tr>
-        </table>
-    </div>
+                        <div style="font-size: 8pt; margin: 1px 0; color: #1e293b;">
+                            Dusun II Ds. Putak Kec. Gelumbang Kab. Muara Enim Sumatera Selatan Kode Pos 31171
+                        </div>
+                        <div style="font-size: 8pt; margin: 1px 0; color: #334155;">
+                            Telepon: 6282118702717 &nbsp;&nbsp;&nbsp; E-mail: pengurusalfalahputra@gmail.com
+                        </div>
+                    </td>
+                    <td style="width: 75px;"></td>
+                </tr>
+            </table>
+        </div>
+    @endif
 
     <!-- JUDUL LAPORAN -->
     <div class="judul-laporan">

@@ -1010,6 +1010,20 @@ class BendaharaController extends Controller
             $kaligrafi = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kaligrafi-kop.png')));
         }
 
+        // Banner Kop Surat Resmi
+        $kopGambar = null;
+        if (file_exists(public_path('images/kop-kas.png'))) {
+            $kopGambar = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kop-kas.png')));
+        } elseif (! empty($pengaturans['kop_gambar']) && file_exists(storage_path('app/public/' . $pengaturans['kop_gambar']))) {
+            $ext = pathinfo($pengaturans['kop_gambar'], PATHINFO_EXTENSION);
+            $mime = strtolower($ext) === 'png' ? 'image/png' : 'image/jpeg';
+            $kopGambar = "data:{$mime};base64," . base64_encode(file_get_contents(storage_path('app/public/' . $pengaturans['kop_gambar'])));
+        } elseif (file_exists(public_path('images/kop.png'))) {
+            $kopGambar = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kop.png')));
+        } elseif (file_exists(public_path('images/kop.jpeg'))) {
+            $kopGambar = 'data:image/jpeg;base64,' . base64_encode(file_get_contents(public_path('images/kop.jpeg')));
+        }
+
         return [
             'filterTipe' => $filterTipe,
             'filterBulan' => $filterBulan,
@@ -1031,6 +1045,7 @@ class BendaharaController extends Controller
             'pengaturans' => $pengaturans,
             'logo' => $logo,
             'kaligrafi' => $kaligrafi,
+            'kopGambar' => $kopGambar,
             'isHtmlPrint' => false,
         ];
     }
@@ -1226,6 +1241,20 @@ class BendaharaController extends Controller
             $kaligrafi = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kaligrafi-kop.png')));
         }
 
+        // Banner Kop Surat Resmi
+        $kopGambar = null;
+        if (file_exists(public_path('images/kop-kas.png'))) {
+            $kopGambar = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kop-kas.png')));
+        } elseif (! empty($pengaturans['kop_gambar']) && file_exists(storage_path('app/public/' . $pengaturans['kop_gambar']))) {
+            $ext = pathinfo($pengaturans['kop_gambar'], PATHINFO_EXTENSION);
+            $mime = strtolower($ext) === 'png' ? 'image/png' : 'image/jpeg';
+            $kopGambar = "data:{$mime};base64," . base64_encode(file_get_contents(storage_path('app/public/' . $pengaturans['kop_gambar'])));
+        } elseif (file_exists(public_path('images/kop.png'))) {
+            $kopGambar = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kop.png')));
+        } elseif (file_exists(public_path('images/kop.jpeg'))) {
+            $kopGambar = 'data:image/jpeg;base64,' . base64_encode(file_get_contents(public_path('images/kop.jpeg')));
+        }
+
         return [
             'filterTipe' => $filterTipe,
             'filterBulan' => $filterBulan,
@@ -1256,6 +1285,7 @@ class BendaharaController extends Controller
             'pengaturans' => $pengaturans,
             'logo' => $logo,
             'kaligrafi' => $kaligrafi,
+            'kopGambar' => $kopGambar,
             'isHtmlPrint' => false,
         ];
     }
