@@ -830,4 +830,178 @@ class BendaharaController extends Controller
                 ->with('error', 'Gagal mengunduh dokumen Word: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Halaman Laporan Laba Rugi (Surplus / Defisit)
+     */
+    public function labaRugi(Request $request)
+    {
+        $data = $this->prepareLabaRugiData($request);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+                'url_cetak' => route('admin.bendahara.laba-rugi.cetak', $request->query()),
+            ]);
+        }
+
+        return view('bendahara.laba_rugi', $data);
+    }
+
+    /**
+     * Cetak Laporan Laba Rugi (PDF)
+     */
+    public function cetakLabaRugi(Request $request)
+    {
+        try {
+            $viewData = $this->prepareLabaRugiData($request);
+
+            if (class_exists(\DOMImplementation::class)) {
+                $pdf = Pdf::loadView('bendahara.laba_rugi_pdf', $viewData)
+                    ->setPaper('a4', 'portrait');
+
+                $filename = 'laporan-laba-rugi-' . date('Ymd-His') . '.pdf';
+
+                return $pdf->stream($filename);
+            }
+
+            $viewData['isHtmlPrint'] = true;
+            return response()->view('bendahara.laba_rugi_pdf', $viewData);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Fallback cetak web laba rugi: ' . $e->getMessage());
+
+            if (isset($viewData)) {
+                $viewData['isHtmlPrint'] = true;
+                return response()->view('bendahara.laba_rugi_pdf', $viewData);
+            }
+
+            return redirect()->route('admin.bendahara.laba-rugi')
+                ->with('error', 'Gagal memproses cetak laba rugi: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Siapkan Data Laporan Laba Rugi (Surplus / Defisit)
+     */
+    protected function prepareLabaRugiData(Request $request): array
+    {
+        $bulanTersedia = $this->getBulanTersedia();
+        $tahunTersedia = $this->getTahunTersedia();
+
+        $filterTipe = $request->input('filter_tipe', 'bulan');
+        $filterBulan = $request->input('filter_bulan');
+        $filterTahun = $request->input('filter_tahun');
+        $dari = $request->input('dari_tanggal');
+        $sampai = $request->input('sampai_tanggal');
+
+        // Tentukan rentang $dari dan $sampai
+        $labelPeriode = 'Semua Periode';
+        $tglAkhirTeks = Carbon::now()->locale('id')->translatedFormat('d F Y');
+
+        if ($filterTipe === 'bulan') {
+            if (!$filterBulan) {
+                $filterBulan = $bulanTersedia->first()['ym'] ?? Carbon::now()->format('Y-m');
+            }
+            $dtBulan = Carbon::createFromFormat('Y-m', $filterBulan);
+            $dari = $dtBulan->copy()->startOfMonth()->toDateString();
+            $sampai = $dtBulan->copy()->endOfMonth()->toDateString();
+            $labelPeriode = $dtBulan->locale('id')->translatedFormat('F Y');
+            $tglAkhirTeks = $dtBulan->copy()->endOfMonth()->locale('id')->translatedFormat('d F Y');
+        } elseif ($filterTipe === 'tahun') {
+            if (!$filterTahun) {
+                $filterTahun = $tahunTersedia->first()['tahun'] ?? Carbon::now()->format('Y');
+            }
+            $dtTahun = Carbon::createFromFormat('Y', $filterTahun);
+            $dari = $dtTahun->copy()->startOfYear()->toDateString();
+            $sampai = $dtTahun->copy()->endOfYear()->toDateString();
+            $labelPeriode = 'Tahun ' . $filterTahun;
+            $tglAkhirTeks = $dtTahun->copy()->endOfYear()->locale('id')->translatedFormat('d F Y');
+        } elseif ($filterTipe === 'kustom' && ($dari || $sampai)) {
+            $tglAwal = $dari ? Carbon::parse($dari)->locale('id')->translatedFormat('d F Y') : 'Awal';
+            $tglAkhir = $sampai ? Carbon::parse($sampai)->locale('id')->translatedFormat('d F Y') : 'Sekarang';
+            $labelPeriode = "{$tglAwal} s.d. {$tglAkhir}";
+            $tglAkhirTeks = $sampai ? Carbon::parse($sampai)->locale('id')->translatedFormat('d F Y') : Carbon::now()->locale('id')->translatedFormat('d F Y');
+        } else {
+            $filterTipe = 'semua';
+            $dari = null;
+            $sampai = null;
+        }
+
+        // Query Pendapatan (Debit)
+        $debitQuery = KasTransaksi::debit();
+        $kreditQuery = KasTransaksi::kredit();
+
+        if ($dari && $sampai) {
+            $debitQuery->whereBetween('tanggal', [$dari, $sampai]);
+            $kreditQuery->whereBetween('tanggal', [$dari, $sampai]);
+        } elseif ($dari) {
+            $debitQuery->whereDate('tanggal', '>=', $dari);
+            $kreditQuery->whereDate('tanggal', '>=', $dari);
+        } elseif ($sampai) {
+            $debitQuery->whereDate('tanggal', '<=', $sampai);
+            $kreditQuery->whereDate('tanggal', '<=', $sampai);
+        }
+
+        $totalPendapatan = (float) $debitQuery->sum('nominal');
+        $totalBeban = (float) $kreditQuery->sum('nominal');
+
+        // Rincian per Kategori Pendapatan
+        $debitGroup = (clone $debitQuery)
+            ->selectRaw('kategori, SUM(nominal) as total, COUNT(*) as jumlah_transaksi')
+            ->groupBy('kategori')
+            ->orderByDesc('total')
+            ->get()
+            ->map(function ($item) use ($totalPendapatan) {
+                $item->persentase = $totalPendapatan > 0 ? round(($item->total / $totalPendapatan) * 100, 1) : 0;
+                return $item;
+            });
+
+        // Rincian per Kategori Beban
+        $kreditGroup = (clone $kreditQuery)
+            ->selectRaw('kategori, SUM(nominal) as total, COUNT(*) as jumlah_transaksi')
+            ->groupBy('kategori')
+            ->orderByDesc('total')
+            ->get()
+            ->map(function ($item) use ($totalBeban) {
+                $item->persentase = $totalBeban > 0 ? round(($item->total / $totalBeban) * 100, 1) : 0;
+                return $item;
+            });
+
+        $surplusDefisit = $totalPendapatan - $totalBeban;
+        $isSurplus = $surplusDefisit >= 0;
+        $marginSurplusDefisit = $totalPendapatan > 0 ? round(($surplusDefisit / $totalPendapatan) * 100, 1) : 0;
+
+        // Ambil Data Pengaturan untuk Kop
+        $pengaturans = Pengaturan::pluck('nilai', 'kunci')->toArray();
+        $logo = null;
+        if (! empty($pengaturans['logo']) && file_exists(storage_path('app/public/' . $pengaturans['logo']))) {
+            $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(storage_path('app/public/' . $pengaturans['logo'])));
+        } elseif (file_exists(public_path('images/logo.png'))) {
+            $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/logo.png')));
+        }
+
+        return [
+            'filterTipe' => $filterTipe,
+            'filterBulan' => $filterBulan,
+            'filterTahun' => $filterTahun,
+            'dari' => $dari,
+            'sampai' => $sampai,
+            'labelPeriode' => $labelPeriode,
+            'tanggalAkhirRiil' => $tglAkhirTeks,
+            'bulanTersedia' => $bulanTersedia,
+            'tahunTersedia' => $tahunTersedia,
+            'pendapatans' => $debitGroup,
+            'bebans' => $kreditGroup,
+            'totalPendapatan' => $totalPendapatan,
+            'totalBeban' => $totalBeban,
+            'surplusDefisit' => $surplusDefisit,
+            'isSurplus' => $isSurplus,
+            'marginSurplusDefisit' => $marginSurplusDefisit,
+            'pengaturan' => $pengaturans,
+            'pengaturans' => $pengaturans,
+            'logo' => $logo,
+            'isHtmlPrint' => false,
+        ];
+    }
 }

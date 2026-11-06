@@ -723,4 +723,123 @@ class BendaharaTest extends TestCase
         $this->assertStringContainsString('BARIS 1: 2 TTD DI ATAS', $html);
         $this->assertStringContainsString('BARIS 2: 1 TTD DI BAWAH TENGAH', $html);
     }
+
+    public function test_user_bisa_membuka_halaman_laba_rugi(): void
+    {
+        $response = $this->actingAs($this->user)->get(route('admin.bendahara.laba-rugi'));
+        $response->assertStatus(200);
+        $response->assertSee('Laporan Laba Rugi');
+        $response->assertSee('Total Pendapatan (Debit)');
+        $response->assertSee('Total Beban (Kredit)');
+    }
+
+    public function test_laba_rugi_menghitung_pendapatan_beban_dan_surplus_defisit_dengan_benar(): void
+    {
+        // 1. Catat 2 Pendapatan
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202610-0001',
+            'tanggal' => '2026-10-05',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq & Shodaqoh',
+            'nominal' => 2000000,
+            'keterangan' => 'Infaq',
+            'user_id' => $this->user->id,
+        ]);
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202610-0002',
+            'tanggal' => '2026-10-10',
+            'jenis' => 'debit',
+            'kategori' => 'Donasi & Bantuan',
+            'nominal' => 1000000,
+            'keterangan' => 'Donasi',
+            'user_id' => $this->user->id,
+        ]);
+
+        // 2. Catat 1 Beban
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKK-202610-0001',
+            'tanggal' => '2026-10-12',
+            'jenis' => 'kredit',
+            'kategori' => 'Operasional',
+            'nominal' => 500000,
+            'keterangan' => 'Listrik',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.bendahara.laba-rugi', [
+            'filter_tipe' => 'bulan',
+            'filter_bulan' => '2026-10',
+        ]));
+
+        $response->assertStatus(200);
+        $response->assertSee('3.000.000'); // Total Pendapatan
+        $response->assertSee('500.000');   // Total Beban
+        $response->assertSee('2.500.000'); // Surplus Kas
+        $response->assertSee('SURPLUS KAS OPERASIONAL');
+    }
+
+    public function test_bisa_mencetak_laporan_laba_rugi_pdf(): void
+    {
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202610-0001',
+            'tanggal' => '2026-10-05',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq & Shodaqoh',
+            'nominal' => 1000000,
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.bendahara.laba-rugi.cetak', [
+            'filter_tipe' => 'bulan',
+            'filter_bulan' => '2026-10',
+        ]));
+
+        $response->assertStatus(200);
+        $this->assertEquals('application/pdf', $response->headers->get('Content-Type'));
+    }
+
+    public function test_cetak_laba_rugi_pdf_memuat_3_tanda_tangan_resmi(): void
+    {
+        $html = view('bendahara.laba_rugi_pdf', [
+            'filterTipe' => 'bulan',
+            'filterBulan' => '2026-10',
+            'filterTahun' => '2026',
+            'dari' => '2026-10-01',
+            'sampai' => '2026-10-31',
+            'labelPeriode' => 'Oktober 2026',
+            'tanggalAkhirRiil' => '31 Oktober 2026',
+            'bulanTersedia' => collect([]),
+            'tahunTersedia' => collect([]),
+            'pendapatans' => collect([
+                (object) ['kategori' => 'Infaq & Shodaqoh', 'total' => 2000000, 'jumlah_transaksi' => 2, 'persentase' => 100],
+            ]),
+            'bebans' => collect([
+                (object) ['kategori' => 'Operasional', 'total' => 500000, 'jumlah_transaksi' => 1, 'persentase' => 100],
+            ]),
+            'totalPendapatan' => 2000000,
+            'totalBeban' => 500000,
+            'surplusDefisit' => 1500000,
+            'isSurplus' => true,
+            'marginSurplusDefisit' => 75.0,
+            'pengaturan' => [],
+            'pengaturans' => [],
+            'logo' => null,
+            'isHtmlPrint' => true,
+        ])->render();
+
+        $this->assertStringContainsString('LAPORAN LABA RUGI', $html);
+        $this->assertStringContainsString('Infaq &amp; Shodaqoh', $html);
+        $this->assertStringContainsString('Operasional', $html);
+        $this->assertStringContainsString('1.500.000', $html);
+
+        // 3 Tanda Tangan: 2 di atas, 1 di bawah tengah
+        $this->assertStringContainsString('Danil Ali Sabila', $html);
+        $this->assertStringContainsString('Ketua Umum AFPA', $html);
+
+        $this->assertStringContainsString('Azwil Yoga Pratama', $html);
+        $this->assertStringContainsString('Bendahara AFPA', $html);
+
+        $this->assertStringContainsString('Ust Imam Qusyairi', $html);
+        $this->assertStringContainsString('Bendahara Pusat PPAF', $html);
+    }
 }
