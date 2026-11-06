@@ -100,6 +100,38 @@ class SuratUksController extends Controller
     }
 
     /**
+     * Endpoint Real-Time Stats untuk Kartu Surat Terdaftar, Kas Masuk, dan Sisa Stok.
+     */
+    public function stats(): JsonResponse
+    {
+        $totalTercetak = SuratUks::count();
+        $totalCetakPulang = SuratUks::pulang()->count();
+        $totalCetakSakit = SuratUks::sakit()->count();
+
+        $jumlahTerjual = SuratUks::whereIn('status', ['terjual', 'kembali'])->count();
+        $totalKasMasuk = $jumlahTerjual * 5000;
+        $kasMasukPulang = SuratUks::pulang()->whereIn('status', ['terjual', 'kembali'])->count() * 5000;
+        $kasMasukSakit = SuratUks::sakit()->whereIn('status', ['terjual', 'kembali'])->count() * 5000;
+
+        $totalSisaStok = SuratUks::tersedia()->count();
+        $stokPulang = SuratUks::pulang()->tersedia()->count();
+        $stokSakit = SuratUks::sakit()->tersedia()->count();
+
+        return response()->json([
+            'total_tercetak' => $totalTercetak,
+            'total_cetak_pulang' => $totalCetakPulang,
+            'total_cetak_sakit' => $totalCetakSakit,
+            'jumlah_terjual' => $jumlahTerjual,
+            'total_kas_masuk' => $totalKasMasuk,
+            'kas_masuk_pulang' => $kasMasukPulang,
+            'kas_masuk_sakit' => $kasMasukSakit,
+            'total_sisa_stok' => $totalSisaStok,
+            'stok_pulang' => $stokPulang,
+            'stok_sakit' => $stokSakit,
+        ]);
+    }
+
+    /**
      * Cetak / Buat Blangko Baru secara Masal (Batch)
      */
     /**

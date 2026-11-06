@@ -18,33 +18,33 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full lg:w-auto">
+            <div class="grid grid-cols-2 sm:grid-cols-4 lg:flex lg:items-center gap-2 w-full lg:w-auto">
                 <button type="button"
                         onclick="openModalGenerate()"
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95 text-center">
+                        class="h-10 px-3 sm:px-4 bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95 inline-flex items-center justify-center gap-1.5 whitespace-nowrap">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
-                    <span>+ Upload / Buat Surat</span>
+                    <span>+ Upload Surat</span>
                 </button>
                 <button type="button"
                         onclick="openModalCatatKode()"
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95 text-center">
+                        class="h-10 px-3 sm:px-4 bg-amber-600 hover:bg-amber-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95 inline-flex items-center justify-center gap-1.5 whitespace-nowrap">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
                     <span>Catat Terjual</span>
                 </button>
                 <a href="{{ route('admin.surat-uks.cetak-batch', ['status' => 'tersedia']) }}"
                    target="_blank"
-                   class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95 text-center">
+                   class="h-10 px-3 sm:px-4 bg-slate-800 hover:bg-slate-900 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95 inline-flex items-center justify-center gap-1.5 whitespace-nowrap">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-                    <span>Cetak PDF Stok</span>
+                    <span>Cetak PDF</span>
                 </a>
-                <form action="{{ route('admin.surat-uks.sync-kas') }}" method="POST" class="w-full sm:w-auto inline"
+                <form action="{{ route('admin.surat-uks.sync-kas') }}" method="POST" class="w-full inline-block"
                       data-konfirmasi="Sinkronkan seluruh akumulasi kas bulanan UKS ke Buku Kas Bendahara sekarang?"
                       data-judul="Konfirmasi Sinkronisasi Kas"
                       data-tombol="Ya, Sinkronkan">
                     @csrf
                     <button type="submit"
                             title="Sinkronkan akumulasi kas bulanan ke Bendahara"
-                            class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-bold rounded-xl border border-slate-300 transition active:scale-95 text-center">
+                            class="w-full h-10 px-3 sm:px-4 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-bold rounded-xl border border-slate-300 shadow-2xs transition active:scale-95 inline-flex items-center justify-center gap-1.5 whitespace-nowrap">
                         <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                         <span>Sinkron Kas</span>
                     </button>
@@ -52,67 +52,76 @@
             </div>
         </div>
 
-        <!-- 3 KARTU LAPORAN UTAMA -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- 1. Laporan Surat Terdaftar -->
-            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">1. Surat Terdaftar</span>
-                    <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    </span>
-                </div>
-                <div class="mt-3">
-                    <div class="flex items-baseline gap-2">
-                        <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums">{{ number_format($totalTercetak) }}</h3>
-                        <span class="text-xs text-slate-500 font-medium">lembar total</span>
-                    </div>
-                    <div class="mt-2.5 pt-2.5 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
-                        <span class="text-slate-600 truncate">Pulang: <strong class="text-emerald-700">{{ number_format($totalCetakPulang) }}</strong></span>
-                        <span class="text-slate-600 truncate text-right">Sakit: <strong class="text-blue-700">{{ number_format($totalCetakSakit) }}</strong></span>
-                    </div>
-                </div>
+        <!-- 3 KARTU LAPORAN UTAMA REAL-TIME -->
+        <div>
+            <div class="flex items-center justify-between mb-2.5">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Statistik UKS Real-Time</span>
+                <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/90 rounded-full px-2.5 py-0.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Live Otomatis</span>
+                </span>
             </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- 1. Laporan Surat Terdaftar -->
+                <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">1. Surat Terdaftar</span>
+                        <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </span>
+                    </div>
+                    <div class="mt-3">
+                        <div class="flex items-baseline gap-2">
+                            <h3 id="stat-total-tercetak" class="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums transition-transform">{{ number_format($totalTercetak) }}</h3>
+                            <span class="text-xs text-slate-500 font-medium">lembar total</span>
+                        </div>
+                        <div class="mt-2.5 pt-2.5 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+                            <span class="text-slate-600 truncate">Pulang: <strong id="stat-cetak-pulang" class="text-emerald-700 tabular-nums">{{ number_format($totalCetakPulang) }}</strong></span>
+                            <span class="text-slate-600 truncate text-right">Sakit: <strong id="stat-cetak-sakit" class="text-blue-700 tabular-nums">{{ number_format($totalCetakSakit) }}</strong></span>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- 2. Laporan Kas Masuk (Otomatis Masuk Bendahara) -->
-            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-emerald-300 shadow-xs flex flex-col justify-between relative overflow-hidden bg-gradient-to-br from-white to-emerald-50/30">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <span class="text-xs font-bold text-emerald-800 uppercase tracking-wider">2. Kas Masuk (Rp 5.000)</span>
-                        <span class="block text-[10px] text-emerald-600 font-medium">Sinkron ke Buku Kas Bendahara</span>
+                <!-- 2. Laporan Kas Masuk (Otomatis Masuk Bendahara) -->
+                <div class="bg-white rounded-2xl p-4 sm:p-5 border border-emerald-300 shadow-xs flex flex-col justify-between relative overflow-hidden bg-gradient-to-br from-white to-emerald-50/30">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-800 uppercase tracking-wider">2. Kas Masuk (Rp 5.000)</span>
+                            <span class="block text-[10px] text-emerald-600 font-medium">Sinkron ke Buku Kas Bendahara</span>
+                        </div>
+                        <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </span>
                     </div>
-                    <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </span>
+                    <div class="mt-3">
+                        <div class="flex items-baseline gap-2">
+                            <h3 id="stat-total-kas" class="text-2xl sm:text-3xl font-black text-emerald-700 tabular-nums transition-transform">Rp {{ number_format($totalKasMasuk, 0, ',', '.') }}</h3>
+                            <span id="stat-jumlah-terjual" class="text-xs text-emerald-600 font-semibold tabular-nums">({{ number_format($jumlahTerjual) }} lbr)</span>
+                        </div>
+                        <div class="mt-2.5 pt-2.5 border-t border-emerald-100 grid grid-cols-2 gap-2 text-[11px]">
+                            <span class="text-slate-600 truncate">SIP: <strong id="stat-kas-pulang" class="text-emerald-700 tabular-nums">Rp {{ number_format($kasMasukPulang, 0, ',', '.') }}</strong></span>
+                            <span class="text-slate-600 truncate text-right">SIS: <strong id="stat-kas-sakit" class="text-blue-700 tabular-nums">Rp {{ number_format($kasMasukSakit, 0, ',', '.') }}</strong></span>
+                        </div>
+                    </div>
                 </div>
-                <div class="mt-3">
-                    <div class="flex items-baseline gap-2">
-                        <h3 class="text-2xl sm:text-3xl font-black text-emerald-700 tabular-nums">Rp {{ number_format($totalKasMasuk, 0, ',', '.') }}</h3>
-                        <span class="text-xs text-emerald-600 font-semibold">({{ number_format($jumlahTerjual) }} lbr)</span>
-                    </div>
-                    <div class="mt-2.5 pt-2.5 border-t border-emerald-100 grid grid-cols-2 gap-2 text-[11px]">
-                        <span class="text-slate-600 truncate">SIP: <strong class="text-emerald-700">Rp {{ number_format($kasMasukPulang, 0, ',', '.') }}</strong></span>
-                        <span class="text-slate-600 truncate text-right">SIS: <strong class="text-blue-700">Rp {{ number_format($kasMasukSakit, 0, ',', '.') }}</strong></span>
-                    </div>
-                </div>
-            </div>
 
-            <!-- 3. Laporan Sisa Stok Blangko -->
-            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">3. Sisa Stok Tersedia</span>
-                    <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-xs">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                    </span>
-                </div>
-                <div class="mt-3">
-                    <div class="flex items-baseline gap-2">
-                        <h3 class="text-2xl sm:text-3xl font-black text-amber-600 tabular-nums">{{ number_format($totalSisaStok) }}</h3>
-                        <span class="text-xs text-slate-500 font-medium">lembar tersedia</span>
+                <!-- 3. Laporan Sisa Stok Blangko -->
+                <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">3. Sisa Stok Tersedia</span>
+                        <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-xs">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                        </span>
                     </div>
-                    <div class="mt-2.5 pt-2.5 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
-                        <span class="text-slate-600 truncate">Pulang: <strong class="text-emerald-700">{{ number_format($stokPulang) }}</strong></span>
-                        <span class="text-slate-600 truncate text-right">Sakit: <strong class="text-blue-700">{{ number_format($stokSakit) }}</strong></span>
+                    <div class="mt-3">
+                        <div class="flex items-baseline gap-2">
+                            <h3 id="stat-total-sisa-stok" class="text-2xl sm:text-3xl font-black text-amber-600 tabular-nums transition-transform">{{ number_format($totalSisaStok) }}</h3>
+                            <span class="text-xs text-slate-500 font-medium">lembar tersedia</span>
+                        </div>
+                        <div class="mt-2.5 pt-2.5 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+                            <span class="text-slate-600 truncate">Pulang: <strong id="stat-stok-pulang" class="text-emerald-700 tabular-nums">{{ number_format($stokPulang) }}</strong></span>
+                            <span class="text-slate-600 truncate text-right">Sakit: <strong id="stat-stok-sakit" class="text-blue-700 tabular-nums">{{ number_format($stokSakit) }}</strong></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -124,19 +133,19 @@
                 <!-- Filter Tab Status -->
                 <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
                     <a href="{{ route('admin.surat-uks.index') }}"
-                       class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap {{ !request('status') && !request('jenis') ? 'bg-emerald-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                       class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap {{ !request('status') && !request('jenis') ? 'bg-emerald-700 text-white shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
                         Semua Dokumen
                     </a>
                     <a href="{{ route('admin.surat-uks.index', ['status' => 'tersedia']) }}"
-                       class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request('status') === 'tersedia' ? 'bg-amber-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
-                        Stok Tersedia ({{ $totalSisaStok }})
+                       class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request('status') === 'tersedia' ? 'bg-amber-600 text-white shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                        <span id="stat-tab-stok-tersedia">Stok Tersedia ({{ $totalSisaStok }})</span>
                     </a>
                     <a href="{{ route('admin.surat-uks.index', ['status' => 'terjual']) }}"
-                       class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request('status') === 'terjual' ? 'bg-emerald-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                       class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request('status') === 'terjual' ? 'bg-emerald-700 text-white shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
                         Terjual / Terpakai
                     </a>
                     <a href="{{ route('admin.surat-uks.index', ['status' => 'kembali']) }}"
-                       class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request('status') === 'kembali' ? 'bg-purple-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                       class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request('status') === 'kembali' ? 'bg-purple-700 text-white shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
                         Telah Kembali
                     </a>
                     <a href="{{ route('admin.surat-uks.index', ['jenis' => 'pulang']) }}"
@@ -271,7 +280,8 @@
                                             <!-- Tombol Catat Terjual: Membuka modal dengan Kode otomatis terisi -->
                                             <button type="button"
                                                     onclick="openModalCatatKode('{{ $item->kode_verifikasi }}')"
-                                                    class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-[11px] shadow-2xs transition active:scale-95 flex items-center gap-1">
+                                                    class="h-8 px-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-lg font-bold text-[11px] shadow-2xs transition active:scale-95 inline-flex items-center gap-1 whitespace-nowrap">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
                                                 <span>Catat Terjual</span>
                                             </button>
                                         @elseif ($item->status === 'terjual')
@@ -282,8 +292,9 @@
                                                   data-tombol="Ya, Sudah Kembali">
                                                 @csrf
                                                 <button type="submit"
-                                                        class="px-2.5 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-bold text-[11px] shadow-2xs transition active:scale-95">
-                                                    Tandai Kembali
+                                                        class="h-8 px-2.5 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white rounded-lg font-bold text-[11px] shadow-2xs transition active:scale-95 inline-flex items-center gap-1 whitespace-nowrap">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                                                    <span>Tandai Kembali</span>
                                                 </button>
                                             </form>
                                         @endif
@@ -292,14 +303,14 @@
                                         <a href="{{ route('admin.surat-uks.cetak', $item) }}"
                                            target="_blank"
                                            title="Cetak PDF Fisik (70mm x 297mm)"
-                                           class="p-1.5 text-slate-600 hover:text-emerald-700 hover:bg-slate-100 rounded-lg transition">
+                                           class="w-8 h-8 text-slate-700 hover:text-emerald-700 bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 rounded-lg transition shadow-2xs inline-flex items-center justify-center active:scale-95">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
                                         </a>
 
                                         <!-- Unduh Word -->
                                         <a href="{{ route('admin.surat-uks.word', $item) }}"
                                            title="Unduh File Word (.doc)"
-                                           class="p-1.5 text-slate-600 hover:text-blue-700 hover:bg-slate-100 rounded-lg transition">
+                                           class="w-8 h-8 text-slate-700 hover:text-blue-700 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-lg transition shadow-2xs inline-flex items-center justify-center active:scale-95">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                                         </a>
 
@@ -314,7 +325,7 @@
                                             @method('DELETE')
                                             <button type="submit"
                                                     title="Hapus Surat"
-                                                    class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-slate-100 rounded-lg transition">
+                                                    class="w-8 h-8 text-slate-400 hover:text-rose-600 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-200 rounded-lg transition shadow-2xs inline-flex items-center justify-center active:scale-95">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                             </button>
                                         </form>
@@ -420,7 +431,8 @@
                             @if ($item->status === 'tersedia')
                                 <button type="button"
                                         onclick="openModalCatatKode('{{ $item->kode_verifikasi }}')"
-                                        class="w-full py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-xs transition flex items-center justify-center gap-1.5">
+                                        class="w-full h-10 px-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl font-bold text-xs shadow-xs transition active:scale-95 flex items-center justify-center gap-1.5 whitespace-nowrap">
+                                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                                     <span>Catat Terjual</span>
                                 </button>
                             @elseif ($item->status === 'terjual')
@@ -430,29 +442,29 @@
                                       data-tombol="Ya, Sudah Kembali">
                                     @csrf
                                     <button type="submit"
-                                            class="w-full py-2 px-3 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white rounded-xl font-bold text-xs shadow-xs transition flex items-center justify-center gap-1.5">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                                            class="w-full h-10 px-3 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white rounded-xl font-bold text-xs shadow-xs transition active:scale-95 flex items-center justify-center gap-1.5 whitespace-nowrap">
+                                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
                                         <span>Tandai Kembali</span>
                                     </button>
                                 </form>
                             @else
-                                <span class="inline-block text-xs font-semibold text-slate-400 italic">
+                                <div class="w-full h-10 px-3 bg-slate-100 rounded-xl flex items-center justify-center text-xs font-semibold text-slate-400 italic">
                                     Sudah Kembali
-                                </span>
+                                </div>
                             @endif
                         </div>
 
                         <!-- Ikon Cetak PDF, Word, Hapus -->
-                        <div class="flex items-center gap-1 shrink-0">
+                        <div class="flex items-center gap-1.5 shrink-0">
                             <a href="{{ route('admin.surat-uks.cetak', $item) }}"
                                target="_blank"
                                title="Cetak PDF Fisik"
-                               class="p-2 text-slate-700 hover:text-emerald-700 bg-slate-100 hover:bg-emerald-50 rounded-xl transition flex items-center justify-center">
+                               class="w-10 h-10 text-slate-700 hover:text-emerald-700 bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 rounded-xl transition shadow-2xs flex items-center justify-center active:scale-95">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
                             </a>
                             <a href="{{ route('admin.surat-uks.word', $item) }}"
                                title="Unduh File Word"
-                               class="p-2 text-slate-700 hover:text-blue-700 bg-slate-100 hover:bg-blue-50 rounded-xl transition flex items-center justify-center">
+                               class="w-10 h-10 text-slate-700 hover:text-blue-700 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-xl transition shadow-2xs flex items-center justify-center active:scale-95">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                             </a>
                             <form action="{{ route('admin.surat-uks.destroy', $item) }}"
@@ -465,7 +477,7 @@
                                 @method('DELETE')
                                 <button type="submit"
                                         title="Hapus Surat"
-                                        class="p-2 text-slate-400 hover:text-rose-600 bg-slate-100 hover:bg-rose-50 rounded-xl transition flex items-center justify-center">
+                                        class="w-10 h-10 text-slate-400 hover:text-rose-600 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-200 rounded-xl transition shadow-2xs flex items-center justify-center active:scale-95">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                 </button>
                             </form>
@@ -766,6 +778,72 @@
                     }, 300);
                 });
             }
+
+            // Real-Time Auto-Update Stats Polling (Setiap 4 Detik & Saat Tab Aktif)
+            const STATS_URL = '{{ route('admin.surat-uks.stats') }}';
+            let isPollingActive = true;
+
+            function formatRupiah(num) {
+                return 'Rp ' + new Intl.NumberFormat('id-ID').format(num);
+            }
+            function formatNumber(num) {
+                return new Intl.NumberFormat('id-ID').format(num);
+            }
+
+            function updateElementIfChanged(id, newText) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const currentText = el.textContent.trim();
+                const targetText = String(newText).trim();
+                if (currentText !== targetText) {
+                    el.textContent = targetText;
+                    el.classList.add('transition-all', 'duration-300', 'text-emerald-500', 'scale-105');
+                    setTimeout(() => {
+                        el.classList.remove('text-emerald-500', 'scale-105');
+                    }, 800);
+                }
+            }
+
+            async function fetchRealtimeStats() {
+                if (!isPollingActive || document.hidden) return;
+                try {
+                    const res = await fetch(STATS_URL, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    if (!res.ok) return;
+                    const data = await res.json();
+
+                    // 1. Surat Terdaftar
+                    updateElementIfChanged('stat-total-tercetak', formatNumber(data.total_tercetak));
+                    updateElementIfChanged('stat-cetak-pulang', formatNumber(data.total_cetak_pulang));
+                    updateElementIfChanged('stat-cetak-sakit', formatNumber(data.total_cetak_sakit));
+
+                    // 2. Kas Masuk
+                    updateElementIfChanged('stat-total-kas', formatRupiah(data.total_kas_masuk));
+                    updateElementIfChanged('stat-jumlah-terjual', '(' + formatNumber(data.jumlah_terjual) + ' lbr)');
+                    updateElementIfChanged('stat-kas-pulang', formatRupiah(data.kas_masuk_pulang));
+                    updateElementIfChanged('stat-kas-sakit', formatRupiah(data.kas_masuk_sakit));
+
+                    // 3. Sisa Stok
+                    updateElementIfChanged('stat-total-sisa-stok', formatNumber(data.total_sisa_stok));
+                    updateElementIfChanged('stat-stok-pulang', formatNumber(data.stok_pulang));
+                    updateElementIfChanged('stat-stok-sakit', formatNumber(data.stok_sakit));
+                    updateElementIfChanged('stat-tab-stok-tersedia', 'Stok Tersedia (' + formatNumber(data.total_sisa_stok) + ')');
+                } catch (err) {
+                    // Ignore silent network failure
+                }
+            }
+
+            // Jalankan polling berkala setiap 4 detik
+            setInterval(fetchRealtimeStats, 4000);
+
+            // Fetch instan saat tab browser dibuka kembali
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) fetchRealtimeStats();
+            });
         });
 
         function openModalGenerate() {

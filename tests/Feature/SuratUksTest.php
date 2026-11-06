@@ -515,5 +515,49 @@ class SuratUksTest extends TestCase
                 'asrama' => 'Kamar 01',
             ]);
     }
+
+    public function test_secretary_can_get_realtime_stats_json(): void
+    {
+        SuratUks::create([
+            'nomor_surat' => 'ST01',
+            'kode_verifikasi' => 'ST01',
+            'jenis' => 'pulang',
+            'tanggal_cetak' => Carbon::today(),
+            'status' => 'tersedia',
+        ]);
+
+        SuratUks::create([
+            'nomor_surat' => 'ST02',
+            'kode_verifikasi' => 'ST02',
+            'jenis' => 'sakit',
+            'tanggal_cetak' => Carbon::today(),
+            'status' => 'terjual',
+            'harga' => 5000,
+        ]);
+
+        $response = $this->actingAs($this->user)->getJson('/admin/surat-uks/stats');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'total_tercetak',
+                'total_cetak_pulang',
+                'total_cetak_sakit',
+                'jumlah_terjual',
+                'total_kas_masuk',
+                'kas_masuk_pulang',
+                'kas_masuk_sakit',
+                'total_sisa_stok',
+                'stok_pulang',
+                'stok_sakit',
+            ]);
+
+        $this->assertEquals(2, $response->json('total_tercetak'));
+        $this->assertEquals(1, $response->json('total_cetak_pulang'));
+        $this->assertEquals(1, $response->json('total_cetak_sakit'));
+        $this->assertEquals(1, $response->json('jumlah_terjual'));
+        $this->assertEquals(5000, $response->json('total_kas_masuk'));
+        $this->assertEquals(1, $response->json('total_sisa_stok'));
+    }
 }
+
 
