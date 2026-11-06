@@ -842,4 +842,127 @@ class BendaharaTest extends TestCase
         $this->assertStringContainsString('Ust Imam Qusyairi', $html);
         $this->assertStringContainsString('Bendahara Pusat PPAF', $html);
     }
+
+    public function test_user_bisa_membuka_halaman_neraca(): void
+    {
+        $response = $this->actingAs($this->user)->get(route('admin.bendahara.neraca'));
+        $response->assertStatus(200);
+        $response->assertSee('Laporan Neraca');
+        $response->assertSee('SISI AKTIVA (ASET)');
+        $response->assertSee('SISI PASIVA');
+        $response->assertSee('SEIMBANG (BALANCE)');
+    }
+
+    public function test_neraca_menghitung_aset_kewajiban_ekuitas_dan_selalu_balance(): void
+    {
+        // Pemasukan 5.000.000
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202610-0001',
+            'tanggal' => '2026-10-05',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq',
+            'nominal' => 5000000,
+            'user_id' => $this->user->id,
+        ]);
+
+        // Pengeluaran 1.200.000
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKK-202610-0001',
+            'tanggal' => '2026-10-15',
+            'jenis' => 'kredit',
+            'kategori' => 'Operasional',
+            'nominal' => 1200000,
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.bendahara.neraca', [
+            'filter_tipe' => 'bulan',
+            'filter_bulan' => '2026-10',
+        ]));
+
+        $response->assertStatus(200);
+        // Sisa Kas Riil = 3.800.000
+        $response->assertSee('3.800.000');
+        $totalAset = $response->viewData('totalAset');
+        $totalPasiva = $response->viewData('totalPasiva');
+        $isBalance = $response->viewData('isBalance');
+
+        $this->assertEquals(3800000, $totalAset);
+        $this->assertEquals(3800000, $totalPasiva);
+        $this->assertTrue($isBalance);
+    }
+
+    public function test_bisa_mencetak_laporan_neraca_pdf(): void
+    {
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202610-0001',
+            'tanggal' => '2026-10-05',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq',
+            'nominal' => 1000000,
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.bendahara.neraca.cetak', [
+            'filter_tipe' => 'bulan',
+            'filter_bulan' => '2026-10',
+        ]));
+
+        $response->assertStatus(200);
+        $this->assertEquals('application/pdf', $response->headers->get('Content-Type'));
+    }
+
+    public function test_cetak_neraca_pdf_memuat_3_tanda_tangan_resmi(): void
+    {
+        $html = view('bendahara.neraca_pdf', [
+            'filterTipe' => 'bulan',
+            'filterBulan' => '2026-10',
+            'filterTahun' => '2026',
+            'dari' => '2026-10-01',
+            'sampai' => '2026-10-31',
+            'labelPeriode' => 'Per 31 Oktober 2026',
+            'tanggalAkhirRiil' => '31 Oktober 2026',
+            'bulanTersedia' => collect([]),
+            'tahunTersedia' => collect([]),
+            'saldoAwal' => 0,
+            'totalDebitPeriode' => 5000000,
+            'totalKreditPeriode' => 1000000,
+            'surplusDefisitPeriode' => 4000000,
+            'saldoAkhirKas' => 4000000,
+            'asetLancar' => [
+                ['nama' => 'Kas Tunai Pesantren (Buku Kas Umum)', 'nominal' => 4000000],
+            ],
+            'totalAsetLancar' => 4000000,
+            'asetTetap' => [],
+            'totalAsetTetap' => 0,
+            'totalAset' => 4000000,
+            'kewajiban' => [],
+            'totalKewajiban' => 0,
+            'ekuitas' => [
+                ['nama' => 'Surplus Kas Periode Berjalan', 'nominal' => 4000000],
+            ],
+            'totalEkuitas' => 4000000,
+            'totalPasiva' => 4000000,
+            'isBalance' => true,
+            'pengaturan' => [],
+            'pengaturans' => [],
+            'logo' => null,
+            'isHtmlPrint' => true,
+        ])->render();
+
+        $this->assertStringContainsString('LAPORAN NERACA', $html);
+        $this->assertStringContainsString('Kas Tunai Pesantren', $html);
+        $this->assertStringContainsString('4.000.000', $html);
+        $this->assertStringContainsString('SEIMBANG (BALANCE)', $html);
+
+        // 3 Tanda Tangan: 2 di atas, 1 di bawah tengah
+        $this->assertStringContainsString('Danil Ali Sabila', $html);
+        $this->assertStringContainsString('Ketua Umum AFPA', $html);
+
+        $this->assertStringContainsString('Azwil Yoga Pratama', $html);
+        $this->assertStringContainsString('Bendahara AFPA', $html);
+
+        $this->assertStringContainsString('Ust Imam Qusyairi', $html);
+        $this->assertStringContainsString('Bendahara Pusat PPAF', $html);
+    }
 }

@@ -1004,4 +1004,208 @@ class BendaharaController extends Controller
             'isHtmlPrint' => false,
         ];
     }
+
+    /**
+     * Halaman Laporan Neraca (Posisi Keuangan Kas & Saldo Dana)
+     */
+    public function neraca(Request $request)
+    {
+        $data = $this->prepareNeracaData($request);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+                'url_cetak' => route('admin.bendahara.neraca.cetak', $request->query()),
+            ]);
+        }
+
+        return view('bendahara.neraca', $data);
+    }
+
+    /**
+     * Cetak Laporan Neraca (PDF)
+     */
+    public function cetakNeraca(Request $request)
+    {
+        try {
+            $viewData = $this->prepareNeracaData($request);
+
+            if (class_exists(\DOMImplementation::class)) {
+                $pdf = Pdf::loadView('bendahara.neraca_pdf', $viewData)
+                    ->setPaper('a4', 'portrait');
+
+                $filename = 'laporan-neraca-' . date('Ymd-His') . '.pdf';
+
+                return $pdf->stream($filename);
+            }
+
+            $viewData['isHtmlPrint'] = true;
+            return response()->view('bendahara.neraca_pdf', $viewData);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Fallback cetak web neraca: ' . $e->getMessage());
+
+            if (isset($viewData)) {
+                $viewData['isHtmlPrint'] = true;
+                return response()->view('bendahara.neraca_pdf', $viewData);
+            }
+
+            return redirect()->route('admin.bendahara.neraca')
+                ->with('error', 'Gagal memproses cetak neraca: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Siapkan Data Laporan Neraca (Posisi Kas & Saldo Dana - Opsi 1)
+     */
+    protected function prepareNeracaData(Request $request): array
+    {
+        $bulanTersedia = $this->getBulanTersedia();
+        $tahunTersedia = $this->getTahunTersedia();
+
+        $filterTipe = $request->input('filter_tipe', 'bulan');
+        $filterBulan = $request->input('filter_bulan');
+        $filterTahun = $request->input('filter_tahun');
+        $dari = $request->input('dari_tanggal');
+        $sampai = $request->input('sampai_tanggal');
+
+        $labelPeriode = 'Semua Periode';
+        $tglAkhirTeks = Carbon::now()->locale('id')->translatedFormat('d F Y');
+
+        if ($filterTipe === 'bulan') {
+            if (!$filterBulan) {
+                $filterBulan = $bulanTersedia->first()['ym'] ?? Carbon::now()->format('Y-m');
+            }
+            $dtBulan = Carbon::createFromFormat('Y-m', $filterBulan);
+            $dari = $dtBulan->copy()->startOfMonth()->toDateString();
+            $sampai = $dtBulan->copy()->endOfMonth()->toDateString();
+            $labelPeriode = 'Per ' . $dtBulan->copy()->endOfMonth()->locale('id')->translatedFormat('d F Y');
+            $tglAkhirTeks = $dtBulan->copy()->endOfMonth()->locale('id')->translatedFormat('d F Y');
+        } elseif ($filterTipe === 'tahun') {
+            if (!$filterTahun) {
+                $filterTahun = $tahunTersedia->first()['tahun'] ?? Carbon::now()->format('Y');
+            }
+            $dtTahun = Carbon::createFromFormat('Y', $filterTahun);
+            $dari = $dtTahun->copy()->startOfYear()->toDateString();
+            $sampai = $dtTahun->copy()->endOfYear()->toDateString();
+            $labelPeriode = 'Per 31 Desember ' . $filterTahun;
+            $tglAkhirTeks = $dtTahun->copy()->endOfYear()->locale('id')->translatedFormat('d F Y');
+        } elseif ($filterTipe === 'kustom' && ($dari || $sampai)) {
+            $tglAkhir = $sampai ? Carbon::parse($sampai)->locale('id')->translatedFormat('d F Y') : Carbon::now()->locale('id')->translatedFormat('d F Y');
+            $labelPeriode = "Per {$tglAkhir}";
+            $tglAkhirTeks = $tglAkhir;
+        } else {
+            $filterTipe = 'semua';
+            $dari = null;
+            $sampai = null;
+            $labelPeriode = 'Per ' . Carbon::now()->locale('id')->translatedFormat('d F Y');
+        }
+
+        // 1. Saldo Awal Kas (sebelum $dari jika ada batasan awal)
+        $saldoAwal = 0.0;
+        if ($dari) {
+            $debitSebelumnya = (float) KasTransaksi::debit()->whereDate('tanggal', '<', $dari)->sum('nominal');
+            $kreditSebelumnya = (float) KasTransaksi::kredit()->whereDate('tanggal', '<', $dari)->sum('nominal');
+            $saldoAwal = $debitSebelumnya - $kreditSebelumnya;
+        }
+
+        // 2. Mutasi Periode Berjalan
+        $mutasiDebitQuery = KasTransaksi::debit();
+        $mutasiKreditQuery = KasTransaksi::kredit();
+
+        if ($dari && $sampai) {
+            $mutasiDebitQuery->whereBetween('tanggal', [$dari, $sampai]);
+            $mutasiKreditQuery->whereBetween('tanggal', [$dari, $sampai]);
+        } elseif ($dari) {
+            $mutasiDebitQuery->whereDate('tanggal', '>=', $dari);
+            $mutasiKreditQuery->whereDate('tanggal', '>=', $dari);
+        } elseif ($sampai) {
+            $mutasiDebitQuery->whereDate('tanggal', '<=', $sampai);
+            $mutasiKreditQuery->whereDate('tanggal', '<=', $sampai);
+        }
+
+        $totalDebitPeriode = (float) $mutasiDebitQuery->sum('nominal');
+        $totalKreditPeriode = (float) $mutasiKreditQuery->sum('nominal');
+        $surplusDefisitPeriode = $totalDebitPeriode - $totalKreditPeriode;
+
+        // 3. Saldo Akhir Kas Kumulatif (Hingga Tanggal Cut-off $sampai)
+        $totalDebitSampai = (float) KasTransaksi::debit()->when($sampai, fn($q) => $q->whereDate('tanggal', '<=', $sampai))->sum('nominal');
+        $totalKreditSampai = (float) KasTransaksi::kredit()->when($sampai, fn($q) => $q->whereDate('tanggal', '<=', $sampai))->sum('nominal');
+        $saldoAkhirKas = $totalDebitSampai - $totalKreditSampai;
+
+        // 4. Struktur Aset (Aktiva)
+        $asetLancar = [
+            ['nama' => 'Kas Tunai Pesantren (Buku Kas Umum)', 'nominal' => $saldoAkhirKas],
+            ['nama' => 'Rekening Bank Pesantren', 'nominal' => 0.0],
+            ['nama' => 'Piutang & Uang Muka Operasional', 'nominal' => 0.0],
+        ];
+        $totalAsetLancar = $saldoAkhirKas;
+
+        $asetTetap = [
+            ['nama' => 'Inventaris & Peralatan Kantor Sekretariat', 'nominal' => 0.0],
+            ['nama' => 'Gedung & Bangunan Pondok Putra', 'nominal' => 0.0],
+        ];
+        $totalAsetTetap = 0.0;
+
+        $totalAset = $totalAsetLancar + $totalAsetTetap;
+
+        // 5. Struktur Kewajiban (Liabilitas)
+        $kewajiban = [
+            ['nama' => 'Utang Operasional Jangka Pendek', 'nominal' => 0.0],
+            ['nama' => 'Utang Titipan / Kewajiban Lainnya', 'nominal' => 0.0],
+        ];
+        $totalKewajiban = 0.0;
+
+        // 6. Struktur Ekuitas Dana (Saldo Dana Pesantren)
+        $ekuitas = [
+            ['nama' => 'Saldo Awal Dana Kas (Sebelum Periode)', 'nominal' => $saldoAwal],
+            ['nama' => ($surplusDefisitPeriode >= 0 ? 'Surplus Kas' : 'Defisit Kas') . ' Periode Berjalan', 'nominal' => $surplusDefisitPeriode],
+        ];
+        $totalEkuitas = $saldoAwal + $surplusDefisitPeriode;
+
+        // 7. Total Pasiva & Keseimbangan (Balance)
+        $totalPasiva = $totalKewajiban + $totalEkuitas;
+        $isBalance = abs($totalAset - $totalPasiva) < 0.01;
+
+        // Data Kop Pengaturan
+        $pengaturans = Pengaturan::pluck('nilai', 'kunci')->toArray();
+        $logo = null;
+        if (! empty($pengaturans['logo']) && file_exists(storage_path('app/public/' . $pengaturans['logo']))) {
+            $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(storage_path('app/public/' . $pengaturans['logo'])));
+        } elseif (file_exists(public_path('images/logo.png'))) {
+            $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/logo.png')));
+        }
+
+        return [
+            'filterTipe' => $filterTipe,
+            'filterBulan' => $filterBulan,
+            'filterTahun' => $filterTahun,
+            'dari' => $dari,
+            'sampai' => $sampai,
+            'labelPeriode' => $labelPeriode,
+            'tanggalAkhirRiil' => $tglAkhirTeks,
+            'bulanTersedia' => $bulanTersedia,
+            'tahunTersedia' => $tahunTersedia,
+            'saldoAwal' => $saldoAwal,
+            'totalDebitPeriode' => $totalDebitPeriode,
+            'totalKreditPeriode' => $totalKreditPeriode,
+            'surplusDefisitPeriode' => $surplusDefisitPeriode,
+            'saldoAkhirKas' => $saldoAkhirKas,
+            'asetLancar' => $asetLancar,
+            'totalAsetLancar' => $totalAsetLancar,
+            'asetTetap' => $asetTetap,
+            'totalAsetTetap' => $totalAsetTetap,
+            'totalAset' => $totalAset,
+            'kewajiban' => $kewajiban,
+            'totalKewajiban' => $totalKewajiban,
+            'ekuitas' => $ekuitas,
+            'totalEkuitas' => $totalEkuitas,
+            'totalPasiva' => $totalPasiva,
+            'isBalance' => $isBalance,
+            'pengaturan' => $pengaturans,
+            'pengaturans' => $pengaturans,
+            'logo' => $logo,
+            'isHtmlPrint' => false,
+        ];
+    }
 }

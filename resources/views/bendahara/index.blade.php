@@ -84,7 +84,7 @@
         </div>
     </div>
 
-    <!-- TAB NAVIGASI SUB-MODUL BENDAHARA -->
+    <!-- TAB NAVIGASI SUB-MODUL BENDAHARA (3 TAB LENGKAP) -->
     <div class="flex items-center gap-2 border-b border-slate-200">
         <a href="{{ route('admin.bendahara.index') }}"
            class="px-4 py-3 text-xs sm:text-sm font-bold text-emerald-800 border-b-2 border-emerald-600 flex items-center gap-2">
@@ -97,6 +97,12 @@
            class="px-4 py-3 text-xs sm:text-sm font-bold text-slate-600 hover:text-emerald-700 border-b-2 border-transparent hover:border-slate-300 transition flex items-center gap-2">
             <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
             <span>Laporan Laba Rugi</span>
+        </a>
+
+        <a href="{{ route('admin.bendahara.neraca') }}"
+           class="px-4 py-3 text-xs sm:text-sm font-bold text-slate-600 hover:text-emerald-700 border-b-2 border-transparent hover:border-slate-300 transition flex items-center gap-2">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+            <span>Laporan Neraca</span>
         </a>
     </div>
 

@@ -129,6 +129,8 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     // Modul Bendahara / Buku Kas Umum (Debit & Kredit) & Laporan Keuangan
     Route::get('/bendahara/laba-rugi', [BendaharaController::class, 'labaRugi'])->name('admin.bendahara.laba-rugi');
     Route::get('/bendahara/laba-rugi/cetak', [BendaharaController::class, 'cetakLabaRugi'])->name('admin.bendahara.laba-rugi.cetak');
+    Route::get('/bendahara/neraca', [BendaharaController::class, 'neraca'])->name('admin.bendahara.neraca');
+    Route::get('/bendahara/neraca/cetak', [BendaharaController::class, 'cetakNeraca'])->name('admin.bendahara.neraca.cetak');
     Route::get('/bendahara/cetak', [BendaharaController::class, 'cetak'])->name('admin.bendahara.cetak');
     Route::get('/bendahara/export-word', [BendaharaController::class, 'exportWord'])->name('admin.bendahara.word');
     Route::post('/bendahara/tutup-buku', [BendaharaController::class, 'tutupBuku'])->name('admin.bendahara.tutup-buku');
