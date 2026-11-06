@@ -614,4 +614,51 @@ class SuratUksController extends Controller
             'Cache-Control' => 'max-age=0',
         ]);
     }
+
+    /**
+     * Unduh berkas Excel (CSV dengan UTF-8 BOM) yang berisi Kode Surat & Jenis Surat
+     * dengan status TERSEDIA saja (stok blangko), dengan opsi filter jenis pulang atau sakit.
+     */
+    public function exportExcel(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        $jenis = $request->query('jenis');
+
+        $query = SuratUks::where('status', 'tersedia')->latest('id');
+
+        if ($jenis && in_array($jenis, ['pulang', 'sakit'])) {
+            $query->where('jenis', $jenis);
+            $suffix = $jenis === 'pulang' ? 'sip-pulang' : 'sis-sakit';
+        } else {
+            $suffix = 'semua';
+        }
+
+        $filename = "stok-kode-surat-uks-{$suffix}-" . date('Ymd-His') . ".csv";
+
+        return response()->streamDownload(function () use ($query) {
+            $output = fopen('php://output', 'w');
+            // Tambahkan UTF-8 BOM agar langsung rapi saat dibuka di Microsoft Excel
+            fputs($output, "\xEF\xBB\xBF");
+            fputcsv($output, [
+                'No',
+                'Kode Surat',
+                'Jenis Surat',
+            ]);
+
+            $no = 1;
+            $query->chunk(200, function ($surats) use ($output, &$no) {
+                foreach ($surats as $surat) {
+                    fputcsv($output, [
+                        $no++,
+                        $surat->kode_verifikasi,
+                        $surat->jenis_label,
+                    ]);
+                }
+            });
+
+            fclose($output);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
+    }
 }

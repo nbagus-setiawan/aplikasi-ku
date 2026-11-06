@@ -558,6 +558,86 @@ class SuratUksTest extends TestCase
         $this->assertEquals(5000, $response->json('total_kas_masuk'));
         $this->assertEquals(1, $response->json('total_sisa_stok'));
     }
+
+    public function test_secretary_can_export_available_letters_to_excel_csv(): void
+    {
+        // 1. Surat tersedia pulang & sakit
+        SuratUks::create([
+            'nomor_surat' => 'EX01',
+            'kode_verifikasi' => 'EX01',
+            'jenis' => 'pulang',
+            'tanggal_cetak' => Carbon::today(),
+            'status' => 'tersedia',
+        ]);
+
+        SuratUks::create([
+            'nomor_surat' => 'EX02',
+            'kode_verifikasi' => 'EX02',
+            'jenis' => 'sakit',
+            'tanggal_cetak' => Carbon::today(),
+            'status' => 'tersedia',
+        ]);
+
+        // 2. Surat terjual (TIDAK BOLEH IKUT TERUNDUH)
+        SuratUks::create([
+            'nomor_surat' => 'EX99',
+            'kode_verifikasi' => 'EX99',
+            'jenis' => 'pulang',
+            'tanggal_cetak' => Carbon::today(),
+            'nama_santri' => 'Fulan',
+            'status' => 'terjual',
+        ]);
+
+        $response = $this->actingAs($this->user)->get('/admin/surat-uks/export-excel');
+
+        $response->assertStatus(200);
+        $this->assertStringContainsString('text/csv', $response->headers->get('Content-Type'));
+
+        $content = $response->streamedContent();
+
+        // Header CSV
+        $this->assertStringContainsString('Kode Surat', $content);
+        $this->assertStringContainsString('Jenis Surat', $content);
+
+        // Hanya memuat stok tersedia
+        $this->assertStringContainsString('EX01', $content);
+        $this->assertStringContainsString('EX02', $content);
+        $this->assertStringNotContainsString('EX99', $content);
+    }
+
+    public function test_secretary_can_filter_export_excel_by_jenis(): void
+    {
+        SuratUks::create([
+            'nomor_surat' => 'PL01',
+            'kode_verifikasi' => 'PL01',
+            'jenis' => 'pulang',
+            'tanggal_cetak' => Carbon::today(),
+            'status' => 'tersedia',
+        ]);
+
+        SuratUks::create([
+            'nomor_surat' => 'SK01',
+            'kode_verifikasi' => 'SK01',
+            'jenis' => 'sakit',
+            'tanggal_cetak' => Carbon::today(),
+            'status' => 'tersedia',
+        ]);
+
+        // Filter pulang
+        $resPulang = $this->actingAs($this->user)->get('/admin/surat-uks/export-excel?jenis=pulang');
+        $resPulang->assertStatus(200);
+        $contentPulang = $resPulang->streamedContent();
+        $this->assertStringContainsString('PL01', $contentPulang);
+        $this->assertStringNotContainsString('SK01', $contentPulang);
+
+        // Filter sakit
+        $resSakit = $this->actingAs($this->user)->get('/admin/surat-uks/export-excel?jenis=sakit');
+        $resSakit->assertStatus(200);
+        $contentSakit = $resSakit->streamedContent();
+        $this->assertStringContainsString('SK01', $contentSakit);
+        $this->assertStringNotContainsString('PL01', $contentSakit);
+    }
 }
+
 
 

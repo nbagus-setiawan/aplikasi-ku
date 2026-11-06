@@ -31,12 +31,53 @@
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
                     <span>Catat Terjual</span>
                 </button>
-                <a href="{{ route('admin.surat-uks.cetak-batch', ['status' => 'tersedia']) }}"
-                   target="_blank"
-                   class="h-10 px-3 sm:px-4 bg-slate-800 hover:bg-slate-900 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95 inline-flex items-center justify-center gap-1.5 whitespace-nowrap">
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-                    <span>Cetak PDF</span>
-                </a>
+                <!-- Tombol Unduh Excel dengan Filter Jenis (Hanya Stok Tersedia) -->
+                <div class="relative w-full inline-block" x-data="{ open: false }">
+                    <button type="button"
+                            @click="open = !open"
+                            @click.outside="open = false"
+                            class="w-full h-10 px-3 sm:px-4 bg-emerald-800 hover:bg-emerald-900 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95 inline-flex items-center justify-center gap-1.5 whitespace-nowrap">
+                        <svg class="w-4 h-4 shrink-0 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span>Unduh Excel</span>
+                        <svg class="w-3.5 h-3.5 shrink-0 opacity-70 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+                    <div x-show="open"
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+                         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
+                         class="absolute right-0 sm:left-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-40 text-xs divide-y divide-slate-100"
+                         style="display: none;">
+                        <div class="px-3 py-1.5 bg-slate-50 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                            Pilih Stok Tersedia:
+                        </div>
+                        <div class="py-1">
+                            <a href="{{ route('admin.surat-uks.export-excel') }}"
+                               @click="open = false"
+                               class="flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 font-semibold transition">
+                                <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                                <span>Semua Stok Tersedia</span>
+                            </a>
+                            <a href="{{ route('admin.surat-uks.export-excel', ['jenis' => 'pulang']) }}"
+                               @click="open = false"
+                               class="flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 font-semibold transition">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                <span>Stok Surat Pulang (SIP)</span>
+                            </a>
+                            <a href="{{ route('admin.surat-uks.export-excel', ['jenis' => 'sakit']) }}"
+                               @click="open = false"
+                               class="flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 font-semibold transition">
+                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                <span>Stok Surat Sakit (SIS)</span>
+                            </a>
+                        </div>
+                        <div class="px-3 py-1.5 text-[10.5px] text-slate-400 bg-slate-50">
+                            *Hanya mengekspor Kode & Jenis status Tersedia.
+                        </div>
+                    </div>
+                </div>
                 <form action="{{ route('admin.surat-uks.sync-kas') }}" method="POST" class="w-full inline-block"
                       data-konfirmasi="Sinkronkan seluruh akumulasi kas bulanan UKS ke Buku Kas Bendahara sekarang?"
                       data-judul="Konfirmasi Sinkronisasi Kas"
@@ -299,21 +340,6 @@
                                             </form>
                                         @endif
 
-                                        <!-- Cetak PDF -->
-                                        <a href="{{ route('admin.surat-uks.cetak', $item) }}"
-                                           target="_blank"
-                                           title="Cetak PDF Fisik (70mm x 297mm)"
-                                           class="w-8 h-8 text-slate-700 hover:text-emerald-700 bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 rounded-lg transition shadow-2xs inline-flex items-center justify-center active:scale-95">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-                                        </a>
-
-                                        <!-- Unduh Word -->
-                                        <a href="{{ route('admin.surat-uks.word', $item) }}"
-                                           title="Unduh File Word (.doc)"
-                                           class="w-8 h-8 text-slate-700 hover:text-blue-700 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-lg transition shadow-2xs inline-flex items-center justify-center active:scale-95">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                                        </a>
-
                                         <!-- Hapus -->
                                         <form action="{{ route('admin.surat-uks.destroy', $item) }}"
                                               method="POST"
@@ -454,19 +480,8 @@
                             @endif
                         </div>
 
-                        <!-- Ikon Cetak PDF, Word, Hapus -->
-                        <div class="flex items-center gap-1.5 shrink-0">
-                            <a href="{{ route('admin.surat-uks.cetak', $item) }}"
-                               target="_blank"
-                               title="Cetak PDF Fisik"
-                               class="w-10 h-10 text-slate-700 hover:text-emerald-700 bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 rounded-xl transition shadow-2xs flex items-center justify-center active:scale-95">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-                            </a>
-                            <a href="{{ route('admin.surat-uks.word', $item) }}"
-                               title="Unduh File Word"
-                               class="w-10 h-10 text-slate-700 hover:text-blue-700 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-xl transition shadow-2xs flex items-center justify-center active:scale-95">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                            </a>
+                        <!-- Ikon Hapus -->
+                        <div class="flex items-center shrink-0">
                             <form action="{{ route('admin.surat-uks.destroy', $item) }}"
                                   method="POST"
                                   class="inline"

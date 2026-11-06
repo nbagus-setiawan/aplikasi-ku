@@ -99,6 +99,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
 
     // Modul Surat UKS (Izin Pulang & Izin Sakit)
     Route::get('/surat-uks/stats', [SuratUksController::class, 'stats'])->name('admin.surat-uks.stats');
+    Route::get('/surat-uks/export-excel', [SuratUksController::class, 'exportExcel'])->name('admin.surat-uks.export-excel');
     Route::get('/surat-uks/cek-kode', [SuratUksController::class, 'cekKode'])->name('admin.surat-uks.cek-kode');
     Route::post('/surat-uks/generate-blangko', [SuratUksController::class, 'generateBlangko'])->name('admin.surat-uks.generate-blangko');
     Route::post('/surat-uks/sync-kas', [SuratUksController::class, 'syncSemuaKas'])->name('admin.surat-uks.sync-kas');
