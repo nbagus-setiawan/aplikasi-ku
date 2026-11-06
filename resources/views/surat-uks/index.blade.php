@@ -23,7 +23,7 @@
                         onclick="openModalGenerate()"
                         class="h-10 px-3 sm:px-4 bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95 inline-flex items-center justify-center gap-1.5 whitespace-nowrap">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
-                    <span>+ Upload Surat</span>
+                    <span>Upload Surat</span>
                 </button>
                 <button type="button"
                         onclick="openModalCatatKode()"
@@ -778,13 +778,13 @@
                             .then(res => res.json())
                             .then(data => {
                                 if (!data.found) {
-                                    statusKode.innerHTML = '<span class="px-2.5 py-1 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 font-bold text-xs flex items-center gap-1">✕ Kode Tidak Terdaftar</span>';
+                                    statusKode.innerHTML = '<span class="px-2.5 py-1 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 font-bold text-xs flex items-center gap-1.5"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg><span>' + data.pesan + '</span></span>';
                                 } else if (data.status === 'tersedia') {
-                                    statusKode.innerHTML = '<span class="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-800 font-bold text-xs flex items-center gap-1">✓ ' + data.pesan + '</span>';
+                                    statusKode.innerHTML = '<span class="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-800 font-bold text-xs flex items-center gap-1.5"><svg class="w-3.5 h-3.5 shrink-0 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span>' + data.pesan + '</span></span>';
                                 } else if (data.status === 'terjual') {
-                                    statusKode.innerHTML = '<span class="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-300 text-amber-800 font-bold text-xs flex items-center gap-1">' + data.pesan + '</span>';
+                                    statusKode.innerHTML = '<span class="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-300 text-amber-800 font-bold text-xs flex items-center gap-1.5"><svg class="w-3.5 h-3.5 shrink-0 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><span>' + data.pesan + '</span></span>';
                                 } else {
-                                    statusKode.innerHTML = '<span class="px-2.5 py-1 rounded-lg bg-purple-50 border border-purple-200 text-purple-700 font-bold text-xs flex items-center gap-1">' + data.pesan + '</span>';
+                                    statusKode.innerHTML = '<span class="px-2.5 py-1 rounded-lg bg-purple-50 border border-purple-200 text-purple-700 font-bold text-xs flex items-center gap-1.5"><svg class="w-3.5 h-3.5 shrink-0 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>' + data.pesan + '</span></span>';
                                 }
                             })
                             .catch(() => {

@@ -235,7 +235,7 @@ class SuratUksController extends Controller
             return response()->json([
                 'found' => false,
                 'status' => 'tidak_ada',
-                'pesan' => '✕ Kode Tidak Terdaftar',
+                'pesan' => 'Kode Tidak Terdaftar',
             ]);
         }
 
@@ -257,8 +257,8 @@ class SuratUksController extends Controller
             'is_pdf' => $surat->is_pdf,
             'is_word' => $surat->is_word,
             'pesan' => $isTersedia 
-                ? "✓ Kode Terdaftar ({$label})" 
-                : ($surat->status === 'terjual' ? "⚠️ Kode Sudah Terjual a.n {$surat->nama_santri}" : "⚠️ Kode Berstatus Telah Kembali"),
+                ? "Kode Terdaftar ({$label})" 
+                : ($surat->status === 'terjual' ? "Kode Sudah Terjual a.n {$surat->nama_santri}" : "Kode Berstatus Telah Kembali"),
         ]);
     }
 
