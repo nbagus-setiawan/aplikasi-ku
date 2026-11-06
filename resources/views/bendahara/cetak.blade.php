@@ -9,10 +9,10 @@
             margin: 1cm 1.2cm 1cm 1.2cm;
         }
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 9pt;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 9.5pt;
             color: #0f172a;
-            line-height: 1.3;
+            line-height: 1.35;
             margin: 0;
             padding: 0;
         }

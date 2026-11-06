@@ -221,6 +221,10 @@
                     <td style="width: 70px; text-align: center; vertical-align: middle;">
                         <img src="{{ $logo }}" style="width: 60px; height: auto;" alt="Logo">
                     </td>
+                @elseif(file_exists(public_path('images/logo.png')))
+                    <td style="width: 70px; text-align: center; vertical-align: middle;">
+                        <img src="{{ public_path('images/logo.png') }}" style="width: 60px; height: auto;" alt="Logo">
+                    </td>
                 @endif
                 <td style="text-align: center; padding: 0 10px;">
                     <div style="font-size: 11pt; font-weight: bold; letter-spacing: 0.5px; margin: 0; text-transform: uppercase; color: #0f172a;">
@@ -236,9 +240,7 @@
                         Telepon: 6282118702717 &nbsp;&nbsp;&nbsp; E-mail: pengurusalfalahputra@gmail.com
                     </div>
                 </td>
-                @if(!empty($logo))
-                    <td style="width: 70px;"></td>
-                @endif
+                <td style="width: 70px;"></td>
             </tr>
         </table>
     </div>
