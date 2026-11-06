@@ -221,12 +221,22 @@ class SuratUksController extends Controller
     }
 
     /**
+     * Helper untuk memastikan parameter selalu berupa instance SuratUks
+     */
+    protected function resolveSuratUks(mixed $suratUk): SuratUks
+    {
+        return $suratUk instanceof SuratUks ? $suratUk : SuratUks::findOrFail($suratUk);
+    }
+
+    /**
      * Catat Surat Terjual / Terpakai berdasarkan ID surat.
      * Cukup input: nama_santri, kelas, asrama.
      * Otomatis mengupdate kas masuk bulanan di modul Bendahara.
      */
-    public function catatTerjual(Request $request, SuratUks $suratUk): RedirectResponse
+    public function catatTerjual(Request $request, mixed $suratUk): RedirectResponse
     {
+        $suratUk = $this->resolveSuratUks($suratUk);
+
         if ($suratUk->status !== 'tersedia') {
             return back()->with('error', "Surat nomor {$suratUk->nomor_surat} sudah berstatus {$suratUk->status}.");
         }
@@ -299,8 +309,10 @@ class SuratUksController extends Controller
     /**
      * Tandai santri telah kembali ke pondok.
      */
-    public function tandaiKembali(Request $request, SuratUks $suratUk): RedirectResponse
+    public function tandaiKembali(Request $request, mixed $suratUk): RedirectResponse
     {
+        $suratUk = $this->resolveSuratUks($suratUk);
+
         $suratUk->update([
             'status' => 'kembali',
             'tanggal_kembali_riil' => Carbon::now(),
@@ -312,8 +324,9 @@ class SuratUksController extends Controller
     /**
      * Hapus surat UKS (soft delete) beserta update akumulasi kas bulanan jika ada.
      */
-    public function destroy(SuratUks $suratUk): RedirectResponse
+    public function destroy(mixed $suratUk): RedirectResponse
     {
+        $suratUk = $this->resolveSuratUks($suratUk);
         $nomor = $suratUk->nomor_surat;
 
         DB::transaction(function () use ($suratUk) {
@@ -340,61 +353,77 @@ class SuratUksController extends Controller
     /**
      * Cetak surat UKS tunggal ke PDF.
      */
-    public function cetakPdf(Request $request, SuratUks $suratUk): Response
+    public function cetakPdf(Request $request, mixed $suratUk): Response|RedirectResponse
     {
-        $pengaturans = Pengaturan::getAllKeyValues();
-        $suratList = collect([$suratUk]);
+        try {
+            $suratUk = $this->resolveSuratUks($suratUk);
+            $pengaturans = Pengaturan::getAllKeyValues();
+            $suratList = collect([$suratUk]);
 
-        $pdf = Pdf::loadView('surat-uks.pdf', compact('suratList', 'pengaturans'))
-            ->setPaper('a4', 'portrait');
+            $pdf = Pdf::loadView('surat-uks.pdf', compact('suratList', 'pengaturans'))
+                ->setPaper('a4', 'portrait');
 
-        $slug = Str::slug($suratUk->nomor_surat);
-        $filename = "surat-uks-{$suratUk->kode_verifikasi}-{$slug}.pdf";
+            $slug = Str::slug($suratUk->nomor_surat);
+            $filename = "surat-uks-{$suratUk->kode_verifikasi}-{$slug}.pdf";
 
-        return $pdf->stream($filename);
+            return $pdf->stream($filename);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal cetak PDF Surat UKS: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return back()->with('error', 'Gagal memproses cetak PDF: ' . $e->getMessage());
+        }
     }
 
     /**
      * Cetak surat UKS massal (batch) ke satu berkas PDF.
      */
-    public function cetakBatch(Request $request): Response
+    public function cetakBatch(Request $request): Response|RedirectResponse
     {
-        $pengaturans = Pengaturan::getAllKeyValues();
-        $query = SuratUks::latest('id');
+        try {
+            $pengaturans = Pengaturan::getAllKeyValues();
+            $query = SuratUks::latest('id');
 
-        if ($ids = $request->input('ids')) {
-            $idArray = is_array($ids) ? $ids : explode(',', $ids);
-            $query->whereIn('id', $idArray);
-        } else {
-            if ($jenis = $request->input('jenis')) {
-                $query->where('jenis', $jenis);
+            if ($ids = $request->input('ids')) {
+                $idArray = is_array($ids) ? $ids : explode(',', $ids);
+                $query->whereIn('id', $idArray);
+            } else {
+                if ($jenis = $request->input('jenis')) {
+                    $query->where('jenis', $jenis);
+                }
+                if ($status = $request->input('status', 'tersedia')) {
+                    $query->where('status', $status);
+                }
+                $limit = min(50, max(1, (int) $request->input('limit', 20)));
+                $query->limit($limit);
             }
-            if ($status = $request->input('status', 'tersedia')) {
-                $query->where('status', $status);
+
+            $suratList = $query->get();
+
+            if ($suratList->isEmpty()) {
+                return back()->with('error', 'Tidak ada surat blangko yang ditemukan untuk dicetak.');
             }
-            $limit = min(50, max(1, (int) $request->input('limit', 20)));
-            $query->limit($limit);
+
+            $pdf = Pdf::loadView('surat-uks.pdf', compact('suratList', 'pengaturans'))
+                ->setPaper('a4', 'portrait');
+
+            $filename = "blangko-surat-uks-batch-" . date('Ymd-His') . ".pdf";
+
+            return $pdf->stream($filename);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal cetak batch PDF Surat UKS: ' . $e->getMessage());
+
+            return back()->with('error', 'Gagal memproses cetak batch PDF: ' . $e->getMessage());
         }
-
-        $suratList = $query->get();
-
-        if ($suratList->isEmpty()) {
-            abort(404, 'Tidak ada surat blangko yang ditemukan untuk dicetak.');
-        }
-
-        $pdf = Pdf::loadView('surat-uks.pdf', compact('suratList', 'pengaturans'))
-            ->setPaper('a4', 'portrait');
-
-        $filename = "blangko-surat-uks-batch-" . date('Ymd-His') . ".pdf";
-
-        return $pdf->stream($filename);
     }
 
     /**
      * Ekspor dokumen Word blangko surat.
      */
-    public function exportWord(Request $request, SuratUks $suratUk): Response
+    public function exportWord(Request $request, mixed $suratUk): Response
     {
+        $suratUk = $this->resolveSuratUks($suratUk);
         $pengaturans = Pengaturan::getAllKeyValues();
         $content = view('surat-uks.word', compact('suratUk', 'pengaturans'))->render();
 

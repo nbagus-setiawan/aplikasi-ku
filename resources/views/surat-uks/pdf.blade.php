@@ -3,10 +3,18 @@
     $alamatLembaga = $pengaturans['alamat_lembaga'] ?? 'Desa Putak, Kec. Gelumbang, Kab. Muara Enim, Sumatera Selatan 31171';
     $kontakLembaga = $pengaturans['kontak_lembaga'] ?? 'Telp/WA: 0812-3456-7890 | Website: alfalahputra.ponpes.id';
 
-    $logoPath = public_path('images/logo.png');
     $logoBase64 = '';
-    if (file_exists($logoPath)) {
-        $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+    $logoCandidates = [
+        public_path('images/logo-nav.png'),
+        public_path('images/logo.png'),
+        base_path('public/images/logo-nav.png'),
+        base_path('public/images/logo.png'),
+    ];
+    foreach ($logoCandidates as $cand) {
+        if (!empty($cand) && file_exists($cand)) {
+            $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($cand));
+            break;
+        }
     }
 @endphp
 <!DOCTYPE html>

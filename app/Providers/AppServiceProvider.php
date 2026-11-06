@@ -24,5 +24,9 @@ class AppServiceProvider extends ServiceProvider
     {
         // Daftarkan guesser mandiri agar upload berkas tidak error saat php_fileinfo nonaktif di hosting
         MimeTypes::getDefault()->registerGuesser(new ExtensionMimeTypeGuesser());
+
+        // Daftarkan binding rute untuk model SuratUks
+        \Illuminate\Support\Facades\Route::model('suratUk', \App\Models\SuratUks::class);
+        \Illuminate\Support\Facades\Route::model('surat_uk', \App\Models\SuratUks::class);
     }
 }
