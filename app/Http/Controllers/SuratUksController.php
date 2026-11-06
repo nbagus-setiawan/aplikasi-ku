@@ -111,21 +111,36 @@ class SuratUksController extends Controller
         $validated = $request->validate([
             'jenis' => ['required', 'in:pulang,sakit'],
             'tanggal_cetak' => ['nullable', 'date'],
-            'jumlah' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'jumlah' => ['nullable', 'integer', 'min:0', 'max:100'],
             'berkas_surat' => ['nullable', 'array'],
             'berkas_surat.*' => ['nullable', 'file', 'mimes:pdf,doc,docx,jpg,jpeg,png,webp', 'max:15360'],
         ], [
             'jenis.required' => 'Pilih jenis surat izin (pulang atau sakit).',
+            'jenis.in' => 'Pilihan jenis surat tidak valid.',
+            'jumlah.integer' => 'Jumlah lembar harus berupa angka bulat.',
+            'jumlah.min' => 'Jumlah minimal 0 jika mengunggah berkas, atau minimal 1 jika tanpa berkas.',
+            'jumlah.max' => 'Jumlah lembar maksimal 100.',
+            'berkas_surat.*.file' => 'Berkas surat yang diunggah tidak valid.',
+            'berkas_surat.*.mimes' => 'Format berkas harus PDF, Word (.doc/.docx), atau Gambar (.jpg, .jpeg, .png, .webp).',
+            'berkas_surat.*.max' => 'Ukuran berkas maksimal 15 MB per file.',
         ]);
 
         $jenis = $validated['jenis'];
         $tanggalCetak = !empty($validated['tanggal_cetak']) ? Carbon::parse($validated['tanggal_cetak']) : Carbon::today();
         $files = $request->file('berkas_surat', []);
+        $hasFiles = is_array($files) && count(array_filter($files)) > 0;
+        $jumlah = (int) ($request->input('jumlah', 0));
+
+        if (!$hasFiles && $jumlah <= 0) {
+            return back()->withErrors([
+                'jumlah' => 'Silakan pilih berkas surat untuk diunggah, atau masukkan jumlah minimal 1 lembar jika ingin membuat kode stok tanpa berkas.',
+            ])->withInput();
+        }
 
         $jumlahDibuat = 0;
 
-        DB::transaction(function () use ($jenis, $tanggalCetak, $files, $request, &$jumlahDibuat) {
-            if (!empty($files) && count($files) > 0) {
+        DB::transaction(function () use ($jenis, $tanggalCetak, $files, $hasFiles, $jumlah, &$jumlahDibuat) {
+            if ($hasFiles) {
                 foreach ($files as $file) {
                     if (!$file || !$file->isValid()) continue;
 
@@ -148,7 +163,6 @@ class SuratUksController extends Controller
                     $jumlahDibuat++;
                 }
             } else {
-                $jumlah = max(1, (int) ($request->input('jumlah', 1)));
                 for ($i = 0; $i < $jumlah; $i++) {
                     $kodeVerifikasi = SuratUks::generateKodeVerifikasi();
 

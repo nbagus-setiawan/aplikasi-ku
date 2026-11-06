@@ -437,6 +437,7 @@ class SuratUksTest extends TestCase
 
         $response = $this->actingAs($this->user)->post('/admin/surat-uks/generate-blangko', [
             'jenis' => 'pulang',
+            'jumlah' => 0,
             'berkas_surat' => [$filePdf, $fileJpg, $fileDoc],
         ]);
 
@@ -453,6 +454,16 @@ class SuratUksTest extends TestCase
             $this->assertEquals(4, strlen($surat->kode_verifikasi));
             Storage::disk('public')->assertExists($surat->file_surat);
         }
+    }
+
+    public function test_generate_blangko_fails_if_no_files_and_jumlah_is_zero(): void
+    {
+        $response = $this->actingAs($this->user)->post('/admin/surat-uks/generate-blangko', [
+            'jenis' => 'pulang',
+            'jumlah' => 0,
+        ]);
+
+        $response->assertSessionHasErrors(['jumlah']);
     }
 
     public function test_cek_kode_endpoint_returns_realtime_verification_status(): void
