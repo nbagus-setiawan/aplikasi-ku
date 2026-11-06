@@ -716,12 +716,20 @@ class BendaharaController extends Controller
 
         $pengaturans = Pengaturan::getAllKeyValues();
 
-        // Logo Satuan
+        // Logo Satuan (Prioritaskan Logo Resmi Pesantren Hexagon dari Dokumen Asli)
         $logo = null;
-        if (! empty($pengaturans['logo']) && file_exists(storage_path('app/public/' . $pengaturans['logo']))) {
+        if (file_exists(public_path('images/logo-pesantren.png'))) {
+            $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/logo-pesantren.png')));
+        } elseif (! empty($pengaturans['logo']) && file_exists(storage_path('app/public/' . $pengaturans['logo']))) {
             $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(storage_path('app/public/' . $pengaturans['logo'])));
         } elseif (file_exists(public_path('images/logo.png'))) {
             $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/logo.png')));
+        }
+
+        // Kaligrafi Arab Resmi
+        $kaligrafi = null;
+        if (file_exists(public_path('images/kaligrafi-kop.png'))) {
+            $kaligrafi = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kaligrafi-kop.png')));
         }
 
         // Banner Kop Surat Resmi Khusus Laporan Buku Kas (Sesuai Template Word Resmi)
@@ -757,6 +765,7 @@ class BendaharaController extends Controller
             'pengaturan' => $pengaturans,
             'pengaturans' => $pengaturans,
             'logo' => $logo,
+            'kaligrafi' => $kaligrafi,
             'kopGambar' => $kopGambar,
             'isHtmlPrint' => false,
         ];
@@ -903,7 +912,12 @@ class BendaharaController extends Controller
             if (!$filterBulan) {
                 $filterBulan = $bulanTersedia->first()['ym'] ?? Carbon::now()->format('Y-m');
             }
-            $dtBulan = Carbon::createFromFormat('Y-m', $filterBulan);
+            try {
+                $dtBulan = Carbon::parse($filterBulan . '-01');
+            } catch (\Throwable) {
+                $dtBulan = Carbon::now()->startOfMonth();
+                $filterBulan = $dtBulan->format('Y-m');
+            }
             $dari = $dtBulan->copy()->startOfMonth()->toDateString();
             $sampai = $dtBulan->copy()->endOfMonth()->toDateString();
             $labelPeriode = $dtBulan->locale('id')->translatedFormat('F Y');
@@ -912,7 +926,12 @@ class BendaharaController extends Controller
             if (!$filterTahun) {
                 $filterTahun = $tahunTersedia->first()['tahun'] ?? Carbon::now()->format('Y');
             }
-            $dtTahun = Carbon::createFromFormat('Y', $filterTahun);
+            try {
+                $dtTahun = Carbon::createFromDate((int) $filterTahun, 1, 1);
+            } catch (\Throwable) {
+                $dtTahun = Carbon::now()->startOfYear();
+                $filterTahun = $dtTahun->format('Y');
+            }
             $dari = $dtTahun->copy()->startOfYear()->toDateString();
             $sampai = $dtTahun->copy()->endOfYear()->toDateString();
             $labelPeriode = 'Tahun ' . $filterTahun;
@@ -973,12 +992,22 @@ class BendaharaController extends Controller
         $marginSurplusDefisit = $totalPendapatan > 0 ? round(($surplusDefisit / $totalPendapatan) * 100, 1) : 0;
 
         // Ambil Data Pengaturan untuk Kop
-        $pengaturans = Pengaturan::pluck('nilai', 'kunci')->toArray();
+        $pengaturans = Pengaturan::getAllKeyValues();
+
+        // Logo Satuan (Prioritaskan Logo Resmi Hexagon Pesantren)
         $logo = null;
-        if (! empty($pengaturans['logo']) && file_exists(storage_path('app/public/' . $pengaturans['logo']))) {
+        if (file_exists(public_path('images/logo-pesantren.png'))) {
+            $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/logo-pesantren.png')));
+        } elseif (! empty($pengaturans['logo']) && file_exists(storage_path('app/public/' . $pengaturans['logo']))) {
             $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(storage_path('app/public/' . $pengaturans['logo'])));
         } elseif (file_exists(public_path('images/logo.png'))) {
             $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/logo.png')));
+        }
+
+        // Kaligrafi Arab Resmi
+        $kaligrafi = null;
+        if (file_exists(public_path('images/kaligrafi-kop.png'))) {
+            $kaligrafi = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kaligrafi-kop.png')));
         }
 
         return [
@@ -1001,6 +1030,7 @@ class BendaharaController extends Controller
             'pengaturan' => $pengaturans,
             'pengaturans' => $pengaturans,
             'logo' => $logo,
+            'kaligrafi' => $kaligrafi,
             'isHtmlPrint' => false,
         ];
     }
@@ -1076,7 +1106,12 @@ class BendaharaController extends Controller
             if (!$filterBulan) {
                 $filterBulan = $bulanTersedia->first()['ym'] ?? Carbon::now()->format('Y-m');
             }
-            $dtBulan = Carbon::createFromFormat('Y-m', $filterBulan);
+            try {
+                $dtBulan = Carbon::parse($filterBulan . '-01');
+            } catch (\Throwable) {
+                $dtBulan = Carbon::now()->startOfMonth();
+                $filterBulan = $dtBulan->format('Y-m');
+            }
             $dari = $dtBulan->copy()->startOfMonth()->toDateString();
             $sampai = $dtBulan->copy()->endOfMonth()->toDateString();
             $labelPeriode = 'Per ' . $dtBulan->copy()->endOfMonth()->locale('id')->translatedFormat('d F Y');
@@ -1085,7 +1120,12 @@ class BendaharaController extends Controller
             if (!$filterTahun) {
                 $filterTahun = $tahunTersedia->first()['tahun'] ?? Carbon::now()->format('Y');
             }
-            $dtTahun = Carbon::createFromFormat('Y', $filterTahun);
+            try {
+                $dtTahun = Carbon::createFromDate((int) $filterTahun, 1, 1);
+            } catch (\Throwable) {
+                $dtTahun = Carbon::now()->startOfYear();
+                $filterTahun = $dtTahun->format('Y');
+            }
             $dari = $dtTahun->copy()->startOfYear()->toDateString();
             $sampai = $dtTahun->copy()->endOfYear()->toDateString();
             $labelPeriode = 'Per 31 Desember ' . $filterTahun;
@@ -1168,12 +1208,22 @@ class BendaharaController extends Controller
         $isBalance = abs($totalAset - $totalPasiva) < 0.01;
 
         // Data Kop Pengaturan
-        $pengaturans = Pengaturan::pluck('nilai', 'kunci')->toArray();
+        $pengaturans = Pengaturan::getAllKeyValues();
+
+        // Logo Satuan (Prioritaskan Logo Resmi Hexagon Pesantren)
         $logo = null;
-        if (! empty($pengaturans['logo']) && file_exists(storage_path('app/public/' . $pengaturans['logo']))) {
+        if (file_exists(public_path('images/logo-pesantren.png'))) {
+            $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/logo-pesantren.png')));
+        } elseif (! empty($pengaturans['logo']) && file_exists(storage_path('app/public/' . $pengaturans['logo']))) {
             $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(storage_path('app/public/' . $pengaturans['logo'])));
         } elseif (file_exists(public_path('images/logo.png'))) {
             $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/logo.png')));
+        }
+
+        // Kaligrafi Arab Resmi
+        $kaligrafi = null;
+        if (file_exists(public_path('images/kaligrafi-kop.png'))) {
+            $kaligrafi = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/kaligrafi-kop.png')));
         }
 
         return [
@@ -1205,6 +1255,7 @@ class BendaharaController extends Controller
             'pengaturan' => $pengaturans,
             'pengaturans' => $pengaturans,
             'logo' => $logo,
+            'kaligrafi' => $kaligrafi,
             'isHtmlPrint' => false,
         ];
     }
