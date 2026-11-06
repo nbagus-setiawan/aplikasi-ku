@@ -88,8 +88,8 @@
                         <span class="text-xs text-emerald-600 font-semibold">({{ number_format($jumlahTerjual) }} lbr terjual)</span>
                     </div>
                     <div class="mt-2.5 pt-2.5 border-t border-emerald-100 flex items-center justify-between text-[11px]">
-                        <span class="text-slate-600">Akun Pulang: <strong class="text-emerald-700">Rp {{ number_format($kasMasukPulang, 0, ',', '.') }}</strong></span>
-                        <span class="text-slate-600">Akun Sakit: <strong class="text-blue-700">Rp {{ number_format($kasMasukSakit, 0, ',', '.') }}</strong></span>
+                        <span class="text-slate-600">Pendapatan SIP: <strong class="text-emerald-700">Rp {{ number_format($kasMasukPulang, 0, ',', '.') }}</strong></span>
+                        <span class="text-slate-600">Pendapatan SIS: <strong class="text-blue-700">Rp {{ number_format($kasMasukSakit, 0, ',', '.') }}</strong></span>
                     </div>
                 </div>
             </div>

@@ -17,8 +17,8 @@ class BendaharaController extends Controller
      * Kategori Rekomendasi Akun Kas
      */
     protected array $kategoriDebit = [
-        'Pendapatan Surat Izin Pulang',
-        'Pendapatan Surat Izin Sakit',
+        'Pendapatan SIP',
+        'Pendapatan SIS',
         'Lain-lain (Penerimaan)',
     ];
 

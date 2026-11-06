@@ -98,7 +98,7 @@ class SuratUksTest extends TestCase
         $kas = KasTransaksi::find($surat->kas_transaksi_id);
         $this->assertNotNull($kas);
         $this->assertEquals('debit', $kas->jenis);
-        $this->assertEquals('Pendapatan Surat Izin Pulang', $kas->kategori);
+        $this->assertEquals('Pendapatan SIP', $kas->kategori);
         $this->assertEquals(5000, $kas->nominal);
         $this->assertStringContainsString('1 lbr x Rp 5.000', $kas->keterangan);
     }
@@ -137,8 +137,8 @@ class SuratUksTest extends TestCase
             'tanggal_pembelian' => '2026-10-15',
         ]);
 
-        // Pastikan hanya ada 1 baris transaksi kas di bulan Oktober untuk Pendapatan Surat Izin Pulang
-        $transaksis = KasTransaksi::where('kategori', 'Pendapatan Surat Izin Pulang')
+        // Pastikan hanya ada 1 baris transaksi kas di bulan Oktober untuk Pendapatan SIP
+        $transaksis = KasTransaksi::where('kategori', 'Pendapatan SIP')
             ->whereYear('tanggal', 2026)
             ->whereMonth('tanggal', 10)
             ->get();
@@ -181,10 +181,10 @@ class SuratUksTest extends TestCase
         $this->assertEquals('terjual', $surat->status);
         $this->assertEquals('Ahmad Fulan', $surat->nama_santri);
 
-        // Kas masuk akun Pendapatan Surat Izin Sakit
+        // Kas masuk akun Pendapatan SIS
         $kas = KasTransaksi::find($surat->kas_transaksi_id);
         $this->assertNotNull($kas);
-        $this->assertEquals('Pendapatan Surat Izin Sakit', $kas->kategori);
+        $this->assertEquals('Pendapatan SIS', $kas->kategori);
         $this->assertEquals(5000, $kas->nominal);
         $this->assertStringContainsString('1 lbr x Rp 5.000', $kas->keterangan);
     }
@@ -300,7 +300,7 @@ class SuratUksTest extends TestCase
             'kode_transaksi' => 'BKM-202611-0001',
             'tanggal' => Carbon::today(),
             'jenis' => 'debit',
-            'kategori' => 'Pendapatan Surat Izin Pulang',
+            'kategori' => 'Pendapatan SIP',
             'nominal' => 5000,
             'keterangan' => 'Penjualan 1 lbr',
         ]);

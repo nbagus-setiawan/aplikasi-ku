@@ -136,7 +136,7 @@ class SuratUksController extends Controller
      */
     public static function syncKasBulanan(string $jenis, int $year, int $month): ?KasTransaksi
     {
-        $akunKategori = ($jenis === 'sakit') ? 'Pendapatan Surat Izin Sakit' : 'Pendapatan Surat Izin Pulang';
+        $akunKategori = ($jenis === 'sakit') ? 'Pendapatan SIS' : 'Pendapatan SIP';
         $jenisLabel = ($jenis === 'sakit') ? 'Surat Izin Sakit' : 'Surat Izin Pulang';
 
         $startOfMonth = Carbon::createFromDate($year, $month, 1)->startOfMonth()->toDateString();
