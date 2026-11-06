@@ -344,10 +344,14 @@ class SuratUksController extends Controller
         $suratUk = $this->resolveSuratUks($suratUk);
         $nomor = $suratUk->nomor_surat;
 
-        DB::transaction(function () use ($suratUk) {
+        DB::transaction(function () use ($suratUk, $nomor) {
             $tgl = $suratUk->tanggal_pembelian;
             $jenis = $suratUk->jenis;
             $kasId = $suratUk->kas_transaksi_id;
+
+            // Lepaskan nomor surat dengan suffix -BATAL agar nomor aslinya langsung bebas dipakai ulang
+            $suratUk->nomor_surat = $nomor . '-BATAL-' . $suratUk->id;
+            $suratUk->saveQuietly();
             $suratUk->delete();
 
             if ($tgl) {
@@ -373,7 +377,7 @@ class SuratUksController extends Controller
     }
 
     /**
-     * Cetak surat UKS tunggal ke PDF (atau pratinjau cetak browser jika PHP DOM belum aktif di cPanel).
+     * Cetak surat UKS tunggal ke PDF ukuran A4 dibagi 3 (Lebar: 70mm, Tinggi: 297mm).
      */
     public function cetakPdf(Request $request, mixed $suratUk): Response|RedirectResponse|View
     {
@@ -383,8 +387,9 @@ class SuratUksController extends Controller
             $suratList = collect([$suratUk]);
 
             if (class_exists(\DOMImplementation::class)) {
+                // Ukuran A4 bagi 3: Lebar 70mm (198.43 pt), Tinggi 297mm (841.89 pt)
                 $pdf = Pdf::loadView('surat-uks.pdf', compact('suratList', 'pengaturans'))
-                    ->setPaper('a4', 'portrait');
+                    ->setPaper([0, 0, 198.43, 841.89], 'portrait');
 
                 $slug = Str::slug($suratUk->nomor_surat);
                 $filename = "surat-uks-{$suratUk->kode_verifikasi}-{$slug}.pdf";
@@ -410,7 +415,7 @@ class SuratUksController extends Controller
     }
 
     /**
-     * Cetak surat UKS massal (batch) ke satu berkas PDF (atau pratinjau cetak browser jika PHP DOM belum aktif).
+     * Cetak surat UKS massal (batch) ke satu berkas PDF ukuran 70mm x 297mm.
      */
     public function cetakBatch(Request $request): Response|RedirectResponse|View
     {
@@ -439,8 +444,9 @@ class SuratUksController extends Controller
             }
 
             if (class_exists(\DOMImplementation::class)) {
+                // Ukuran A4 bagi 3: Lebar 70mm (198.43 pt), Tinggi 297mm (841.89 pt)
                 $pdf = Pdf::loadView('surat-uks.pdf', compact('suratList', 'pengaturans'))
-                    ->setPaper('a4', 'portrait');
+                    ->setPaper([0, 0, 198.43, 841.89], 'portrait');
 
                 $filename = "blangko-surat-uks-batch-" . date('Ymd-His') . ".pdf";
 

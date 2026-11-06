@@ -339,4 +339,90 @@ class SuratUksTest extends TestCase
         $this->assertStringContainsString('SURAT KETERANGAN IZIN PULANG', $response->getContent());
         $this->assertStringContainsString('5555', $response->getContent());
     }
+
+    public function test_deleted_surat_uks_number_can_be_reused_immediately(): void
+    {
+        // 1. Buat surat 001
+        $surat1 = SuratUks::create([
+            'nomor_surat' => '001/UKS-SIP/AF-PA/XI/2026',
+            'kode_verifikasi' => '1234',
+            'jenis' => 'pulang',
+            'tanggal_cetak' => Carbon::create(2026, 11, 1),
+            'status' => 'tersedia',
+        ]);
+
+        // 2. Buat surat 002
+        $surat2 = SuratUks::create([
+            'nomor_surat' => '002/UKS-SIP/AF-PA/XI/2026',
+            'kode_verifikasi' => '5678',
+            'jenis' => 'pulang',
+            'tanggal_cetak' => Carbon::create(2026, 11, 1),
+            'status' => 'tersedia',
+        ]);
+
+        // 3. Hapus surat 001
+        $this->actingAs($this->user)->delete("/admin/surat-uks/{$surat1->id}");
+
+        // 4. Generate nomor baru berikutnya, harus mengulang mengambil 001
+        $nomorBerikutnya = app(\App\Services\NomorSuratService::class)->generateNomorSuratUks('pulang', Carbon::create(2026, 11, 1));
+        $this->assertEquals('001/UKS-SIP/AF-PA/XI/2026', $nomorBerikutnya);
+
+        // 5. Bisa simpan surat baru bernomor 001 tanpa error duplicate
+        $suratBaru = SuratUks::create([
+            'nomor_surat' => $nomorBerikutnya,
+            'kode_verifikasi' => '9999',
+            'jenis' => 'pulang',
+            'tanggal_cetak' => Carbon::create(2026, 11, 1),
+            'status' => 'tersedia',
+        ]);
+        $this->assertDatabaseHas('surat_uks', [
+            'id' => $suratBaru->id,
+            'nomor_surat' => '001/UKS-SIP/AF-PA/XI/2026',
+        ]);
+    }
+
+    public function test_pdf_template_has_new_kop_and_exact_signatures_without_satpam(): void
+    {
+        $suratPulang = SuratUks::create([
+            'nomor_surat' => '001/UKS-SIP/AF-PA/XI/2026',
+            'kode_verifikasi' => '7F2B',
+            'jenis' => 'pulang',
+            'tanggal_cetak' => Carbon::today(),
+            'status' => 'tersedia',
+        ]);
+
+        $htmlPulang = view('surat-uks.pdf', [
+            'suratList' => collect([$suratPulang]),
+            'pengaturans' => \App\Models\Pengaturan::getAllKeyValues(),
+            'isHtmlPrint' => true,
+        ])->render();
+
+        $this->assertStringContainsString('YAYASAN PONDOK PESANTREN AL-FALAH', $htmlPulang);
+        $this->assertStringContainsString('PONDOK PUTRA', $htmlPulang);
+        $this->assertStringContainsString('UNIT KESEHATAN SANTRI PUTRA', $htmlPulang);
+        $this->assertStringContainsString('https://ponpesalfalahputak.my.id/verifikasi', $htmlPulang);
+        $this->assertStringContainsString('KH. MURSYIDI', $htmlPulang);
+        $this->assertStringNotContainsString('LEMBAR SANTRI / SATPAM', $htmlPulang);
+        $this->assertStringNotContainsString('Pos Keamanan / Satpam', $htmlPulang);
+        $this->assertStringNotContainsString('Orang Tua / Wali Santri', $htmlPulang);
+        $this->assertStringNotContainsString('Ketentuan: Surat ini wajib diserahkan kepada Pos Keamanan', $htmlPulang);
+
+        $suratSakit = SuratUks::create([
+            'nomor_surat' => '002/UKS-SIS/AF-PA/XI/2026',
+            'kode_verifikasi' => '9K3D',
+            'jenis' => 'sakit',
+            'tanggal_cetak' => Carbon::today(),
+            'status' => 'tersedia',
+        ]);
+
+        $htmlSakit = view('surat-uks.pdf', [
+            'suratList' => collect([$suratSakit]),
+            'pengaturans' => \App\Models\Pengaturan::getAllKeyValues(),
+            'isHtmlPrint' => true,
+        ])->render();
+
+        $this->assertStringContainsString('Sekretaris Pondok Putra', $htmlSakit);
+        $this->assertStringContainsString('Pengurus Kesehatan Putra', $htmlSakit);
+        $this->assertStringNotContainsString('Pos Keamanan / Satpam', $htmlSakit);
+    }
 }

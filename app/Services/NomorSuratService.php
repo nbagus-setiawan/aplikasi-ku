@@ -117,6 +117,7 @@ class NomorSuratService
 
     /**
      * Buat nomor surat izin UKS (pulang/sakit) berikutnya secara atomik per tahun.
+     * Menggunakan nomor urut terkecil yang belum terpakai (mengulang jika nomor sebelumnya dihapus).
      */
     public function generateNomorSuratUks(string $jenis, Carbon|string|null $tanggal = null): string
     {
@@ -125,25 +126,60 @@ class NomorSuratService
         $kategoriKode = ($jenis === 'sakit') ? 'UKS-SIS' : 'UKS-SIP';
 
         return DB::transaction(function () use ($kategoriKode, $date, $tahun) {
+            // Ambil semua nomor urut aktif dari surat UKS pada tahun bersangkutan (abaikan yang dihapus)
+            $usedNumbers = \App\Models\SuratUks::whereYear('tanggal_cetak', $tahun)
+                ->whereNull('deleted_at')
+                ->lockForUpdate()
+                ->pluck('nomor_surat')
+                ->map(function ($nomor) {
+                    if (preg_match('/^(\d+)\//', $nomor, $matches)) {
+                        return (int) $matches[1];
+                    }
+                    return null;
+                })
+                ->filter()
+                ->unique()
+                ->sort()
+                ->values()
+                ->all();
+
+            // Cari nomor urut terkecil yang belum terpakai (mulai dari 1)
+            $urutan = 1;
+            while (in_array($urutan, $usedNumbers, true)) {
+                $urutan++;
+            }
+
+            // Sinkronkan counter
             $counter = NomorSuratCounter::where('tahun', $tahun)
                 ->where('tipe', 'uks')
                 ->lockForUpdate()
                 ->first();
 
+            $maxUrutan = max(array_merge([$urutan], $usedNumbers));
+
             if (! $counter) {
-                $counter = NomorSuratCounter::create([
+                NomorSuratCounter::create([
                     'tahun' => $tahun,
                     'tipe' => 'uks',
-                    'urutan' => 1,
+                    'urutan' => $maxUrutan,
                 ]);
-                $urutan = 1;
             } else {
-                $counter->urutan += 1;
+                $counter->urutan = $maxUrutan;
                 $counter->save();
-                $urutan = $counter->urutan;
             }
 
-            return $this->formatNomorSurat($urutan, $kategoriKode, $date);
+            $nomorBaru = $this->formatNomorSurat($urutan, $kategoriKode, $date);
+
+            // Bersihkan potensi konflik nomor pada baris yang pernah di-soft delete di masa lalu
+            \App\Models\SuratUks::onlyTrashed()
+                ->where('nomor_surat', $nomorBaru)
+                ->get()
+                ->each(function ($trashed) {
+                    $trashed->nomor_surat = $trashed->nomor_surat . '-BATAL-' . $trashed->id;
+                    $trashed->saveQuietly();
+                });
+
+            return $nomorBaru;
         });
     }
 }
