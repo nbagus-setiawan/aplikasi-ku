@@ -177,7 +177,8 @@
                         <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between bg-slate-50">
                             <div>
                                 <h3 class="text-base font-bold text-gray-900 flex items-center gap-2">
-                                    <span>✂️ Potong & Sesuaikan Foto</span>
+                                    <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879a3 3 0 11-4.242-4.242L12 12m0 0L9.121 9.121a3 3 0 10-4.242 4.242L12 12z"/></svg>
+                                    <span>Potong & Sesuaikan Foto</span>
                                 </h3>
                                 <p class="text-xs text-gray-500 mt-0.5">
                                     Geser, perbesar, atau putar gambar agar pas dengan bingkai kartu warta berita.
@@ -393,7 +394,10 @@
                 <label class="flex items-center gap-3 cursor-pointer">
                     <input type="checkbox" name="is_pinned" value="1" {{ old('is_pinned', $pengumuman->is_pinned) ? 'checked' : '' }} class="rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4">
                     <div>
-                        <span class="text-sm font-bold text-gray-800">📌 Sematkan Pengumuman Ini (Pinned)</span>
+                        <span class="text-sm font-bold text-gray-800 inline-flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                            <span>Sematkan Pengumuman Ini (Pinned)</span>
+                        </span>
                         <p class="text-xs text-gray-500">Pengumuman akan selalu tampil di baris teratas daftar.</p>
                     </div>
                 </label>

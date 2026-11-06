@@ -293,7 +293,7 @@
                 <div x-show="progress1 === 100" x-cloak class="bg-gray-50 rounded-xl border border-gray-200 p-4 space-y-3">
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-3">
                         <div>
-                            <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-900">📋 Hasil Pencatatan Otomatis Sistem</span>
+                            <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-900">Hasil Pencatatan Otomatis Sistem</span>
                             <p class="text-[11px] text-gray-500">Terisi otomatis dari dokumen Anda. Jika ada yang kurang tepat, Anda dapat langsung mengoreksinya pada kolom di bawah.</p>
                         </div>
                         <div class="flex items-center gap-2 bg-white border border-emerald-200 px-3 py-1.5 rounded-xl shadow-xs">
@@ -310,8 +310,9 @@
                              :class="detected.is_nomor_lengkap ? 'bg-white border-gray-200' : 'bg-amber-50 border-amber-300'">
                             <div class="flex flex-wrap items-center justify-between gap-1 mb-1.5">
                                 <label class="text-gray-600 font-bold text-[11px] uppercase tracking-wider">Nomor Surat Asal</label>
-                                <span x-show="!detected.is_nomor_lengkap" class="text-[11px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">
-                                    ⚠️ Nomor surat kosong/belum lengkap — Silakan lengkapi nomor surat asal di bawah
+                                <span x-show="!detected.is_nomor_lengkap" class="text-[11px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded inline-flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                    <span>Nomor surat kosong/belum lengkap — Silakan lengkapi nomor surat asal di bawah</span>
                                 </span>
                                 <span x-show="detected.is_nomor_lengkap" class="text-[11px] font-bold text-emerald-700">
                                     ✓ Terdeteksi Otomatis (Dapat dikoreksi jika perlu)
@@ -455,8 +456,11 @@
                        :class="progress2 === 100 ? 'border-emerald-400 bg-emerald-50/40' : 'border-blue-300 hover:border-blue-500 bg-blue-50/30'">
                     <input type="file" name="lampiran_berkas[]" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="hidden" @change="handleFileLampiran($event)">
                     <div class="space-y-1.5">
-                        <div class="text-xs font-bold text-blue-900" x-show="!fileLampiranName">
-                            📎 Klik untuk memilih berkas lampiran (Bisa pilih banyak sekaligus: Word / Gambar / PDF)
+                        <div class="text-xs font-bold text-blue-900 flex items-center justify-center gap-1.5" x-show="!fileLampiranName">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                            </svg>
+                            <span>Klik untuk memilih berkas lampiran (Bisa pilih banyak sekaligus: Word / Gambar / PDF)</span>
                         </div>
                         <div class="text-sm font-extrabold text-emerald-900" x-show="fileLampiranName" x-text="fileLampiranName"></div>
                     </div>
@@ -480,8 +484,11 @@
                     Batal
                 </a>
                 <button type="button" @click="lanjutKonfirmasi()"
-                        class="px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-extrabold shadow-md transition">
-                    ✓ Lanjutkan & Simpan Dokumen Surat Masuk
+                        class="px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-extrabold shadow-md transition flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Lanjutkan & Simpan Dokumen Surat Masuk</span>
                 </button>
             </div>
         </form>
@@ -490,8 +497,10 @@
         <div x-show="showConfirmModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-black/60 flex items-center justify-center p-4">
             <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-gray-100" @click.away="if (!isSubmitting) showConfirmModal = false">
                 <div class="text-center space-y-2">
-                    <div class="w-14 h-14 mx-auto rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl font-bold">
-                        📥
+                    <div class="w-14 h-14 mx-auto rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                        <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20" />
+                        </svg>
                     </div>
                     <h3 class="text-base font-extrabold text-gray-900">
                         Apakah Anda yakin ingin menyimpan dokumen surat masuk ini?

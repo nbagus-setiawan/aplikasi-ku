@@ -101,7 +101,7 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">Orientasi Cetak Dokumen</label>
                         <select name="orientasi_kertas" class="w-full text-xs rounded-lg border-emerald-300 focus:border-emerald-600 focus:ring-emerald-600 bg-emerald-100/70 font-bold text-emerald-950">
-                            <option value="portrait" selected>📄 Potret (Tegak) &mdash; Bukan Lanskap</option>
+                            <option value="portrait" selected>Potret (Tegak) &mdash; Bukan Lanskap</option>
                         </select>
                         <p class="text-[11px] text-emerald-800 font-semibold mt-1">✓ Wajib Potret (Tegak) untuk surat resmi.</p>
                     </div>

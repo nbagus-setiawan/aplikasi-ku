@@ -229,16 +229,19 @@
 
             <div class="flex flex-wrap items-center gap-2">
                 <button type="button" @click="submitSurat('draft')"
-                        class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs">
-                    💾 Simpan Perubahan
+                        class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                    <span>Simpan Perubahan</span>
                 </button>
                 <button type="button" @click="submitSurat('cetak')"
                         class="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-xl text-xs font-extrabold transition shadow-sm flex items-center gap-1.5">
-                    <span>🖨️ Simpan & Langsung Cetak PDF</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    <span>Simpan & Langsung Cetak PDF</span>
                 </button>
                 <button type="button" @click="submitSurat('siap_kirim')"
                         class="px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl text-xs font-extrabold transition shadow-sm flex items-center gap-1.5">
-                    <span>🚀 Simpan & Siap Kirim (Final)</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                    <span>Simpan & Siap Kirim (Final)</span>
                 </button>
             </div>
         </div>
@@ -315,12 +318,12 @@
                             <button type="button" @click="metodeTtd = 'digital'"
                                     :class="metodeTtd === 'digital' ? 'bg-white text-emerald-900 font-bold shadow-2xs' : 'text-gray-600'"
                                     class="py-1.5 px-2 rounded-lg text-[11px] transition text-center">
-                                ✍️ TTD Digital di Layar
+                                TTD Digital di Layar
                             </button>
                             <button type="button" @click="metodeTtd = 'basah'"
                                     :class="metodeTtd === 'basah' ? 'bg-white text-gray-900 font-bold shadow-2xs' : 'text-gray-600'"
                                     class="py-1.5 px-2 rounded-lg text-[11px] transition text-center">
-                                🖨️ TTD Basah (Cetak)
+                                TTD Basah (Cetak)
                             </button>
                         </div>
 
@@ -332,7 +335,7 @@
                                     @if ($pengurusList->isNotEmpty())
                                         <select @change="pilihPengurus(1, $event.target.value); $event.target.value = ''"
                                                 class="text-[10px] rounded-lg border-gray-300 py-0.5 pl-1.5 pr-5 bg-white text-gray-700">
-                                            <option value="">⚡ Pilih Pengurus</option>
+                                            <option value="">Pilih Pengurus</option>
                                             @foreach ($pengurusList as $idx => $p)
                                                 <option value="{{ $idx }}">{{ $p->nama }} ({{ $p->jabatan }})</option>
                                             @endforeach
@@ -345,7 +348,7 @@
                                 </div>
                                 <div x-show="metodeTtd === 'digital'" class="flex items-center justify-between pt-1">
                                     <span class="text-[10px]" :class="sig1 ? 'text-emerald-700 font-bold' : 'text-gray-500'" x-text="sig1 ? '✓ Sudah Tanda Tangan' : 'Belum TTD'"></span>
-                                    <button type="button" @click="bukaModalTtd(1)" class="px-2 py-0.5 bg-emerald-600 text-white rounded text-[10px] font-bold">✍️ Gambar TTD 1</button>
+                                    <button type="button" @click="bukaModalTtd(1)" class="px-2 py-0.5 bg-emerald-600 text-white rounded text-[10px] font-bold">Gambar TTD 1</button>
                                 </div>
                             </div>
 
@@ -358,7 +361,7 @@
                                 </div>
                                 <div x-show="metodeTtd === 'digital'" class="flex items-center justify-between pt-1">
                                     <span class="text-[10px]" :class="sig2 ? 'text-emerald-700 font-bold' : 'text-gray-500'" x-text="sig2 ? '✓ Sudah Tanda Tangan' : 'Belum TTD'"></span>
-                                    <button type="button" @click="bukaModalTtd(2)" class="px-2 py-0.5 bg-blue-600 text-white rounded text-[10px] font-bold">✍️ Gambar TTD 2</button>
+                                    <button type="button" @click="bukaModalTtd(2)" class="px-2 py-0.5 bg-blue-600 text-white rounded text-[10px] font-bold">Gambar TTD 2</button>
                                 </div>
                             </div>
 
@@ -371,7 +374,7 @@
                                 </div>
                                 <div x-show="metodeTtd === 'digital'" class="flex items-center justify-between pt-1">
                                     <span class="text-[10px]" :class="sig3 ? 'text-emerald-700 font-bold' : 'text-gray-500'" x-text="sig3 ? '✓ Sudah Tanda Tangan' : 'Belum TTD'"></span>
-                                    <button type="button" @click="bukaModalTtd(3)" class="px-2 py-0.5 bg-purple-600 text-white rounded text-[10px] font-bold">✍️ Gambar TTD 3</button>
+                                    <button type="button" @click="bukaModalTtd(3)" class="px-2 py-0.5 bg-purple-600 text-white rounded text-[10px] font-bold">Gambar TTD 3</button>
                                 </div>
                             </div>
                         </div>
@@ -424,9 +427,9 @@
                             <button type="button" @click="execCmd('italic')" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg italic font-serif text-xs">I</button>
                             <button type="button" @click="execCmd('underline')" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg underline text-xs">U</button>
                             <span class="h-4 w-px bg-slate-600 mx-1"></span>
-                            <button type="button" @click="execCmd('justifyLeft')" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg text-[11px]">⬅ Kiri</button>
-                            <button type="button" @click="execCmd('justifyCenter')" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg text-[11px]">⬌ Tengah</button>
-                            <button type="button" @click="execCmd('justifyFull')" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg text-[11px]">☰ Rata Kanan-Kiri</button>
+                            <button type="button" @click="execCmd('justifyLeft')" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg text-[11px]">Rata Kiri</button>
+                            <button type="button" @click="execCmd('justifyCenter')" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg text-[11px]">Tengah</button>
+                            <button type="button" @click="execCmd('justifyFull')" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg text-[11px]">Rata Kanan-Kiri</button>
                         </div>
                         <div class="flex flex-wrap items-center gap-1">
                             <button type="button" @click="insertSnippet('jadwal')" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[11px] font-bold">+ Jadwal</button>
@@ -517,7 +520,7 @@
                                             <div @click="if (metodeTtd === 'digital') bukaModalTtd(1)"
                                                  class="w-[3.9cm] h-[2.6cm] my-1.5 flex items-center justify-center rounded-lg border border-dashed border-emerald-400 cursor-pointer">
                                                 <template x-if="sig1"><img :src="sig1" class="max-w-[3.9cm] max-h-[2.6cm] object-contain" /></template>
-                                                <template x-if="!sig1"><span class="text-[10px] font-sans text-emerald-700 font-semibold">✍️ Klik TTD</span></template>
+                                                <template x-if="!sig1"><span class="text-[10px] font-sans text-emerald-700 font-semibold">Klik TTD</span></template>
                                             </div>
                                             <input type="text" x-model="namaTtd1" class="w-full text-center font-bold underline bg-amber-50/60 border-b border-dashed border-emerald-600 focus:outline-none px-1 py-0" style="font-family: inherit;" />
                                         </div>
@@ -529,7 +532,7 @@
                                             <input type="text" x-model="jabatanTtd1" class="w-full text-center bg-amber-50/60 border-b border-dashed border-emerald-600 focus:outline-none px-1 py-0" style="font-family: inherit;" />
                                             <div @click="if (metodeTtd === 'digital') bukaModalTtd(1)" class="w-[3.9cm] h-[2.6cm] my-1.5 flex items-center justify-center rounded-lg border border-dashed border-emerald-400 cursor-pointer">
                                                 <template x-if="sig1"><img :src="sig1" class="max-w-[3.9cm] max-h-[2.6cm] object-contain" /></template>
-                                                <template x-if="!sig1"><span class="text-[10px] font-sans text-emerald-700 font-semibold">✍️ Klik TTD 1</span></template>
+                                                <template x-if="!sig1"><span class="text-[10px] font-sans text-emerald-700 font-semibold">Klik TTD 1</span></template>
                                             </div>
                                             <input type="text" x-model="namaTtd1" class="w-full text-center font-bold underline bg-amber-50/60 border-b border-dashed border-emerald-600 focus:outline-none px-1 py-0" style="font-family: inherit;" />
                                         </div>
@@ -537,7 +540,7 @@
                                             <input type="text" x-model="jabatanTtd2" class="w-full text-center bg-amber-50/60 border-b border-dashed border-emerald-600 focus:outline-none px-1 py-0" style="font-family: inherit;" />
                                             <div @click="if (metodeTtd === 'digital') bukaModalTtd(2)" class="w-[3.9cm] h-[2.6cm] my-1.5 flex items-center justify-center rounded-lg border border-dashed border-blue-400 cursor-pointer">
                                                 <template x-if="sig2"><img :src="sig2" class="max-w-[3.9cm] max-h-[2.6cm] object-contain" /></template>
-                                                <template x-if="!sig2"><span class="text-[10px] font-sans text-blue-700 font-semibold">✍️ Klik TTD 2</span></template>
+                                                <template x-if="!sig2"><span class="text-[10px] font-sans text-blue-700 font-semibold">Klik TTD 2</span></template>
                                             </div>
                                             <input type="text" x-model="namaTtd2" class="w-full text-center font-bold underline bg-amber-50/60 border-b border-dashed border-emerald-600 focus:outline-none px-1 py-0" style="font-family: inherit;" />
                                         </div>
@@ -550,7 +553,7 @@
                                             <input type="text" x-model="jabatanTtd1" class="w-full text-center bg-amber-50/60 border-b border-dashed border-emerald-600 focus:outline-none px-1 py-0" style="font-family: inherit;" />
                                             <div @click="if (metodeTtd === 'digital') bukaModalTtd(1)" class="w-[3.9cm] h-[2.4cm] my-1 flex items-center justify-center rounded-lg border border-dashed border-emerald-400 cursor-pointer">
                                                 <template x-if="sig1"><img :src="sig1" class="max-w-[3.9cm] max-h-[2.4cm] object-contain" /></template>
-                                                <template x-if="!sig1"><span class="text-[10px] font-sans text-emerald-700 font-semibold">✍️ Klik TTD 1</span></template>
+                                                <template x-if="!sig1"><span class="text-[10px] font-sans text-emerald-700 font-semibold">Klik TTD 1</span></template>
                                             </div>
                                             <input type="text" x-model="namaTtd1" class="w-full text-center font-bold underline bg-amber-50/60 border-b border-dashed border-emerald-600 focus:outline-none px-1 py-0" style="font-family: inherit;" />
                                         </div>
@@ -559,7 +562,7 @@
                                                 <input type="text" x-model="jabatanTtd2" class="w-full text-center bg-amber-50/60 border-b border-dashed border-emerald-600 focus:outline-none px-1 py-0" style="font-family: inherit;" />
                                                 <div @click="if (metodeTtd === 'digital') bukaModalTtd(2)" class="w-[3.9cm] h-[2.4cm] my-1 flex items-center justify-center rounded-lg border border-dashed border-blue-400 cursor-pointer">
                                                     <template x-if="sig2"><img :src="sig2" class="max-w-[3.9cm] max-h-[2.4cm] object-contain" /></template>
-                                                    <template x-if="!sig2"><span class="text-[10px] font-sans text-blue-700 font-semibold">✍️ Klik TTD 2</span></template>
+                                                    <template x-if="!sig2"><span class="text-[10px] font-sans text-blue-700 font-semibold">Klik TTD 2</span></template>
                                                 </div>
                                                 <input type="text" x-model="namaTtd2" class="w-full text-center font-bold underline bg-amber-50/60 border-b border-dashed border-emerald-600 focus:outline-none px-1 py-0" style="font-family: inherit;" />
                                             </div>
@@ -567,7 +570,7 @@
                                                 <input type="text" x-model="jabatanTtd3" class="w-full text-center bg-amber-50/60 border-b border-dashed border-emerald-600 focus:outline-none px-1 py-0" style="font-family: inherit;" />
                                                 <div @click="if (metodeTtd === 'digital') bukaModalTtd(3)" class="w-[3.9cm] h-[2.4cm] my-1 flex items-center justify-center rounded-lg border border-dashed border-purple-400 cursor-pointer">
                                                     <template x-if="sig3"><img :src="sig3" class="max-w-[3.9cm] max-h-[2.4cm] object-contain" /></template>
-                                                    <template x-if="!sig3"><span class="text-[10px] font-sans text-purple-700 font-semibold">✍️ Klik TTD 3</span></template>
+                                                    <template x-if="!sig3"><span class="text-[10px] font-sans text-purple-700 font-semibold">Klik TTD 3</span></template>
                                                 </div>
                                                 <input type="text" x-model="namaTtd3" class="w-full text-center font-bold underline bg-amber-50/60 border-b border-dashed border-emerald-600 focus:outline-none px-1 py-0" style="font-family: inherit;" />
                                             </div>

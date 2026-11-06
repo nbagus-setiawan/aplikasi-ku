@@ -245,8 +245,9 @@
                                             <span class="font-mono font-bold text-emerald-900 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 text-xs">
                                                 {{ $item->no_surat }}
                                             </span>
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-purple-50 text-purple-800 border border-purple-200">
-                                                🏷️ {{ $item->kategori?->nama ?? 'Surat' }}
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-purple-50 text-purple-800 border border-purple-200">
+                                                <svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                                                <span>{{ $item->kategori?->nama ?? 'Surat' }}</span>
                                             </span>
                                         </div>
                                         <div>
@@ -269,8 +270,9 @@
                                     @endphp
                                     @if ($adaLamp)
                                         <div class="flex flex-col items-start gap-1">
-                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-800 border border-blue-200 text-xs font-bold">
-                                                📎 {{ $lampTeks !== '-' ? $lampTeks : '1 Berkas' }}
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-800 border border-blue-200 text-xs font-bold">
+                                                <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                                <span>{{ $lampTeks !== '-' ? $lampTeks : '1 Berkas' }}</span>
                                             </span>
                                             @if ($item->file)
                                                 <a href="{{ asset('storage/' . $item->file) }}" target="_blank" class="text-[11px] text-blue-700 hover:underline font-semibold">
@@ -398,7 +400,10 @@
                         @if ($item->lampiran_teks)
                             <div class="flex items-center justify-between pt-1 border-t border-gray-200/60">
                                 <span class="text-gray-400 text-[10px] uppercase font-bold">Lampiran:</span>
-                                <span class="font-medium text-blue-800">📎 {{ $item->lampiran_teks }}</span>
+                                <span class="font-medium text-blue-800 inline-flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                    <span>{{ $item->lampiran_teks }}</span>
+                                </span>
                             </div>
                         @endif
                     </div>

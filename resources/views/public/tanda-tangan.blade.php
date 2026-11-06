@@ -56,7 +56,8 @@
                     <button type="button"
                             @click="showModalTtd = true; setTimeout(() => initSignaturePad(), 120)"
                             class="min-h-[44px] px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition flex items-center gap-1.5 active:scale-95 shrink-0">
-                        <span>✍️ Bubuhkan Tanda Tangan</span>
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                        <span>Bubuhkan Tanda Tangan</span>
                     </button>
                 </div>
             </div>
@@ -183,7 +184,7 @@
                                         <img src="{{ $ttd1->data_ttd }}" class="max-w-[3.9cm] max-h-[2.6cm] object-contain" alt="TTD 1">
                                     @else
                                         <div class="text-center font-sans">
-                                            <span class="text-[11px] font-bold text-emerald-800 block">✍️ Klik di Sini</span>
+                                            <span class="text-[11px] font-bold text-emerald-800 block">Klik di Sini</span>
                                             <span class="text-[9.5px] text-emerald-600 block">untuk Tanda Tangan</span>
                                         </div>
                                     @endif
@@ -205,7 +206,7 @@
                                         <img src="{{ $ttd1->data_ttd }}" class="max-w-[3.9cm] max-h-[2.6cm] object-contain" alt="TTD 1">
                                     @elseif ($myUrutan === 1)
                                         <div class="text-center font-sans">
-                                            <span class="text-[11px] font-bold text-emerald-800 block">✍️ Klik di Sini</span>
+                                            <span class="text-[11px] font-bold text-emerald-800 block">Klik di Sini</span>
                                             <span class="text-[9.5px] text-emerald-600 block">untuk Tanda Tangan</span>
                                         </div>
                                     @else
@@ -224,7 +225,7 @@
                                         <img src="{{ $ttd2->data_ttd }}" class="max-w-[3.9cm] max-h-[2.6cm] object-contain" alt="TTD 2">
                                     @elseif ($myUrutan === 2)
                                         <div class="text-center font-sans">
-                                            <span class="text-[11px] font-bold text-emerald-800 block">✍️ Klik di Sini</span>
+                                            <span class="text-[11px] font-bold text-emerald-800 block">Klik di Sini</span>
                                             <span class="text-[9.5px] text-emerald-600 block">untuk Tanda Tangan</span>
                                         </div>
                                     @else
@@ -252,7 +253,7 @@
                                         <img src="{{ $ttd1->data_ttd }}" class="max-w-[3.9cm] max-h-[2.6cm] object-contain" alt="TTD 1">
                                     @elseif ($myUrutan === 1)
                                         <div class="text-center font-sans">
-                                            <span class="text-[11px] font-bold text-emerald-800 block">✍️ Klik di Sini</span>
+                                            <span class="text-[11px] font-bold text-emerald-800 block">Klik di Sini</span>
                                             <span class="text-[9.5px] text-emerald-600 block">untuk Tanda Tangan</span>
                                         </div>
                                     @else
@@ -274,7 +275,7 @@
                                             <img src="{{ $ttd2->data_ttd }}" class="max-w-[3.9cm] max-h-[2.6cm] object-contain" alt="TTD 2">
                                         @elseif ($myUrutan === 2)
                                             <div class="text-center font-sans">
-                                                <span class="text-[11px] font-bold text-emerald-800 block">✍️ Klik di Sini</span>
+                                                <span class="text-[11px] font-bold text-emerald-800 block">Klik di Sini</span>
                                                 <span class="text-[9.5px] text-emerald-600 block">untuk Tanda Tangan</span>
                                             </div>
                                         @else
@@ -293,7 +294,7 @@
                                             <img src="{{ $ttd3->data_ttd }}" class="max-w-[3.9cm] max-h-[2.6cm] object-contain" alt="TTD 3">
                                         @elseif ($myUrutan === 3)
                                             <div class="text-center font-sans">
-                                                <span class="text-[11px] font-bold text-emerald-800 block">✍️ Klik di Sini</span>
+                                                <span class="text-[11px] font-bold text-emerald-800 block">Klik di Sini</span>
                                                 <span class="text-[9.5px] text-emerald-600 block">untuk Tanda Tangan</span>
                                             </div>
                                         @else
@@ -331,7 +332,7 @@
                 <div class="flex items-center justify-between border-b pb-3">
                     <div>
                         <h3 class="font-extrabold text-sm sm:text-base text-gray-900 flex items-center gap-1.5">
-                            <span>✍️ Konfirmasi Penandatanganan Dokumen</span>
+                            <span>Konfirmasi Penandatanganan Dokumen</span>
                         </h3>
                         <p class="text-xs text-gray-600 mt-0.5">
                             Yth. <strong class="text-gray-900">{{ $tandaTangan->nama_penandatangan }}</strong> &bull; {{ $tandaTangan->jabatan_penandatangan }}
@@ -386,8 +387,8 @@
     @elseif ($status === 'success')
         <div class="flex-1 flex items-center justify-center p-4">
             <div class="bg-white rounded-2xl border border-emerald-200 shadow-2xl p-6 sm:p-8 text-center space-y-4 max-w-md w-full">
-                <div class="w-16 h-16 mx-auto bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center text-3xl font-black shadow-inner">
-                    ✓
+                <div class="w-16 h-16 mx-auto bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center shadow-inner">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                 </div>
                 <h2 class="text-xl font-black text-gray-900">Alhamdulillah, Dokumen Berhasil Ditandatangani</h2>
                 <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">

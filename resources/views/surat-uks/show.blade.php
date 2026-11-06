@@ -65,8 +65,9 @@
                                 data-konfirmasi="Tandai santri telah kembali ke pondok sekarang?"
                                 data-judul="Konfirmasi Santri Kembali"
                                 data-tombol="Ya, Sudah Kembali"
-                                class="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs sm:text-sm font-bold rounded-xl transition shadow-2xs">
-                            ✓ Tandai Kembali
+                                class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs sm:text-sm font-bold rounded-xl transition shadow-2xs">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span>Tandai Kembali</span>
                         </button>
                     </form>
                 @endif
@@ -78,8 +79,12 @@
             <!-- Header Kartu -->
             <div class="p-5 sm:p-6 bg-slate-50/70 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0 {{ $suratUk->jenis === 'sakit' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700' }}">
-                        {{ $suratUk->jenis === 'sakit' ? '🩺' : '🏠' }}
+                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 {{ $suratUk->jenis === 'sakit' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700' }}">
+                        @if ($suratUk->jenis === 'sakit')
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        @else
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        @endif
                     </div>
                     <div>
                         <h3 class="text-base sm:text-lg font-black text-slate-900">{{ $suratUk->santri?->nama ?? 'Santri' }}</h3>
@@ -132,9 +137,12 @@
                     @if ($suratUk->diagnosa)
                         <div>
                             <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Diagnosa / Tindakan Medis UKS</span>
-                            <p class="p-3.5 rounded-2xl bg-blue-50/60 border border-blue-100 text-blue-900 font-semibold leading-relaxed">
-                                🩺 {{ $suratUk->diagnosa }}
-                            </p>
+                            <div class="p-3.5 rounded-2xl bg-blue-50/60 border border-blue-100 text-blue-900 font-semibold leading-relaxed flex items-start gap-2">
+                                <svg class="w-5 h-5 text-blue-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                                <span>{{ $suratUk->diagnosa }}</span>
+                            </div>
                         </div>
                     @endif
                 </div>

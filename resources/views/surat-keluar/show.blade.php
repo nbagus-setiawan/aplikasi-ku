@@ -365,7 +365,7 @@
                                 $isSigned = !empty($ttdDataOpt?->data_ttd);
                             @endphp
                             <option value="{{ $uOpt }}">
-                                Penandatangan {{ $uOpt }}: {{ $p['nama'] ?? '-' }} ({{ $isSigned ? '✓ Sudah TTD' : '⏳ Belum TTD' }})
+                                Penandatangan {{ $uOpt }}: {{ $p['nama'] ?? '-' }} ({{ $isSigned ? 'Sudah TTD' : 'Belum TTD' }})
                             </option>
                         @endforeach
                     </select>

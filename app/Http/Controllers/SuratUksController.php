@@ -9,6 +9,7 @@ use App\Models\SuratUks;
 use App\Services\NomorSuratService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -338,7 +339,7 @@ class SuratUksController extends Controller
     /**
      * Hapus surat UKS (soft delete) beserta update akumulasi kas bulanan jika ada.
      */
-    public function destroy(mixed $suratUk): RedirectResponse
+    public function destroy(Request $request, mixed $suratUk): JsonResponse|RedirectResponse
     {
         $suratUk = $this->resolveSuratUks($suratUk);
         $nomor = $suratUk->nomor_surat;
@@ -358,6 +359,13 @@ class SuratUksController extends Controller
                 }
             }
         });
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Data surat UKS {$nomor} berhasil dihapus.",
+            ]);
+        }
 
         return redirect()
             ->route('admin.surat-uks.index')

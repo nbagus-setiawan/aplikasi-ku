@@ -180,6 +180,7 @@
                                 console.warn('Fallback submit biasa:', err);
                                 this.open = false;
                                 this.loading = false;
+                                form.__sudahDikonfirmasi = true;
                                 form.submit();
                             });
                             return;
@@ -188,6 +189,7 @@
                         // Form biasa non-delete
                         this.open = false;
                         this.loading = false;
+                        form.__sudahDikonfirmasi = true;
                         form.submit();
                     } else if (typeof this.actionCallback === 'function') {
                         this.actionCallback();
@@ -401,26 +403,29 @@
                 }, 4500);
             };
 
-            // Intersepsi formulir dengan atribut data-konfirmasi
-            document.addEventListener('DOMContentLoaded', () => {
-                document.querySelectorAll('form[data-konfirmasi]').forEach(form => {
-                    form.addEventListener('submit', function(e) {
-                        e.preventDefault();
-                        const pesan = this.getAttribute('data-konfirmasi') || 'Apakah Anda yakin ingin melanjutkan tindakan ini?';
-                        const judul = this.getAttribute('data-judul') || 'Konfirmasi Hapus Data';
-                        const tombol = this.getAttribute('data-tombol') || 'Ya, Hapus Data';
-                        if (window.bukaKonfirmasi) {
-                            window.bukaKonfirmasi({
-                                judul: judul,
-                                pesan: pesan,
-                                tombolTeks: tombol,
-                                form: this
-                            });
-                        } else {
-                            this.submit();
-                        }
+            // Intersepsi formulir dengan atribut data-konfirmasi secara global (Event Delegation)
+            document.addEventListener('submit', function(e) {
+                const form = e.target.closest('form[data-konfirmasi]');
+                if (!form || form.__sudahDikonfirmasi) return;
+
+                e.preventDefault();
+                const pesan = form.getAttribute('data-konfirmasi') || 'Apakah Anda yakin ingin melanjutkan tindakan ini?';
+                const judul = form.getAttribute('data-judul') || 'Konfirmasi Tindakan';
+                const tombol = form.getAttribute('data-tombol') || 'Ya, Lanjutkan';
+                if (window.bukaKonfirmasi) {
+                    window.bukaKonfirmasi({
+                        judul: judul,
+                        pesan: pesan,
+                        tombolTeks: tombol,
+                        form: form
                     });
-                });
+                } else {
+                    form.__sudahDikonfirmasi = true;
+                    form.submit();
+                }
+            });
+
+            document.addEventListener('DOMContentLoaded', () => {
 
                 // Penanda Baris yang Baru Diubah (Highlight Kilauan Hijau Otomatis di Semua Halaman)
                 const highlightId = @json(session('highlight_id')) || new URLSearchParams(window.location.search).get('highlight');

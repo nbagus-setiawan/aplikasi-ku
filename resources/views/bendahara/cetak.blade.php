@@ -124,7 +124,8 @@
         </div>
         <div style="display: flex; gap: 8px; flex-shrink: 0;">
             <button onclick="sesuaikanUrlCetak(); window.print();" type="button" style="background: #059669; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                <span>🖨️</span> <span>Cetak / Simpan PDF</span>
+                <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                <span>Cetak / Simpan PDF</span>
             </button>
             <a href="{{ route('admin.bendahara.index') }}" style="background: #e2e8f0; color: #334155; text-decoration: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 12px; display: inline-block;">
                 &larr; Kembali

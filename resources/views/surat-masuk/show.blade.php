@@ -95,7 +95,7 @@
 
                 <!-- Dokumen Surat Masuk Asli (Tetap Tepat Seperti Aslinya yang Diupload) -->
                 <div class="md:col-span-2 space-y-3 pt-4 border-t border-gray-100">
-                    <span class="block text-xs font-bold uppercase tracking-wider text-emerald-900">📄 Berkas Dokumen Surat Masuk Asli</span>
+                    <span class="block text-xs font-bold uppercase tracking-wider text-emerald-900">Berkas Dokumen Surat Masuk Asli</span>
                     @if ($suratMasuk->file)
                         @php
                             $extFile = strtolower(pathinfo($suratMasuk->file, PATHINFO_EXTENSION));

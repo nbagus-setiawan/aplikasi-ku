@@ -271,8 +271,9 @@
                                     @endphp
                                     @if ($adaLamp)
                                         <div class="flex flex-col items-start gap-1">
-                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-800 border border-blue-200 text-xs font-bold">
-                                                📎 {{ $lampTeks !== '-' ? $lampTeks : '1 Berkas' }}
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-800 border border-blue-200 text-xs font-bold">
+                                                <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                                <span>{{ $lampTeks !== '-' ? $lampTeks : '1 Berkas' }}</span>
                                             </span>
                                             @if ($item->file_lampiran)
                                                 <a href="{{ asset('storage/' . $item->file_lampiran) }}" target="_blank" class="text-[11px] text-blue-700 hover:underline font-semibold">
@@ -392,7 +393,10 @@
                         @if ($item->lampiran_teks)
                             <div class="flex items-center justify-between pt-1 border-t border-gray-200/60">
                                 <span class="text-gray-400 text-[10px] uppercase font-bold">Lampiran:</span>
-                                <span class="font-medium text-blue-800">📎 {{ $item->lampiran_teks }}</span>
+                                <span class="font-medium text-blue-800 inline-flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                    <span>{{ $item->lampiran_teks }}</span>
+                                </span>
                             </div>
                         @endif
                     </div>

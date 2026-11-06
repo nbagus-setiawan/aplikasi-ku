@@ -67,8 +67,9 @@
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
                         Pemindai QR Code Dokumen
                     </div>
-                    <button type="button" id="btn-close-scan" class="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-gray-800 transition text-sm">
-                        ✕ Tutup Scanner
+                    <button type="button" id="btn-close-scan" class="inline-flex items-center gap-1.5 text-gray-400 hover:text-white px-2 py-1 rounded-lg hover:bg-gray-800 transition text-xs font-semibold">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <span>Tutup Scanner</span>
                     </button>
                 </div>
                 <p class="text-xs text-gray-400">
@@ -217,7 +218,7 @@
                         <div class="pt-3 space-y-3">
                             <div class="flex flex-wrap items-center justify-between gap-3">
                                 <div>
-                                    <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-900 block">📄 Dokumen Surat Asli Resmi (Ber-QR Code)</span>
+                                    <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-900 block">Dokumen Surat Asli Resmi (Ber-QR Code)</span>
                                     <span class="text-[11px] text-gray-500 font-medium">Hanya untuk pratinjau verifikasi keaslian naskah dokumen</span>
                                 </div>
                                 <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-semibold">
@@ -236,7 +237,7 @@
                     @elseif ($tampilanPath && ($isGambarAsli || $extTampilan === 'pdf'))
                         <div class="pt-3 space-y-3">
                             <div class="flex items-center justify-between">
-                                <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-900">📄 Dokumen Surat Asli Resmi (Ber-QR Code)</span>
+                                <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-900">Dokumen Surat Asli Resmi (Ber-QR Code)</span>
                                 <span class="text-[11px] text-gray-500 font-medium">Hanya untuk pratinjau verifikasi</span>
                             </div>
 
@@ -340,8 +341,9 @@
                             </div>
                         </div>
                     @else
-                        <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs">
-                            ℹ️ Blangko fisik ini sah dan telah terbit dengan nomor resmi, namun belum dicatat pemakaian / pembelian atas nama santri tertentu.
+                        <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-start gap-2.5">
+                            <svg class="w-4 h-4 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>Blangko fisik ini sah dan telah terbit dengan nomor resmi, namun belum dicatat pemakaian / pembelian atas nama santri tertentu.</span>
                         </div>
                     @endif
                 </div>
@@ -350,8 +352,8 @@
         @elseif(!empty($kode))
             <!-- Dokumen Tidak Ditemukan -->
             <div class="bg-white rounded-2xl border border-rose-200 shadow-sm p-8 text-center space-y-4">
-                <div class="w-14 h-14 mx-auto bg-rose-50 text-rose-600 rounded-full flex items-center justify-center text-2xl font-bold">
-                    ✕
+                <div class="w-14 h-14 mx-auto bg-rose-50 text-rose-600 rounded-full flex items-center justify-center">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </div>
                 <h3 class="text-base font-bold text-gray-900 uppercase">Dokumen Tidak Ditemukan</h3>
                 <p class="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">

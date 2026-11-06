@@ -294,12 +294,13 @@
 @if (!empty($isHtmlPrint))
     <div class="no-print" style="position: sticky; top: 0; z-index: 9999; background: #064e3b; color: #ffffff; padding: 10px 14px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; font-family: sans-serif; box-shadow: 0 2px 10px rgba(0,0,0,0.25);">
         <div style="flex: 1 1 240px;">
-            <strong style="font-size: 13px; display: block; color: #ecfdf5;">🖨️ Mode Pratinjau Cetak Blangko Surat UKS</strong>
+            <strong style="font-size: 13px; display: block; color: #ecfdf5;">Mode Pratinjau Cetak Blangko Surat UKS</strong>
             <p style="margin: 2px 0 0; font-size: 10.5px; color: #a7f3d0;">Gunakan menu cetak browser (Ctrl+P) untuk cetak atau Simpan sebagai PDF.</p>
         </div>
         <div style="display: flex; gap: 6px; flex-shrink: 0;">
-            <button onclick="window.print();" type="button" style="background: #10b981; color: white; border: none; padding: 7px 14px; border-radius: 6px; font-weight: bold; font-size: 11.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
-                <span>🖨️</span> <span>Cetak / PDF</span>
+            <button onclick="window.print();" type="button" style="background: #10b981; color: white; border: none; padding: 7px 14px; border-radius: 6px; font-weight: bold; font-size: 11.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                <span>Cetak / PDF</span>
             </button>
             <a href="{{ route('admin.surat-uks.index') }}" style="background: rgba(255,255,255,0.18); color: white; text-decoration: none; padding: 7px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 500;">
                 &larr; Kembali
@@ -463,7 +464,7 @@
 
             @if ($slip === 1)
                 <div class="separator-slip">
-                    <span>✂ Gunting Di Sini (Potongan Slip Rangkap)</span>
+                    <span>--- Potongan Slip Rangkap ---</span>
                 </div>
             @endif
         @endfor

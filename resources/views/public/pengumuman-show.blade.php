@@ -45,7 +45,7 @@
 @section('content')
 @php
     $shortUrl = url('/p/' . $pengumuman->id);
-    $shareText = "*Warta Resmi Ponpes Al-Falah Putak*\n\n📌 *" . $pengumuman->judul . "*\n\nBaca selengkapnya di:\n" . $shortUrl;
+    $shareText = "*Warta Resmi Ponpes Al-Falah Putak*\n\n*" . $pengumuman->judul . "*\n\nBaca selengkapnya di:\n" . $shortUrl;
 @endphp
 
 <!-- Header Navigasi Breadcrumb (Ringkas & Bersih di HP) -->
@@ -75,8 +75,8 @@
                             {{ $pengumuman->kategori }}
                         </span>
                         @if($pengumuman->is_pinned)
-                            <span class="px-2.5 py-1 rounded-full font-bold uppercase tracking-wider text-[11px] bg-amber-100 text-amber-900 border border-amber-200 flex items-center gap-1">
-                                <span>📌</span>
+                            <span class="px-2.5 py-1 rounded-full font-bold uppercase tracking-wider text-[11px] bg-amber-100 text-amber-900 border border-amber-200 flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 text-amber-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
                                 <span>Disematkan</span>
                             </span>
                         @endif
@@ -395,8 +395,8 @@
                     <div class="pt-8 border-t border-slate-200/80 space-y-4">
                         <div class="flex items-center justify-between flex-wrap gap-3">
                             <div class="flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm">
-                                    💬
+                                <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                                 </div>
                                 <div>
                                     <h3 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">
@@ -470,8 +470,8 @@
                                  @click.stop>
                                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                                     <div class="flex items-center gap-2.5">
-                                        <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-base">
-                                            💬
+                                        <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                                         </div>
                                         <div>
                                             <h3 class="text-base font-bold text-slate-900">Beri Komentar & Doa</h3>
@@ -720,8 +720,8 @@
                                                  style="object-position: {{ $item->posisi_gambar ?? '50% 50%' }};">
                                         </div>
                                     @else
-                                        <div class="w-16 h-14 rounded-xl bg-emerald-900 text-white flex items-center justify-center text-xs font-bold shrink-0">
-                                            📰
+                                        <div class="w-16 h-14 rounded-xl bg-emerald-900 text-white flex items-center justify-center shrink-0">
+                                            <svg class="w-5 h-5 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
                                         </div>
                                     @endif
                                     <div class="space-y-1">

@@ -37,7 +37,10 @@
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
                     <span>Cetak PDF Stok</span>
                 </a>
-                <form action="{{ route('admin.surat-uks.sync-kas') }}" method="POST" class="w-full sm:w-auto inline" onsubmit="return confirm('Sinkronkan seluruh akumulasi kas bulanan UKS ke Buku Kas Bendahara?')">
+                <form action="{{ route('admin.surat-uks.sync-kas') }}" method="POST" class="w-full sm:w-auto inline"
+                      data-konfirmasi="Sinkronkan seluruh akumulasi kas bulanan UKS ke Buku Kas Bendahara sekarang?"
+                      data-judul="Konfirmasi Sinkronisasi Kas"
+                      data-tombol="Ya, Sinkronkan">
                     @csrf
                     <button type="submit"
                             title="Sinkronkan akumulasi kas bulanan ke Bendahara"
@@ -56,7 +59,7 @@
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">1. Surat Tercetak</span>
                     <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs">
-                        📄
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     </span>
                 </div>
                 <div class="mt-3">
@@ -79,7 +82,7 @@
                         <span class="block text-[10px] text-emerald-600 font-medium">Sinkron ke Buku Kas Bendahara</span>
                     </div>
                     <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">
-                        💰
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </span>
                 </div>
                 <div class="mt-3">
@@ -99,7 +102,7 @@
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">3. Sisa Stok Blangko</span>
                     <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-xs">
-                        📦
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                     </span>
                 </div>
                 <div class="mt-3">
@@ -253,7 +256,10 @@
                                             </button>
                                         @elseif ($item->status === 'terjual')
                                             <!-- Tombol Tandai Kembali -->
-                                            <form action="{{ route('admin.surat-uks.kembali', $item) }}" method="POST" class="inline" onsubmit="return confirm('Tandai santri ini telah kembali ke pondok?')">
+                                            <form action="{{ route('admin.surat-uks.kembali', $item) }}" method="POST" class="inline"
+                                                  data-konfirmasi="Tandai santri ini telah kembali ke pondok sekarang?"
+                                                  data-judul="Konfirmasi Santri Kembali"
+                                                  data-tombol="Ya, Sudah Kembali">
                                                 @csrf
                                                 <button type="submit"
                                                         class="px-2.5 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-bold text-[11px] shadow-2xs transition active:scale-95">
@@ -281,7 +287,9 @@
                                         <form action="{{ route('admin.surat-uks.destroy', $item) }}"
                                               method="POST"
                                               class="inline"
-                                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus surat {{ $item->nomor_surat }}? Transaksi kas terkait juga akan disesuaikan.')">
+                                              data-konfirmasi="Apakah Anda yakin ingin menghapus surat {{ $item->nomor_surat }}? Transaksi kas terkait juga akan disesuaikan."
+                                              data-judul="Konfirmasi Hapus Surat"
+                                              data-tombol="Ya, Hapus Surat">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
@@ -382,15 +390,18 @@
                                 <button type="button"
                                         onclick="openModalCatatId('{{ $item->id }}', '{{ $item->nomor_surat }}', '{{ $item->kode_verifikasi }}', '{{ $item->jenis_label }}')"
                                         class="w-full py-2 px-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl font-bold text-xs shadow-xs transition flex items-center justify-center gap-1.5">
-                                    <span>🏷️</span>
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
                                     <span>Catat Terjual</span>
                                 </button>
                             @elseif ($item->status === 'terjual')
-                                <form action="{{ route('admin.surat-uks.kembali', $item) }}" method="POST" class="w-full" onsubmit="return confirm('Tandai santri ini telah kembali ke pondok?')">
+                                <form action="{{ route('admin.surat-uks.kembali', $item) }}" method="POST" class="w-full"
+                                      data-konfirmasi="Tandai santri ini telah kembali ke pondok sekarang?"
+                                      data-judul="Konfirmasi Santri Kembali"
+                                      data-tombol="Ya, Sudah Kembali">
                                     @csrf
                                     <button type="submit"
                                             class="w-full py-2 px-3 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white rounded-xl font-bold text-xs shadow-xs transition flex items-center justify-center gap-1.5">
-                                        <span>↩️</span>
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
                                         <span>Tandai Kembali</span>
                                     </button>
                                 </form>
@@ -417,7 +428,9 @@
                             <form action="{{ route('admin.surat-uks.destroy', $item) }}"
                                   method="POST"
                                   class="inline"
-                                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus surat {{ $item->nomor_surat }}?')">
+                                  data-konfirmasi="Apakah Anda yakin ingin menghapus surat {{ $item->nomor_surat }}? Transaksi kas terkait juga akan disesuaikan."
+                                  data-judul="Konfirmasi Hapus Surat"
+                                  data-tombol="Ya, Hapus Surat">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit"
@@ -448,10 +461,14 @@
         <div class="bg-white rounded-2xl max-w-md w-full p-4 sm:p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[92vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                    <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs">📄</span>
+                    <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </span>
                     <span>Cetak / Terbitkan Blangko UKS</span>
                 </h3>
-                <button type="button" onclick="closeModalGenerate()" class="text-slate-400 hover:text-slate-600 text-sm">✕</button>
+                <button type="button" onclick="closeModalGenerate()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
 
             <form action="{{ route('admin.surat-uks.generate-blangko') }}" method="POST" class="space-y-4">
@@ -497,14 +514,17 @@
                     <h3 class="text-base font-bold text-slate-900">Catat Surat Terjual / Terpakai</h3>
                     <p id="catat-info" class="text-xs text-emerald-800 font-mono font-semibold mt-0.5"></p>
                 </div>
-                <button type="button" onclick="closeModalCatatId()" class="text-slate-400 hover:text-slate-600 text-sm">✕</button>
+                <button type="button" onclick="closeModalCatatId()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
 
             <form id="form-catat-id" method="POST" class="space-y-3.5">
                 @csrf
                 <div class="bg-emerald-50/80 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-900 space-y-1">
                     <span class="font-bold flex items-center gap-1.5">
-                        <span>💵</span> Tarif Resmi: Rp 5.000,-
+                        <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Tarif Resmi: Rp 5.000,-</span>
                     </span>
                     <p class="text-[11px] leading-relaxed">
                         Saat disimpan, sistem otomatis membuat Kas Masuk (Debit Rp 5.000) di modul Bendahara.
@@ -514,7 +534,10 @@
                 <div class="relative">
                     <div class="flex items-center justify-between mb-1">
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Nama Santri *</label>
-                        <span class="text-[10.5px] text-emerald-700 font-medium">🔍 Ketik untuk saran otomatis</span>
+                        <span class="text-[10.5px] text-emerald-700 font-medium flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <span>Ketik untuk saran otomatis</span>
+                        </span>
                     </div>
                     <input type="text" id="input-nama-santri-id" name="nama_santri" required autocomplete="off" placeholder="Ketik nama santri..."
                            class="w-full text-sm rounded-xl border-slate-300 focus:ring-emerald-500 focus:border-emerald-500">
@@ -557,10 +580,14 @@
         <div class="bg-white rounded-2xl max-w-md w-full p-4 sm:p-6 shadow-2xl border border-slate-200 space-y-3.5 max-h-[92vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                    <span class="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center text-xs">🏷️</span>
+                    <span class="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center text-xs">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                    </span>
                     <span>Catat Terjual Via Kode 4-Digit</span>
                 </h3>
-                <button type="button" onclick="closeModalCatatKode()" class="text-slate-400 hover:text-slate-600 text-sm">✕</button>
+                <button type="button" onclick="closeModalCatatKode()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
 
             <form action="{{ route('admin.surat-uks.catat-terjual-kode') }}" method="POST" class="space-y-3.5">
@@ -578,7 +605,10 @@
                 <div class="relative">
                     <div class="flex items-center justify-between mb-1">
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Nama Santri *</label>
-                        <span class="text-[10.5px] text-amber-700 font-medium">🔍 Ketik untuk saran otomatis</span>
+                        <span class="text-[10.5px] text-amber-700 font-medium flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <span>Ketik untuk saran otomatis</span>
+                        </span>
                     </div>
                     <input type="text" id="input-nama-santri-kode" name="nama_santri" required autocomplete="off" placeholder="Ketik nama santri..."
                            class="w-full text-sm rounded-xl border-slate-300 focus:ring-amber-500 focus:border-amber-500">
