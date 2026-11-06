@@ -14,22 +14,22 @@
                     <span>Surat Izin UKS (Pulang & Sakit)</span>
                 </h1>
                 <p class="text-xs sm:text-sm text-slate-500 mt-1">
-                    Manajemen blangko resmi, nomor urut terpadu, penjualan Rp 5.000/lembar, dan integrasi kas otomatis ke Bendahara.
+                    Upload berkas surat fisik asli, penerbitan Kode 4-Digit, penjualan Rp 5.000/lembar, dan integrasi kas otomatis ke Bendahara.
                 </p>
             </div>
 
             <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full lg:w-auto">
                 <button type="button"
                         onclick="openModalGenerate()"
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95 text-center">
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-                    <span>+ Buat Blangko</span>
+                        class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95 text-center">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                    <span>+ Upload / Buat Surat</span>
                 </button>
                 <button type="button"
                         onclick="openModalCatatKode()"
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95 text-center">
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" /></svg>
-                    <span>Catat 4-Digit</span>
+                        class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition active:scale-95 text-center">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+                    <span>Catat Terjual</span>
                 </button>
                 <a href="{{ route('admin.surat-uks.cetak-batch', ['status' => 'tersedia']) }}"
                    target="_blank"
@@ -52,12 +52,12 @@
             </div>
         </div>
 
-        <!-- 3 KARTU LAPORAN UTAMA (Sesuai Permintaan) -->
+        <!-- 3 KARTU LAPORAN UTAMA -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- 1. Laporan Surat Tercetak -->
+            <!-- 1. Laporan Surat Terdaftar -->
             <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">1. Surat Tercetak</span>
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">1. Surat Terdaftar</span>
                     <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     </span>
@@ -100,7 +100,7 @@
             <!-- 3. Laporan Sisa Stok Blangko -->
             <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">3. Sisa Stok Blangko</span>
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">3. Sisa Stok Tersedia</span>
                     <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-xs">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                     </span>
@@ -157,7 +157,7 @@
                         <input type="text"
                                name="search"
                                value="{{ request('search') }}"
-                               placeholder="Cari kode/nama/surat..."
+                               placeholder="Cari kode/nama santri..."
                                class="w-full text-xs rounded-xl border-slate-200 pl-8 pr-3 py-2 focus:ring-emerald-500 focus:border-emerald-500">
                         <svg class="w-4 h-4 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -179,12 +179,12 @@
                 <table class="w-full text-left border-collapse text-xs">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[11px]">
-                            <th class="py-3 px-4">Tgl. Cetak</th>
+                            <th class="py-3 px-4">Tgl. Terdaftar</th>
                             <th class="py-3 px-4">Tgl. Beli</th>
                             <th class="py-3 px-4">Nama Santri</th>
-                            <th class="py-3 px-4">Nomor Surat & Kode</th>
-                            <th class="py-3 px-4">Kelas</th>
-                            <th class="py-3 px-4">Asrama</th>
+                            <th class="py-3 px-4">Kode Surat & Jenis</th>
+                            <th class="py-3 px-4">Berkas Asli</th>
+                            <th class="py-3 px-4">Kelas & Asrama</th>
                             <th class="py-3 px-4">Status</th>
                             <th class="py-3 px-4 text-center">Aksi</th>
                         </tr>
@@ -207,28 +207,48 @@
                                         <span class="font-bold text-slate-900 block text-xs">{{ $item->nama_santri }}</span>
                                     @else
                                         <span class="inline-block px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-500 italic">
-                                            (Blangko Stok Belum Terjual)
+                                            (Belum Terjual)
                                         </span>
                                     @endif
                                 </td>
                                 <td class="py-3 px-4">
-                                    <div class="space-y-0.5">
-                                        <span class="font-mono font-bold text-slate-900 block text-[11px]">{{ $item->nomor_surat }}</span>
+                                    <div class="space-y-1">
                                         <div class="flex items-center gap-1.5">
-                                            <span class="px-1.5 py-0.2 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 font-mono text-[10px] font-bold">
-                                                Kode: {{ $item->kode_verifikasi }}
+                                            <span class="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-950 font-mono text-xs font-black tracking-widest">
+                                                {{ $item->kode_verifikasi }}
                                             </span>
-                                            <span class="text-[10px] font-semibold {{ $item->jenis === 'sakit' ? 'text-blue-700' : 'text-emerald-700' }}">
-                                                &bull; {{ $item->jenis_label }}
+                                            <span class="text-[10px] font-bold {{ $item->jenis === 'sakit' ? 'text-blue-700 bg-blue-50 border-blue-200' : 'text-emerald-700 bg-emerald-50 border-emerald-200' }} px-2 py-0.5 rounded-md border">
+                                                {{ $item->jenis_label }}
                                             </span>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="py-3 px-4 text-slate-600 font-medium">
-                                    {{ $item->kelas ?: '-' }}
+                                <td class="py-3 px-4 whitespace-nowrap">
+                                    @if ($item->file_surat)
+                                        <a href="{{ $item->file_url }}" target="_blank"
+                                           class="inline-flex items-center gap-1 text-[11px] font-bold text-blue-700 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-2 py-1 rounded-lg transition">
+                                            <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                            <span>Lihat ({{ strtoupper($item->file_ext ?: 'FILE') }})</span>
+                                        </a>
+                                    @else
+                                        <span class="text-slate-400 italic text-[11px]">Tanpa File</span>
+                                    @endif
+
+                                    @if ($item->file_bukti_terjual)
+                                        <div class="mt-1">
+                                            <a href="{{ $item->file_bukti_url }}" target="_blank"
+                                               class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 hover:text-emerald-900 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
+                                                <span>Bukti Terjual</span>
+                                            </a>
+                                        </div>
+                                    @endif
                                 </td>
                                 <td class="py-3 px-4 text-slate-600 font-medium">
-                                    {{ $item->asrama ?: '-' }}
+                                    @if ($item->kelas || $item->asrama)
+                                        <span>{{ $item->kelas ?: '-' }} &bull; {{ $item->asrama ?: '-' }}</span>
+                                    @else
+                                        <span class="text-slate-400">-</span>
+                                    @endif
                                 </td>
                                 <td class="py-3 px-4 whitespace-nowrap">
                                     @if ($item->status === 'tersedia')
@@ -248,9 +268,9 @@
                                 <td class="py-3 px-4 whitespace-nowrap text-center">
                                     <div class="inline-flex items-center gap-1.5">
                                         @if ($item->status === 'tersedia')
-                                            <!-- Tombol Catat Terjual: Hanya isi Nama, Kelas, Asrama -->
+                                            <!-- Tombol Catat Terjual: Membuka modal dengan Kode otomatis terisi -->
                                             <button type="button"
-                                                    onclick="openModalCatatId('{{ $item->id }}', '{{ $item->nomor_surat }}', '{{ $item->kode_verifikasi }}', '{{ $item->jenis_label }}')"
+                                                    onclick="openModalCatatKode('{{ $item->kode_verifikasi }}')"
                                                     class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-[11px] shadow-2xs transition active:scale-95 flex items-center gap-1">
                                                 <span>Catat Terjual</span>
                                             </button>
@@ -271,7 +291,7 @@
                                         <!-- Cetak PDF -->
                                         <a href="{{ route('admin.surat-uks.cetak', $item) }}"
                                            target="_blank"
-                                           title="Cetak PDF Fisik"
+                                           title="Cetak PDF Fisik (70mm x 297mm)"
                                            class="p-1.5 text-slate-600 hover:text-emerald-700 hover:bg-slate-100 rounded-lg transition">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
                                         </a>
@@ -287,7 +307,7 @@
                                         <form action="{{ route('admin.surat-uks.destroy', $item) }}"
                                               method="POST"
                                               class="inline"
-                                              data-konfirmasi="Apakah Anda yakin ingin menghapus surat {{ $item->nomor_surat }}? Transaksi kas terkait juga akan disesuaikan."
+                                              data-konfirmasi="Apakah Anda yakin ingin menghapus surat Kode {{ $item->kode_verifikasi }}? Transaksi kas terkait juga akan disesuaikan."
                                               data-judul="Konfirmasi Hapus Surat"
                                               data-tombol="Ya, Hapus Surat">
                                             @csrf
@@ -304,7 +324,7 @@
                         @empty
                             <tr>
                                 <td colspan="8" class="py-12 text-center text-slate-400 text-xs">
-                                    Belum ada data blangko surat UKS. Silakan klik tombol <strong>"+ Buat Blangko"</strong> untuk mencetak blangko fisik dengan nomor urut resmi.
+                                    Belum ada data surat UKS. Silakan klik tombol <strong>"+ Upload / Buat Surat"</strong> untuk mendaftarkan surat baru.
                                 </td>
                             </tr>
                         @endforelse
@@ -323,14 +343,11 @@
         <div class="block md:hidden space-y-3">
             @forelse ($suratUks as $item)
                 <div class="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-xs space-y-3">
-                    <!-- Baris Atas: Nomor Surat, Kode 4-Digit, Jenis & Status -->
+                    <!-- Baris Atas: Kode 4-Digit, Jenis & Status -->
                     <div class="flex items-start justify-between gap-2 border-b border-slate-100 pb-2.5">
                         <div class="space-y-1">
-                            <span class="block font-mono font-black text-slate-900 text-xs tracking-tight">
-                                {{ $item->nomor_surat }}
-                            </span>
                             <div class="flex flex-wrap items-center gap-1.5">
-                                <span class="px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-300 text-emerald-800 font-mono text-[11px] font-black tracking-wider">
+                                <span class="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-950 font-mono text-sm font-black tracking-widest">
                                     KODE: {{ $item->kode_verifikasi }}
                                 </span>
                                 <span class="text-[10px] font-bold {{ $item->jenis === 'sakit' ? 'text-blue-700 bg-blue-50 border-blue-200' : 'text-emerald-700 bg-emerald-50 border-emerald-200' }} px-2 py-0.5 rounded-md border">
@@ -374,23 +391,36 @@
                             </div>
                         @else
                             <div class="py-1 text-center">
-                                <span class="text-slate-400 italic font-medium">Blangko Stok Kosong (Belum Terjual)</span>
+                                <span class="text-slate-400 italic font-medium">Stok Kosong (Belum Terjual)</span>
                             </div>
                         @endif
-                        <div class="flex items-center gap-2 pt-1 border-t border-slate-200/50 text-[11px] text-slate-500">
-                            <span class="w-16 shrink-0">Tgl. Cetak</span>
-                            <span>: {{ $item->tanggal_cetak ? $item->tanggal_cetak->format('d-m-Y') : '-' }}</span>
-                        </div>
+
+                        @if ($item->file_surat)
+                            <div class="pt-1 border-t border-slate-200/50 flex items-center justify-between">
+                                <span class="text-slate-500 text-[11px]">Berkas Asli:</span>
+                                <a href="{{ $item->file_url }}" target="_blank" class="text-blue-600 font-bold text-[11px] hover:underline flex items-center gap-1">
+                                    <span>Lihat File ({{ strtoupper($item->file_ext) }})</span>
+                                </a>
+                            </div>
+                        @endif
+
+                        @if ($item->file_bukti_terjual)
+                            <div class="pt-1 border-t border-slate-200/50 flex items-center justify-between">
+                                <span class="text-emerald-700 text-[11px] font-semibold">Bukti Terjual:</span>
+                                <a href="{{ $item->file_bukti_url }}" target="_blank" class="text-emerald-700 font-bold text-[11px] hover:underline">
+                                    <span>Lihat Bukti</span>
+                                </a>
+                            </div>
+                        @endif
                     </div>
 
-                    <!-- Tombol Aksi di Mobile -->
-                    <div class="flex items-center justify-between gap-2 pt-1">
+                    <!-- Tombol Aksi Mobile -->
+                    <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100">
                         <div class="flex-1">
                             @if ($item->status === 'tersedia')
                                 <button type="button"
-                                        onclick="openModalCatatId('{{ $item->id }}', '{{ $item->nomor_surat }}', '{{ $item->kode_verifikasi }}', '{{ $item->jenis_label }}')"
-                                        class="w-full py-2 px-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl font-bold text-xs shadow-xs transition flex items-center justify-center gap-1.5">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                                        onclick="openModalCatatKode('{{ $item->kode_verifikasi }}')"
+                                        class="w-full py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-xs transition flex items-center justify-center gap-1.5">
                                     <span>Catat Terjual</span>
                                 </button>
                             @elseif ($item->status === 'terjual')
@@ -428,7 +458,7 @@
                             <form action="{{ route('admin.surat-uks.destroy', $item) }}"
                                   method="POST"
                                   class="inline"
-                                  data-konfirmasi="Apakah Anda yakin ingin menghapus surat {{ $item->nomor_surat }}? Transaksi kas terkait juga akan disesuaikan."
+                                  data-konfirmasi="Apakah Anda yakin ingin menghapus surat Kode {{ $item->kode_verifikasi }}? Transaksi kas terkait juga akan disesuaikan."
                                   data-judul="Konfirmasi Hapus Surat"
                                   data-tombol="Ya, Hapus Surat">
                                 @csrf
@@ -444,7 +474,7 @@
                 </div>
             @empty
                 <div class="bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-400 text-xs">
-                    Belum ada data blangko surat UKS. Silakan klik tombol <strong>"+ Buat Blangko"</strong> untuk mencetak blangko fisik dengan nomor urut resmi.
+                    Belum ada data surat UKS. Silakan klik tombol <strong>"+ Upload / Buat Surat"</strong> untuk mendaftarkan surat baru.
                 </div>
             @endforelse
 
@@ -456,40 +486,56 @@
         </div>
     </div>
 
-    <!-- MODAL 1: BUAT / CETAK BLANGKO BARU -->
+    <!-- MODAL 1: UPLOAD BERKAS / DAFTARKAN SURAT UKS BARU -->
     <div id="modal-generate" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-4 sm:p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[92vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-4 sm:p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[92vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
                     <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
                     </span>
-                    <span>Cetak / Terbitkan Blangko UKS</span>
+                    <span>Upload & Daftarkan Surat UKS</span>
                 </h3>
                 <button type="button" onclick="closeModalGenerate()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
 
-            <form action="{{ route('admin.surat-uks.generate-blangko') }}" method="POST" class="space-y-4">
+            <form action="{{ route('admin.surat-uks.generate-blangko') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                 @csrf
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Jenis Surat Izin</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Jenis Surat Izin *</label>
                     <select name="jenis" required class="w-full text-sm rounded-xl border-slate-300 focus:ring-emerald-500 focus:border-emerald-500">
-                        <option value="pulang">Surat Izin Pulang (TTD KH. Mursyidi)</option>
-                        <option value="sakit">Surat Izin Sakit (TTD Sekretaris & Kesehatan)</option>
+                        <option value="pulang">Surat Izin Pulang (SIP)</option>
+                        <option value="sakit">Surat Izin Sakit (SIS)</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Jumlah Lembar Yang Dibuat</label>
-                    <input type="number" name="jumlah" value="10" min="1" max="100" required
-                           class="w-full text-sm rounded-xl border-slate-300 focus:ring-emerald-500 focus:border-emerald-500">
-                    <p class="text-[11px] text-slate-500 mt-1">Setiap lembar akan memiliki nomor urut resmi dan kode verifikasi 4-digit unik.</p>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                        Upload Berkas Surat Asli (PDF, Word, atau Gambar)
+                    </label>
+                    <div class="border-2 border-dashed border-emerald-300 hover:border-emerald-500 bg-emerald-50/30 rounded-2xl p-4 text-center cursor-pointer transition">
+                        <input type="file" id="berkas-surat-input" name="berkas_surat[]" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp"
+                               class="w-full text-xs text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-700 file:text-white hover:file:bg-emerald-800 cursor-pointer">
+                        <p class="text-[11px] text-slate-500 mt-2">
+                            Bisa pilih banyak berkas sekaligus (PDF, Word, atau Gambar). Setiap berkas akan otomatis diterbitkan <strong>1 Kode 4-Digit</strong> unik resmi tanpa mengubah berkas aslinya.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-slate-100">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                        Atau Buat Kode Stok Kosong Tanpa File
+                    </label>
+                    <input type="number" name="jumlah" value="0" min="0" max="100"
+                           class="w-full text-sm rounded-xl border-slate-300 focus:ring-emerald-500 focus:border-emerald-500"
+                           placeholder="Isi angka lembar jika hanya ingin menerbitkan kode tanpa upload berkas">
+                    <span class="text-[10.5px] text-slate-400 mt-0.5 block">Biarkan 0 jika Anda memilih berkas di atas.</span>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Tanggal Cetak</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Tanggal</label>
                     <input type="date" name="tanggal_cetak" value="{{ date('Y-m-d') }}" required
                            class="w-full text-sm rounded-xl border-slate-300 focus:ring-emerald-500 focus:border-emerald-500">
                 </div>
@@ -498,37 +544,48 @@
                     <button type="button" onclick="closeModalGenerate()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition">
                         Batal
                     </button>
-                    <button type="submit" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition shadow-xs">
-                        Terbitkan & Tambah ke Stok
+                    <button type="submit" class="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition shadow-xs">
+                        Upload & Terbitkan Kode
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL 2: CATAT TERJUAL PER ROW (HANYA NAMA, KELAS, ASRAMA) -->
-    <div id="modal-catat-id" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+    <!-- MODAL 2: CATAT TERJUAL DENGAN VERIFIKASI KODE 4-DIGIT INSTAN -->
+    <div id="modal-catat-kode" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-4 sm:p-6 shadow-2xl border border-slate-200 space-y-3.5 max-h-[92vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div>
-                    <h3 class="text-base font-bold text-slate-900">Catat Surat Terjual / Terpakai</h3>
-                    <p id="catat-info" class="text-xs text-emerald-800 font-mono font-semibold mt-0.5"></p>
-                </div>
-                <button type="button" onclick="closeModalCatatId()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition">
+                <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                    </span>
+                    <span>Pencatatan Surat Terjual</span>
+                </h3>
+                <button type="button" onclick="closeModalCatatKode()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
 
-            <form id="form-catat-id" method="POST" class="space-y-3.5">
+            <form action="{{ route('admin.surat-uks.catat-terjual-kode') }}" method="POST" enctype="multipart/form-data" class="space-y-3.5">
                 @csrf
                 <div class="bg-emerald-50/80 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-900 space-y-1">
                     <span class="font-bold flex items-center gap-1.5">
                         <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <span>Tarif Resmi: Rp 5.000,-</span>
+                        <span>Kas Masuk Otomatis: Rp 5.000,-</span>
                     </span>
                     <p class="text-[11px] leading-relaxed">
-                        Saat disimpan, sistem otomatis membuat Kas Masuk (Debit Rp 5.000) di modul Bendahara.
+                        Saat disimpan, kas masuk otomatis terakumulasi di Buku Kas Bendahara.
                     </p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Kode Verifikasi (4 Digit) *</label>
+                    <input type="text" id="catat-input-kode" name="kode_verifikasi" maxlength="4" required placeholder="Contoh: 7F2B"
+                           class="w-full text-base font-mono font-bold uppercase rounded-xl border-slate-300 focus:ring-emerald-500 focus:border-emerald-500">
+                    <div id="catat-status-kode" class="mt-1.5 min-h-[22px] flex items-center">
+                        <span class="text-[11px] text-slate-500">Ketik 4 digit kode yang tertera di surat fisik santri.</span>
+                    </div>
                 </div>
 
                 <div class="relative">
@@ -539,22 +596,29 @@
                             <span>Ketik untuk saran otomatis</span>
                         </span>
                     </div>
-                    <input type="text" id="input-nama-santri-id" name="nama_santri" required autocomplete="off" placeholder="Ketik nama santri..."
+                    <input type="text" id="input-nama-santri-kode" name="nama_santri" required autocomplete="off" placeholder="Ketik nama santri..."
                            class="w-full text-sm rounded-xl border-slate-300 focus:ring-emerald-500 focus:border-emerald-500">
-                    <div id="dropdown-santri-id" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-44 overflow-y-auto z-50 divide-y divide-slate-100 text-xs"></div>
+                    <div id="dropdown-santri-kode" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-44 overflow-y-auto z-50 divide-y divide-slate-100 text-xs"></div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Kelas *</label>
-                        <input type="text" id="input-kelas-id" name="kelas" required placeholder="Contoh: 3 Aliyah"
+                        <input type="text" id="input-kelas-kode" name="kelas" required placeholder="Contoh: 3 Aliyah"
                                class="w-full text-sm rounded-xl border-slate-300 focus:ring-emerald-500 focus:border-emerald-500">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Asrama / Kamar *</label>
-                        <input type="text" id="input-asrama-id" name="asrama" required placeholder="Contoh: Kamar B-04"
+                        <input type="text" id="input-asrama-kode" name="asrama" required placeholder="Contoh: Kamar B-04"
                                class="w-full text-sm rounded-xl border-slate-300 focus:ring-emerald-500 focus:border-emerald-500">
                     </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Upload Bukti Surat Fisik (Opsional)</label>
+                    <input type="file" name="file_bukti" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp"
+                           class="w-full text-xs text-slate-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer">
+                    <span class="text-[10.5px] text-slate-400 mt-0.5 block">Unggah foto atau scan surat fisik yang telah diisi tulisan tangan.</span>
                 </div>
 
                 <div>
@@ -564,75 +628,10 @@
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="closeModalCatatId()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition">
-                        Batal
-                    </button>
-                    <button type="submit" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition shadow-xs">
-                        Simpan & Masukkan Kas
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL 3: CATAT TERJUAL DENGAN INPUT KODE VERIFIKASI 4-DIGIT -->
-    <div id="modal-catat-kode" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-4 sm:p-6 shadow-2xl border border-slate-200 space-y-3.5 max-h-[92vh] overflow-y-auto">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                    <span class="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center text-xs">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
-                    </span>
-                    <span>Catat Terjual Via Kode 4-Digit</span>
-                </h3>
-                <button type="button" onclick="closeModalCatatKode()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-
-            <form action="{{ route('admin.surat-uks.catat-terjual-kode') }}" method="POST" class="space-y-3.5">
-                @csrf
-                <div class="bg-amber-50/80 border border-amber-200 rounded-xl p-3 text-xs text-amber-900">
-                    Masukkan 4 karakter kode verifikasi yang tertera di surat fisik (misal: <strong>7F2B</strong>).
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Kode Verifikasi (4 Digit) *</label>
-                    <input type="text" name="kode_verifikasi" maxlength="4" required placeholder="Contoh: 7F2B"
-                           class="w-full text-base font-mono font-bold uppercase rounded-xl border-slate-300 focus:ring-amber-500 focus:border-amber-500">
-                </div>
-
-                <div class="relative">
-                    <div class="flex items-center justify-between mb-1">
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Nama Santri *</label>
-                        <span class="text-[10.5px] text-amber-700 font-medium flex items-center gap-1">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                            <span>Ketik untuk saran otomatis</span>
-                        </span>
-                    </div>
-                    <input type="text" id="input-nama-santri-kode" name="nama_santri" required autocomplete="off" placeholder="Ketik nama santri..."
-                           class="w-full text-sm rounded-xl border-slate-300 focus:ring-amber-500 focus:border-amber-500">
-                    <div id="dropdown-santri-kode" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-44 overflow-y-auto z-50 divide-y divide-slate-100 text-xs"></div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Kelas *</label>
-                        <input type="text" id="input-kelas-kode" name="kelas" required placeholder="Contoh: 3 Aliyah"
-                               class="w-full text-sm rounded-xl border-slate-300 focus:ring-amber-500 focus:border-amber-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Asrama / Kamar *</label>
-                        <input type="text" id="input-asrama-kode" name="asrama" required placeholder="Contoh: Kamar B-04"
-                               class="w-full text-sm rounded-xl border-slate-300 focus:ring-amber-500 focus:border-amber-500">
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
                     <button type="button" onclick="closeModalCatatKode()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition">
                         Batal
                     </button>
-                    <button type="submit" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition shadow-xs">
+                    <button type="submit" id="btn-submit-catat" class="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition shadow-xs">
                         Catat & Masukkan Kas
                     </button>
                 </div>
@@ -686,7 +685,6 @@
 
             inputNama.addEventListener('input', function() {
                 renderSuggestions(this.value);
-                // Jika user mengetik nama lengkap yang persis sama
                 const exact = santriList.find(s => s.nama.toLowerCase() === this.value.trim().toLowerCase());
                 if (exact) {
                     if (inputKelas) inputKelas.value = exact.kelas;
@@ -724,8 +722,47 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            setupSantriAutocomplete('input-nama-santri-id', 'dropdown-santri-id', 'input-kelas-id', 'input-asrama-id');
             setupSantriAutocomplete('input-nama-santri-kode', 'dropdown-santri-kode', 'input-kelas-kode', 'input-asrama-kode');
+
+            // Setup Real-time Check Kode Verifikasi
+            const inputKode = document.getElementById('catat-input-kode');
+            const statusKode = document.getElementById('catat-status-kode');
+            const btnSubmitCatat = document.getElementById('btn-submit-catat');
+
+            let timeoutKode = null;
+            if (inputKode) {
+                inputKode.addEventListener('input', function() {
+                    const val = this.value.trim().toUpperCase();
+                    this.value = val;
+                    clearTimeout(timeoutKode);
+
+                    if (val.length < 4) {
+                        statusKode.innerHTML = '<span class="text-[11px] text-slate-500">Ketik 4 digit kode yang tertera di surat fisik santri.</span>';
+                        return;
+                    }
+
+                    statusKode.innerHTML = '<span class="text-[11px] text-slate-400 font-semibold animate-pulse">Memeriksa status kode ' + val + '...</span>';
+
+                    timeoutKode = setTimeout(() => {
+                        fetch('{{ route('admin.surat-uks.cek-kode') }}?kode=' + encodeURIComponent(val))
+                            .then(res => res.json())
+                            .then(data => {
+                                if (!data.found) {
+                                    statusKode.innerHTML = '<span class="px-2.5 py-1 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 font-bold text-xs flex items-center gap-1">✕ Kode Tidak Terdaftar</span>';
+                                } else if (data.status === 'tersedia') {
+                                    statusKode.innerHTML = '<span class="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-800 font-bold text-xs flex items-center gap-1">✓ ' + data.pesan + '</span>';
+                                } else if (data.status === 'terjual') {
+                                    statusKode.innerHTML = '<span class="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-300 text-amber-800 font-bold text-xs flex items-center gap-1">' + data.pesan + '</span>';
+                                } else {
+                                    statusKode.innerHTML = '<span class="px-2.5 py-1 rounded-lg bg-purple-50 border border-purple-200 text-purple-700 font-bold text-xs flex items-center gap-1">' + data.pesan + '</span>';
+                                }
+                            })
+                            .catch(() => {
+                                statusKode.innerHTML = '<span class="text-[11px] text-rose-500">Gagal memeriksa kode. Silakan coba lagi.</span>';
+                            });
+                    }, 300);
+                });
+            }
         });
 
         function openModalGenerate() {
@@ -735,35 +772,29 @@
             document.getElementById('modal-generate').classList.add('hidden');
         }
 
-        function openModalCatatId(id, noSurat, kode, jenisLabel) {
-            const form = document.getElementById('form-catat-id');
-            form.action = `/admin/surat-uks/${id}/catat-terjual`;
-            document.getElementById('catat-info').innerText = `${jenisLabel} No: ${noSurat} (Kode: ${kode})`;
-            const inputNama = document.getElementById('input-nama-santri-id');
-            const inputKelas = document.getElementById('input-kelas-id');
-            const inputAsrama = document.getElementById('input-asrama-id');
-            const dropdown = document.getElementById('dropdown-santri-id');
-            if (inputNama) inputNama.value = '';
-            if (inputKelas) inputKelas.value = '';
-            if (inputAsrama) inputAsrama.value = '';
-            if (dropdown) dropdown.classList.add('hidden');
-            document.getElementById('modal-catat-id').classList.remove('hidden');
-            if (inputNama) setTimeout(() => inputNama.focus(), 100);
-        }
-        function closeModalCatatId() {
-            document.getElementById('modal-catat-id').classList.add('hidden');
-        }
-
-        function openModalCatatKode() {
+        function openModalCatatKode(prefillKode = '') {
+            const inputKode = document.getElementById('catat-input-kode');
             const inputNama = document.getElementById('input-nama-santri-kode');
             const inputKelas = document.getElementById('input-kelas-kode');
             const inputAsrama = document.getElementById('input-asrama-kode');
             const dropdown = document.getElementById('dropdown-santri-kode');
+
             if (inputNama) inputNama.value = '';
             if (inputKelas) inputKelas.value = '';
             if (inputAsrama) inputAsrama.value = '';
             if (dropdown) dropdown.classList.add('hidden');
+
             document.getElementById('modal-catat-kode').classList.remove('hidden');
+
+            if (inputKode) {
+                inputKode.value = prefillKode;
+                if (prefillKode) {
+                    inputKode.dispatchEvent(new Event('input'));
+                    if (inputNama) setTimeout(() => inputNama.focus(), 150);
+                } else {
+                    setTimeout(() => inputKode.focus(), 100);
+                }
+            }
         }
         function closeModalCatatKode() {
             document.getElementById('modal-catat-kode').classList.add('hidden');

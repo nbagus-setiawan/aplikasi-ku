@@ -17,6 +17,8 @@ class SuratUks extends Model
     protected $table = 'surat_uks';
 
     protected $fillable = [
+        'file_surat',
+        'file_bukti_terjual',
         'nomor_surat',
         'kode_verifikasi',
         'jenis',
@@ -41,6 +43,36 @@ class SuratUks extends Model
         'tanggal_kembali_riil' => 'datetime',
         'harga' => 'decimal:2',
     ];
+
+    public function getFileUrlAttribute(): ?string
+    {
+        return $this->file_surat ? asset('storage/' . $this->file_surat) : null;
+    }
+
+    public function getFileBuktiUrlAttribute(): ?string
+    {
+        return $this->file_bukti_terjual ? asset('storage/' . $this->file_bukti_terjual) : null;
+    }
+
+    public function getFileExtAttribute(): string
+    {
+        return $this->file_surat ? strtolower(pathinfo($this->file_surat, PATHINFO_EXTENSION)) : '';
+    }
+
+    public function getIsPdfAttribute(): bool
+    {
+        return $this->file_ext === 'pdf';
+    }
+
+    public function getIsImageAttribute(): bool
+    {
+        return in_array($this->file_ext, ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp'], true);
+    }
+
+    public function getIsWordAttribute(): bool
+    {
+        return in_array($this->file_ext, ['doc', 'docx'], true);
+    }
 
     /**
      * Relasi ke data santri (jika dihubungkan).

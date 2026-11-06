@@ -513,6 +513,8 @@
         // Tangkap submit formulir
         document.addEventListener('submit', function (e) {
             let form = e.target;
+            if (e.defaultPrevented) return;
+            if (form.hasAttribute('data-konfirmasi') && !form.__sudahDikonfirmasi) return;
             if (form.classList.contains('no-loader')) return;
             if (form.getAttribute('target') === '_blank') return;
 

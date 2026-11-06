@@ -102,37 +102,68 @@ class SuratUksController extends Controller
     /**
      * Cetak / Buat Blangko Baru secara Masal (Batch)
      */
+    /**
+     * Cetak / Buat Blangko Baru secara Masal (Bisa Upload Berkas Banyak Sekaligus: PDF, Word, atau Gambar).
+     * Setiap berkas otomatis diterbitkan Kode 4-Digit unik resmi.
+     */
     public function generateBlangko(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'jenis' => ['required', 'in:pulang,sakit'],
-            'jumlah' => ['required', 'integer', 'min:1', 'max:100'],
             'tanggal_cetak' => ['nullable', 'date'],
+            'jumlah' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'berkas_surat' => ['nullable', 'array'],
+            'berkas_surat.*' => ['nullable', 'file', 'mimes:pdf,doc,docx,jpg,jpeg,png,webp', 'max:15360'],
         ], [
             'jenis.required' => 'Pilih jenis surat izin (pulang atau sakit).',
-            'jumlah.required' => 'Masukkan jumlah lembar blangko yang ingin dibuat.',
-            'jumlah.min' => 'Jumlah minimal 1 lembar.',
-            'jumlah.max' => 'Jumlah maksimal 100 lembar per sekali buat.',
         ]);
 
         $jenis = $validated['jenis'];
-        $jumlah = (int) $validated['jumlah'];
         $tanggalCetak = !empty($validated['tanggal_cetak']) ? Carbon::parse($validated['tanggal_cetak']) : Carbon::today();
+        $files = $request->file('berkas_surat', []);
 
-        DB::transaction(function () use ($jenis, $jumlah, $tanggalCetak) {
-            for ($i = 0; $i < $jumlah; $i++) {
-                $nomorSurat = $this->nomorSuratService->generateNomorSuratUks($jenis, $tanggalCetak);
-                $kodeVerifikasi = SuratUks::generateKodeVerifikasi();
+        $jumlahDibuat = 0;
 
-                SuratUks::create([
-                    'nomor_surat' => $nomorSurat,
-                    'kode_verifikasi' => $kodeVerifikasi,
-                    'jenis' => $jenis,
-                    'tanggal_cetak' => $tanggalCetak,
-                    'harga' => 5000,
-                    'status' => 'tersedia',
-                    'user_id' => Auth::id(),
-                ]);
+        DB::transaction(function () use ($jenis, $tanggalCetak, $files, $request, &$jumlahDibuat) {
+            if (!empty($files) && count($files) > 0) {
+                foreach ($files as $file) {
+                    if (!$file || !$file->isValid()) continue;
+
+                    $kodeVerifikasi = SuratUks::generateKodeVerifikasi();
+                    $ext = $file->getClientOriginalExtension();
+                    $filename = "surat-{$kodeVerifikasi}-" . time() . "-{$jumlahDibuat}." . $ext;
+                    $path = $file->storeAs('surat-uks', $filename, 'public');
+
+                    SuratUks::create([
+                        'nomor_surat' => $kodeVerifikasi,
+                        'kode_verifikasi' => $kodeVerifikasi,
+                        'jenis' => $jenis,
+                        'tanggal_cetak' => $tanggalCetak,
+                        'harga' => 5000,
+                        'status' => 'tersedia',
+                        'file_surat' => $path,
+                        'user_id' => Auth::id(),
+                    ]);
+
+                    $jumlahDibuat++;
+                }
+            } else {
+                $jumlah = max(1, (int) ($request->input('jumlah', 1)));
+                for ($i = 0; $i < $jumlah; $i++) {
+                    $kodeVerifikasi = SuratUks::generateKodeVerifikasi();
+
+                    SuratUks::create([
+                        'nomor_surat' => $kodeVerifikasi,
+                        'kode_verifikasi' => $kodeVerifikasi,
+                        'jenis' => $jenis,
+                        'tanggal_cetak' => $tanggalCetak,
+                        'harga' => 5000,
+                        'status' => 'tersedia',
+                        'user_id' => Auth::id(),
+                    ]);
+
+                    $jumlahDibuat++;
+                }
             }
         });
 
@@ -140,7 +171,49 @@ class SuratUksController extends Controller
 
         return redirect()
             ->route('admin.surat-uks.index')
-            ->with('success', "Alhamdulillah, berhasil menerbitkan {$jumlah} lembar blangko kosong {$label} siap cetak dan bernomor urut resmi.");
+            ->with('success', "Alhamdulillah, berhasil menerbitkan {$jumlahDibuat} lembar berkas {$label} dengan Kode 4-Digit resmi siap pakai.");
+    }
+
+    /**
+     * Endpoint Cek Kode Verifikasi 4-Digit secara Realtime via AJAX.
+     */
+    public function cekKode(Request $request): JsonResponse
+    {
+        $kode = strtoupper(trim((string) $request->input('kode', '')));
+        if (strlen($kode) < 4) {
+            return response()->json(['found' => false]);
+        }
+
+        $surat = SuratUks::where('kode_verifikasi', $kode)->first();
+        if (! $surat) {
+            return response()->json([
+                'found' => false,
+                'status' => 'tidak_ada',
+                'pesan' => '✕ Kode Tidak Terdaftar',
+            ]);
+        }
+
+        $isTersedia = ($surat->status === 'tersedia');
+        $label = ($surat->jenis === 'sakit') ? 'Surat Izin Sakit' : 'Surat Izin Pulang';
+
+        return response()->json([
+            'found' => true,
+            'id' => $surat->id,
+            'kode' => $surat->kode_verifikasi,
+            'status' => $surat->status,
+            'jenis' => $surat->jenis,
+            'jenis_label' => $label,
+            'nama_santri' => $surat->nama_santri,
+            'kelas' => $surat->kelas,
+            'asrama' => $surat->asrama,
+            'file_url' => $surat->file_url,
+            'is_image' => $surat->is_image,
+            'is_pdf' => $surat->is_pdf,
+            'is_word' => $surat->is_word,
+            'pesan' => $isTersedia 
+                ? "✓ Kode Terdaftar ({$label})" 
+                : ($surat->status === 'terjual' ? "⚠️ Kode Sudah Terjual a.n {$surat->nama_santri}" : "⚠️ Kode Berstatus Telah Kembali"),
+        ]);
     }
 
     /**
@@ -253,7 +326,7 @@ class SuratUksController extends Controller
         $suratUk = $this->resolveSuratUks($suratUk);
 
         if ($suratUk->status !== 'tersedia') {
-            return back()->with('error', "Surat nomor {$suratUk->nomor_surat} sudah berstatus {$suratUk->status}.");
+            return back()->with('error', "Surat Kode {$suratUk->kode_verifikasi} sudah berstatus {$suratUk->status}.");
         }
 
         $validated = $request->validate([
@@ -261,6 +334,7 @@ class SuratUksController extends Controller
             'kelas' => ['required', 'string', 'max:100'],
             'asrama' => ['required', 'string', 'max:100'],
             'tanggal_pembelian' => ['nullable', 'date'],
+            'file_bukti' => ['nullable', 'file', 'mimes:pdf,doc,docx,jpg,jpeg,png,webp', 'max:15360'],
         ], [
             'nama_santri.required' => 'Nama santri wajib diisi.',
             'kelas.required' => 'Kelas wajib diisi.',
@@ -269,23 +343,31 @@ class SuratUksController extends Controller
 
         $tanggal = !empty($validated['tanggal_pembelian']) ? Carbon::parse($validated['tanggal_pembelian']) : Carbon::today();
 
-        DB::transaction(function () use ($suratUk, $validated, $tanggal) {
-            // 1. Update status surat UKS
-            $suratUk->update([
+        $buktiPath = null;
+        if ($request->hasFile('file_bukti') && $request->file('file_bukti')->isValid()) {
+            $buktiPath = $request->file('file_bukti')->store('surat-uks/bukti', 'public');
+        }
+
+        DB::transaction(function () use ($suratUk, $validated, $tanggal, $buktiPath) {
+            $dataUpdate = [
                 'nama_santri' => $validated['nama_santri'],
                 'kelas' => $validated['kelas'],
                 'asrama' => $validated['asrama'],
                 'tanggal_pembelian' => $tanggal,
                 'status' => 'terjual',
-            ]);
+            ];
+            if ($buktiPath) {
+                $dataUpdate['file_bukti_terjual'] = $buktiPath;
+            }
 
-            // 2. Akumulasikan dan perbarui catatan kas bulanan di buku kas bendahara
+            $suratUk->update($dataUpdate);
+
             self::syncKasBulanan($suratUk->jenis, (int) $tanggal->format('Y'), (int) $tanggal->format('m'));
         });
 
         return redirect()
             ->route('admin.surat-uks.index')
-            ->with('success', "Surat No. {$suratUk->nomor_surat} (Kode: {$suratUk->kode_verifikasi}) berhasil dicatat terjual untuk {$validated['nama_santri']}. Kas penjualan bulan ini otomatis diakumulasikan di Buku Kas Bendahara.");
+            ->with('success', "Surat Kode {$suratUk->kode_verifikasi} berhasil dicatat Terjual untuk {$validated['nama_santri']}. Kas penjualan bulan ini otomatis terakumulasi di Buku Kas Bendahara.");
     }
 
     /**
@@ -299,6 +381,7 @@ class SuratUksController extends Controller
             'kelas' => ['required', 'string', 'max:100'],
             'asrama' => ['required', 'string', 'max:100'],
             'tanggal_pembelian' => ['nullable', 'date'],
+            'file_bukti' => ['nullable', 'file', 'mimes:pdf,doc,docx,jpg,jpeg,png,webp', 'max:15360'],
         ], [
             'kode_verifikasi.required' => 'Kode verifikasi 4-digit wajib diisi.',
             'kode_verifikasi.size' => 'Kode verifikasi harus tepat 4 karakter.',
@@ -311,11 +394,11 @@ class SuratUksController extends Controller
         $suratUk = SuratUks::where('kode_verifikasi', $kode)->first();
 
         if (! $suratUk) {
-            return back()->with('error', "Surat dengan kode verifikasi {$kode} tidak ditemukan dalam database.");
+            return back()->withInput()->with('error', "Kode verifikasi {$kode} Tidak Terdaftar.");
         }
 
         if ($suratUk->status !== 'tersedia') {
-            return back()->with('error', "Surat nomor {$suratUk->nomor_surat} (Kode: {$kode}) sudah berstatus {$suratUk->status} a.n {$suratUk->nama_santri}.");
+            return back()->withInput()->with('error', "Surat Kode {$kode} sudah berstatus {$suratUk->status} a.n {$suratUk->nama_santri}.");
         }
 
         return $this->catatTerjual($request, $suratUk);

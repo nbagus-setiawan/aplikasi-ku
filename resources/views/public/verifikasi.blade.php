@@ -276,12 +276,11 @@
                 <div class="p-5 sm:p-8 space-y-4 text-xs sm:text-sm text-gray-700">
                     <div class="border-b border-gray-100 pb-4 flex flex-wrap items-center justify-between gap-4">
                         <div>
-                            <span class="block text-slate-500 font-semibold uppercase text-xs tracking-wider">Nomor Surat</span>
-                            <span class="block text-base sm:text-lg font-mono font-bold text-emerald-950 mt-0.5">{{ $suratUks->nomor_surat }}</span>
+                            <span class="block text-slate-500 font-semibold uppercase text-xs tracking-wider">Kode Surat</span>
+                            <span class="block text-2xl font-mono font-black text-emerald-950 mt-0.5 tracking-widest">{{ $suratUks->kode_verifikasi }}</span>
                         </div>
-                        <div class="bg-emerald-50/70 border border-emerald-200 px-4 py-2 rounded-xl text-right">
-                            <span class="block text-[10px] font-bold uppercase text-emerald-800">Kode Verifikasi (4 Digit):</span>
-                            <span class="font-mono text-lg font-extrabold text-emerald-950 tracking-widest">{{ $suratUks->kode_verifikasi }}</span>
+                        <div class="bg-emerald-50/70 border border-emerald-200 px-3.5 py-1.5 rounded-xl">
+                            <span class="text-xs font-bold text-emerald-800">4 Digit Resmi</span>
                         </div>
                     </div>
 

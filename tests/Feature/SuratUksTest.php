@@ -8,6 +8,8 @@ use App\Models\SuratUks;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class SuratUksTest extends TestCase
@@ -42,11 +44,10 @@ class SuratUksTest extends TestCase
         $response = $this->actingAs($this->user)->get('/admin/surat-uks');
         $response->assertStatus(200);
         $response->assertSee('Surat Izin UKS');
-        $response->assertSee('001/UKS-SIP/AF-PA/XI/2026');
         $response->assertSee('7F2B');
-        $response->assertSee('Surat Tercetak');
+        $response->assertSee('Surat Terdaftar');
         $response->assertSee('Kas Masuk');
-        $response->assertSee('Sisa Stok Blangko');
+        $response->assertSee('Sisa Stok Tersedia');
         $response->assertViewHas('santris');
         $response->assertViewHas('santriJson');
     }
@@ -66,7 +67,7 @@ class SuratUksTest extends TestCase
         $this->assertNotNull($surat);
         $this->assertEquals('tersedia', $surat->status);
         $this->assertEquals(4, strlen($surat->kode_verifikasi));
-        $this->assertStringContainsString('UKS-SIP', $surat->nomor_surat);
+        $this->assertEquals($surat->kode_verifikasi, $surat->nomor_surat);
     }
 
     public function test_secretary_can_catat_terjual_with_name_class_and_dorm(): void
@@ -211,7 +212,7 @@ class SuratUksTest extends TestCase
 
         // Pastikan terverifikasi sah dan menampilkan data santri
         $response->assertSee('DOKUMEN RESMI TERVERIFIKASI SAH');
-        $response->assertSee('003/UKS-SIP/AF-PA/XI/2026');
+        $response->assertSee('Kode Surat');
         $response->assertSee('V7X9');
         $response->assertSee('Surat Izin Pulang');
         $response->assertSee('Muhammad Zaidan');
@@ -425,4 +426,83 @@ class SuratUksTest extends TestCase
         $this->assertStringContainsString('Pengurus Kesehatan Putra', $htmlSakit);
         $this->assertStringNotContainsString('Pos Keamanan / Satpam', $htmlSakit);
     }
+
+    public function test_secretary_can_upload_multi_files_for_surat_uks(): void
+    {
+        Storage::fake('public');
+
+        $filePdf = UploadedFile::fake()->create('surat1.pdf', 200, 'application/pdf');
+        $fileJpg = UploadedFile::fake()->image('surat2.jpg', 600, 800);
+        $fileDoc = UploadedFile::fake()->create('surat3.docx', 150, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+
+        $response = $this->actingAs($this->user)->post('/admin/surat-uks/generate-blangko', [
+            'jenis' => 'pulang',
+            'berkas_surat' => [$filePdf, $fileJpg, $fileDoc],
+        ]);
+
+        $response->assertRedirect('/admin/surat-uks');
+        $response->assertSessionHas('success');
+
+        $surats = SuratUks::latest('id')->take(3)->get();
+        $this->assertCount(3, $surats);
+
+        foreach ($surats as $surat) {
+            $this->assertEquals('pulang', $surat->jenis);
+            $this->assertEquals('tersedia', $surat->status);
+            $this->assertNotNull($surat->file_surat);
+            $this->assertEquals(4, strlen($surat->kode_verifikasi));
+            Storage::disk('public')->assertExists($surat->file_surat);
+        }
+    }
+
+    public function test_cek_kode_endpoint_returns_realtime_verification_status(): void
+    {
+        // 1. Kode belum terdaftar
+        $resNotFound = $this->actingAs($this->user)->getJson('/admin/surat-uks/cek-kode?kode=NON9');
+        $resNotFound->assertStatus(200)
+            ->assertJson([
+                'found' => false,
+                'status' => 'tidak_ada',
+            ]);
+
+        // 2. Kode terdaftar & berstatus tersedia
+        $suratTersedia = SuratUks::create([
+            'nomor_surat' => 'OK01',
+            'kode_verifikasi' => 'OK01',
+            'jenis' => 'pulang',
+            'tanggal_cetak' => Carbon::today(),
+            'status' => 'tersedia',
+        ]);
+
+        $resTersedia = $this->actingAs($this->user)->getJson("/admin/surat-uks/cek-kode?kode={$suratTersedia->kode_verifikasi}");
+        $resTersedia->assertStatus(200)
+            ->assertJson([
+                'found' => true,
+                'status' => 'tersedia',
+                'jenis' => 'pulang',
+            ]);
+
+        // 3. Kode terdaftar & berstatus terjual
+        $suratTerjual = SuratUks::create([
+            'nomor_surat' => 'OK02',
+            'kode_verifikasi' => 'OK02',
+            'jenis' => 'sakit',
+            'tanggal_cetak' => Carbon::today(),
+            'nama_santri' => 'Ahmad Santri',
+            'kelas' => '2 Aliyah',
+            'asrama' => 'Kamar 01',
+            'status' => 'terjual',
+        ]);
+
+        $resTerjual = $this->actingAs($this->user)->getJson("/admin/surat-uks/cek-kode?kode={$suratTerjual->kode_verifikasi}");
+        $resTerjual->assertStatus(200)
+            ->assertJson([
+                'found' => true,
+                'status' => 'terjual',
+                'nama_santri' => 'Ahmad Santri',
+                'kelas' => '2 Aliyah',
+                'asrama' => 'Kamar 01',
+            ]);
+    }
 }
+
