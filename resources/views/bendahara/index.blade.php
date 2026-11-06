@@ -71,15 +71,15 @@
                 <span>Catat Kredit</span>
             </button>
 
-            <!-- Tombol Buka Pop-up Unduh Laporan (Tidak Langsung Mengunduh) -->
+            <!-- Tombol Buka Pop-up Unduh Laporan PDF -->
             <button @click="modalDownloadOpen = true"
                     type="button"
-                    class="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-xs transition transform active:scale-95"
-                    title="Pilih periode dan unduh laporan Word / Cetak PDF">
-                <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    class="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs sm:text-sm shadow-xs transition transform active:scale-95"
+                    title="Pilih periode dan unduh laporan kas PDF">
+                <svg class="w-4 h-4 text-blue-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
-                <span>Unduh / Cetak Laporan</span>
+                <span>Unduh Laporan PDF</span>
             </button>
         </div>
     </div>
@@ -289,6 +289,57 @@
                 </div>
             </div>
         </div>
+
+        <!-- PANEL STATUS PEMBUKUAN & TOMBOL TUTUP BUKU (HANYA MUNCUL DI MODE FILTER BULAN) -->
+        <div x-show="filter.tipe === 'bulan'" class="pt-3 border-t border-slate-100 space-y-2.5" style="display: none;">
+            <!-- KONDISI 1: JIKA BULAN INI TELAH DITUTUP BUKU (TERKUNCI) -->
+            <div x-show="isTutupBuku" class="p-3.5 rounded-2xl bg-slate-900 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm border border-slate-800">
+                <div class="flex items-start sm:items-center gap-3 min-w-0">
+                    <span class="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    </span>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-xs sm:text-sm font-black text-emerald-300">STATUS: BUKU KAS DITUTUP (TERKUNCI)</span>
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-800" x-text="filter.bulan"></span>
+                        </div>
+                        <p class="text-[11px] text-slate-300 mt-0.5">
+                            Saldo akhir resmi dibukukan sebagai Saldo Awal bulan berikutnya. Seluruh transaksi di bulan ini dikunci dari perubahan.
+                        </p>
+                    </div>
+                </div>
+                <button @click="openModalBukaKunci()"
+                        type="button"
+                        class="w-full sm:w-auto shrink-0 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 hover:text-amber-200 font-bold text-xs border border-slate-700 shadow-xs transition flex items-center justify-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+                    <span>Buka Kunci Buku</span>
+                </button>
+            </div>
+
+            <!-- KONDISI 2: JIKA BULAN INI BELUM DITUTUP BUKU (TERBUKA) -->
+            <div x-show="!isTutupBuku" class="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50/50 to-white border border-emerald-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs">
+                <div class="flex items-start sm:items-center gap-3 min-w-0">
+                    <span class="p-2 rounded-xl bg-emerald-600 text-white shadow-xs shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </span>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-xs sm:text-sm font-black text-emerald-950">PEMBUKUAN BULAN INI TERBUKA</span>
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-white text-emerald-800 border border-emerald-300" x-text="filter.bulan"></span>
+                        </div>
+                        <p class="text-[11px] text-emerald-700 mt-0.5">
+                            Saldo Awal Kas: <strong class="font-mono text-emerald-950" x-text="cards.saldo_awal || 'Rp 0'">Rp 0</strong> &bull; Saldo Akhir Kas: <strong class="font-mono text-emerald-950" x-text="cards.saldo_akhir_filtered || 'Rp 0'">Rp 0</strong>
+                        </p>
+                    </div>
+                </div>
+                <button @click="openModalTutupBuku()"
+                        type="button"
+                        class="w-full sm:w-auto shrink-0 px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs transition transform active:scale-95 flex items-center justify-center gap-1.5 whitespace-nowrap">
+                    <svg class="w-3.5 h-3.5 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    <span>Tutup Buku Bulan Ini</span>
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- KONTEN MUTASI: DUA TAMPILAN (CARD FEED DI MOBILE, TABEL LENGKAP DI DESKTOP) -->
@@ -478,26 +529,135 @@
                 </div>
             </div>
 
-            <!-- Tombol Aksi Unduh Word / Cetak PDF -->
+            <!-- Tombol Aksi Unduh PDF -->
             <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-end gap-2">
                 <button @click="modalDownloadOpen = false"
                         type="button"
-                        class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition order-3 sm:order-1">
+                        class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition order-2 sm:order-1">
                     Batal
                 </button>
 
                 <button @click="triggerDownload('pdf')"
                         type="button"
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition order-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                    <span>Cetak / PDF</span>
+                        class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs shadow-xs transition order-1 sm:order-2">
+                    <svg class="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>Unduh Laporan PDF</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL POP-UP: TUTUP BUKU AKHIR BULAN (DATA LOCKING & RESMIKAN SALDO AWAL) -->
+    <!-- ========================================================================= -->
+    <div x-show="modalTutupBukuOpen"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4"
+         style="display: none;">
+        <div @click.away="modalTutupBukuOpen = false"
+             class="bg-white rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-slate-200 space-y-4">
+            
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <span class="p-2 rounded-xl bg-emerald-100 text-emerald-800">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    </span>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-black text-slate-900">Tutup Buku Akhir Bulan</h3>
+                        <p class="text-xs text-slate-500" x-text="'Kunci pembukuan periode ' + (cards.periode_label || filter.bulan)"></p>
+                    </div>
+                </div>
+                <button @click="modalTutupBukuOpen = false" type="button" class="text-slate-400 hover:text-slate-600 p-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Ringkasan Angka yang Akan Dibukukan -->
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-2.5 text-xs">
+                <div class="flex justify-between items-center text-slate-600">
+                    <span>1. Saldo Awal Kas (Sebelum Periode):</span>
+                    <strong class="font-mono text-slate-900" x-text="cards.saldo_awal || 'Rp 0'">Rp 0</strong>
+                </div>
+                <div class="flex justify-between items-center text-emerald-700">
+                    <span>2. Total Penerimaan (Debit):</span>
+                    <strong class="font-mono" x-text="cards.total_debit || 'Rp 0'">Rp 0</strong>
+                </div>
+                <div class="flex justify-between items-center text-rose-700">
+                    <span>3. Total Pengeluaran (Kredit):</span>
+                    <strong class="font-mono" x-text="cards.total_kredit || 'Rp 0'">Rp 0</strong>
+                </div>
+                <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-slate-900 font-bold text-sm">
+                    <span>Saldo Akhir Kas:</span>
+                    <strong class="font-mono text-emerald-800 text-base" x-text="cards.saldo_akhir_filtered || 'Rp 0'">Rp 0</strong>
+                </div>
+                <p class="text-[11px] text-slate-500 leading-relaxed pt-1">
+                    *Saldo Akhir ini akan resmi dibukukan dan otomatis menjadi <strong>Saldo Awal Kas</strong> pada tanggal 1 bulan berikutnya. Seluruh transaksi di bulan ini akan terkunci (tidak bisa diedit atau dihapus).
+                </p>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Catatan Penutupan Buku (Opsional)</label>
+                <textarea x-model="tutupBukuCatatan" rows="2" placeholder="Contoh: Selesai diverifikasi kas fisik dan buku kas klop..." class="w-full text-xs rounded-xl border-slate-300"></textarea>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button @click="modalTutupBukuOpen = false" type="button" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100">Batal</button>
+                <button @click="executeTutupBuku()" type="button" :disabled="submittingTutupBuku" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs disabled:opacity-50">
+                    <template x-if="submittingTutupBuku">
+                        <svg class="w-3.5 h-3.5 animate-spin text-white" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    </template>
+                    <span x-text="submittingTutupBuku ? 'Memproses...' : 'Ya, Tutup Buku & Kunci'">Ya, Tutup Buku & Kunci</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL POP-UP: BUKA KUNCI BUKU KAS (PERBAIKAN DARURAT)                     -->
+    <!-- ========================================================================= -->
+    <div x-show="modalBukaKunciOpen"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4"
+         style="display: none;">
+        <div @click.away="modalBukaKunciOpen = false"
+             class="bg-white rounded-3xl max-w-sm w-full p-5 sm:p-6 shadow-2xl border border-slate-200 text-center space-y-4">
+            
+            <div class="w-14 h-14 mx-auto rounded-full bg-amber-100 text-amber-700 flex items-center justify-center shadow-inner">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+            </div>
+
+            <div>
+                <h3 class="text-base sm:text-lg font-black text-slate-900">Buka Kunci Buku Kas?</h3>
+                <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                    Kunci pembukuan periode <span class="font-bold text-slate-800" x-text="cards.periode_label || filter.bulan"></span> akan dibuka kembali. Transaksi pada bulan ini dapat diedit atau ditambah kembali jika diperlukan perbaikan.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5 pt-2">
+                <button @click="modalBukaKunciOpen = false"
+                        type="button"
+                        class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">
+                    Batal
                 </button>
 
-                <button @click="triggerDownload('word')"
+                <button @click="executeBukaKunci()"
                         type="button"
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition order-1 sm:order-3">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <span>Unduh Word (.docx)</span>
+                        :disabled="submittingBukaKunci"
+                        class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-xs transition disabled:opacity-50">
+                    <template x-if="submittingBukaKunci">
+                        <svg class="w-3.5 h-3.5 animate-spin text-white" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    </template>
+                    <span x-text="submittingBukaKunci ? 'Membuka...' : 'Ya, Buka Kunci'">Ya, Buka Kunci</span>
                 </button>
             </div>
         </div>
@@ -857,6 +1017,12 @@ function bukuKasApp() {
         modalPreviewOpen: false,
         modalDownloadOpen: false,
         modalDeleteOpen: false,
+        modalTutupBukuOpen: false,
+        modalBukaKunciOpen: false,
+        tutupBukuCatatan: '',
+        submittingTutupBuku: false,
+        submittingBukaKunci: false,
+        isTutupBuku: {{ $isTutupBuku ? 'true' : 'false' }},
         
         // Pilihan Unduh Laporan
         downloadMode: 'rentang_bulan',
@@ -907,7 +1073,9 @@ function bukuKasApp() {
             surplus_defisit: '{{ $surplusDefisitFiltered >= 0 ? "+" : "" }}Rp {{ number_format($surplusDefisitFiltered, 0, ",", ".") }}',
             is_surplus: {{ $surplusDefisitFiltered >= 0 ? "true" : "false" }},
             total_count: {{ $totalCountFiltered }},
-            periode_label: '{{ $labelPeriode }}'
+            periode_label: '{{ $labelPeriode }}',
+            saldo_awal: 'Rp {{ number_format($saldoAwal, 0, ",", ".") }}',
+            saldo_akhir_filtered: 'Rp {{ number_format($saldoAkhirFiltered, 0, ",", ".") }}'
         },
 
         totalTransaksi: {{ $transaksis->total() }},
@@ -975,6 +1143,7 @@ function bukuKasApp() {
                 if (data.success) {
                     this.cards = data.html_cards;
                     this.totalTransaksi = data.total_transaksi;
+                    this.isTutupBuku = !!data.is_tutup_buku;
                     document.getElementById('container-mobile-cards').innerHTML = data.html_mobile;
                     document.getElementById('container-desktop-tbody').innerHTML = data.html_desktop;
                     document.getElementById('container-pagination').innerHTML = data.html_pagination;
@@ -1157,7 +1326,93 @@ function bukuKasApp() {
             });
         },
 
-        triggerDownload(format) {
+        openModalTutupBuku() {
+            this.tutupBukuCatatan = '';
+            this.modalTutupBukuOpen = true;
+        },
+
+        openModalBukaKunci() {
+            this.modalBukaKunciOpen = true;
+        },
+
+        executeTutupBuku() {
+            if (!this.filter.bulan) {
+                this.showToast('error', 'Gagal', 'Pilih bulan yang ingin ditutup buku terlebih dahulu.');
+                return;
+            }
+            this.submittingTutupBuku = true;
+
+            fetch('{{ route("admin.bendahara.tutup-buku") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    tahun_bulan: this.filter.bulan,
+                    catatan: this.tutupBukuCatatan
+                })
+            })
+            .then(res => {
+                if (!res.ok) return res.json().then(err => { throw err; });
+                return res.json();
+            })
+            .then(data => {
+                this.modalTutupBukuOpen = false;
+                this.isTutupBuku = true;
+                this.showToast('success', 'Buku Kas Ditutup', data.message);
+                this.applyFilter();
+            })
+            .catch(err => {
+                console.error(err);
+                this.showToast('error', 'Gagal Tutup Buku', err.message || 'Terjadi kesalahan saat menutup buku.');
+            })
+            .finally(() => {
+                this.submittingTutupBuku = false;
+            });
+        },
+
+        executeBukaKunci() {
+            if (!this.filter.bulan) {
+                this.showToast('error', 'Gagal', 'Pilih bulan yang ingin dibuka kuncinya terlebih dahulu.');
+                return;
+            }
+            this.submittingBukaKunci = true;
+
+            fetch('{{ route("admin.bendahara.buka-kunci") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    tahun_bulan: this.filter.bulan
+                })
+            })
+            .then(res => {
+                if (!res.ok) return res.json().then(err => { throw err; });
+                return res.json();
+            })
+            .then(data => {
+                this.modalBukaKunciOpen = false;
+                this.isTutupBuku = false;
+                this.showToast('success', 'Kunci Dibuka', data.message);
+                this.applyFilter();
+            })
+            .catch(err => {
+                console.error(err);
+                this.showToast('error', 'Gagal Buka Kunci', err.message || 'Terjadi kesalahan saat membuka kunci.');
+            })
+            .finally(() => {
+                this.submittingBukaKunci = false;
+            });
+        },
+
+        triggerDownload(format = 'pdf') {
             const params = new URLSearchParams();
             params.set('mode', this.downloadMode);
 
@@ -1174,12 +1429,7 @@ function bukuKasApp() {
             if (this.filter.kategori) params.set('kategori', this.filter.kategori);
             if (this.filter.q) params.set('q', this.filter.q);
 
-            let targetUrl = '';
-            if (format === 'word') {
-                targetUrl = '{{ route("admin.bendahara.word") }}?' + params.toString();
-            } else {
-                targetUrl = '{{ route("admin.bendahara.cetak") }}?' + params.toString();
-            }
+            const targetUrl = '{{ route("admin.bendahara.cetak") }}?' + params.toString();
 
             this.modalDownloadOpen = false;
             window.open(targetUrl, '_blank');

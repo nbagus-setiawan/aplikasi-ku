@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\KasTransaksi;
+use App\Models\KasTutupBuku;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -510,5 +511,216 @@ class BendaharaTest extends TestCase
 
         $response->assertStatus(200);
         $this->assertEquals('application/vnd.openxmlformats-officedocument.wordprocessingml.document', $response->headers->get('Content-Type'));
+    }
+
+    public function test_bisa_tutup_buku_dan_mengunci_transaksi_bulan_tersebut(): void
+    {
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202610-0001',
+            'tanggal' => '2026-10-10',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq',
+            'nominal' => 1500000,
+            'keterangan' => 'Infaq bulan Oktober',
+            'user_id' => $this->user->id,
+        ]);
+
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKK-202610-0001',
+            'tanggal' => '2026-10-25',
+            'jenis' => 'kredit',
+            'kategori' => 'Operasional',
+            'nominal' => 500000,
+            'keterangan' => 'Beli ATK',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->postJson(route('admin.bendahara.tutup-buku'), [
+            'tahun_bulan' => '2026-10',
+            'catatan' => 'Tutup buku resmi Oktober',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+        ]);
+
+        $this->assertDatabaseHas('kas_tutup_bukus', [
+            'tahun_bulan' => '2026-10',
+            'total_debit' => 1500000,
+            'total_kredit' => 500000,
+            'saldo_akhir' => 1000000,
+            'status' => 'tutup',
+        ]);
+
+        $this->assertTrue(KasTutupBuku::isTutup('2026-10'));
+    }
+
+    public function test_transaksi_baru_pada_bulan_tertutup_ditolak(): void
+    {
+        KasTutupBuku::create([
+            'tahun_bulan' => '2026-10',
+            'tanggal_tutup' => '2026-10-31',
+            'saldo_awal' => 0,
+            'total_debit' => 1000000,
+            'total_kredit' => 0,
+            'saldo_akhir' => 1000000,
+            'status' => 'tutup',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->postJson(route('admin.bendahara.store'), [
+            'tanggal' => '2026-10-15',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq',
+            'nominal' => 250000,
+            'keterangan' => 'Coba tambah transaksi di bulan yang sudah ditutup',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['tanggal']);
+    }
+
+    public function test_edit_transaksi_pada_bulan_tertutup_ditolak(): void
+    {
+        $transaksi = KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202610-0001',
+            'tanggal' => '2026-10-05',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq',
+            'nominal' => 500000,
+            'keterangan' => 'Transaksi awal',
+            'user_id' => $this->user->id,
+        ]);
+
+        KasTutupBuku::create([
+            'tahun_bulan' => '2026-10',
+            'tanggal_tutup' => '2026-10-31',
+            'saldo_awal' => 0,
+            'total_debit' => 500000,
+            'total_kredit' => 0,
+            'saldo_akhir' => 500000,
+            'status' => 'tutup',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->putJson(route('admin.bendahara.update', $transaksi->id), [
+            'tanggal' => '2026-10-05',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq',
+            'nominal' => 800000,
+            'keterangan' => 'Coba edit',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['tanggal']);
+    }
+
+    public function test_hapus_transaksi_pada_bulan_tertutup_ditolak(): void
+    {
+        $transaksi = KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202610-0001',
+            'tanggal' => '2026-10-05',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq',
+            'nominal' => 500000,
+            'keterangan' => 'Transaksi awal',
+            'user_id' => $this->user->id,
+        ]);
+
+        KasTutupBuku::create([
+            'tahun_bulan' => '2026-10',
+            'tanggal_tutup' => '2026-10-31',
+            'saldo_awal' => 0,
+            'total_debit' => 500000,
+            'total_kredit' => 0,
+            'saldo_akhir' => 500000,
+            'status' => 'tutup',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->deleteJson(route('admin.bendahara.destroy', $transaksi->id));
+
+        $response->assertStatus(422);
+        $this->assertDatabaseHas('kas_transaksis', ['id' => $transaksi->id]);
+    }
+
+    public function test_bisa_buka_kunci_buku_kas_darurat(): void
+    {
+        KasTutupBuku::create([
+            'tahun_bulan' => '2026-10',
+            'tanggal_tutup' => '2026-10-31',
+            'saldo_awal' => 0,
+            'total_debit' => 500000,
+            'total_kredit' => 0,
+            'saldo_akhir' => 500000,
+            'status' => 'tutup',
+            'user_id' => $this->user->id,
+        ]);
+
+        $this->assertTrue(KasTutupBuku::isTutup('2026-10'));
+
+        $response = $this->actingAs($this->user)->postJson(route('admin.bendahara.buka-kunci'), [
+            'tahun_bulan' => '2026-10',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
+
+        $this->assertFalse(KasTutupBuku::isTutup('2026-10'));
+    }
+
+    public function test_cetak_pdf_tata_letak_3_tanda_tangan_tidak_sejajar_dan_saldo_awal(): void
+    {
+        $transaksi = KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202610-0001',
+            'tanggal' => '2026-10-15',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq',
+            'nominal' => 500000,
+            'keterangan' => 'Infaq Santri',
+            'user_id' => $this->user->id,
+        ]);
+
+        $html = view('bendahara.cetak', [
+            'transaksis' => collect([$transaksi]),
+            'saldoAwal' => 2500000,
+            'totalDebit' => 500000,
+            'totalKredit' => 0,
+            'saldoAkhir' => 3000000,
+            'dari' => '2026-10-01',
+            'sampai' => '2026-10-31',
+            'jenis' => null,
+            'kategori' => null,
+            'periode' => 'satu_bulan',
+            'q' => null,
+            'labelPeriode' => 'Oktober 2026',
+            'tanggal_awal_teks' => '01 Oktober',
+            'tanggal_akhir_teks' => '31 Oktober 2026',
+            'tanggalAkhirRiil' => '31 Oktober 2026',
+            'pengaturan' => [],
+            'pengaturans' => [],
+            'logo' => null,
+            'kopGambar' => 'data:image/png;base64,sample',
+            'isHtmlPrint' => true,
+        ])->render();
+
+        // 1. Saldo Awal baris pertama di tabel
+        $this->assertStringContainsString('SALDO AWAL KAS SEBELUM PERIODE', $html);
+        $this->assertStringContainsString('2.500.000', $html);
+
+        // 2. Tiga tanda tangan dengan posisi tidak sejajar (2 di atas, 1 di bawah tengah)
+        $this->assertStringContainsString('Danil Ali Sabila', $html);
+        $this->assertStringContainsString('Ketua Umum AFPA', $html);
+
+        $this->assertStringContainsString('Azwil Yoga Pratama', $html);
+        $this->assertStringContainsString('Bendahara AFPA', $html);
+
+        $this->assertStringContainsString('Ust Imam Qusyairi', $html);
+        $this->assertStringContainsString('Bendahara Pusat PPAF', $html);
+
+        // Memastikan ada struktur 2 di atas dan 1 di bawah
+        $this->assertStringContainsString('BARIS 1: 2 TTD DI ATAS', $html);
+        $this->assertStringContainsString('BARIS 2: 1 TTD DI BAWAH TENGAH', $html);
     }
 }

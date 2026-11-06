@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\KasTransaksi;
+use App\Models\KasTutupBuku;
 use App\Models\Pengaturan;
 use App\Services\KasDocxService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -257,6 +258,24 @@ class BendaharaController extends Controller
         // Kategori terpakai untuk filter dropdown
         $kategoriList = KasTransaksi::distinct()->pluck('kategori')->filter()->values();
 
+        // Hitung Saldo Awal sebelum tanggal $dari (untuk filter bulan / rentang tanggal)
+        $saldoAwal = 0.0;
+        if ($dari) {
+            $debitSebelumnya = (float) KasTransaksi::debit()->whereDate('tanggal', '<', $dari)->sum('nominal');
+            $kreditSebelumnya = (float) KasTransaksi::kredit()->whereDate('tanggal', '<', $dari)->sum('nominal');
+            $saldoAwal = $debitSebelumnya - $kreditSebelumnya;
+        }
+        $saldoAkhirFiltered = $saldoAwal + $surplusDefisitFiltered;
+
+        // Cek Status Tutup Buku Bulan yang Sedang Dipilih
+        $tutupBukuData = null;
+        $isTutupBuku = false;
+        if ($filterBulan) {
+            $tutupBukuData = KasTutupBuku::getBulan($filterBulan);
+            $isTutupBuku = ($tutupBukuData && $tutupBukuData->status === 'tutup');
+        }
+        $tutupBulanList = KasTutupBuku::where('status', 'tutup')->pluck('tahun_bulan')->toArray();
+
         // Respon AJAX (Seamless Tanpa Reload)
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
@@ -264,22 +283,30 @@ class BendaharaController extends Controller
                 'html_cards' => [
                     'saldo_kas' => 'Rp ' . number_format($saldoKasKeseluruhan, 0, ',', '.'),
                     'saldo_kas_raw' => $saldoKasKeseluruhan,
+                    'saldo_awal' => 'Rp ' . number_format($saldoAwal, 0, ',', '.'),
+                    'saldo_awal_raw' => $saldoAwal,
                     'total_debit' => 'Rp ' . number_format($totalDebitFiltered, 0, ',', '.'),
                     'total_kredit' => 'Rp ' . number_format($totalKreditFiltered, 0, ',', '.'),
+                    'saldo_akhir_filtered' => 'Rp ' . number_format($saldoAkhirFiltered, 0, ',', '.'),
+                    'saldo_akhir_raw' => $saldoAkhirFiltered,
                     'surplus_defisit' => ($surplusDefisitFiltered >= 0 ? '+' : '') . 'Rp ' . number_format($surplusDefisitFiltered, 0, ',', '.'),
                     'is_surplus' => $surplusDefisitFiltered >= 0,
                     'total_count' => $totalCountFiltered,
                     'periode_label' => $labelPeriode,
+                    'is_tutup_buku' => $isTutupBuku,
+                    'tutup_buku_data' => $tutupBukuData,
                 ],
-                'html_mobile' => view('bendahara.partials.card_feed', ['transaksis' => $transaksis])->render(),
-                'html_desktop' => view('bendahara.partials.table_rows', ['transaksis' => $transaksis])->render(),
+                'html_mobile' => view('bendahara.partials.card_feed', ['transaksis' => $transaksis, 'tutupBulanList' => $tutupBulanList])->render(),
+                'html_desktop' => view('bendahara.partials.table_rows', ['transaksis' => $transaksis, 'tutupBulanList' => $tutupBulanList])->render(),
                 'html_pagination' => $transaksis->hasPages() ? $transaksis->links()->toHtml() : '',
                 'total_transaksi' => $transaksis->total(),
                 'label_periode' => $labelPeriode,
                 'filter_tipe' => $filterTipe,
                 'filter_bulan' => $filterBulan,
                 'filter_tahun' => $filterTahun,
-                'url_word' => route('admin.bendahara.word', $request->query()),
+                'is_tutup_buku' => $isTutupBuku,
+                'saldo_awal' => $saldoAwal,
+                'saldo_akhir' => $saldoAkhirFiltered,
                 'url_cetak' => route('admin.bendahara.cetak', $request->query()),
             ]);
         }
@@ -292,6 +319,8 @@ class BendaharaController extends Controller
             'totalDebitFiltered' => $totalDebitFiltered,
             'totalKreditFiltered' => $totalKreditFiltered,
             'surplusDefisitFiltered' => $surplusDefisitFiltered,
+            'saldoAwal' => $saldoAwal,
+            'saldoAkhirFiltered' => $saldoAkhirFiltered,
             'totalCountFiltered' => $totalCountFiltered,
             'filterTipe' => $filterTipe,
             'filterBulan' => $filterBulan,
@@ -308,6 +337,9 @@ class BendaharaController extends Controller
             'kategoriDebit' => $this->kategoriDebit,
             'kategoriKredit' => $this->kategoriKredit,
             'kategoriList' => $kategoriList,
+            'isTutupBuku' => $isTutupBuku,
+            'tutupBukuData' => $tutupBukuData,
+            'tutupBulanList' => $tutupBulanList,
         ]);
     }
 
@@ -332,6 +364,20 @@ class BendaharaController extends Controller
             'nominal.min' => 'Nominal minimal Rp 1.',
             'lampiran.max' => 'Ukuran file bukti transaksi maksimal 5 MB.',
         ]);
+
+        $tahunBulan = Carbon::parse($validated['tanggal'])->format('Y-m');
+        if (KasTutupBuku::isTutup($tahunBulan)) {
+            $namaBulan = Carbon::parse($validated['tanggal'])->locale('id')->translatedFormat('F Y');
+            $pesan = "Pembukuan kas bulan {$namaBulan} telah DITUTUP BUKU (Terkunci). Transaksi baru tidak dapat ditambahkan kecuali kunci buku dibuka terlebih dahulu.";
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $pesan,
+                    'errors' => ['tanggal' => [$pesan]],
+                ], 422);
+            }
+            return back()->withInput()->with('error', $pesan);
+        }
 
         $lampiranPath = null;
         if ($request->hasFile('lampiran')) {
@@ -389,6 +435,20 @@ class BendaharaController extends Controller
             'lampiran.max' => 'Ukuran file bukti transaksi maksimal 5 MB.',
         ]);
 
+        $oldBulan = Carbon::parse($bendahara->tanggal)->format('Y-m');
+        $newBulan = Carbon::parse($validated['tanggal'])->format('Y-m');
+        if (KasTutupBuku::isTutup($oldBulan) || KasTutupBuku::isTutup($newBulan)) {
+            $pesan = "Transaksi kas pada periode bulan yang telah DITUTUP BUKU tidak dapat diedit.";
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $pesan,
+                    'errors' => ['tanggal' => [$pesan]],
+                ], 422);
+            }
+            return back()->withInput()->with('error', $pesan);
+        }
+
         $lampiranPath = $bendahara->lampiran;
         if ($request->hasFile('lampiran')) {
             if ($lampiranPath && Storage::disk('public')->exists($lampiranPath)) {
@@ -426,6 +486,15 @@ class BendaharaController extends Controller
      */
     public function destroy(Request $request, KasTransaksi $bendahara)
     {
+        $bulan = Carbon::parse($bendahara->tanggal)->format('Y-m');
+        if (KasTutupBuku::isTutup($bulan)) {
+            $pesan = "Transaksi kas pada periode bulan yang telah DITUTUP BUKU tidak dapat dihapus.";
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $pesan], 422);
+            }
+            return back()->with('error', $pesan);
+        }
+
         $kode = $bendahara->kode_transaksi;
 
         if ($bendahara->lampiran && Storage::disk('public')->exists($bendahara->lampiran)) {
@@ -445,6 +514,94 @@ class BendaharaController extends Controller
 
         return redirect()->route('admin.bendahara.index')
             ->with('success', $successMessage);
+    }
+
+    /**
+     * Tutup Buku Kas Bulanan (Opsi A - Data Locking & Saldo Awal Resmi)
+     */
+    public function tutupBuku(Request $request)
+    {
+        $validated = $request->validate([
+            'tahun_bulan' => ['required', 'string', 'regex:/^\d{4}-\d{2}$/'],
+            'catatan' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $tahunBulan = $validated['tahun_bulan'];
+        $dari = Carbon::createFromFormat('Y-m', $tahunBulan)->startOfMonth()->toDateString();
+        $sampai = Carbon::createFromFormat('Y-m', $tahunBulan)->endOfMonth()->toDateString();
+
+        // Hitung Saldo Awal (sebelum tanggal $dari)
+        $debitSebelumnya = (float) KasTransaksi::debit()->whereDate('tanggal', '<', $dari)->sum('nominal');
+        $kreditSebelumnya = (float) KasTransaksi::kredit()->whereDate('tanggal', '<', $dari)->sum('nominal');
+        $saldoAwal = $debitSebelumnya - $kreditSebelumnya;
+
+        // Hitung Total Mutasi Bulan Bersangkutan
+        $totalDebit = (float) KasTransaksi::debit()->whereBetween('tanggal', [$dari, $sampai])->sum('nominal');
+        $totalKredit = (float) KasTransaksi::kredit()->whereBetween('tanggal', [$dari, $sampai])->sum('nominal');
+        $saldoAkhir = $saldoAwal + $totalDebit - $totalKredit;
+
+        $tutupBuku = KasTutupBuku::updateOrCreate(
+            ['tahun_bulan' => $tahunBulan],
+            [
+                'tanggal_tutup' => Carbon::now()->toDateString(),
+                'saldo_awal' => $saldoAwal,
+                'total_debit' => $totalDebit,
+                'total_kredit' => $totalKredit,
+                'saldo_akhir' => $saldoAkhir,
+                'status' => 'tutup',
+                'catatan' => $validated['catatan'] ?? null,
+                'user_id' => Auth::id(),
+            ]
+        );
+
+        $namaBulan = Carbon::createFromFormat('Y-m', $tahunBulan)->locale('id')->translatedFormat('F Y');
+        $saldoAkhirFmt = 'Rp ' . number_format($saldoAkhir, 0, ',', '.');
+        $pesan = "Alhamdulillah, pembukuan kas bulan {$namaBulan} resmi DITUTUP BUKU. Saldo akhir {$saldoAkhirFmt} resmi dibukukan sebagai saldo awal bulan berikutnya dan seluruh transaksi bulan ini telah dikunci.";
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $pesan,
+                'data' => $tutupBuku,
+            ]);
+        }
+
+        return redirect()->route('admin.bendahara.index', [
+            'filter_tipe' => 'bulan',
+            'filter_bulan' => $tahunBulan,
+        ])->with('success', $pesan);
+    }
+
+    /**
+     * Buka Kunci Buku Kas Bulanan (Untuk Perbaikan Darurat)
+     */
+    public function bukaKunci(Request $request)
+    {
+        $validated = $request->validate([
+            'tahun_bulan' => ['required', 'string', 'regex:/^\d{4}-\d{2}$/'],
+        ]);
+
+        $tahunBulan = $validated['tahun_bulan'];
+        $tutupBuku = KasTutupBuku::where('tahun_bulan', $tahunBulan)->first();
+
+        if ($tutupBuku) {
+            $tutupBuku->update(['status' => 'buka']);
+        }
+
+        $namaBulan = Carbon::createFromFormat('Y-m', $tahunBulan)->locale('id')->translatedFormat('F Y');
+        $pesan = "Kunci pembukuan kas bulan {$namaBulan} berhasil DIBUKA KEMBALI. Transaksi dapat diedit atau diperbaiki jika diperlukan.";
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $pesan,
+            ]);
+        }
+
+        return redirect()->route('admin.bendahara.index', [
+            'filter_tipe' => 'bulan',
+            'filter_bulan' => $tahunBulan,
+        ])->with('success', $pesan);
     }
 
     /**
@@ -596,6 +753,7 @@ class BendaharaController extends Controller
             'labelPeriode' => $labelPeriode,
             'tanggal_awal_teks' => $tglAwalTeks,
             'tanggal_akhir_teks' => $tglAkhirTeks,
+            'tanggalAkhirRiil' => $tglAkhirTeks,
             'pengaturan' => $pengaturans,
             'pengaturans' => $pengaturans,
             'logo' => $logo,
