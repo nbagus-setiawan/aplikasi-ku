@@ -967,7 +967,14 @@ class BendaharaController extends Controller
             $saldoAwal = $debitSebelumnya - $kreditSebelumnya;
         }
 
-        // Total Pendapatan (A) = Pendapatan Kas Periode Ini + Saldo Periode Bulan Lalu
+        $labelSaldoAwal = match ($filterTipe) {
+            'bulan' => 'Saldo Kas Periode Sebelumnya (Bulan Lalu)',
+            'tahun' => 'Saldo Kas Periode Sebelumnya (Tahun Lalu)',
+            'kustom' => 'Saldo Kas Sebelum Periode',
+            default => 'Saldo Awal Kas',
+        };
+
+        // Total Pendapatan (A) = Pendapatan Kas Periode Ini + Saldo Periode Sebelumnya
         $totalPendapatan = $totalPendapatanPeriode + $saldoAwal;
         $persentaseSaldoAwal = $totalPendapatan > 0 ? round(($saldoAwal / $totalPendapatan) * 100, 1) : 0;
 
@@ -1045,6 +1052,7 @@ class BendaharaController extends Controller
             'isSurplus' => $isSurplus,
             'marginSurplusDefisit' => $marginSurplusDefisit,
             'saldoAwal' => $saldoAwal,
+            'labelSaldoAwal' => $labelSaldoAwal,
             'persentaseSaldoAwal' => $persentaseSaldoAwal,
             'saldoAkhirKas' => $saldoAkhirKas,
             'pengaturan' => $pengaturans,
@@ -1170,6 +1178,13 @@ class BendaharaController extends Controller
             $saldoAwal = $debitSebelumnya - $kreditSebelumnya;
         }
 
+        $labelSaldoAwal = match ($filterTipe) {
+            'bulan' => 'Saldo Kas Periode Sebelumnya (Bulan Lalu)',
+            'tahun' => 'Saldo Kas Periode Sebelumnya (Tahun Lalu)',
+            'kustom' => 'Saldo Kas Sebelum Periode',
+            default => 'Saldo Awal Kas',
+        };
+
         // 2. Mutasi Periode Berjalan
         $mutasiDebitQuery = KasTransaksi::debit();
         $mutasiKreditQuery = KasTransaksi::kredit();
@@ -1210,11 +1225,11 @@ class BendaharaController extends Controller
         $totalKewajiban = 0.0;
 
         // 6. Struktur Ekuitas Dana (Saldo Dana Pesantren — Sinkron Laba Rugi & Buku Kas)
-        // Rumus: Saldo Periode Lalu + Penerimaan Kas Periode Ini - Beban Kas Periode Ini = Surplus Kas Operasional
+        // Rumus: Saldo Periode Sebelumnya + Penerimaan Kas Periode Ini - Beban Kas Periode Ini = Surplus Kas Operasional
         $ekuitas = [
-            ['nama' => 'Saldo Kas Periode Sebelumnya (Bulan Lalu)', 'nominal' => $saldoAwal],
+            ['nama' => $labelSaldoAwal, 'nominal' => $saldoAwal],
             ['nama' => 'Penerimaan Kas Periode Ini (Debit)', 'nominal' => $totalDebitPeriode],
-            ['nama' => 'Beban Pengeluaran Kas (Kredit)', 'nominal' => -$totalKreditPeriode],
+            ['nama' => 'Dikurangi: Beban Pengeluaran Kas (Kredit)', 'nominal' => -$totalKreditPeriode],
         ];
         $totalEkuitas = $saldoAwal + $totalDebitPeriode - $totalKreditPeriode;
 

@@ -338,7 +338,7 @@
             </tr>
             <tr>
                 <td class="text-center">1</td>
-                <td class="text-left" style="font-weight: bold;">Saldo Kas Periode Sebelumnya (Bulan Lalu)</td>
+                <td class="text-left" style="font-weight: bold;">{{ $labelSaldoAwal ?? (($filterTipe ?? 'bulan') === 'tahun' ? 'Saldo Kas Periode Sebelumnya (Tahun Lalu)' : 'Saldo Kas Periode Sebelumnya (Bulan Lalu)') }}</td>
                 <td class="text-center">Saldo Awal</td>
                 <td class="text-right nowrap" style="font-weight: bold;">Rp {{ number_format($saldoAwal ?? 0, 0, ',', '.') }}</td>
                 <td class="text-center">{{ $persentaseSaldoAwal ?? (($totalPendapatan > 0 && ($saldoAwal ?? 0) > 0) ? round((($saldoAwal ?? 0) / $totalPendapatan) * 100, 1) : 0) }}%</td>

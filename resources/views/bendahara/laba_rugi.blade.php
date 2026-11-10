@@ -245,11 +245,11 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 bg-white">
-                        <!-- Baris 1: Saldo Periode Bulan Lalu -->
+                        <!-- Baris 1: Saldo Periode Sebelumnya (Bulan Lalu / Tahun Lalu) -->
                         <tr class="bg-emerald-50/30 hover:bg-emerald-50/60 transition">
                             <td class="px-4 py-3 text-center text-emerald-700 font-bold text-xs">1</td>
                             <td class="px-4 py-3 font-bold text-slate-800">
-                                Saldo Kas Periode Sebelumnya (Bulan Lalu)
+                                {{ $labelSaldoAwal ?? (($filterTipe ?? 'bulan') === 'tahun' ? 'Saldo Kas Periode Sebelumnya (Tahun Lalu)' : 'Saldo Kas Periode Sebelumnya (Bulan Lalu)') }}
                             </td>
                             <td class="px-4 py-3 text-center text-xs text-slate-500">Saldo Awal</td>
                             <td class="px-4 py-3 text-right font-mono font-bold text-emerald-700">

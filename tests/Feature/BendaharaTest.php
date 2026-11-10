@@ -947,6 +947,60 @@ class BendaharaTest extends TestCase
         $this->assertTrue($isBalance);
     }
 
+    public function test_laba_rugi_dan_neraca_mode_tahunan_menampilkan_saldo_tahun_lalu(): void
+    {
+        // Transaksi Tahun 2025 (Tahun Lalu): Sisa Saldo = 2.000.000
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202512-0001',
+            'tanggal' => '2025-12-15',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq & Shodaqoh',
+            'nominal' => 2000000,
+            'keterangan' => 'Sisa kas tahun 2025',
+            'user_id' => $this->user->id,
+        ]);
+
+        // Transaksi Tahun 2026 (Tahun Ini): Pemasukan = 1.000.000, Pengeluaran = 600.000
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202603-0001',
+            'tanggal' => '2026-03-10',
+            'jenis' => 'debit',
+            'kategori' => 'Donasi & Bantuan',
+            'nominal' => 1000000,
+            'user_id' => $this->user->id,
+        ]);
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKK-202605-0001',
+            'tanggal' => '2026-05-12',
+            'jenis' => 'kredit',
+            'kategori' => 'Operasional',
+            'nominal' => 600000,
+            'user_id' => $this->user->id,
+        ]);
+
+        // 1. Cek Laba Rugi Tahunan 2026
+        $resLr = $this->actingAs($this->user)->get(route('admin.bendahara.laba-rugi', [
+            'filter_tipe' => 'tahun',
+            'filter_tahun' => '2026',
+        ]));
+        $resLr->assertStatus(200);
+        $resLr->assertSee('Saldo Kas Periode Sebelumnya (Tahun Lalu)');
+        // Total Pendapatan (A) = 1.000.000 + 2.000.000 = 3.000.000
+        $this->assertEquals(3000000, $resLr->viewData('totalPendapatan'));
+        // Surplus (A - B) = 3.000.000 - 600.000 = 2.400.000
+        $this->assertEquals(2400000, $resLr->viewData('surplusDefisit'));
+
+        // 2. Cek Neraca Tahunan 2026
+        $resNeraca = $this->actingAs($this->user)->get(route('admin.bendahara.neraca', [
+            'filter_tipe' => 'tahun',
+            'filter_tahun' => '2026',
+        ]));
+        $resNeraca->assertStatus(200);
+        $resNeraca->assertSee('Saldo Kas Periode Sebelumnya (Tahun Lalu)');
+        $this->assertEquals(2400000, $resNeraca->viewData('totalAset'));
+        $this->assertEquals(2400000, $resNeraca->viewData('totalPasiva'));
+    }
+
     public function test_bisa_mencetak_laporan_neraca_pdf(): void
     {
         KasTransaksi::create([
