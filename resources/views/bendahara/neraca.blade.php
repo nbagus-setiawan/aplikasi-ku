@@ -179,7 +179,7 @@
 
         <!-- ==================== SISI KIRI: ASET / AKTIVA ==================== -->
         <div class="bg-white rounded-3xl border border-emerald-200/80 shadow-xs overflow-hidden flex flex-col">
-            <div class="p-4 sm:p-5 bg-emerald-50/80 border-b border-emerald-100 flex items-center justify-between">
+            <div class="p-4 sm:p-5 bg-emerald-50/60 border-b border-emerald-100 flex items-center justify-between">
                 <div class="flex items-center gap-2.5">
                     <span class="p-2 rounded-xl bg-emerald-100 text-emerald-700">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
@@ -223,9 +223,9 @@
 
                 <!-- II. ASET TETAP -->
                 <div class="space-y-2">
-                    <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-teal-50/60 border border-teal-100">
-                        <h3 class="text-xs font-black uppercase text-teal-900 tracking-wider">II. ASET TETAP (INVENTARIS)</h3>
-                        <span class="text-xs font-bold text-teal-700">Peralatan & Gedung</span>
+                    <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-emerald-50/50 border border-emerald-100">
+                        <h3 class="text-xs font-black uppercase text-emerald-900 tracking-wider">II. ASET TETAP (INVENTARIS)</h3>
+                        <span class="text-xs font-bold text-emerald-700">Peralatan & Gedung</span>
                     </div>
 
                     <div class="divide-y divide-slate-100 text-xs sm:text-sm px-1">
@@ -239,9 +239,9 @@
                         @endforeach
                     </div>
 
-                    <div class="p-3 bg-teal-50/70 rounded-xl border border-teal-100 flex items-center justify-between text-xs font-bold text-teal-900">
+                    <div class="p-3 bg-emerald-50/70 rounded-xl border border-emerald-100 flex items-center justify-between text-xs font-bold text-emerald-900">
                         <span>Jumlah Aset Tetap:</span>
-                        <span class="font-mono font-black text-sm text-teal-800">
+                        <span class="font-mono font-black text-sm text-emerald-800">
                             Rp {{ number_format($totalAsetTetap, 0, ',', '.') }}
                         </span>
                     </div>
@@ -249,7 +249,7 @@
             </div>
 
             <!-- TOTAL AKHIR ASET (AKTIVA) -->
-            <div class="p-4 sm:p-5 bg-emerald-50/90 border-t-2 border-emerald-500 flex items-center justify-between">
+            <div class="p-4 sm:p-5 bg-emerald-50 border-t-2 border-emerald-500 flex items-center justify-between">
                 <div>
                     <span class="text-xs font-black uppercase tracking-wider text-emerald-950 block">TOTAL ASET (AKTIVA):</span>
                     <span class="text-[11px] text-emerald-700">Aset Lancar + Aset Tetap</span>
@@ -264,7 +264,7 @@
 
         <!-- ==================== SISI KANAN: KEWAJIBAN & EKUITAS ==================== -->
         <div class="bg-white rounded-3xl border border-blue-200/80 shadow-xs overflow-hidden flex flex-col">
-            <div class="p-4 sm:p-5 bg-blue-50/80 border-b border-blue-100 flex items-center justify-between">
+            <div class="p-4 sm:p-5 bg-blue-50/70 border-b border-blue-100 flex items-center justify-between">
                 <div class="flex items-center gap-2.5">
                     <span class="p-2 rounded-xl bg-blue-100 text-blue-700">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
@@ -334,7 +334,7 @@
             </div>
 
             <!-- TOTAL AKHIR KEWAJIBAN & EKUITAS (PASIVA) -->
-            <div class="p-4 sm:p-5 bg-blue-50/90 border-t-2 border-blue-500 flex items-center justify-between">
+            <div class="p-4 sm:p-5 bg-blue-50 border-t-2 border-blue-500 flex items-center justify-between">
                 <div>
                     <span class="text-xs font-black uppercase tracking-wider text-blue-950 block">TOTAL KEWAJIBAN & EKUITAS:</span>
                     <span class="text-[11px] text-blue-700">Liabilitas + Saldo Dana</span>

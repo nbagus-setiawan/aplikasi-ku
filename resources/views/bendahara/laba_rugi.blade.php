@@ -218,7 +218,7 @@
 
         <!-- KOLOM KIRI: RINCIAN PENDAPATAN (PENERIMAAN) -->
         <div class="bg-white rounded-3xl border border-emerald-200/80 shadow-xs overflow-hidden flex flex-col">
-            <div class="p-4 sm:p-5 bg-emerald-50/80 border-b border-emerald-100 flex items-center justify-between">
+            <div class="p-4 sm:p-5 bg-emerald-50/60 border-b border-emerald-100 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <span class="p-2 rounded-xl bg-emerald-100 text-emerald-700">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
@@ -246,7 +246,7 @@
                     </thead>
                     <tbody class="divide-y divide-slate-100 bg-white">
                         @forelse($pendapatans as $idx => $item)
-                            <tr class="hover:bg-emerald-50/30 transition">
+                            <tr class="hover:bg-slate-50/80 transition">
                                 <td class="px-4 py-3 text-center text-slate-400 text-xs">{{ $idx + 1 }}</td>
                                 <td class="px-4 py-3 font-semibold text-slate-800">{{ $item->kategori }}</td>
                                 <td class="px-4 py-3 text-center text-xs text-slate-500">{{ $item->jumlah_transaksi }}x</td>
@@ -269,7 +269,7 @@
             </div>
 
             <!-- Subtotal Pendapatan -->
-            <div class="p-4 bg-emerald-50/90 border-t-2 border-emerald-500 flex items-center justify-between">
+            <div class="p-4 bg-emerald-50 border-t-2 border-emerald-500 flex items-center justify-between">
                 <span class="text-xs font-black text-emerald-950 uppercase">Total Pendapatan (A):</span>
                 <span class="font-mono font-black text-base text-emerald-800">
                     Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
@@ -279,13 +279,13 @@
 
         <!-- KOLOM KANAN: RINCIAN BEBAN (PENGELUARAN) -->
         <div class="bg-white rounded-3xl border border-rose-200/80 shadow-xs overflow-hidden flex flex-col">
-            <div class="p-4 sm:p-5 bg-rose-50/80 border-b border-rose-100 flex items-center justify-between">
+            <div class="p-4 sm:p-5 bg-rose-50/60 border-b border-rose-100 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <span class="p-2 rounded-xl bg-rose-100 text-rose-700">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
                     </span>
                     <div>
-                        <h2 class="text-sm sm:text-base font-bold text-rose-950">II. Beban Kas (Pengeluaran)</h2>
+                        <h2 class="text-sm sm:text-base font-bold text-rose-900">II. Beban Kas (Pengeluaran)</h2>
                         <p class="text-[11px] text-rose-700">Rincian per pos kategori biaya operasional</p>
                     </div>
                 </div>
@@ -307,7 +307,7 @@
                     </thead>
                     <tbody class="divide-y divide-slate-100 bg-white">
                         @forelse($bebans as $idx => $item)
-                            <tr class="hover:bg-rose-50/30 transition">
+                            <tr class="hover:bg-slate-50/80 transition">
                                 <td class="px-4 py-3 text-center text-slate-400 text-xs">{{ $idx + 1 }}</td>
                                 <td class="px-4 py-3 font-semibold text-slate-800">{{ $item->kategori }}</td>
                                 <td class="px-4 py-3 text-center text-xs text-slate-500">{{ $item->jumlah_transaksi }}x</td>
@@ -330,8 +330,8 @@
             </div>
 
             <!-- Subtotal Beban -->
-            <div class="p-4 bg-rose-50/90 border-t-2 border-rose-500 flex items-center justify-between">
-                <span class="text-xs font-black text-rose-950 uppercase">Total Beban (B):</span>
+            <div class="p-4 bg-rose-50 border-t-2 border-rose-500 flex items-center justify-between">
+                <span class="text-xs font-black text-rose-900 uppercase">Total Beban (B):</span>
                 <span class="font-mono font-black text-base text-rose-800">
                     Rp {{ number_format($totalBeban, 0, ',', '.') }}
                 </span>
