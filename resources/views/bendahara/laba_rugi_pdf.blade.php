@@ -380,16 +380,36 @@
                 <td class="text-center">100.0%</td>
             </tr>
 
-            <!-- BAGIAN III: HASIL AKHIR -->
-            <tr class="total-akhir-row">
+            <!-- BAGIAN III: HASIL AKHIR & REKONSILIASI SALDO KAS -->
+            <tr class="subtotal-row">
                 <td colspan="3" class="text-center">
-                    TOTAL {{ $isSurplus ? 'SURPLUS KAS OPERASIONAL (A - B)' : 'DEFISIT KAS OPERASIONAL (A - B)' }}
+                    {{ $isSurplus ? 'SURPLUS KAS OPERASIONAL PERIODE INI (A - B)' : 'DEFISIT KAS OPERASIONAL PERIODE INI (A - B)' }}
                 </td>
-                <td class="text-right nowrap highlight-cell">
+                <td class="text-right nowrap">
                     {{ $isSurplus ? '+' : '' }}Rp {{ number_format($surplusDefisit, 0, ',', '.') }}
                 </td>
-                <td class="text-center highlight-cell">
+                <td class="text-center">
                     {{ $marginSurplusDefisit }}%
+                </td>
+            </tr>
+            <tr class="subtotal-row">
+                <td colspan="3" class="text-center">
+                    SALDO AWAL KAS SEBELUM PERIODE (SISA PERIODE SEBELUMNYA)
+                </td>
+                <td class="text-right nowrap">
+                    Rp {{ number_format($saldoAwal ?? 0, 0, ',', '.') }}
+                </td>
+                <td class="text-center">-</td>
+            </tr>
+            <tr class="total-akhir-row">
+                <td colspan="3" class="text-center">
+                    SALDO AKHIR KAS TERSEDIA (SINKRON BUKU KAS &amp; NERACA)
+                </td>
+                <td class="text-right nowrap highlight-cell">
+                    Rp {{ number_format($saldoAkhirKas ?? (($saldoAwal ?? 0) + $surplusDefisit), 0, ',', '.') }}
+                </td>
+                <td class="text-center highlight-cell">
+                    100%
                 </td>
             </tr>
         </tbody>

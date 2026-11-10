@@ -842,6 +842,8 @@ class BendaharaTest extends TestCase
 
         $this->assertStringContainsString('Ust Imam Qusyairi', $html);
         $this->assertStringContainsString('Bendahara Pusat PPAF', $html);
+        $this->assertStringContainsString('SALDO AWAL KAS SEBELUM PERIODE', $html);
+        $this->assertStringContainsString('SALDO AKHIR KAS TERSEDIA', $html);
     }
 
     public function test_user_bisa_membuka_halaman_neraca(): void
@@ -852,6 +854,11 @@ class BendaharaTest extends TestCase
         $response->assertSee('SISI AKTIVA (ASET)');
         $response->assertSee('SISI PASIVA');
         $response->assertSee('SEIMBANG (BALANCE)');
+        // Pastikan pos kosong yang tidak ada inputannya sudah tidak tampil
+        $response->assertDontSee('Rekening Bank Pesantren');
+        $response->assertDontSee('Piutang & Uang Muka Operasional');
+        $response->assertDontSee('Inventaris & Peralatan Kantor Sekretariat');
+        $response->assertDontSee('Utang Operasional Jangka Pendek');
     }
 
     public function test_neraca_menghitung_aset_kewajiban_ekuitas_dan_selalu_balance(): void
@@ -940,6 +947,7 @@ class BendaharaTest extends TestCase
             'kewajiban' => [],
             'totalKewajiban' => 0,
             'ekuitas' => [
+                ['nama' => 'Saldo Awal Dana Kas (Sebelum Periode)', 'nominal' => 0],
                 ['nama' => 'Surplus Kas Periode Berjalan', 'nominal' => 4000000],
             ],
             'totalEkuitas' => 4000000,
@@ -955,6 +963,8 @@ class BendaharaTest extends TestCase
         $this->assertStringContainsString('Kas Tunai Pesantren', $html);
         $this->assertStringContainsString('4.000.000', $html);
         $this->assertStringContainsString('SEIMBANG (BALANCE)', $html);
+        $this->assertStringNotContainsString('II. ASET TETAP (INVENTARIS)', $html);
+        $this->assertStringNotContainsString('I. KEWAJIBAN (LIABILITAS)', $html);
 
         // 3 Tanda Tangan: 2 di atas, 1 di bawah tengah
         $this->assertStringContainsString('Danil Ali Sabila', $html);

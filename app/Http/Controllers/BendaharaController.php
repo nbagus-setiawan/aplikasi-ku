@@ -985,6 +985,15 @@ class BendaharaController extends Controller
         $isSurplus = $surplusDefisit >= 0;
         $marginSurplusDefisit = $totalPendapatan > 0 ? round(($surplusDefisit / $totalPendapatan) * 100, 1) : 0;
 
+        // Saldo Awal Kas sebelum periode (jika ada batas tanggal awal) & Saldo Akhir Kas
+        $saldoAwal = 0.0;
+        if ($dari) {
+            $debitSebelumnya = (float) KasTransaksi::debit()->whereDate('tanggal', '<', $dari)->sum('nominal');
+            $kreditSebelumnya = (float) KasTransaksi::kredit()->whereDate('tanggal', '<', $dari)->sum('nominal');
+            $saldoAwal = $debitSebelumnya - $kreditSebelumnya;
+        }
+        $saldoAkhirKas = $saldoAwal + $surplusDefisit;
+
         // Ambil Data Pengaturan untuk Kop
         $pengaturans = Pengaturan::getAllKeyValues();
 
@@ -1029,6 +1038,8 @@ class BendaharaController extends Controller
             'surplusDefisit' => $surplusDefisit,
             'isSurplus' => $isSurplus,
             'marginSurplusDefisit' => $marginSurplusDefisit,
+            'saldoAwal' => $saldoAwal,
+            'saldoAkhirKas' => $saldoAkhirKas,
             'pengaturan' => $pengaturans,
             'pengaturans' => $pengaturans,
             'logo' => $logo,
@@ -1089,7 +1100,7 @@ class BendaharaController extends Controller
     }
 
     /**
-     * Siapkan Data Laporan Neraca (Posisi Kas & Saldo Dana - Opsi 1)
+     * Siapkan Data Laporan Neraca (Posisi Kas & Saldo Dana - Data Riil Buku Kas)
      */
     protected function prepareNeracaData(Request $request): array
     {
@@ -1176,30 +1187,22 @@ class BendaharaController extends Controller
         $totalKreditSampai = (float) KasTransaksi::kredit()->when($sampai, fn($q) => $q->whereDate('tanggal', '<=', $sampai))->sum('nominal');
         $saldoAkhirKas = $totalDebitSampai - $totalKreditSampai;
 
-        // 4. Struktur Aset (Aktiva)
+        // 4. Struktur Aset (Aktiva) — Hanya Data Riil Buku Kas
         $asetLancar = [
             ['nama' => 'Kas Tunai Pesantren (Buku Kas Umum)', 'nominal' => $saldoAkhirKas],
-            ['nama' => 'Rekening Bank Pesantren', 'nominal' => 0.0],
-            ['nama' => 'Piutang & Uang Muka Operasional', 'nominal' => 0.0],
         ];
         $totalAsetLancar = $saldoAkhirKas;
 
-        $asetTetap = [
-            ['nama' => 'Inventaris & Peralatan Kantor Sekretariat', 'nominal' => 0.0],
-            ['nama' => 'Gedung & Bangunan Pondok Putra', 'nominal' => 0.0],
-        ];
+        $asetTetap = [];
         $totalAsetTetap = 0.0;
 
         $totalAset = $totalAsetLancar + $totalAsetTetap;
 
-        // 5. Struktur Kewajiban (Liabilitas)
-        $kewajiban = [
-            ['nama' => 'Utang Operasional Jangka Pendek', 'nominal' => 0.0],
-            ['nama' => 'Utang Titipan / Kewajiban Lainnya', 'nominal' => 0.0],
-        ];
+        // 5. Struktur Kewajiban (Liabilitas) — Kosong karena berbasis kas murni
+        $kewajiban = [];
         $totalKewajiban = 0.0;
 
-        // 6. Struktur Ekuitas Dana (Saldo Dana Pesantren)
+        // 6. Struktur Ekuitas Dana (Saldo Dana Pesantren — Sinkron Laba Rugi & Buku Kas)
         $ekuitas = [
             ['nama' => 'Saldo Awal Dana Kas (Sebelum Periode)', 'nominal' => $saldoAwal],
             ['nama' => ($surplusDefisitPeriode >= 0 ? 'Surplus Kas' : 'Defisit Kas') . ' Periode Berjalan', 'nominal' => $surplusDefisitPeriode],

@@ -194,33 +194,34 @@
                 </span>
             </div>
 
-            <div class="p-4 sm:p-5 space-y-5">
-                <!-- I. ASET LANCAR -->
+            <div class="p-4 sm:p-5 space-y-5 flex-1">
+                <!-- I. ASET LANCAR (KAS PESANTREN) -->
                 <div class="space-y-2">
                     <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-emerald-50/60 border border-emerald-100">
-                        <h3 class="text-xs font-black uppercase text-emerald-900 tracking-wider">I. ASET LANCAR</h3>
-                        <span class="text-xs font-bold text-emerald-700">Kas & Setara Kas</span>
+                        <h3 class="text-xs font-black uppercase text-emerald-900 tracking-wider">I. ASET LANCAR (KAS PESANTREN)</h3>
+                        <span class="text-xs font-bold text-emerald-700">Data Riil Buku Kas</span>
                     </div>
 
                     <div class="divide-y divide-slate-100 text-xs sm:text-sm px-1">
                         @foreach($asetLancar as $al)
-                            <div class="py-2.5 flex items-center justify-between">
-                                <span class="text-slate-700">{{ $al['nama'] }}</span>
+                            <div class="py-3 flex items-center justify-between">
+                                <span class="text-slate-700 font-medium">{{ $al['nama'] }}</span>
                                 <span class="font-mono font-bold text-slate-900">
-                                    {{ $al['nominal'] > 0 ? 'Rp ' . number_format($al['nominal'], 0, ',', '.') : '-' }}
+                                    {{ $al['nominal'] < 0 ? '-' : '' }}Rp {{ number_format(abs($al['nominal']), 0, ',', '.') }}
                                 </span>
                             </div>
                         @endforeach
                     </div>
 
                     <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-between text-xs font-bold text-emerald-900">
-                        <span>Jumlah Aset Lancar:</span>
+                        <span>Jumlah Aset Kas Lancar:</span>
                         <span class="font-mono font-black text-sm text-emerald-800">
                             Rp {{ number_format($totalAsetLancar, 0, ',', '.') }}
                         </span>
                     </div>
                 </div>
 
+                @if(!empty($asetTetap))
                 <!-- II. ASET TETAP -->
                 <div class="space-y-2">
                     <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-emerald-50/50 border border-emerald-100">
@@ -246,13 +247,14 @@
                         </span>
                     </div>
                 </div>
+                @endif
             </div>
 
             <!-- TOTAL AKHIR ASET (AKTIVA) -->
             <div class="p-4 sm:p-5 bg-emerald-50 border-t-2 border-emerald-500 flex items-center justify-between">
                 <div>
                     <span class="text-xs font-black uppercase tracking-wider text-emerald-950 block">TOTAL ASET (AKTIVA):</span>
-                    <span class="text-[11px] text-emerald-700">Aset Lancar + Aset Tetap</span>
+                    <span class="text-[11px] text-emerald-700">Saldo Akhir Kas Tersedia (Sinkron Buku Kas)</span>
                 </div>
                 <div class="text-right">
                     <span class="font-mono font-black text-xl text-emerald-800">
@@ -270,8 +272,8 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
                     </span>
                     <div>
-                        <h2 class="text-sm sm:text-base font-bold text-blue-950 uppercase tracking-wider">SISI PASIVA (KEWAJIBAN & EKUITAS)</h2>
-                        <p class="text-[11px] text-blue-700">Liabilitas & akumulasi saldo dana pesantren</p>
+                        <h2 class="text-sm sm:text-base font-bold text-blue-950 uppercase tracking-wider">SISI PASIVA (EKUITAS SALDO DANA)</h2>
+                        <p class="text-[11px] text-blue-700">Akumulasi saldo awal & hasil laba rugi kas pesantren</p>
                     </div>
                 </div>
                 <span class="text-xs font-mono font-bold px-3 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
@@ -279,7 +281,8 @@
                 </span>
             </div>
 
-            <div class="p-4 sm:p-5 space-y-5">
+            <div class="p-4 sm:p-5 space-y-5 flex-1">
+                @if(!empty($kewajiban))
                 <!-- I. KEWAJIBAN (LIABILITAS) -->
                 <div class="space-y-2">
                     <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-amber-50/70 border border-amber-100">
@@ -305,12 +308,13 @@
                         </span>
                     </div>
                 </div>
+                @endif
 
-                <!-- II. EKUITAS DANA (SALDO DANA PESANTREN) -->
+                <!-- EKUITAS DANA (SALDO DANA PESANTREN) -->
                 <div class="space-y-2">
                     <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-blue-50/70 border border-blue-100">
-                        <h3 class="text-xs font-black uppercase text-blue-900 tracking-wider">II. EKUITAS DANA (SALDO DANA)</h3>
-                        <span class="text-xs font-bold text-blue-700">Kekayaan Bersih Kas</span>
+                        <h3 class="text-xs font-black uppercase text-blue-900 tracking-wider">{{ !empty($kewajiban) ? 'II.' : 'I.' }} EKUITAS DANA (SALDO DANA KAS)</h3>
+                        <span class="text-xs font-bold text-blue-700">Sinkron Laba Rugi</span>
                     </div>
 
                     <div class="divide-y divide-slate-100 text-xs sm:text-sm px-1">
@@ -336,8 +340,8 @@
             <!-- TOTAL AKHIR KEWAJIBAN & EKUITAS (PASIVA) -->
             <div class="p-4 sm:p-5 bg-blue-50 border-t-2 border-blue-500 flex items-center justify-between">
                 <div>
-                    <span class="text-xs font-black uppercase tracking-wider text-blue-950 block">TOTAL KEWAJIBAN & EKUITAS:</span>
-                    <span class="text-[11px] text-blue-700">Liabilitas + Saldo Dana</span>
+                    <span class="text-xs font-black uppercase tracking-wider text-blue-950 block">TOTAL PASIVA (EKUITAS DANA):</span>
+                    <span class="text-[11px] text-blue-700">Saldo Awal + Surplus/Defisit Periode</span>
                 </div>
                 <div class="text-right">
                     <span class="font-mono font-black text-xl text-blue-800">

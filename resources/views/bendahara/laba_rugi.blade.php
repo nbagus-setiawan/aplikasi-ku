@@ -340,13 +340,13 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- KESIMPULAN REKAPITULASI HASIL BERSIH (SURPLUS / DEFISIT)                 -->
+    <!-- KESIMPULAN REKAPITULASI HASIL BERSIH & SINKRONISASI SALDO KAS             -->
     <!-- ========================================================================= -->
-    <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs">
+    <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl {{ $isSurplus ? 'bg-emerald-50 border border-emerald-200' : 'bg-rose-50 border border-rose-200' }}">
             <div>
                 <span class="text-xs font-black uppercase tracking-wider {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }}">
-                    Hasil Akhir Pembukuan (A - B):
+                    Hasil Akhir Pembukuan Periode Ini (A - B):
                 </span>
                 <h3 class="text-lg sm:text-xl font-black {{ $isSurplus ? 'text-emerald-900' : 'text-rose-900' }} mt-0.5">
                     {{ $isSurplus ? 'SURPLUS KAS OPERASIONAL' : 'DEFISIT KAS OPERASIONAL' }}
@@ -364,6 +364,39 @@
                 <div class="text-2xl sm:text-3xl font-black font-mono {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }}">
                     {{ $isSurplus ? '+' : '' }}Rp {{ number_format($surplusDefisit, 0, ',', '.') }}
                 </div>
+            </div>
+        </div>
+
+        <!-- Rekonsiliasi Saldo Awal & Saldo Akhir Kas (Sinkron Buku Kas & Neraca) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase text-slate-500 block">Saldo Awal Kas (Sebelum Periode)</span>
+                    <span class="text-xs text-slate-600">Sisa kas dari periode sebelumnya</span>
+                </div>
+                <span class="font-mono font-black text-base text-slate-900">
+                    Rp {{ number_format($saldoAwal ?? 0, 0, ',', '.') }}
+                </span>
+            </div>
+
+            <div class="p-4 rounded-2xl {{ $isSurplus ? 'bg-emerald-50/70 border border-emerald-200' : 'bg-rose-50/70 border border-rose-200' }} flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase {{ $isSurplus ? 'text-emerald-700' : 'text-rose-700' }} block">Mutasi Bersih Periode Ini (A - B)</span>
+                    <span class="text-xs {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }}">{{ $isSurplus ? 'Surplus periode berjalan' : 'Defisit periode berjalan' }}</span>
+                </div>
+                <span class="font-mono font-black text-base {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }}">
+                    {{ $isSurplus ? '+' : '' }}Rp {{ number_format($surplusDefisit, 0, ',', '.') }}
+                </span>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase text-blue-800 block">Saldo Akhir Kas Tersedia</span>
+                    <span class="text-xs text-blue-700">Sinkron Buku Kas Umum &amp; Neraca</span>
+                </div>
+                <span class="font-mono font-black text-base text-blue-900">
+                    Rp {{ number_format($saldoAkhirKas ?? (($saldoAwal ?? 0) + $surplusDefisit), 0, ',', '.') }}
+                </span>
             </div>
         </div>
     </div>

@@ -304,88 +304,127 @@
         $kwList = array_values($kewajiban ?? []);
         $ekList = array_values($ekuitas ?? []);
 
-        $maxBagian1 = max(count($alList), count($kwList));
-        $maxBagian2 = max(count($atList), count($ekList));
+        $onlyKasDanEkuitas = empty($atList) && empty($kwList);
     @endphp
 
     <!-- TABEL UTAMA NERACA SKONTRO SEJAJAR (4 KOLOM PRESISI) -->
     <table class="tabel-skontro">
         <thead>
             <tr>
-                <th colspan="2" style="width: 50%;">AKTIVA (ASET / KEKAYAAN)</th>
-                <th colspan="2" style="width: 50%;">PASIVA (KEWAJIBAN &amp; EKUITAS DANA)</th>
+                <th colspan="2" style="width: 50%;">AKTIVA (ASET KAS PESANTREN)</th>
+                <th colspan="2" style="width: 50%;">PASIVA (EKUITAS SALDO DANA KAS)</th>
             </tr>
         </thead>
         <tbody>
-            <!-- BAGIAN I: ASET LANCAR VS KEWAJIBAN -->
-            <tr>
-                <td colspan="2" class="section-cell">I. ASET LANCAR</td>
-                <td colspan="2" class="section-cell">I. KEWAJIBAN (LIABILITAS)</td>
-            </tr>
-            @for($i = 0; $i < $maxBagian1; $i++)
+            @if($onlyKasDanEkuitas)
                 @php
-                    $al = $alList[$i] ?? null;
-                    $kw = $kwList[$i] ?? null;
+                    $maxRows = max(count($alList), count($ekList));
                 @endphp
                 <tr>
-                    <td style="width: 32%;">{{ $al['nama'] ?? '' }}</td>
-                    <td class="text-right nowrap" style="width: 18%;">
-                        @if($al)
-                            {{ $al['nominal'] > 0 ? 'Rp ' . number_format($al['nominal'], 0, ',', '.') : '-' }}
-                        @endif
-                    </td>
-                    <td style="width: 32%;">{{ $kw['nama'] ?? '' }}</td>
-                    <td class="text-right nowrap" style="width: 18%;">
-                        @if($kw)
-                            {{ $kw['nominal'] > 0 ? 'Rp ' . number_format($kw['nominal'], 0, ',', '.') : '-' }}
-                        @endif
-                    </td>
+                    <td colspan="2" class="section-cell">I. ASET LANCAR (KAS PESANTREN)</td>
+                    <td colspan="2" class="section-cell">I. EKUITAS DANA (SALDO DANA KAS)</td>
                 </tr>
-            @endfor
-            <tr>
-                <td class="subtotal-cell text-center">Jumlah Aset Lancar</td>
-                <td class="subtotal-cell text-right nowrap">Rp {{ number_format($totalAsetLancar, 0, ',', '.') }}</td>
-                <td class="subtotal-cell text-center">Jumlah Kewajiban</td>
-                <td class="subtotal-cell text-right nowrap">Rp {{ number_format($totalKewajiban, 0, ',', '.') }}</td>
-            </tr>
+                @for($i = 0; $i < $maxRows; $i++)
+                    @php
+                        $al = $alList[$i] ?? null;
+                        $ek = $ekList[$i] ?? null;
+                    @endphp
+                    <tr>
+                        <td style="width: 32%;">{{ $al['nama'] ?? '' }}</td>
+                        <td class="text-right nowrap" style="width: 18%;">
+                            @if($al)
+                                {{ $al['nominal'] < 0 ? '-' : '' }}Rp {{ number_format(abs($al['nominal']), 0, ',', '.') }}
+                            @endif
+                        </td>
+                        <td style="width: 32%;">{{ $ek['nama'] ?? '' }}</td>
+                        <td class="text-right nowrap" style="width: 18%;">
+                            @if($ek)
+                                {{ $ek['nominal'] < 0 ? '-' : '' }}Rp {{ number_format(abs($ek['nominal']), 0, ',', '.') }}
+                            @endif
+                        </td>
+                    </tr>
+                @endfor
+                <tr>
+                    <td class="subtotal-cell text-center">Jumlah Aset Kas Lancar</td>
+                    <td class="subtotal-cell text-right nowrap">Rp {{ number_format($totalAsetLancar, 0, ',', '.') }}</td>
+                    <td class="subtotal-cell text-center">Jumlah Ekuitas Saldo Dana</td>
+                    <td class="subtotal-cell text-right nowrap">Rp {{ number_format($totalEkuitas, 0, ',', '.') }}</td>
+                </tr>
+            @else
+                @php
+                    $maxBagian1 = max(count($alList), count($kwList));
+                    $maxBagian2 = max(count($atList), count($ekList));
+                @endphp
+                <!-- BAGIAN I: ASET LANCAR VS KEWAJIBAN -->
+                <tr>
+                    <td colspan="2" class="section-cell">I. ASET LANCAR</td>
+                    <td colspan="2" class="section-cell">I. KEWAJIBAN (LIABILITAS)</td>
+                </tr>
+                @for($i = 0; $i < $maxBagian1; $i++)
+                    @php
+                        $al = $alList[$i] ?? null;
+                        $kw = $kwList[$i] ?? null;
+                    @endphp
+                    <tr>
+                        <td style="width: 32%;">{{ $al['nama'] ?? '' }}</td>
+                        <td class="text-right nowrap" style="width: 18%;">
+                            @if($al)
+                                {{ $al['nominal'] > 0 ? 'Rp ' . number_format($al['nominal'], 0, ',', '.') : '-' }}
+                            @endif
+                        </td>
+                        <td style="width: 32%;">{{ $kw['nama'] ?? '' }}</td>
+                        <td class="text-right nowrap" style="width: 18%;">
+                            @if($kw)
+                                {{ $kw['nominal'] > 0 ? 'Rp ' . number_format($kw['nominal'], 0, ',', '.') : '-' }}
+                            @endif
+                        </td>
+                    </tr>
+                @endfor
+                <tr>
+                    <td class="subtotal-cell text-center">Jumlah Aset Lancar</td>
+                    <td class="subtotal-cell text-right nowrap">Rp {{ number_format($totalAsetLancar, 0, ',', '.') }}</td>
+                    <td class="subtotal-cell text-center">Jumlah Kewajiban</td>
+                    <td class="subtotal-cell text-right nowrap">Rp {{ number_format($totalKewajiban, 0, ',', '.') }}</td>
+                </tr>
 
-            <!-- BAGIAN II: ASET TETAP VS EKUITAS DANA -->
-            <tr>
-                <td colspan="2" class="section-cell">II. ASET TETAP (INVENTARIS)</td>
-                <td colspan="2" class="section-cell">II. EKUITAS DANA (SALDO DANA)</td>
-            </tr>
-            @for($i = 0; $i < $maxBagian2; $i++)
-                @php
-                    $at = $atList[$i] ?? null;
-                    $ek = $ekList[$i] ?? null;
-                @endphp
+                <!-- BAGIAN II: ASET TETAP VS EKUITAS DANA -->
                 <tr>
-                    <td>{{ $at['nama'] ?? '' }}</td>
-                    <td class="text-right nowrap">
-                        @if($at)
-                            {{ $at['nominal'] > 0 ? 'Rp ' . number_format($at['nominal'], 0, ',', '.') : '-' }}
-                        @endif
-                    </td>
-                    <td>{{ $ek['nama'] ?? '' }}</td>
-                    <td class="text-right nowrap">
-                        @if($ek)
-                            {{ $ek['nominal'] < 0 ? '-' : '' }}Rp {{ number_format(abs($ek['nominal']), 0, ',', '.') }}
-                        @endif
-                    </td>
+                    <td colspan="2" class="section-cell">II. ASET TETAP (INVENTARIS)</td>
+                    <td colspan="2" class="section-cell">II. EKUITAS DANA (SALDO DANA)</td>
                 </tr>
-            @endfor
-            <tr>
-                <td class="subtotal-cell text-center">Jumlah Aset Tetap</td>
-                <td class="subtotal-cell text-right nowrap">Rp {{ number_format($totalAsetTetap, 0, ',', '.') }}</td>
-                <td class="subtotal-cell text-center">Jumlah Ekuitas Dana</td>
-                <td class="subtotal-cell text-right nowrap">Rp {{ number_format($totalEkuitas, 0, ',', '.') }}</td>
-            </tr>
+                @for($i = 0; $i < $maxBagian2; $i++)
+                    @php
+                        $at = $atList[$i] ?? null;
+                        $ek = $ekList[$i] ?? null;
+                    @endphp
+                    <tr>
+                        <td>{{ $at['nama'] ?? '' }}</td>
+                        <td class="text-right nowrap">
+                            @if($at)
+                                {{ $at['nominal'] > 0 ? 'Rp ' . number_format($at['nominal'], 0, ',', '.') : '-' }}
+                            @endif
+                        </td>
+                        <td>{{ $ek['nama'] ?? '' }}</td>
+                        <td class="text-right nowrap">
+                            @if($ek)
+                                {{ $ek['nominal'] < 0 ? '-' : '' }}Rp {{ number_format(abs($ek['nominal']), 0, ',', '.') }}
+                            @endif
+                        </td>
+                    </tr>
+                @endfor
+                <tr>
+                    <td class="subtotal-cell text-center">Jumlah Aset Tetap</td>
+                    <td class="subtotal-cell text-right nowrap">Rp {{ number_format($totalAsetTetap, 0, ',', '.') }}</td>
+                    <td class="subtotal-cell text-center">Jumlah Ekuitas Dana</td>
+                    <td class="subtotal-cell text-right nowrap">Rp {{ number_format($totalEkuitas, 0, ',', '.') }}</td>
+                </tr>
+            @endif
 
             <!-- BARIS REKAPITULASI TOTAL SEIMBANG -->
             <tr class="total-row">
-                <td class="text-center">TOTAL AKTIVA (ASET)</td>
+                <td class="text-center">TOTAL AKTIVA (ASET KAS)</td>
                 <td class="text-right nowrap highlight-cell">Rp {{ number_format($totalAset, 0, ',', '.') }}</td>
-                <td class="text-center">TOTAL PASIVA (KEWAJIBAN &amp; EKUITAS)</td>
+                <td class="text-center">TOTAL PASIVA (EKUITAS DANA)</td>
                 <td class="text-right nowrap highlight-cell">Rp {{ number_format($totalPasiva, 0, ',', '.') }}</td>
             </tr>
         </tbody>
