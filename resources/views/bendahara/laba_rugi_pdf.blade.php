@@ -332,13 +332,20 @@
             </tr>
         </thead>
         <tbody>
-            <!-- BAGIAN I: PENDAPATAN -->
+            <!-- BAGIAN I: PENDAPATAN + SALDO PERIODE SEBELUMNYA -->
             <tr class="section-header">
                 <td colspan="5">I. PENDAPATAN / PENERIMAAN KAS OPERASIONAL</td>
             </tr>
+            <tr>
+                <td class="text-center">1</td>
+                <td class="text-left" style="font-weight: bold;">Saldo Kas Periode Sebelumnya (Bulan Lalu)</td>
+                <td class="text-center">Saldo Awal</td>
+                <td class="text-right nowrap" style="font-weight: bold;">Rp {{ number_format($saldoAwal ?? 0, 0, ',', '.') }}</td>
+                <td class="text-center">{{ $persentaseSaldoAwal ?? (($totalPendapatan > 0 && ($saldoAwal ?? 0) > 0) ? round((($saldoAwal ?? 0) / $totalPendapatan) * 100, 1) : 0) }}%</td>
+            </tr>
             @forelse($pendapatans as $idx => $item)
                 <tr>
-                    <td class="text-center">{{ $idx + 1 }}</td>
+                    <td class="text-center">{{ $idx + 2 }}</td>
                     <td class="text-left">{{ $item->kategori }}</td>
                     <td class="text-center">{{ $item->jumlah_transaksi }} transaksi</td>
                     <td class="text-right nowrap">Rp {{ number_format($item->total, 0, ',', '.') }}</td>
@@ -347,7 +354,7 @@
             @empty
                 <tr>
                     <td class="text-center">-</td>
-                    <td colspan="4" style="font-style: italic; padding: 10px;">Tidak ada data penerimaan pada periode ini.</td>
+                    <td colspan="4" style="font-style: italic; padding: 6px 10px;">Tidak ada tambahan penerimaan kas baru pada periode ini (Rp 0).</td>
                 </tr>
             @endforelse
             <tr class="subtotal-row">
@@ -380,36 +387,16 @@
                 <td class="text-center">100.0%</td>
             </tr>
 
-            <!-- BAGIAN III: HASIL AKHIR & REKONSILIASI SALDO KAS -->
-            <tr class="subtotal-row">
-                <td colspan="3" class="text-center">
-                    {{ $isSurplus ? 'SURPLUS KAS OPERASIONAL PERIODE INI (A - B)' : 'DEFISIT KAS OPERASIONAL PERIODE INI (A - B)' }}
-                </td>
-                <td class="text-right nowrap">
-                    {{ $isSurplus ? '+' : '' }}Rp {{ number_format($surplusDefisit, 0, ',', '.') }}
-                </td>
-                <td class="text-center">
-                    {{ $marginSurplusDefisit }}%
-                </td>
-            </tr>
-            <tr class="subtotal-row">
-                <td colspan="3" class="text-center">
-                    SALDO AWAL KAS SEBELUM PERIODE (SISA PERIODE SEBELUMNYA)
-                </td>
-                <td class="text-right nowrap">
-                    Rp {{ number_format($saldoAwal ?? 0, 0, ',', '.') }}
-                </td>
-                <td class="text-center">-</td>
-            </tr>
+            <!-- BAGIAN III: HASIL AKHIR (A - B) -->
             <tr class="total-akhir-row">
                 <td colspan="3" class="text-center">
-                    SALDO AKHIR KAS TERSEDIA (SINKRON BUKU KAS &amp; NERACA)
+                    TOTAL {{ $isSurplus ? 'SURPLUS KAS OPERASIONAL (A - B)' : 'DEFISIT KAS OPERASIONAL (A - B)' }}
                 </td>
                 <td class="text-right nowrap highlight-cell">
-                    Rp {{ number_format($saldoAkhirKas ?? (($saldoAwal ?? 0) + $surplusDefisit), 0, ',', '.') }}
+                    {{ $isSurplus ? '+' : '' }}Rp {{ number_format($surplusDefisit, 0, ',', '.') }}
                 </td>
                 <td class="text-center highlight-cell">
-                    100%
+                    {{ $marginSurplusDefisit }}%
                 </td>
             </tr>
         </tbody>

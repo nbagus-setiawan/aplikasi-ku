@@ -956,8 +956,20 @@ class BendaharaController extends Controller
             $kreditQuery->whereDate('tanggal', '<=', $sampai);
         }
 
-        $totalPendapatan = (float) $debitQuery->sum('nominal');
+        $totalPendapatanPeriode = (float) $debitQuery->sum('nominal');
         $totalBeban = (float) $kreditQuery->sum('nominal');
+
+        // Hitung Saldo Awal Kas sebelum periode (jika ada batas tanggal awal; jika tidak ada maka 0)
+        $saldoAwal = 0.0;
+        if ($dari) {
+            $debitSebelumnya = (float) KasTransaksi::debit()->whereDate('tanggal', '<', $dari)->sum('nominal');
+            $kreditSebelumnya = (float) KasTransaksi::kredit()->whereDate('tanggal', '<', $dari)->sum('nominal');
+            $saldoAwal = $debitSebelumnya - $kreditSebelumnya;
+        }
+
+        // Total Pendapatan (A) = Pendapatan Kas Periode Ini + Saldo Periode Bulan Lalu
+        $totalPendapatan = $totalPendapatanPeriode + $saldoAwal;
+        $persentaseSaldoAwal = $totalPendapatan > 0 ? round(($saldoAwal / $totalPendapatan) * 100, 1) : 0;
 
         // Rincian per Kategori Pendapatan
         $debitGroup = (clone $debitQuery)
@@ -981,18 +993,11 @@ class BendaharaController extends Controller
                 return $item;
             });
 
+        // Surplus / Defisit Kas Operasional = Total Pendapatan (termasuk Saldo Periode Lalu) - Total Beban
         $surplusDefisit = $totalPendapatan - $totalBeban;
         $isSurplus = $surplusDefisit >= 0;
         $marginSurplusDefisit = $totalPendapatan > 0 ? round(($surplusDefisit / $totalPendapatan) * 100, 1) : 0;
-
-        // Saldo Awal Kas sebelum periode (jika ada batas tanggal awal) & Saldo Akhir Kas
-        $saldoAwal = 0.0;
-        if ($dari) {
-            $debitSebelumnya = (float) KasTransaksi::debit()->whereDate('tanggal', '<', $dari)->sum('nominal');
-            $kreditSebelumnya = (float) KasTransaksi::kredit()->whereDate('tanggal', '<', $dari)->sum('nominal');
-            $saldoAwal = $debitSebelumnya - $kreditSebelumnya;
-        }
-        $saldoAkhirKas = $saldoAwal + $surplusDefisit;
+        $saldoAkhirKas = $surplusDefisit;
 
         // Ambil Data Pengaturan untuk Kop
         $pengaturans = Pengaturan::getAllKeyValues();
@@ -1033,12 +1038,14 @@ class BendaharaController extends Controller
             'tahunTersedia' => $tahunTersedia,
             'pendapatans' => $debitGroup,
             'bebans' => $kreditGroup,
+            'totalPendapatanPeriode' => $totalPendapatanPeriode,
             'totalPendapatan' => $totalPendapatan,
             'totalBeban' => $totalBeban,
             'surplusDefisit' => $surplusDefisit,
             'isSurplus' => $isSurplus,
             'marginSurplusDefisit' => $marginSurplusDefisit,
             'saldoAwal' => $saldoAwal,
+            'persentaseSaldoAwal' => $persentaseSaldoAwal,
             'saldoAkhirKas' => $saldoAkhirKas,
             'pengaturan' => $pengaturans,
             'pengaturans' => $pengaturans,

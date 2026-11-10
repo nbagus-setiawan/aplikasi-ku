@@ -145,7 +145,7 @@
     <!-- ========================================================================= -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-        <!-- KARTU 1: PENDAPATAN -->
+        <!-- KARTU 1: PENDAPATAN + SALDO PERIODE LALU -->
         <div class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-xs relative overflow-hidden">
             <div class="flex items-center justify-between">
                 <div>
@@ -154,7 +154,7 @@
                         Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
                     </h3>
                     <p class="text-xs text-slate-500 mt-1">
-                        {{ $pendapatans->count() }} pos kategori penerimaan
+                        Penerimaan + Saldo Periode Lalu (Rp {{ number_format($saldoAwal ?? 0, 0, ',', '.') }})
                     </p>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
@@ -188,13 +188,13 @@
             <div class="flex items-center justify-between">
                 <div>
                     <span class="text-xs font-bold uppercase tracking-wider {{ $isSurplus ? 'text-emerald-700' : 'text-rose-700' }}">
-                        {{ $isSurplus ? 'Surplus Bersih Kas' : 'Defisit Bersih Kas' }}
+                        {{ $isSurplus ? 'Surplus Kas Operasional' : 'Defisit Kas Operasional' }}
                     </span>
                     <h3 class="text-2xl font-black mt-1 font-mono {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }}">
                         {{ $isSurplus ? '+' : '' }}Rp {{ number_format($surplusDefisit, 0, ',', '.') }}
                     </h3>
                     <p class="text-xs text-slate-500 mt-1">
-                        Rasio Operasional: <strong>{{ $marginSurplusDefisit }}%</strong>
+                        Rasio Sisa Kas: <strong>{{ $marginSurplusDefisit }}%</strong>
                     </p>
                 </div>
                 <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 {{ $isSurplus ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
@@ -216,7 +216,7 @@
     <!-- ========================================================================= -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        <!-- KOLOM KIRI: RINCIAN PENDAPATAN (PENERIMAAN) -->
+        <!-- KOLOM KIRI: RINCIAN PENDAPATAN (PENERIMAAN + SALDO PERIODE LALU) -->
         <div class="bg-white rounded-3xl border border-emerald-200/80 shadow-xs overflow-hidden flex flex-col">
             <div class="p-4 sm:p-5 bg-emerald-50/60 border-b border-emerald-100 flex items-center justify-between">
                 <div class="flex items-center gap-2">
@@ -225,11 +225,11 @@
                     </span>
                     <div>
                         <h2 class="text-sm sm:text-base font-bold text-emerald-950">I. Pendapatan Kas (Penerimaan)</h2>
-                        <p class="text-[11px] text-emerald-700">Rincian per pos akun pemasukan</p>
+                        <p class="text-[11px] text-emerald-700">Saldo periode lalu + rincian pemasukan periode ini</p>
                     </div>
                 </div>
                 <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
-                    {{ $pendapatans->count() }} Akun
+                    {{ $pendapatans->count() + 1 }} Komponen
                 </span>
             </div>
 
@@ -245,9 +245,25 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 bg-white">
+                        <!-- Baris 1: Saldo Periode Bulan Lalu -->
+                        <tr class="bg-emerald-50/30 hover:bg-emerald-50/60 transition">
+                            <td class="px-4 py-3 text-center text-emerald-700 font-bold text-xs">1</td>
+                            <td class="px-4 py-3 font-bold text-slate-800">
+                                Saldo Kas Periode Sebelumnya (Bulan Lalu)
+                            </td>
+                            <td class="px-4 py-3 text-center text-xs text-slate-500">Saldo Awal</td>
+                            <td class="px-4 py-3 text-right font-mono font-bold text-emerald-700">
+                                Rp {{ number_format($saldoAwal ?? 0, 0, ',', '.') }}
+                            </td>
+                            <td class="px-4 py-3 text-right font-mono text-xs text-slate-500">
+                                {{ $persentaseSaldoAwal ?? (($totalPendapatan > 0 && ($saldoAwal ?? 0) > 0) ? round((($saldoAwal ?? 0) / $totalPendapatan) * 100, 1) : 0) }}%
+                            </td>
+                        </tr>
+
+                        <!-- Baris Berikutnya: Penerimaan Kas Periode Ini -->
                         @forelse($pendapatans as $idx => $item)
                             <tr class="hover:bg-slate-50/80 transition">
-                                <td class="px-4 py-3 text-center text-slate-400 text-xs">{{ $idx + 1 }}</td>
+                                <td class="px-4 py-3 text-center text-slate-400 text-xs">{{ $idx + 2 }}</td>
                                 <td class="px-4 py-3 font-semibold text-slate-800">{{ $item->kategori }}</td>
                                 <td class="px-4 py-3 text-center text-xs text-slate-500">{{ $item->jumlah_transaksi }}x</td>
                                 <td class="px-4 py-3 text-right font-mono font-bold text-emerald-700">
@@ -259,8 +275,9 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-4 py-8 text-center text-slate-400 text-xs italic">
-                                    Tidak ada mutasi penerimaan kas pada periode ini.
+                                <td class="px-4 py-3 text-center text-slate-400 text-xs">-</td>
+                                <td colspan="4" class="px-4 py-3 text-slate-400 text-xs italic">
+                                    Tidak ada tambahan penerimaan kas baru pada periode ini (Rp 0).
                                 </td>
                             </tr>
                         @endforelse
@@ -268,7 +285,7 @@
                 </table>
             </div>
 
-            <!-- Subtotal Pendapatan -->
+            <!-- Subtotal Pendapatan (Penerimaan + Saldo Periode Lalu) -->
             <div class="p-4 bg-emerald-50 border-t-2 border-emerald-500 flex items-center justify-between">
                 <span class="text-xs font-black text-emerald-950 uppercase">Total Pendapatan (A):</span>
                 <span class="font-mono font-black text-base text-emerald-800">
@@ -340,23 +357,19 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- KESIMPULAN REKAPITULASI HASIL BERSIH & SINKRONISASI SALDO KAS             -->
+    <!-- KESIMPULAN REKAPITULASI HASIL BERSIH (A - B = SURPLUS / DEFISIT)           -->
     <!-- ========================================================================= -->
-    <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
+    <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl {{ $isSurplus ? 'bg-emerald-50 border border-emerald-200' : 'bg-rose-50 border border-rose-200' }}">
             <div>
                 <span class="text-xs font-black uppercase tracking-wider {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }}">
-                    Hasil Akhir Pembukuan Periode Ini (A - B):
+                    Hasil Akhir Pembukuan (A - B):
                 </span>
                 <h3 class="text-lg sm:text-xl font-black {{ $isSurplus ? 'text-emerald-900' : 'text-rose-900' }} mt-0.5">
                     {{ $isSurplus ? 'SURPLUS KAS OPERASIONAL' : 'DEFISIT KAS OPERASIONAL' }}
                 </h3>
                 <p class="text-xs {{ $isSurplus ? 'text-emerald-700' : 'text-rose-700' }} mt-1">
-                    @if($isSurplus)
-                        Total penerimaan kas melebihi total beban operasional sebesar <strong>Rp {{ number_format($surplusDefisit, 0, ',', '.') }}</strong> (Margin surplus: {{ $marginSurplusDefisit }}%).
-                    @else
-                        Total beban operasional melebihi penerimaan kas sebesar <strong>Rp {{ number_format(abs($surplusDefisit), 0, ',', '.') }}</strong> (Margin defisit: {{ $marginSurplusDefisit }}%).
-                    @endif
+                    Pendapatan Kas (Rp {{ number_format($totalPendapatanPeriode ?? 0, 0, ',', '.') }}) + Saldo Periode Lalu (Rp {{ number_format($saldoAwal ?? 0, 0, ',', '.') }}) dikurangi Beban Kas (Rp {{ number_format($totalBeban, 0, ',', '.') }}) menghasilkan <strong>{{ $isSurplus ? 'Surplus Kas' : 'Defisit Kas' }} sebesar Rp {{ number_format(abs($surplusDefisit), 0, ',', '.') }}</strong> (Sinkron Buku Kas &amp; Neraca).
                 </p>
             </div>
 
@@ -364,39 +377,6 @@
                 <div class="text-2xl sm:text-3xl font-black font-mono {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }}">
                     {{ $isSurplus ? '+' : '' }}Rp {{ number_format($surplusDefisit, 0, ',', '.') }}
                 </div>
-            </div>
-        </div>
-
-        <!-- Rekonsiliasi Saldo Awal & Saldo Akhir Kas (Sinkron Buku Kas & Neraca) -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
-            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
-                <div>
-                    <span class="text-[11px] font-bold uppercase text-slate-500 block">Saldo Awal Kas (Sebelum Periode)</span>
-                    <span class="text-xs text-slate-600">Sisa kas dari periode sebelumnya</span>
-                </div>
-                <span class="font-mono font-black text-base text-slate-900">
-                    Rp {{ number_format($saldoAwal ?? 0, 0, ',', '.') }}
-                </span>
-            </div>
-
-            <div class="p-4 rounded-2xl {{ $isSurplus ? 'bg-emerald-50/70 border border-emerald-200' : 'bg-rose-50/70 border border-rose-200' }} flex items-center justify-between">
-                <div>
-                    <span class="text-[11px] font-bold uppercase {{ $isSurplus ? 'text-emerald-700' : 'text-rose-700' }} block">Mutasi Bersih Periode Ini (A - B)</span>
-                    <span class="text-xs {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }}">{{ $isSurplus ? 'Surplus periode berjalan' : 'Defisit periode berjalan' }}</span>
-                </div>
-                <span class="font-mono font-black text-base {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }}">
-                    {{ $isSurplus ? '+' : '' }}Rp {{ number_format($surplusDefisit, 0, ',', '.') }}
-                </span>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-between">
-                <div>
-                    <span class="text-[11px] font-bold uppercase text-blue-800 block">Saldo Akhir Kas Tersedia</span>
-                    <span class="text-xs text-blue-700">Sinkron Buku Kas Umum &amp; Neraca</span>
-                </div>
-                <span class="font-mono font-black text-base text-blue-900">
-                    Rp {{ number_format($saldoAkhirKas ?? (($saldoAwal ?? 0) + $surplusDefisit), 0, ',', '.') }}
-                </span>
             </div>
         </div>
     </div>

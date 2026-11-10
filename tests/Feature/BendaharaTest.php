@@ -779,6 +779,49 @@ class BendaharaTest extends TestCase
         $response->assertSee('SURPLUS KAS OPERASIONAL');
     }
 
+    public function test_laba_rugi_menambahkan_saldo_periode_lalu_ke_pendapatan_sehingga_menghasilkan_surplus(): void
+    {
+        // Bulan September (Periode Lalu): Sisa Saldo = 1.342.000
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKM-202609-0001',
+            'tanggal' => '2026-09-20',
+            'jenis' => 'debit',
+            'kategori' => 'Infaq & Shodaqoh',
+            'nominal' => 1342000,
+            'keterangan' => 'Sisa kas bulan September',
+            'user_id' => $this->user->id,
+        ]);
+
+        // Bulan Oktober (Periode Ini): Tidak ada pemasukan baru (0), Beban = 973.000
+        KasTransaksi::create([
+            'kode_transaksi' => 'BKK-202610-0001',
+            'tanggal' => '2026-10-10',
+            'jenis' => 'kredit',
+            'kategori' => 'Perlengkapan kantor',
+            'nominal' => 973000,
+            'keterangan' => 'Beban Oktober',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('admin.bendahara.laba-rugi', [
+            'filter_tipe' => 'bulan',
+            'filter_bulan' => '2026-10',
+        ]));
+
+        $response->assertStatus(200);
+        // Total Pendapatan (A) = 0 + 1.342.000 = 1.342.000
+        $this->assertEquals(1342000, $response->viewData('totalPendapatan'));
+        // Total Beban (B) = 973.000
+        $this->assertEquals(973000, $response->viewData('totalBeban'));
+        // Hasil A - B = +369.000 (Surplus Kas Operasional)
+        $this->assertEquals(369000, $response->viewData('surplusDefisit'));
+        $this->assertTrue($response->viewData('isSurplus'));
+        $response->assertSee('Saldo Kas Periode Sebelumnya (Bulan Lalu)');
+        $response->assertSee('1.342.000');
+        $response->assertSee('369.000');
+        $response->assertSee('SURPLUS KAS OPERASIONAL');
+    }
+
     public function test_bisa_mencetak_laporan_laba_rugi_pdf(): void
     {
         KasTransaksi::create([
@@ -842,8 +885,8 @@ class BendaharaTest extends TestCase
 
         $this->assertStringContainsString('Ust Imam Qusyairi', $html);
         $this->assertStringContainsString('Bendahara Pusat PPAF', $html);
-        $this->assertStringContainsString('SALDO AWAL KAS SEBELUM PERIODE', $html);
-        $this->assertStringContainsString('SALDO AKHIR KAS TERSEDIA', $html);
+        $this->assertStringContainsString('Saldo Kas Periode Sebelumnya (Bulan Lalu)', $html);
+        $this->assertStringContainsString('SURPLUS KAS OPERASIONAL (A - B)', $html);
     }
 
     public function test_user_bisa_membuka_halaman_neraca(): void
