@@ -329,7 +329,7 @@
                     </div>
 
                     <div class="p-3 bg-blue-50 rounded-xl border border-blue-100 flex items-center justify-between text-xs font-bold text-blue-900">
-                        <span>Jumlah Ekuitas Saldo Dana:</span>
+                        <span>{{ $totalEkuitas >= 0 ? 'Surplus Kas Operasional (Saldo Dana):' : 'Defisit Kas Operasional (Saldo Dana):' }}</span>
                         <span class="font-mono font-black text-sm text-blue-800">
                             Rp {{ number_format($totalEkuitas, 0, ',', '.') }}
                         </span>
@@ -341,7 +341,7 @@
             <div class="p-4 sm:p-5 bg-blue-50 border-t-2 border-blue-500 flex items-center justify-between">
                 <div>
                     <span class="text-xs font-black uppercase tracking-wider text-blue-950 block">TOTAL PASIVA (EKUITAS DANA):</span>
-                    <span class="text-[11px] text-blue-700">Saldo Awal + Surplus/Defisit Periode</span>
+                    <span class="text-[11px] text-blue-700">Pendapatan + Saldo Periode Lalu - Beban</span>
                 </div>
                 <div class="text-right">
                     <span class="font-mono font-black text-xl text-blue-800">

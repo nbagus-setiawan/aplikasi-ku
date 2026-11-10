@@ -1210,11 +1210,13 @@ class BendaharaController extends Controller
         $totalKewajiban = 0.0;
 
         // 6. Struktur Ekuitas Dana (Saldo Dana Pesantren — Sinkron Laba Rugi & Buku Kas)
+        // Rumus: Saldo Periode Lalu + Penerimaan Kas Periode Ini - Beban Kas Periode Ini = Surplus Kas Operasional
         $ekuitas = [
-            ['nama' => 'Saldo Awal Dana Kas (Sebelum Periode)', 'nominal' => $saldoAwal],
-            ['nama' => ($surplusDefisitPeriode >= 0 ? 'Surplus Kas' : 'Defisit Kas') . ' Periode Berjalan', 'nominal' => $surplusDefisitPeriode],
+            ['nama' => 'Saldo Kas Periode Sebelumnya (Bulan Lalu)', 'nominal' => $saldoAwal],
+            ['nama' => 'Penerimaan Kas Periode Ini (Debit)', 'nominal' => $totalDebitPeriode],
+            ['nama' => 'Dikurangi: Beban Pengeluaran Kas (Kredit)', 'nominal' => -$totalKreditPeriode],
         ];
-        $totalEkuitas = $saldoAwal + $surplusDefisitPeriode;
+        $totalEkuitas = $saldoAwal + $totalDebitPeriode - $totalKreditPeriode;
 
         // 7. Total Pasiva & Keseimbangan (Balance)
         $totalPasiva = $totalKewajiban + $totalEkuitas;

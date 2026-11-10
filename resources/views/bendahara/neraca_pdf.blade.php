@@ -347,7 +347,7 @@
                 <tr>
                     <td class="subtotal-cell text-center">Jumlah Aset Kas Lancar</td>
                     <td class="subtotal-cell text-right nowrap">Rp {{ number_format($totalAsetLancar, 0, ',', '.') }}</td>
-                    <td class="subtotal-cell text-center">Jumlah Ekuitas Saldo Dana</td>
+                    <td class="subtotal-cell text-center">{{ $totalEkuitas >= 0 ? 'Surplus Kas Operasional (Saldo Dana)' : 'Defisit Kas Operasional (Saldo Dana)' }}</td>
                     <td class="subtotal-cell text-right nowrap">Rp {{ number_format($totalEkuitas, 0, ',', '.') }}</td>
                 </tr>
             @else

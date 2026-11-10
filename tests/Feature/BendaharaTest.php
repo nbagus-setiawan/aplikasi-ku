@@ -934,6 +934,10 @@ class BendaharaTest extends TestCase
         $response->assertStatus(200);
         // Sisa Kas Riil = 3.800.000
         $response->assertSee('3.800.000');
+        $response->assertSee('Saldo Kas Periode Sebelumnya (Bulan Lalu)');
+        $response->assertSee('Penerimaan Kas Periode Ini (Debit)');
+        $response->assertSee('Dikurangi: Beban Pengeluaran Kas (Kredit)');
+        $response->assertSee('Surplus Kas Operasional (Saldo Dana):');
         $totalAset = $response->viewData('totalAset');
         $totalPasiva = $response->viewData('totalPasiva');
         $isBalance = $response->viewData('isBalance');
