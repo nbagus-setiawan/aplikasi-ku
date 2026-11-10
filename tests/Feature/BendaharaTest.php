@@ -670,7 +670,7 @@ class BendaharaTest extends TestCase
         $this->assertFalse(KasTutupBuku::isTutup('2026-10'));
     }
 
-    public function test_cetak_pdf_tata_letak_3_tanda_tangan_tidak_sejajar_dan_saldo_awal(): void
+    public function test_cetak_pdf_sesuai_template_resmi_dan_saldo_awal(): void
     {
         $transaksi = KasTransaksi::create([
             'kode_transaksi' => 'BKM-202610-0001',
@@ -706,22 +706,20 @@ class BendaharaTest extends TestCase
         ])->render();
 
         // 1. Saldo Awal baris pertama di tabel
-        $this->assertStringContainsString('SALDO AWAL KAS SEBELUM PERIODE', $html);
+        $this->assertStringContainsString('Saldo awal sebelum periode', $html);
         $this->assertStringContainsString('2.500.000', $html);
 
-        // 2. Tiga tanda tangan dengan posisi tidak sejajar (2 di atas, 1 di bawah tengah)
+        // 2. Judul dan kolom sesuai template resmi
+        $this->assertStringContainsString('LAPORAN BUKU KAS BULANAN', $html);
+        $this->assertStringContainsString('TANGGAL TRANSAKSI', $html);
+        $this->assertStringContainsString('TOTAL MUTASI &amp; SALDO AKHIR', $html);
+
+        // 3. Dua tanda tangan sesuai template resmi
         $this->assertStringContainsString('Danil Ali Sabila', $html);
-        $this->assertStringContainsString('Ketua Umum AFPA', $html);
-
+        $this->assertStringContainsString('Ketua Umum', $html);
         $this->assertStringContainsString('Azwil Yoga Pratama', $html);
-        $this->assertStringContainsString('Bendahara AFPA', $html);
-
-        $this->assertStringContainsString('Ust Imam Qusyairi', $html);
-        $this->assertStringContainsString('Bendahara Pusat PPAF', $html);
-
-        // Memastikan ada struktur 2 di atas dan 1 di bawah
-        $this->assertStringContainsString('BARIS 1: 2 TTD DI ATAS', $html);
-        $this->assertStringContainsString('BARIS 2: 1 TTD DI BAWAH TENGAH', $html);
+        $this->assertStringContainsString('Bendahara', $html);
+        $this->assertStringNotContainsString('Bendahara Pusat PPAF', $html);
     }
 
     public function test_user_bisa_membuka_halaman_laba_rugi(): void

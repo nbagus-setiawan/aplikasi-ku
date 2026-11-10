@@ -6,125 +6,143 @@
     <style>
         @page {
             size: A4 landscape;
-            margin: 1cm 1.2cm 1cm 1.2cm;
+            margin: 1cm 1.3cm 1.1cm 1.3cm;
         }
         body {
-            font-family: 'Times New Roman', Times, serif;
-            font-size: 9.5pt;
-            color: #0f172a;
-            line-height: 1.35;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 9pt;
+            color: #000000;
+            line-height: 1.3;
             margin: 0;
             padding: 0;
         }
+
+        /* ===== KOP (SESUAI TEMPLATE RESMI) ===== */
         .header-kop {
             width: 100%;
             border-bottom: 2pt solid #000000;
-            padding-bottom: 8px;
-            margin-bottom: 20px;
+            padding-bottom: 6px;
+            margin-bottom: 16px;
         }
         .header-kop table {
             width: 100%;
             border-collapse: collapse;
-            border: none;
-            margin: 0;
         }
         .header-kop td {
             border: none;
             padding: 0;
             vertical-align: middle;
         }
+        .kop-yayasan {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 13pt;
+            letter-spacing: 0.3px;
+            margin: 0;
+        }
+        .kop-pondok {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 22pt;
+            font-weight: bold;
+            line-height: 1.05;
+            margin: 0;
+        }
+        .kop-alamat {
+            font-size: 8.5pt;
+            font-weight: bold;
+            margin: 2px 0 0;
+        }
+        .kop-kontak {
+            font-size: 8pt;
+            font-weight: bold;
+            margin: 1px 0 0;
+        }
+
+        /* ===== JUDUL ===== */
         .judul-laporan {
             text-align: center;
-            margin-top: 10px;
-            margin-bottom: 18px;
+            margin-bottom: 14px;
         }
-        .judul-laporan h2 {
-            margin: 0;
-            font-size: 12.5pt;
-            text-transform: uppercase;
+        .judul-laporan .judul {
+            font-size: 11pt;
             font-weight: bold;
-            color: #0f172a;
-            letter-spacing: 0.5px;
+            margin: 0;
         }
-        .judul-laporan p {
-            margin: 3px 0 0;
-            font-size: 9pt;
-            color: #334155;
+        .judul-laporan .periode {
+            font-size: 8.5pt;
+            font-weight: bold;
+            margin: 6px 0 0;
         }
+
+        /* ===== TABEL ===== */
         table.tabel-kas {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 14px;
             font-size: 8.5pt;
         }
-        table.tabel-kas th, table.tabel-kas td {
-            border: 1pt solid #cbd5e1;
+        table.tabel-kas th,
+        table.tabel-kas td {
+            border: 1pt solid #000000;
             padding: 5px 6px;
-            text-align: left;
             vertical-align: middle;
         }
         table.tabel-kas th {
-            background-color: #f1f5f9;
-            color: #0f172a;
-            font-weight: bold;
-            font-size: 8pt;
-            text-align: center;
-            letter-spacing: 0.3px;
-            border: 1pt solid #94a3b8;
-        }
-        thead {
-            display: table-header-group;
-        }
-        tr {
-            page-break-inside: avoid;
-        }
-        .bg-strip td {
-            background-color: #f8fafc;
-        }
-        .text-center { text-align: center !important; }
-        .text-right { text-align: right !important; }
-        .font-mono { font-family: Consolas, 'Courier New', Courier, monospace; }
-        .text-debit { color: #047857; font-weight: bold; font-family: Consolas, 'Courier New', Courier, monospace; }
-        .text-kredit { color: #b91c1c; font-weight: bold; font-family: Consolas, 'Courier New', Courier, monospace; }
-        .text-saldo { color: #0f172a; font-weight: bold; font-family: Consolas, 'Courier New', Courier, monospace; }
-        .nowrap { white-space: nowrap !important; }
-        .saldo-awal-row td {
-            background-color: #f0fdf4 !important;
-            font-weight: bold;
-            border-top: 1pt solid #86efac !important;
-            border-bottom: 1pt solid #86efac !important;
-            color: #047857;
-        }
-        .total-row td {
-            background-color: #e2e8f0 !important;
+            background-color: #a6a6a6;
             font-weight: bold;
             font-size: 8.5pt;
-            border-top: 1pt solid #000000 !important;
-            border-bottom: 1pt solid #000000 !important;
-            color: #0f172a !important;
-            padding: 6px 6px;
+            text-align: center;
+            padding: 7px 6px;
         }
-        .pengesahan-container {
+        table.tabel-kas td {
+            text-align: center;
+        }
+        thead { display: table-header-group; }
+        tr { page-break-inside: avoid; }
+
+        .text-left { text-align: left !important; }
+        .text-right { text-align: right !important; }
+        .nowrap { white-space: nowrap; }
+        .bold { font-weight: bold; }
+
+        .saldo-awal-row td {
+            background-color: #f2f2f2;
+            font-style: italic;
+        }
+        .total-row td {
+            font-weight: bold;
+            padding: 7px 6px;
+        }
+        .total-row td.saldo-akhir {
+            background-color: #a6a6a6;
+        }
+
+        /* ===== TANDA TANGAN ===== */
+        .pengesahan {
             width: 100%;
+            margin-top: 22px;
             page-break-inside: avoid;
-            margin-top: 15px;
         }
-        .tabel-ttd {
+        .pengesahan table {
             width: 100%;
             border-collapse: collapse;
-            border: none;
-            margin: 0;
         }
-        .tabel-ttd td {
+        .pengesahan td {
             border: none;
             padding: 0;
+            text-align: center;
             vertical-align: top;
             font-size: 9pt;
-            line-height: 1.35;
         }
-        .ttd-space {
-            height: 55px;
+        .ttd-space { height: 58px; }
+        .ttd-nama {
+            font-weight: bold;
+            text-decoration: underline;
+            margin: 0;
         }
+        .ttd-jabatan {
+            font-style: italic;
+            margin: 1px 0 0;
+        }
+
         @media print {
             .no-print { display: none !important; }
             body { padding: 0 !important; }
@@ -137,13 +155,12 @@
     <!-- Toolbar Pratinjau Cetak Browser (Otomatis Disembunyikan Saat Cetak/PDF) -->
     <div class="no-print" style="background: #ffffff; border-bottom: 2px solid #047857; padding: 10px 18px; margin: -10px -10px 14px -10px; display: flex; align-items: center; justify-content: space-between; font-family: sans-serif; box-shadow: 0 1px 3px rgba(0,0,0,0.1); gap: 12px;">
         <div>
-            <strong style="color: #064e3b; font-size: 13px; display: block;">Pratinjau Cetak Buku Kas Umum (Format Landscape)</strong>
-            <p style="margin: 2px 0 0; font-size: 11px; color: #475569;">Tata letak telah dipresisikan sesuai dokumen resmi. Klik tombol di kanan untuk Simpan PDF atau Cetak.</p>
+            <strong style="color: #064e3b; font-size: 13px; display: block;">Pratinjau Cetak Buku Kas (Format Landscape)</strong>
+            <p style="margin: 2px 0 0; font-size: 11px; color: #475569;">Tata letak mengikuti template resmi. Klik tombol di kanan untuk Simpan PDF atau Cetak.</p>
         </div>
         <div style="display: flex; gap: 8px; flex-shrink: 0;">
-            <button onclick="sesuaikanUrlCetak(); window.print();" type="button" style="background: #047857; color: white; border: none; padding: 7px 15px; border-radius: 7px; font-weight: bold; font-size: 11.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                <span>Cetak / Simpan PDF</span>
+            <button onclick="sesuaikanUrlCetak(); window.print();" type="button" style="background: #047857; color: white; border: none; padding: 7px 15px; border-radius: 7px; font-weight: bold; font-size: 11.5px; cursor: pointer;">
+                Cetak / Simpan PDF
             </button>
             <a href="{{ route('admin.bendahara.index') }}" style="background: #e2e8f0; color: #334155; text-decoration: none; padding: 7px 13px; border-radius: 7px; font-weight: bold; font-size: 11.5px; display: inline-block;">
                 &larr; Kembali
@@ -174,75 +191,62 @@
         });
     </script>
 
-    <!-- KOP RESMI LEMBAGA (SESUAI DOKUMEN RESMI PONDOK PESANTREN) -->
+    <!-- KOP RESMI LEMBAGA -->
     @if (!empty($kopGambar))
-        <div style="text-align: center; margin-bottom: 22px;">
-            <img src="{{ $kopGambar }}" style="width: 100%; max-height: 125px; height: auto; display: block;" alt="Kop Surat">
+        <div style="text-align: center; margin-bottom: 16px;">
+            <img src="{{ $kopGambar }}" style="width: 100%; max-height: 130px; height: auto; display: block;" alt="Kop Surat">
         </div>
     @else
         <div class="header-kop">
             <table>
                 <tr>
-                    <td style="width: 85px; text-align: left; vertical-align: middle;">
+                    <td style="width: 120px; text-align: center;">
                         @if (!empty($logo))
-                            <img src="{{ $logo }}" style="width: 75px; height: auto;" alt="Logo Lembaga">
+                            <img src="{{ $logo }}" style="width: 105px; height: auto;" alt="Logo">
                         @elseif (file_exists(public_path('images/logo-pesantren.png')))
-                            <img src="{{ public_path('images/logo-pesantren.png') }}" style="width: 75px; height: auto;" alt="Logo">
-                        @else
-                            <img src="{{ public_path('images/logo.png') }}" style="width: 75px; height: auto;" alt="Logo">
+                            <img src="{{ public_path('images/logo-pesantren.png') }}" style="width: 105px; height: auto;" alt="Logo">
                         @endif
                     </td>
-                    <td style="text-align: center; vertical-align: middle; padding: 0 10px;">
+                    <td style="text-align: center;">
                         @if(!empty($kaligrafi))
-                            <div style="margin-bottom: 3px;">
-                                <img src="{{ $kaligrafi }}" style="height: 22px; width: auto;" alt="Kaligrafi">
-                            </div>
+                            <img src="{{ $kaligrafi }}" style="height: 34px; width: auto;" alt="Kaligrafi">
                         @elseif(file_exists(public_path('images/kaligrafi-kop.png')))
-                            <div style="margin-bottom: 3px;">
-                                <img src="{{ public_path('images/kaligrafi-kop.png') }}" style="height: 22px; width: auto;" alt="Kaligrafi">
-                            </div>
+                            <img src="{{ public_path('images/kaligrafi-kop.png') }}" style="height: 34px; width: auto;" alt="Kaligrafi">
                         @endif
-                        <div style="font-size: 12pt; font-weight: bold; letter-spacing: 0.5px; margin: 0; text-transform: uppercase; color: #000000;">
-                            YAYASAN PONDOK PESANTREN SALAFIYAH AL-FALAH
-                        </div>
-                        <div style="font-size: 15pt; font-weight: bold; letter-spacing: 1px; margin: 2px 0; text-transform: uppercase; color: #064e3b;">
-                            PONDOK PUTRA
-                        </div>
-                        <div style="font-size: 8.5pt; margin: 1px 0; color: #1e293b;">
-                            Dusun II Ds. Putak Kec. Gelumbang Kab. Muara Enim Sumatera Selatan Kode Pos 31171
-                        </div>
-                        <div style="font-size: 8.5pt; margin: 1px 0; color: #334155;">
-                            Telepon: 6282118702717 &nbsp;&nbsp;&nbsp; E-mail: pengurusalfalahputra@gmail.com
-                        </div>
+                        <p class="kop-yayasan">YAYASAN PONDOK PESANTREN SALAFIYAH AL-FALAH</p>
+                        <p class="kop-pondok">PONDOK PUTRA</p>
+                        <p class="kop-alamat">Dusun II Ds. Putak Kec. Gelumbang Kab. Muara Enim Sumatera Selatan Kode Pos 31171</p>
+                        <p class="kop-kontak">Telepon: 6282118702717 &nbsp;&nbsp; E-mail: pengurusalfalahputra@gmail.com</p>
                     </td>
-                    <td style="width: 85px;"></td>
+                    <td style="width: 120px;"></td>
                 </tr>
             </table>
         </div>
     @endif
 
-    <!-- JUDUL LAPORAN BUKU KAS -->
+    <!-- JUDUL LAPORAN -->
     <div class="judul-laporan">
-        <h2>BUKU KAS UMUM (MUTASI DEBIT &amp; KREDIT)</h2>
-        <p>
-            Periode: <strong>{{ $labelPeriode ?? 'Semua Transaksi Pembukuan' }}</strong>
-            @if(!empty($kategori)) &bull; Pos Akun: <strong>{{ $kategori }}</strong> @endif
-            @if(!empty($jenis)) &bull; Jenis: <strong>{{ strtoupper($jenis) }}</strong> @endif
+        <p class="judul">LAPORAN BUKU KAS BULANAN</p>
+        <p class="judul">PONDOK PUTRA</p>
+        <p class="periode">
+            PERIODE : {{ strtoupper($labelPeriode ?? 'Semua Transaksi Pembukuan') }}
+            @if(!empty($kategori)) &nbsp;|&nbsp; AKUN : {{ strtoupper($kategori) }} @endif
+            @if(!empty($jenis)) &nbsp;|&nbsp; JENIS : {{ strtoupper($jenis) }} @endif
         </p>
     </div>
 
-    <!-- TABEL BUKU KAS UMUM 8 KOLOM (PERSIS SESUAI DOKUMEN RESMI) -->
+    <!-- TABEL BUKU KAS (SESUAI TEMPLATE RESMI) -->
     <table class="tabel-kas">
         <thead>
             <tr>
-                <th style="width: 3.5%;">NO</th>
-                <th style="width: 9%;">TANGGAL</th>
-                <th style="width: 13%;">NO. BUKTI</th>
-                <th style="width: 14%;">POS AKUN / KATEGORI</th>
-                <th style="width: 25%;">URAIAN TRANSAKSI</th>
-                <th style="width: 11.5%;" class="text-right">DEBIT (MASUK)</th>
-                <th style="width: 11.5%;" class="text-right">KREDIT (KELUAR)</th>
-                <th style="width: 12.5%;" class="text-right">SALDO KAS(RP)</th>
+                <th style="width: 4%;">NO</th>
+                <th style="width: 12%;" class="nowrap">TANGGAL TRANSAKSI</th>
+                <th style="width: 10%;">No. BUKTI</th>
+                <th style="width: 13%;">AKUN</th>
+                <th style="width: 25%;">KETERANGAN</th>
+                <th style="width: 12%;">DEBIT</th>
+                <th style="width: 12%;">KREDIT</th>
+                <th style="width: 12%;">SALDO</th>
             </tr>
         </thead>
         <tbody>
@@ -250,13 +254,13 @@
 
             @if($dari && $saldoAwal != 0)
             <tr class="saldo-awal-row">
-                <td class="text-center">-</td>
-                <td class="text-center nowrap">{{ date('d/m/Y', strtotime($dari)) }}</td>
-                <td class="text-center nowrap font-mono">-</td>
-                <td colspan="2"><em>SALDO AWAL KAS SEBELUM PERIODE</em></td>
-                <td class="text-right text-debit">-</td>
-                <td class="text-right text-kredit">-</td>
-                <td class="text-right text-saldo nowrap">Rp {{ number_format($currentSaldo, 0, ',', '.') }}</td>
+                <td></td>
+                <td class="nowrap">{{ date('d-m-Y', strtotime($dari)) }}</td>
+                <td>-</td>
+                <td colspan="2" class="text-left">Saldo awal sebelum periode</td>
+                <td class="text-right">-</td>
+                <td class="text-right">-</td>
+                <td class="text-right nowrap">Rp {{ number_format($currentSaldo, 0, ',', '.') }}</td>
             </tr>
             @endif
 
@@ -267,77 +271,50 @@
                     } else {
                         $currentSaldo -= (float) $t->nominal;
                     }
-                    $tglDisplay = $t->tanggal ? date('d-m-Y', strtotime($t->tanggal)) : '-';
                 @endphp
-                <tr class="{{ $idx % 2 === 1 ? 'bg-strip' : '' }}">
-                    <td class="text-center">{{ $idx + 1 }}</td>
-                    <td class="text-center nowrap">{{ $tglDisplay }}</td>
-                    <td class="text-center nowrap" style="font-family: monospace; font-weight: bold; color: #0f172a;">
-                        {{ $t->kode_transaksi }}
-                    </td>
-                    <td style="font-weight: 600;">{{ $t->kategori }}</td>
-                    <td>
-                        <div>{{ $t->keterangan ?: '-' }}</div>
-                    </td>
-                    <td class="text-right text-debit nowrap">
-                        {{ $t->jenis === 'debit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-' }}
-                    </td>
-                    <td class="text-right text-kredit nowrap">
-                        {{ $t->jenis === 'kredit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-' }}
-                    </td>
-                    <td class="text-right text-saldo nowrap">
-                        Rp {{ number_format((float) $currentSaldo, 0, ',', '.') }}
-                    </td>
+                <tr>
+                    <td>{{ $idx + 1 }}</td>
+                    <td class="nowrap">{{ $t->tanggal ? date('d-m-Y', strtotime($t->tanggal)) : '-' }}</td>
+                    <td class="nowrap">{{ $t->kode_transaksi }}</td>
+                    <td>{{ $t->kategori }}</td>
+                    <td class="text-left">{{ $t->keterangan ?: '-' }}</td>
+                    <td class="text-right nowrap">{{ $t->jenis === 'debit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-' }}</td>
+                    <td class="text-right nowrap">{{ $t->jenis === 'kredit' ? 'Rp ' . number_format((float) $t->nominal, 0, ',', '.') : '-' }}</td>
+                    <td class="text-right nowrap">Rp {{ number_format((float) $currentSaldo, 0, ',', '.') }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="text-center" style="padding: 16px; color: #64748b;">
-                        Tidak ada transaksi kas yang tercatat pada periode ini.
-                    </td>
+                    <td colspan="8" style="padding: 14px;">Tidak ada transaksi kas yang tercatat pada periode ini.</td>
                 </tr>
             @endforelse
 
-            <!-- REKAPITULASI TOTAL MUTASI & SALDO AKHIR -->
+            <!-- TOTAL MUTASI & SALDO AKHIR -->
             <tr class="total-row">
-                <td colspan="5" class="text-center" style="letter-spacing: 0.5px;">TOTAL MUTASI &amp; SALDO AKHIR KAS</td>
-                <td class="text-right text-debit nowrap">Rp {{ number_format((float) $totalDebit, 0, ',', '.') }}</td>
-                <td class="text-right text-kredit nowrap">Rp {{ number_format((float) $totalKredit, 0, ',', '.') }}</td>
-                <td class="text-right text-saldo nowrap" style="font-size: 9.5pt;">Rp {{ number_format((float) $currentSaldo, 0, ',', '.') }}</td>
+                <td></td>
+                <td colspan="4">TOTAL MUTASI &amp; SALDO AKHIR</td>
+                <td class="text-right nowrap">Rp {{ number_format((float) $totalDebit, 0, ',', '.') }}</td>
+                <td class="text-right nowrap">Rp {{ number_format((float) $totalKredit, 0, ',', '.') }}</td>
+                <td class="text-right nowrap saldo-akhir">Rp {{ number_format((float) $currentSaldo, 0, ',', '.') }}</td>
             </tr>
         </tbody>
     </table>
 
-    <!-- LEMBAR PENGESAHAN 3 TANDA TANGAN (2 DI ATAS, 1 DI BAWAH TENGAH) -->
-    <div class="pengesahan-container">
-        <!-- BARIS 1: 2 TTD DI ATAS (KETUA UMUM AFPA & BENDAHARA AFPA) -->
-        <table class="tabel-ttd">
+    <!-- TANDA TANGAN (SESUAI TEMPLATE RESMI) -->
+    <div class="pengesahan">
+        <table>
             <tr>
-                <td style="width: 50%; text-align: center; vertical-align: top;">
-                    <p style="margin: 0; font-size: 9pt;">Mengetahui,</p>
-                    <p style="margin: 2px 0 0; font-size: 9pt; font-weight: bold;">Ketua Umum AFPA</p>
+                <td style="width: 50%;">
+                    <p style="margin: 0; font-weight: bold;">Mengetahui,</p>
                     <div class="ttd-space"></div>
-                    <p style="margin: 0; font-size: 9pt; font-weight: bold; text-decoration: underline;">Danil Ali Sabila</p>
+                    <p class="ttd-nama">Danil Ali Sabila</p>
+                    <p class="ttd-jabatan">Ketua Umum</p>
                 </td>
-                <td style="width: 50%; text-align: center; vertical-align: top;">
-                    <p style="margin: 0; font-size: 9pt;">Putak, {{ $tanggalAkhirRiil ?? date('d F Y') }}</p>
-                    <p style="margin: 2px 0 0; font-size: 9pt; font-weight: bold;">Bendahara AFPA</p>
+                <td style="width: 50%;">
+                    <p style="margin: 0;">Putak, {{ $tanggalAkhirRiil ?? date('d-m-Y') }}</p>
                     <div class="ttd-space"></div>
-                    <p style="margin: 0; font-size: 9pt; font-weight: bold; text-decoration: underline;">Azwil Yoga Pratama</p>
+                    <p class="ttd-nama">Azwil Yoga Pratama</p>
+                    <p class="ttd-jabatan">Bendahara</p>
                 </td>
-            </tr>
-        </table>
-
-        <!-- BARIS 2: 1 TTD DI BAWAH TENGAH (BENDAHARA PUSAT PPAF) -->
-        <table class="tabel-ttd" style="margin-top: 14px;">
-            <tr>
-                <td style="width: 25%;"></td>
-                <td style="width: 50%; text-align: center; vertical-align: top;">
-                    <p style="margin: 0; font-size: 9pt;">Mengetahui,</p>
-                    <p style="margin: 2px 0 0; font-size: 9pt; font-weight: bold;">Bendahara Pusat PPAF</p>
-                    <div class="ttd-space"></div>
-                    <p style="margin: 0; font-size: 9pt; font-weight: bold; text-decoration: underline;">Ust Imam Qusyairi</p>
-                </td>
-                <td style="width: 25%;"></td>
             </tr>
         </table>
     </div>
