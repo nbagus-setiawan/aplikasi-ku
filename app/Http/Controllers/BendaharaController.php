@@ -1214,7 +1214,7 @@ class BendaharaController extends Controller
         $ekuitas = [
             ['nama' => 'Saldo Kas Periode Sebelumnya (Bulan Lalu)', 'nominal' => $saldoAwal],
             ['nama' => 'Penerimaan Kas Periode Ini (Debit)', 'nominal' => $totalDebitPeriode],
-            ['nama' => 'Dikurangi: Beban Pengeluaran Kas (Kredit)', 'nominal' => -$totalKreditPeriode],
+            ['nama' => 'Beban Pengeluaran Kas (Kredit)', 'nominal' => -$totalKreditPeriode],
         ];
         $totalEkuitas = $saldoAwal + $totalDebitPeriode - $totalKreditPeriode;
 
