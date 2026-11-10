@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>&#8203;</title>
     <style>
         @page {
             size: A4 portrait;
@@ -212,6 +212,23 @@
                 font-weight: bold;
             }
         }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin-top: 0cm !important;
+                margin-bottom: 1.2cm !important;
+                margin-left: 1.3cm !important;
+                margin-right: 1.3cm !important;
+            }
+            .no-print { display: none !important; }
+            body {
+                padding-top: 1cm !important;
+                padding-bottom: 0 !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -226,10 +243,10 @@
     <script>
         function sesuaikanUrlCetak() {
             try {
-                document.title = '';
                 if (window.history && window.history.replaceState) {
-                    window.history.replaceState({}, '', 'https://ponpesalfalahputak.my.id');
+                    window.history.replaceState({}, '\u200B', '/');
                 }
+                document.title = '\u200B';
             } catch (e) {}
         }
         sesuaikanUrlCetak();

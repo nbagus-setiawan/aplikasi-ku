@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>&#8203;</title>
     <style>
         @page {
             size: A4 portrait;
@@ -201,20 +201,24 @@
                 font-weight: bold;
             }
         }
-    </style>
-    <script>
-        function sesuaikanUrlCetak() {
-            try {
-                document.title = '';
-                if (window.history && window.history.replaceState) {
-                    window.history.replaceState({}, '', 'https://ponpesalfalahputak.my.id');
-                }
-            } catch (e) {}
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin-top: 0cm !important;
+                margin-bottom: 1.2cm !important;
+                margin-left: 1.3cm !important;
+                margin-right: 1.3cm !important;
+            }
+            .no-print { display: none !important; }
+            body {
+                padding-top: 1cm !important;
+                padding-bottom: 0 !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
         }
-        sesuaikanUrlCetak();
-        window.addEventListener('DOMContentLoaded', sesuaikanUrlCetak);
-        window.addEventListener('beforeprint', sesuaikanUrlCetak);
-    </script>
+    </style>
 </head>
 <body>
 
@@ -224,6 +228,28 @@
         <a href="{{ route('admin.bendahara.neraca') }}" style="color: #cbd5e1; text-decoration: none; margin-left: 10px; font-size: 9pt;">Kembali</a>
     </div>
     @endif
+
+    <script>
+        function sesuaikanUrlCetak() {
+            try {
+                if (window.history && window.history.replaceState) {
+                    window.history.replaceState({}, '\u200B', '/');
+                }
+                document.title = '\u200B';
+            } catch (e) {}
+        }
+        sesuaikanUrlCetak();
+        window.addEventListener('beforeprint', sesuaikanUrlCetak);
+        window.addEventListener('DOMContentLoaded', function() {
+            sesuaikanUrlCetak();
+            @if(!empty($isHtmlPrint))
+            setTimeout(function() {
+                sesuaikanUrlCetak();
+                window.print();
+            }, 400);
+            @endif
+        });
+    </script>
 
     <!-- KOP RESMI PONDOK PESANTREN AL-FALAH PUTRA -->
     @if (!empty($kopGambar))
