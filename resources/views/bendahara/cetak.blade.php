@@ -299,22 +299,36 @@
         </tbody>
     </table>
 
-    <!-- TANDA TANGAN (SESUAI TEMPLATE RESMI) -->
+    <!-- TANDA TANGAN: 2 DI ATAS, 1 DI TENGAH BAWAH -->
     <div class="pengesahan">
+        <!-- BARIS 1: 2 TTD DI ATAS -->
         <table>
             <tr>
                 <td style="width: 50%;">
                     <p style="margin: 0; font-weight: bold;">Mengetahui,</p>
                     <div class="ttd-space"></div>
                     <p class="ttd-nama">Danil Ali Sabila</p>
-                    <p class="ttd-jabatan">Ketua Umum</p>
+                    <p class="ttd-jabatan">Ketua Umum AFPA</p>
                 </td>
                 <td style="width: 50%;">
                     <p style="margin: 0;">Putak, {{ $tanggalAkhirRiil ?? date('d-m-Y') }}</p>
                     <div class="ttd-space"></div>
                     <p class="ttd-nama">Azwil Yoga Pratama</p>
-                    <p class="ttd-jabatan">Bendahara</p>
+                    <p class="ttd-jabatan">Bendahara AFPA</p>
                 </td>
+            </tr>
+        </table>
+        <!-- BARIS 2: 1 TTD DI BAWAH TENGAH -->
+        <table style="margin-top: 14px;">
+            <tr>
+                <td style="width: 30%;"></td>
+                <td style="width: 40%;">
+                    <p style="margin: 0; font-weight: bold;">Mengetahui,</p>
+                    <div class="ttd-space"></div>
+                    <p class="ttd-nama">Ust Imam Qusyairi</p>
+                    <p class="ttd-jabatan">Bendahara Pusat PPAF</p>
+                </td>
+                <td style="width: 30%;"></td>
             </tr>
         </table>
     </div>

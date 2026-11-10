@@ -714,12 +714,15 @@ class BendaharaTest extends TestCase
         $this->assertStringContainsString('TANGGAL TRANSAKSI', $html);
         $this->assertStringContainsString('TOTAL MUTASI &amp; SALDO AKHIR', $html);
 
-        // 3. Dua tanda tangan sesuai template resmi
+        // 3. Tiga tanda tangan (2 di atas, 1 di tengah bawah)
         $this->assertStringContainsString('Danil Ali Sabila', $html);
-        $this->assertStringContainsString('Ketua Umum', $html);
+        $this->assertStringContainsString('Ketua Umum AFPA', $html);
         $this->assertStringContainsString('Azwil Yoga Pratama', $html);
-        $this->assertStringContainsString('Bendahara', $html);
-        $this->assertStringNotContainsString('Bendahara Pusat PPAF', $html);
+        $this->assertStringContainsString('Bendahara AFPA', $html);
+        $this->assertStringContainsString('Ust Imam Qusyairi', $html);
+        $this->assertStringContainsString('Bendahara Pusat PPAF', $html);
+        $this->assertStringContainsString('BARIS 1: 2 TTD DI ATAS', $html);
+        $this->assertStringContainsString('BARIS 2: 1 TTD DI BAWAH TENGAH', $html);
     }
 
     public function test_user_bisa_membuka_halaman_laba_rugi(): void
