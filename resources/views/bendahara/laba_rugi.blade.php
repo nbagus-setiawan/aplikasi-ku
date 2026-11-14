@@ -147,14 +147,14 @@
     <!-- ========================================================================= -->
 
     <!-- 1. TAMPILAN KHUSUS MOBILE: SMART FINANCIAL OVERVIEW CARD -->
-    <div class="md:hidden bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
+    <div class="md:hidden bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs space-y-3.5">
         <!-- Status & Nominal Bersih Utama -->
         <div class="flex items-center justify-between gap-3">
             <div class="min-w-0">
-                <span class="text-[10px] font-bold uppercase tracking-wider {{ $isSurplus ? 'text-emerald-700' : 'text-rose-700' }} block">
+                <span class="text-xs font-bold uppercase tracking-wider {{ $isSurplus ? 'text-emerald-700' : 'text-rose-700' }} block">
                     {{ $isSurplus ? 'Surplus Kas Operasional' : 'Defisit Kas Operasional' }}
                 </span>
-                <div class="text-2xl font-black font-mono tracking-tight {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }} mt-0.5">
+                <div class="text-xl sm:text-2xl font-black font-mono tracking-tight {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }} mt-0.5">
                     {{ $isSurplus ? '+' : '' }}Rp {{ number_format($surplusDefisit, 0, ',', '.') }}
                 </div>
             </div>
@@ -164,36 +164,36 @@
         </div>
 
         <!-- 2 Kolom Mini Sejajar: Penerimaan vs Beban -->
-        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
-            <div class="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-100">
-                <span class="text-[10px] font-bold uppercase tracking-wide text-emerald-800 block truncate">Total Pendapatan (A)</span>
-                <span class="text-xs font-black font-mono text-emerald-700 block truncate mt-0.5">
+        <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100">
+            <div class="p-3 rounded-xl bg-emerald-50/70 border border-emerald-100">
+                <span class="text-xs font-bold uppercase tracking-wide text-emerald-800 block truncate">Total Pendapatan (A)</span>
+                <span class="text-sm font-bold font-mono text-emerald-700 block truncate mt-1">
                     Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
                 </span>
-                <span class="text-[9px] text-emerald-600 block truncate mt-0.5">Termasuk Saldo Lalu</span>
+                <span class="text-xs text-emerald-600 block truncate mt-0.5">Termasuk Saldo Lalu</span>
             </div>
-            <div class="p-2.5 rounded-xl bg-rose-50/70 border border-rose-100">
-                <span class="text-[10px] font-bold uppercase tracking-wide text-rose-800 block truncate">Total Beban (B)</span>
-                <span class="text-xs font-black font-mono text-rose-700 block truncate mt-0.5">
+            <div class="p-3 rounded-xl bg-rose-50/70 border border-rose-100">
+                <span class="text-xs font-bold uppercase tracking-wide text-rose-800 block truncate">Total Beban (B)</span>
+                <span class="text-sm font-bold font-mono text-rose-700 block truncate mt-1">
                     Rp {{ number_format($totalBeban, 0, ',', '.') }}
                 </span>
-                <span class="text-[9px] text-rose-600 block truncate mt-0.5">{{ $bebans->count() }} pos pengeluaran</span>
+                <span class="text-xs text-rose-600 block truncate mt-0.5">{{ $bebans->count() }} pos pengeluaran</span>
             </div>
         </div>
     </div>
 
     <!-- 2. TAMPILAN DESKTOP: 3 KARTU SEJAJAR LENGKAP -->
-    <div class="hidden md:grid md:grid-cols-3 gap-4">
+    <div class="hidden md:grid md:grid-cols-3 gap-4 sm:gap-5">
 
         <!-- KARTU 1: PENDAPATAN + SALDO PERIODE LALU -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs relative overflow-hidden flex flex-col justify-between">
+        <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-xs relative overflow-hidden flex flex-col justify-between">
             <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0 flex-1">
                     <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block truncate">Total Pendapatan (Debit)</span>
-                    <h3 class="text-2xl font-black text-emerald-700 mt-1 font-mono tracking-tight">
+                    <h3 class="text-xl sm:text-2xl font-black text-emerald-700 mt-1 font-mono tracking-tight">
                         Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
                     </h3>
-                    <p class="text-xs text-slate-500 mt-1 truncate">
+                    <p class="text-xs text-slate-500 mt-1.5 truncate">
                         Termasuk Saldo Lalu (Rp {{ number_format($saldoAwal ?? 0, 0, ',', '.') }})
                     </p>
                 </div>
@@ -205,14 +205,14 @@
         </div>
 
         <!-- KARTU 2: BEBAN -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs relative overflow-hidden flex flex-col justify-between">
+        <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-xs relative overflow-hidden flex flex-col justify-between">
             <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0 flex-1">
                     <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block truncate">Total Beban (Kredit)</span>
-                    <h3 class="text-2xl font-black text-rose-700 mt-1 font-mono tracking-tight">
+                    <h3 class="text-xl sm:text-2xl font-black text-rose-700 mt-1 font-mono tracking-tight">
                         Rp {{ number_format($totalBeban, 0, ',', '.') }}
                     </h3>
-                    <p class="text-xs text-slate-500 mt-1 truncate">
+                    <p class="text-xs text-slate-500 mt-1.5 truncate">
                         {{ $bebans->count() }} pos kategori pengeluaran
                     </p>
                 </div>
@@ -224,16 +224,16 @@
         </div>
 
         <!-- KARTU 3: SURPLUS / DEFISIT BERSIH -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs relative overflow-hidden flex flex-col justify-between">
+        <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-xs relative overflow-hidden flex flex-col justify-between">
             <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0 flex-1">
                     <span class="text-xs font-bold uppercase tracking-wider {{ $isSurplus ? 'text-emerald-700' : 'text-rose-700' }} block truncate">
                         {{ $isSurplus ? 'Surplus Kas Operasional' : 'Defisit Kas Operasional' }}
                     </span>
-                    <h3 class="text-2xl font-black mt-1 font-mono tracking-tight {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }}">
+                    <h3 class="text-xl sm:text-2xl font-black mt-1 font-mono tracking-tight {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }}">
                         {{ $isSurplus ? '+' : '' }}Rp {{ number_format($surplusDefisit, 0, ',', '.') }}
                     </h3>
-                    <p class="text-xs text-slate-500 mt-1 truncate">
+                    <p class="text-xs text-slate-500 mt-1.5 truncate">
                         Rasio Sisa Kas: <strong>{{ $marginSurplusDefisit }}%</strong>
                     </p>
                 </div>
@@ -254,22 +254,22 @@
     <!-- ========================================================================= -->
     <!-- TABEL RINCIAN PENDAPATAN & BEBAN (DUA SISI / SEBELAH-MENYEBELAH DI DESKTOP) -->
     <!-- ========================================================================= -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 items-stretch">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 items-stretch">
 
         <!-- KOLOM KIRI: RINCIAN PENDAPATAN (PENERIMAAN + SALDO PERIODE LALU) -->
         <div class="bg-white rounded-2xl border border-emerald-200/80 shadow-xs overflow-hidden flex flex-col justify-between h-full">
             <div>
-                <div class="p-3.5 sm:p-4 bg-emerald-50/70 border-b border-emerald-100 flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-2 min-w-0">
+                <div class="p-4 sm:p-4.5 bg-emerald-50/70 border-b border-emerald-100 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2.5 min-w-0">
                         <span class="p-1.5 rounded-lg bg-emerald-100 text-emerald-700 shrink-0">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
                         </span>
                         <div class="min-w-0">
                             <h2 class="text-xs sm:text-sm font-bold text-emerald-950 truncate">I. Pendapatan Kas (Penerimaan)</h2>
-                            <p class="text-[10px] sm:text-[11px] text-emerald-700 truncate">Saldo periode lalu + rincian penerimaan</p>
+                            <p class="text-xs text-emerald-700 truncate mt-0.5">Saldo periode lalu + rincian penerimaan</p>
                         </div>
                     </div>
-                    <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 shrink-0">
+                    <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 shrink-0">
                         {{ $pendapatans->count() + 1 }} Komponen
                     </span>
                 </div>
@@ -277,27 +277,27 @@
                 <!-- Tampilan Desktop: Tabel Lengkap -->
                 <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-left text-xs sm:text-sm divide-y divide-slate-100">
-                        <thead class="bg-emerald-50/50 text-[11px] font-bold uppercase text-emerald-900 border-b border-emerald-100">
+                        <thead class="bg-emerald-50/50 text-xs font-bold uppercase tracking-wider text-emerald-900 border-b border-emerald-100">
                             <tr>
-                                <th class="px-3 py-2.5 text-center w-10">No</th>
-                                <th class="px-3 py-2.5">Pos Akun / Kategori</th>
-                                <th class="px-2.5 py-2.5 text-center w-16">Volume</th>
-                                <th class="px-3 py-2.5 text-right">Nominal</th>
-                                <th class="px-3 py-2.5 text-right w-14">Porsi</th>
+                                <th class="px-3.5 py-3 text-center w-10">No</th>
+                                <th class="px-3.5 py-3">Pos Akun / Kategori</th>
+                                <th class="px-3 py-3 text-center w-20">Volume</th>
+                                <th class="px-3.5 py-3 text-right">Nominal</th>
+                                <th class="px-3.5 py-3 text-right w-16">Porsi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 bg-white">
                             <!-- Baris 1: Saldo Periode Sebelumnya (Bulan Lalu / Tahun Lalu) -->
                             <tr class="bg-emerald-50/30 hover:bg-emerald-50/60 transition">
-                                <td class="px-3 py-2.5 text-center text-emerald-700 font-bold text-xs">1</td>
-                                <td class="px-3 py-2.5 font-bold text-slate-800 leading-snug">
+                                <td class="px-3.5 py-3.5 text-center text-emerald-700 font-bold text-xs">1</td>
+                                <td class="px-3.5 py-3.5 font-bold text-slate-800 leading-snug">
                                     {{ $labelSaldoAwal ?? (($filterTipe ?? 'bulan') === 'tahun' ? 'Saldo Kas Periode Sebelumnya (Tahun Lalu)' : 'Saldo Kas Periode Sebelumnya (Bulan Lalu)') }}
                                 </td>
-                                <td class="px-2.5 py-2.5 text-center text-xs text-slate-500 whitespace-nowrap">Saldo Awal</td>
-                                <td class="px-3 py-2.5 text-right font-mono font-bold text-xs sm:text-sm text-emerald-700 whitespace-nowrap">
+                                <td class="px-3 py-3.5 text-center text-xs text-slate-500 whitespace-nowrap">Saldo Awal</td>
+                                <td class="px-3.5 py-3.5 text-right font-mono font-bold text-xs sm:text-sm text-emerald-700 whitespace-nowrap">
                                     Rp {{ number_format($saldoAwal ?? 0, 0, ',', '.') }}
                                 </td>
-                                <td class="px-3 py-2.5 text-right font-mono text-xs text-slate-500 whitespace-nowrap">
+                                <td class="px-3.5 py-3.5 text-right font-mono text-xs text-slate-500 whitespace-nowrap">
                                     {{ $persentaseSaldoAwal ?? (($totalPendapatan > 0 && ($saldoAwal ?? 0) > 0) ? round((($saldoAwal ?? 0) / $totalPendapatan) * 100, 1) : 0) }}%
                                 </td>
                             </tr>
@@ -305,20 +305,20 @@
                             <!-- Baris Berikutnya: Penerimaan Kas Periode Ini -->
                             @forelse($pendapatans as $idx => $item)
                                 <tr class="hover:bg-slate-50/80 transition">
-                                    <td class="px-3 py-2.5 text-center text-slate-400 text-xs">{{ $idx + 2 }}</td>
-                                    <td class="px-3 py-2.5 font-medium text-slate-800 leading-snug">{{ $item->kategori }}</td>
-                                    <td class="px-2.5 py-2.5 text-center text-xs text-slate-500 whitespace-nowrap">{{ $item->jumlah_transaksi }}x</td>
-                                    <td class="px-3 py-2.5 text-right font-mono font-bold text-xs sm:text-sm text-emerald-700 whitespace-nowrap">
+                                    <td class="px-3.5 py-3.5 text-center text-slate-400 text-xs">{{ $idx + 2 }}</td>
+                                    <td class="px-3.5 py-3.5 font-medium text-slate-800 leading-snug">{{ $item->kategori }}</td>
+                                    <td class="px-3 py-3.5 text-center text-xs text-slate-500 whitespace-nowrap">{{ $item->jumlah_transaksi }}x</td>
+                                    <td class="px-3.5 py-3.5 text-right font-mono font-bold text-xs sm:text-sm text-emerald-700 whitespace-nowrap">
                                         Rp {{ number_format($item->total, 0, ',', '.') }}
                                     </td>
-                                    <td class="px-3 py-2.5 text-right font-mono text-xs text-slate-500 whitespace-nowrap">
+                                    <td class="px-3.5 py-3.5 text-right font-mono text-xs text-slate-500 whitespace-nowrap">
                                         {{ $item->persentase }}%
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td class="px-3 py-2.5 text-center text-slate-400 text-xs">-</td>
-                                    <td colspan="4" class="px-3 py-2.5 text-slate-400 text-xs italic">
+                                    <td class="px-3.5 py-3.5 text-center text-slate-400 text-xs">-</td>
+                                    <td colspan="4" class="px-3.5 py-3.5 text-slate-400 text-xs italic">
                                         Tidak ada tambahan penerimaan kas baru pada periode ini (Rp 0).
                                     </td>
                                 </tr>
@@ -330,20 +330,20 @@
                 <!-- Tampilan Mobile: List Item Finansial Bersih & Jelas -->
                 <div class="md:hidden divide-y divide-slate-100 bg-white">
                     <!-- Baris Saldo Periode Sebelumnya -->
-                    <div class="p-3 bg-emerald-50/40 flex items-center justify-between gap-2.5">
+                    <div class="p-3.5 sm:p-4 bg-emerald-50/40 flex items-center justify-between gap-3">
                         <div class="min-w-0 flex-1">
                             <div class="flex items-center gap-1.5 flex-wrap">
                                 <span class="text-xs font-bold text-slate-900 leading-snug">
                                     {{ $labelSaldoAwal ?? (($filterTipe ?? 'bulan') === 'tahun' ? 'Saldo Kas Periode Sebelumnya (Tahun Lalu)' : 'Saldo Kas Periode Sebelumnya (Bulan Lalu)') }}
                                 </span>
-                                <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 shrink-0">Saldo Awal</span>
+                                <span class="px-2 py-0.5 rounded text-xs font-bold bg-emerald-100 text-emerald-800 shrink-0">Saldo Awal</span>
                             </div>
-                            <p class="text-[11px] text-slate-500 mt-0.5">
+                            <p class="text-xs text-slate-500 mt-1">
                                 Porsi Kas: <span class="font-mono font-semibold">{{ $persentaseSaldoAwal ?? (($totalPendapatan > 0 && ($saldoAwal ?? 0) > 0) ? round((($saldoAwal ?? 0) / $totalPendapatan) * 100, 1) : 0) }}%</span>
                             </p>
                         </div>
                         <div class="text-right shrink-0">
-                            <span class="font-mono font-bold text-xs text-emerald-700">
+                            <span class="font-mono font-bold text-xs sm:text-sm text-emerald-700">
                                 Rp {{ number_format($saldoAwal ?? 0, 0, ',', '.') }}
                             </span>
                         </div>
@@ -351,15 +351,15 @@
 
                     <!-- Baris Rincian Penerimaan Periode Ini -->
                     @forelse($pendapatans as $idx => $item)
-                        <div class="p-3 hover:bg-slate-50/80 transition flex items-center justify-between gap-2.5">
+                        <div class="p-3.5 sm:p-4 hover:bg-slate-50/80 transition flex items-center justify-between gap-3">
                             <div class="min-w-0 flex-1">
-                                <div class="text-xs font-bold text-slate-900 leading-snug truncate">{{ $item->kategori }}</div>
-                                <p class="text-[11px] text-slate-500 mt-0.5">
+                                <div class="text-xs sm:text-sm font-bold text-slate-900 leading-snug truncate">{{ $item->kategori }}</div>
+                                <p class="text-xs text-slate-500 mt-1">
                                     {{ $item->jumlah_transaksi }}x transaksi &bull; Porsi <span class="font-mono font-semibold">{{ $item->persentase }}%</span>
                                 </p>
                             </div>
                             <div class="text-right shrink-0">
-                                <span class="font-mono font-bold text-xs text-emerald-700">
+                                <span class="font-mono font-bold text-xs sm:text-sm text-emerald-700">
                                     Rp {{ number_format($item->total, 0, ',', '.') }}
                                 </span>
                             </div>
@@ -373,7 +373,7 @@
             </div>
 
             <!-- Subtotal Pendapatan (Penerimaan + Saldo Periode Lalu) -->
-            <div class="p-3 sm:p-3.5 bg-emerald-50 border-t border-emerald-200 flex items-center justify-between">
+            <div class="p-3.5 sm:p-4 bg-emerald-50 border-t border-emerald-200 flex items-center justify-between">
                 <span class="text-xs font-black text-emerald-950 uppercase tracking-wide">Total Pendapatan (A):</span>
                 <span class="font-mono font-black text-sm sm:text-base text-emerald-800 whitespace-nowrap">
                     Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
@@ -384,17 +384,17 @@
         <!-- KOLOM KANAN: RINCIAN BEBAN (PENGELUARAN) -->
         <div class="bg-white rounded-2xl border border-rose-200/80 shadow-xs overflow-hidden flex flex-col justify-between h-full">
             <div>
-                <div class="p-3.5 sm:p-4 bg-rose-50/70 border-b border-rose-100 flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-2 min-w-0">
+                <div class="p-4 sm:p-4.5 bg-rose-50/70 border-b border-rose-100 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2.5 min-w-0">
                         <span class="p-1.5 rounded-lg bg-rose-100 text-rose-700 shrink-0">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
                         </span>
                         <div class="min-w-0">
                             <h2 class="text-xs sm:text-sm font-bold text-rose-900 truncate">II. Beban Kas (Pengeluaran)</h2>
-                            <p class="text-[10px] sm:text-[11px] text-rose-700 truncate">Rincian per pos biaya operasional</p>
+                            <p class="text-xs text-rose-700 truncate mt-0.5">Rincian per pos biaya operasional</p>
                         </div>
                     </div>
-                    <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-200 shrink-0">
+                    <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 border border-rose-200 shrink-0">
                         {{ $bebans->count() }} Akun
                     </span>
                 </div>
@@ -402,31 +402,31 @@
                 <!-- Tampilan Desktop: Tabel Lengkap -->
                 <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-left text-xs sm:text-sm divide-y divide-slate-100">
-                        <thead class="bg-rose-50/50 text-[11px] font-bold uppercase text-rose-900 border-b border-rose-100">
+                        <thead class="bg-rose-50/50 text-xs font-bold uppercase tracking-wider text-rose-900 border-b border-rose-100">
                             <tr>
-                                <th class="px-3 py-2.5 text-center w-10">No</th>
-                                <th class="px-3 py-2.5">Pos Akun / Kategori</th>
-                                <th class="px-2.5 py-2.5 text-center w-16">Volume</th>
-                                <th class="px-3 py-2.5 text-right">Nominal</th>
-                                <th class="px-3 py-2.5 text-right w-14">Porsi</th>
+                                <th class="px-3.5 py-3 text-center w-10">No</th>
+                                <th class="px-3.5 py-3">Pos Akun / Kategori</th>
+                                <th class="px-3 py-3 text-center w-20">Volume</th>
+                                <th class="px-3.5 py-3 text-right">Nominal</th>
+                                <th class="px-3.5 py-3 text-right w-16">Porsi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 bg-white">
                             @forelse($bebans as $idx => $item)
                                 <tr class="hover:bg-slate-50/80 transition">
-                                    <td class="px-3 py-2.5 text-center text-slate-400 text-xs">{{ $idx + 1 }}</td>
-                                    <td class="px-3 py-2.5 font-medium text-slate-800 leading-snug">{{ $item->kategori }}</td>
-                                    <td class="px-2.5 py-2.5 text-center text-xs text-slate-500 whitespace-nowrap">{{ $item->jumlah_transaksi }}x</td>
-                                    <td class="px-3 py-2.5 text-right font-mono font-bold text-xs sm:text-sm text-rose-700 whitespace-nowrap">
+                                    <td class="px-3.5 py-3.5 text-center text-slate-400 text-xs">{{ $idx + 1 }}</td>
+                                    <td class="px-3.5 py-3.5 font-medium text-slate-800 leading-snug">{{ $item->kategori }}</td>
+                                    <td class="px-3 py-3.5 text-center text-xs text-slate-500 whitespace-nowrap">{{ $item->jumlah_transaksi }}x</td>
+                                    <td class="px-3.5 py-3.5 text-right font-mono font-bold text-xs sm:text-sm text-rose-700 whitespace-nowrap">
                                         Rp {{ number_format($item->total, 0, ',', '.') }}
                                     </td>
-                                    <td class="px-3 py-2.5 text-right font-mono text-xs text-slate-500 whitespace-nowrap">
+                                    <td class="px-3.5 py-3.5 text-right font-mono text-xs text-slate-500 whitespace-nowrap">
                                         {{ $item->persentase }}%
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-3 py-4 text-center text-slate-400 text-xs italic">
+                                    <td colspan="5" class="px-3.5 py-4 text-center text-slate-400 text-xs italic">
                                         Tidak ada mutasi pengeluaran kas pada periode ini.
                                     </td>
                                 </tr>
@@ -438,15 +438,15 @@
                 <!-- Tampilan Mobile: List Item Finansial Bersih & Jelas -->
                 <div class="md:hidden divide-y divide-slate-100 bg-white">
                     @forelse($bebans as $idx => $item)
-                        <div class="p-3 hover:bg-slate-50/80 transition flex items-center justify-between gap-2.5">
+                        <div class="p-3.5 sm:p-4 hover:bg-slate-50/80 transition flex items-center justify-between gap-3">
                             <div class="min-w-0 flex-1">
-                                <div class="text-xs font-bold text-slate-900 leading-snug truncate">{{ $item->kategori }}</div>
-                                <p class="text-[11px] text-slate-500 mt-0.5">
+                                <div class="text-xs sm:text-sm font-bold text-slate-900 leading-snug truncate">{{ $item->kategori }}</div>
+                                <p class="text-xs text-slate-500 mt-1">
                                     {{ $item->jumlah_transaksi }}x transaksi &bull; Porsi <span class="font-mono font-semibold">{{ $item->persentase }}%</span>
                                 </p>
                             </div>
                             <div class="text-right shrink-0">
-                                <span class="font-mono font-bold text-xs text-rose-700">
+                                <span class="font-mono font-bold text-xs sm:text-sm text-rose-700">
                                     Rp {{ number_format($item->total, 0, ',', '.') }}
                                 </span>
                             </div>
@@ -460,7 +460,7 @@
             </div>
 
             <!-- Subtotal Beban -->
-            <div class="p-3 sm:p-3.5 bg-rose-50 border-t border-rose-200 flex items-center justify-between">
+            <div class="p-3.5 sm:p-4 bg-rose-50 border-t border-rose-200 flex items-center justify-between">
                 <span class="text-xs font-black text-rose-900 uppercase tracking-wide">Total Beban (B):</span>
                 <span class="font-mono font-black text-sm sm:text-base text-rose-800 whitespace-nowrap">
                     Rp {{ number_format($totalBeban, 0, ',', '.') }}
@@ -473,22 +473,22 @@
     <!-- KESIMPULAN REKAPITULASI HASIL BERSIH (A - B = SURPLUS / DEFISIT)           -->
     <!-- ========================================================================= -->
     <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl {{ $isSurplus ? 'bg-emerald-50 border border-emerald-200' : 'bg-rose-50 border border-rose-200' }}">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-xl {{ $isSurplus ? 'bg-emerald-50 border border-emerald-200' : 'bg-rose-50 border border-rose-200' }}">
             <div class="min-w-0 flex-1">
-                <span class="text-[11px] sm:text-xs font-black uppercase tracking-wider {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }} block">
+                <span class="text-xs font-black uppercase tracking-wider {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }} block">
                     Hasil Akhir Pembukuan (A - B):
                 </span>
                 <h3 class="text-base sm:text-lg font-black {{ $isSurplus ? 'text-emerald-950' : 'text-rose-950' }} mt-0.5">
                     {{ $isSurplus ? 'SURPLUS KAS OPERASIONAL' : 'DEFISIT KAS OPERASIONAL' }}
                 </h3>
-                <p class="text-xs {{ $isSurplus ? 'text-emerald-700' : 'text-rose-700' }} mt-1 leading-relaxed">
+                <p class="text-xs sm:text-sm {{ $isSurplus ? 'text-emerald-700' : 'text-rose-700' }} mt-1.5 leading-relaxed">
                     Pendapatan Kas (Rp {{ number_format($totalPendapatanPeriode ?? 0, 0, ',', '.') }}) + Saldo Periode Lalu (Rp {{ number_format($saldoAwal ?? 0, 0, ',', '.') }}) dikurangi Beban Kas (Rp {{ number_format($totalBeban, 0, ',', '.') }}) menghasilkan <strong>{{ $isSurplus ? 'Surplus Kas' : 'Defisit Kas' }} sebesar Rp {{ number_format(abs($surplusDefisit), 0, ',', '.') }}</strong> (Sinkron Buku Kas &amp; Neraca).
                 </p>
             </div>
 
-            <div class="text-left sm:text-right shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 {{ $isSurplus ? 'border-emerald-200' : 'border-rose-200' }}">
-                <span class="text-[10px] uppercase font-bold text-slate-500 block sm:hidden">Saldo Akhir:</span>
-                <div class="text-2xl sm:text-3xl font-black font-mono tracking-tight {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }}">
+            <div class="text-left sm:text-right shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 {{ $isSurplus ? 'border-emerald-200' : 'border-rose-200' }}">
+                <span class="text-xs uppercase font-bold text-slate-500 block sm:hidden">Saldo Akhir:</span>
+                <div class="text-xl sm:text-2xl font-black font-mono tracking-tight {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }}">
                     {{ $isSurplus ? '+' : '' }}Rp {{ number_format($surplusDefisit, 0, ',', '.') }}
                 </div>
             </div>
