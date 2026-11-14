@@ -147,14 +147,14 @@
     <!-- ========================================================================= -->
 
     <!-- 1. TAMPILAN KHUSUS MOBILE: SMART FINANCIAL OVERVIEW CARD -->
-    <div class="md:hidden bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs space-y-3.5">
+    <div class="md:hidden bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs space-y-3">
         <!-- Status & Nominal Bersih Utama -->
         <div class="flex items-center justify-between gap-3">
             <div class="min-w-0">
                 <span class="text-xs font-bold uppercase tracking-wider {{ $isSurplus ? 'text-emerald-700' : 'text-rose-700' }} block">
                     {{ $isSurplus ? 'Surplus Kas Operasional' : 'Defisit Kas Operasional' }}
                 </span>
-                <div class="text-xl sm:text-2xl font-black font-mono tracking-tight {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }} mt-0.5">
+                <div class="text-lg font-bold font-mono tracking-tight {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }} mt-0.5">
                     {{ $isSurplus ? '+' : '' }}Rp {{ number_format($surplusDefisit, 0, ',', '.') }}
                 </div>
             </div>
@@ -167,14 +167,14 @@
         <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100">
             <div class="p-3 rounded-xl bg-emerald-50/70 border border-emerald-100">
                 <span class="text-xs font-bold uppercase tracking-wide text-emerald-800 block truncate">Total Pendapatan (A)</span>
-                <span class="text-sm font-bold font-mono text-emerald-700 block truncate mt-1">
+                <span class="text-xs sm:text-sm font-bold font-mono text-emerald-700 block truncate mt-1">
                     Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
                 </span>
                 <span class="text-xs text-emerald-600 block truncate mt-0.5">Termasuk Saldo Lalu</span>
             </div>
             <div class="p-3 rounded-xl bg-rose-50/70 border border-rose-100">
                 <span class="text-xs font-bold uppercase tracking-wide text-rose-800 block truncate">Total Beban (B)</span>
-                <span class="text-sm font-bold font-mono text-rose-700 block truncate mt-1">
+                <span class="text-xs sm:text-sm font-bold font-mono text-rose-700 block truncate mt-1">
                     Rp {{ number_format($totalBeban, 0, ',', '.') }}
                 </span>
                 <span class="text-xs text-rose-600 block truncate mt-0.5">{{ $bebans->count() }} pos pengeluaran</span>
@@ -186,59 +186,59 @@
     <div class="hidden md:grid md:grid-cols-3 gap-4 sm:gap-5">
 
         <!-- KARTU 1: PENDAPATAN + SALDO PERIODE LALU -->
-        <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-xs relative overflow-hidden flex flex-col justify-between">
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs relative overflow-hidden flex flex-col justify-between">
             <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0 flex-1">
                     <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block truncate">Total Pendapatan (Debit)</span>
-                    <h3 class="text-xl sm:text-2xl font-black text-emerald-700 mt-1 font-mono tracking-tight">
+                    <h3 class="text-lg sm:text-xl font-bold text-emerald-700 mt-1 font-mono tracking-tight">
                         Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
                     </h3>
-                    <p class="text-xs text-slate-500 mt-1.5 truncate">
+                    <p class="text-xs text-slate-500 mt-1 truncate">
                         Termasuk Saldo Lalu (Rp {{ number_format($saldoAwal ?? 0, 0, ',', '.') }})
                     </p>
                 </div>
-                <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
                 </div>
             </div>
             <div class="h-1 bg-emerald-500 absolute bottom-0 left-0 right-0"></div>
         </div>
 
         <!-- KARTU 2: BEBAN -->
-        <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-xs relative overflow-hidden flex flex-col justify-between">
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs relative overflow-hidden flex flex-col justify-between">
             <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0 flex-1">
                     <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block truncate">Total Beban (Kredit)</span>
-                    <h3 class="text-xl sm:text-2xl font-black text-rose-700 mt-1 font-mono tracking-tight">
+                    <h3 class="text-lg sm:text-xl font-bold text-rose-700 mt-1 font-mono tracking-tight">
                         Rp {{ number_format($totalBeban, 0, ',', '.') }}
                     </h3>
-                    <p class="text-xs text-slate-500 mt-1.5 truncate">
+                    <p class="text-xs text-slate-500 mt-1 truncate">
                         {{ $bebans->count() }} pos kategori pengeluaran
                     </p>
                 </div>
-                <div class="w-11 h-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
                 </div>
             </div>
             <div class="h-1 bg-rose-500 absolute bottom-0 left-0 right-0"></div>
         </div>
 
         <!-- KARTU 3: SURPLUS / DEFISIT BERSIH -->
-        <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-xs relative overflow-hidden flex flex-col justify-between">
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs relative overflow-hidden flex flex-col justify-between">
             <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0 flex-1">
                     <span class="text-xs font-bold uppercase tracking-wider {{ $isSurplus ? 'text-emerald-700' : 'text-rose-700' }} block truncate">
                         {{ $isSurplus ? 'Surplus Kas Operasional' : 'Defisit Kas Operasional' }}
                     </span>
-                    <h3 class="text-xl sm:text-2xl font-black mt-1 font-mono tracking-tight {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }}">
+                    <h3 class="text-lg sm:text-xl font-bold mt-1 font-mono tracking-tight {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }}">
                         {{ $isSurplus ? '+' : '' }}Rp {{ number_format($surplusDefisit, 0, ',', '.') }}
                     </h3>
-                    <p class="text-xs text-slate-500 mt-1.5 truncate">
+                    <p class="text-xs text-slate-500 mt-1 truncate">
                         Rasio Sisa Kas: <strong>{{ $marginSurplusDefisit }}%</strong>
                     </p>
                 </div>
-                <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 {{ $isSurplus ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 {{ $isSurplus ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         @if($isSurplus)
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         @else
@@ -478,17 +478,17 @@
                 <span class="text-xs font-black uppercase tracking-wider {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }} block">
                     Hasil Akhir Pembukuan (A - B):
                 </span>
-                <h3 class="text-base sm:text-lg font-black {{ $isSurplus ? 'text-emerald-950' : 'text-rose-950' }} mt-0.5">
+                <h3 class="text-sm sm:text-base font-bold {{ $isSurplus ? 'text-emerald-950' : 'text-rose-950' }} mt-0.5">
                     {{ $isSurplus ? 'SURPLUS KAS OPERASIONAL' : 'DEFISIT KAS OPERASIONAL' }}
                 </h3>
-                <p class="text-xs sm:text-sm {{ $isSurplus ? 'text-emerald-700' : 'text-rose-700' }} mt-1.5 leading-relaxed">
+                <p class="text-xs {{ $isSurplus ? 'text-emerald-700' : 'text-rose-700' }} mt-1 leading-relaxed">
                     Pendapatan Kas (Rp {{ number_format($totalPendapatanPeriode ?? 0, 0, ',', '.') }}) + Saldo Periode Lalu (Rp {{ number_format($saldoAwal ?? 0, 0, ',', '.') }}) dikurangi Beban Kas (Rp {{ number_format($totalBeban, 0, ',', '.') }}) menghasilkan <strong>{{ $isSurplus ? 'Surplus Kas' : 'Defisit Kas' }} sebesar Rp {{ number_format(abs($surplusDefisit), 0, ',', '.') }}</strong> (Sinkron Buku Kas &amp; Neraca).
                 </p>
             </div>
 
-            <div class="text-left sm:text-right shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 {{ $isSurplus ? 'border-emerald-200' : 'border-rose-200' }}">
-                <span class="text-xs uppercase font-bold text-slate-500 block sm:hidden">Saldo Akhir:</span>
-                <div class="text-xl sm:text-2xl font-black font-mono tracking-tight {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }}">
+            <div class="text-left sm:text-right shrink-0">
+                <span class="text-xs uppercase font-bold text-slate-500 block sm:hidden mb-0.5">Saldo Akhir:</span>
+                <div class="text-base sm:text-lg font-bold font-mono tracking-tight {{ $isSurplus ? 'text-emerald-800' : 'text-rose-800' }}">
                     {{ $isSurplus ? '+' : '' }}Rp {{ number_format($surplusDefisit, 0, ',', '.') }}
                 </div>
             </div>

@@ -189,12 +189,12 @@
         <div class="flex items-center gap-6 shrink-0">
             <div class="text-right">
                 <span class="text-xs text-emerald-700 block uppercase font-bold">Total Aset (Aktiva)</span>
-                <span class="font-mono font-black text-lg sm:text-xl text-emerald-900">Rp {{ number_format($totalAset, 0, ',', '.') }}</span>
+                <span class="font-mono font-bold text-base sm:text-lg text-emerald-900">Rp {{ number_format($totalAset, 0, ',', '.') }}</span>
             </div>
-            <span class="text-xl font-bold text-emerald-600">=</span>
+            <span class="text-lg font-bold text-emerald-600">=</span>
             <div class="text-right">
                 <span class="text-xs text-emerald-700 block uppercase font-bold">Kewajiban + Ekuitas</span>
-                <span class="font-mono font-black text-lg sm:text-xl text-emerald-900">Rp {{ number_format($totalPasiva, 0, ',', '.') }}</span>
+                <span class="font-mono font-bold text-base sm:text-lg text-emerald-900">Rp {{ number_format($totalPasiva, 0, ',', '.') }}</span>
             </div>
         </div>
     </div>
