@@ -8,9 +8,9 @@
     <!-- ========================================================================= -->
     <!-- HEADER & AKSI UTAMA                                                       -->
     <!-- ========================================================================= -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs">
-        <div>
-            <div class="flex items-center gap-2 mb-1">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
+        <div class="min-w-0">
+            <div class="flex items-center gap-2 mb-1 flex-wrap">
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
                     Akuntansi & Keuangan
                 </span>
@@ -18,49 +18,51 @@
                 <span class="text-xs font-semibold text-slate-500">Pondok Pesantren Al-Falah Putra</span>
             </div>
             <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Laporan Neraca (Posisi Keuangan)</h1>
-            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5 leading-relaxed">
                 Posisi sumber daya ekonomi, kekayaan kas, kewajiban, dan ekuitas saldo dana pesantren 
-                <strong class="text-slate-800">{{ $labelPeriode }}</strong>.
+                <strong class="text-slate-800 font-semibold">{{ $labelPeriode }}</strong>.
             </p>
         </div>
 
         <!-- Tombol Unduh PDF -->
-        <div class="flex items-center gap-2.5 self-start md:self-center">
+        <div class="flex items-center gap-2.5 w-full sm:w-auto">
             <a href="{{ route('admin.bendahara.neraca.cetak', request()->query()) }}"
                target="_blank"
-               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs sm:text-sm shadow-xs transition">
-                <svg class="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+               class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs sm:text-sm shadow-xs transition">
+                <svg class="w-4 h-4 text-blue-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 <span>Unduh Laporan PDF</span>
             </a>
         </div>
     </div>
 
-    <!-- TAB NAVIGASI SUB-MODUL BENDAHARA (3 TAB LENGKAP) -->
-    <div class="flex items-center gap-2 border-b border-slate-200">
-        <a href="{{ route('admin.bendahara.index') }}"
-           class="px-4 py-3 text-xs sm:text-sm font-bold text-slate-600 hover:text-emerald-700 border-b-2 border-transparent hover:border-slate-300 transition flex items-center gap-2">
-            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <span>Buku Kas Umum</span>
-        </a>
+    <!-- TAB NAVIGASI SUB-MODUL BENDAHARA (RESPONSIF TOUCH & DESKTOP) -->
+    <div class="overflow-x-auto scrollbar-none whitespace-nowrap border-b border-slate-200 -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div class="flex items-center gap-2 min-w-max">
+            <a href="{{ route('admin.bendahara.index') }}"
+               class="px-4 py-3 text-xs sm:text-sm font-bold text-slate-600 hover:text-emerald-700 border-b-2 border-transparent hover:border-slate-300 transition flex items-center gap-2">
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Buku Kas Umum</span>
+            </a>
 
-        <a href="{{ route('admin.bendahara.laba-rugi') }}"
-           class="px-4 py-3 text-xs sm:text-sm font-bold text-slate-600 hover:text-emerald-700 border-b-2 border-transparent hover:border-slate-300 transition flex items-center gap-2">
-            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-            <span>Laporan Laba Rugi</span>
-        </a>
+            <a href="{{ route('admin.bendahara.laba-rugi') }}"
+               class="px-4 py-3 text-xs sm:text-sm font-bold text-slate-600 hover:text-emerald-700 border-b-2 border-transparent hover:border-slate-300 transition flex items-center gap-2">
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                <span>Laporan Laba Rugi</span>
+            </a>
 
-        <a href="{{ route('admin.bendahara.neraca') }}"
-           class="px-4 py-3 text-xs sm:text-sm font-bold text-emerald-800 border-b-2 border-emerald-600 flex items-center gap-2">
-            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
-            <span>Laporan Neraca</span>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Aktif</span>
-        </a>
+            <a href="{{ route('admin.bendahara.neraca') }}"
+               class="px-4 py-3 text-xs sm:text-sm font-bold text-emerald-800 border-b-2 border-emerald-600 flex items-center gap-2">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+                <span>Laporan Neraca</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Aktif</span>
+            </a>
+        </div>
     </div>
 
     <!-- ========================================================================= -->
     <!-- PANEL FILTER PERIODE                                                      -->
     <!-- ========================================================================= -->
-    <div class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-4">
+    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
         <form method="GET" action="{{ route('admin.bendahara.neraca') }}" class="space-y-4">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
                 <div class="flex items-center gap-2">
@@ -71,21 +73,21 @@
                 </div>
 
                 <!-- 4 Pilihan Mode Filter Cepat -->
-                <div class="inline-flex rounded-xl p-1 bg-slate-100 border border-slate-200 self-start sm:self-auto">
+                <div class="grid grid-cols-2 sm:inline-flex rounded-xl p-1 bg-slate-100 border border-slate-200 w-full sm:w-auto gap-1 sm:gap-0">
                     <button type="submit" name="filter_tipe" value="bulan"
-                            class="px-3 py-1.5 rounded-lg text-xs font-bold transition {{ $filterTipe === 'bulan' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
+                            class="px-3 py-1.5 rounded-lg text-xs font-bold transition text-center {{ $filterTipe === 'bulan' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
                         Bulanan
                     </button>
                     <button type="submit" name="filter_tipe" value="tahun"
-                            class="px-3 py-1.5 rounded-lg text-xs font-bold transition {{ $filterTipe === 'tahun' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
+                            class="px-3 py-1.5 rounded-lg text-xs font-bold transition text-center {{ $filterTipe === 'tahun' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
                         Tahunan
                     </button>
                     <button type="submit" name="filter_tipe" value="kustom"
-                            class="px-3 py-1.5 rounded-lg text-xs font-bold transition {{ $filterTipe === 'kustom' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
+                            class="px-3 py-1.5 rounded-lg text-xs font-bold transition text-center {{ $filterTipe === 'kustom' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
                         Rentang Bebas
                     </button>
                     <button type="submit" name="filter_tipe" value="semua"
-                            class="px-3 py-1.5 rounded-lg text-xs font-bold transition {{ $filterTipe === 'semua' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
+                            class="px-3 py-1.5 rounded-lg text-xs font-bold transition text-center {{ $filterTipe === 'semua' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
                         Posisi Terkini
                     </button>
                 </div>
@@ -143,31 +145,31 @@
     <!-- ========================================================================= -->
     <!-- BANNER STATUS KESEIMBANGAN (BALANCE)                                      -->
     <!-- ========================================================================= -->
-    <div class="p-4 sm:p-5 rounded-3xl bg-emerald-50 text-emerald-950 border border-emerald-200 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
-            <span class="p-2.5 rounded-2xl bg-emerald-100 text-emerald-700 shrink-0 border border-emerald-200">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    <div class="p-4 sm:p-5 rounded-2xl bg-emerald-50 text-emerald-950 border border-emerald-200 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div class="flex items-start sm:items-center gap-3 min-w-0">
+            <span class="p-2 sm:p-2.5 rounded-xl bg-emerald-100 text-emerald-700 shrink-0 border border-emerald-200">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </span>
-            <div>
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-black tracking-wider text-emerald-900 uppercase">STATUS NERACA:</span>
-                    <span class="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-600 text-white">SEIMBANG (BALANCE)</span>
+            <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-[11px] sm:text-xs font-black tracking-wider text-emerald-900 uppercase">STATUS NERACA:</span>
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-black bg-emerald-600 text-white">SEIMBANG (BALANCE)</span>
                 </div>
-                <p class="text-xs text-emerald-800 mt-1">
+                <p class="text-xs text-emerald-800 mt-1 leading-relaxed">
                     Total Aset bernilai sama persis dengan Total Kewajiban ditambah Ekuitas Saldo Dana sesuai persamaan dasar akuntansi.
                 </p>
             </div>
         </div>
 
-        <div class="flex items-center gap-6 self-stretch md:self-auto justify-between md:justify-end pt-2 md:pt-0 border-t md:border-t-0 border-emerald-200 text-right">
-            <div>
-                <span class="text-[11px] text-emerald-700 block uppercase font-bold">Total Aset (Aktiva)</span>
-                <span class="font-mono font-black text-lg text-emerald-900">Rp {{ number_format($totalAset, 0, ',', '.') }}</span>
+        <div class="flex items-center gap-4 sm:gap-6 self-stretch md:self-auto justify-between md:justify-end pt-3 md:pt-0 border-t md:border-t-0 border-emerald-200">
+            <div class="text-left sm:text-right">
+                <span class="text-[10px] sm:text-[11px] text-emerald-700 block uppercase font-bold">Total Aset (Aktiva)</span>
+                <span class="font-mono font-black text-base sm:text-lg text-emerald-900">Rp {{ number_format($totalAset, 0, ',', '.') }}</span>
             </div>
-            <span class="text-xl font-bold text-emerald-600">=</span>
-            <div>
-                <span class="text-[11px] text-emerald-700 block uppercase font-bold">Kewajiban + Ekuitas</span>
-                <span class="font-mono font-black text-lg text-emerald-900">Rp {{ number_format($totalPasiva, 0, ',', '.') }}</span>
+            <span class="text-lg sm:text-xl font-bold text-emerald-600">=</span>
+            <div class="text-right">
+                <span class="text-[10px] sm:text-[11px] text-emerald-700 block uppercase font-bold">Kewajiban + Ekuitas</span>
+                <span class="font-mono font-black text-base sm:text-lg text-emerald-900">Rp {{ number_format($totalPasiva, 0, ',', '.') }}</span>
             </div>
         </div>
     </div>
@@ -175,89 +177,91 @@
     <!-- ========================================================================= -->
     <!-- TABEL SKONTRO DUA SISI: AKTIVA (KIRI) VS PASIVA (KANAN)                    -->
     <!-- ========================================================================= -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 items-stretch">
 
         <!-- ==================== SISI KIRI: ASET / AKTIVA ==================== -->
-        <div class="bg-white rounded-3xl border border-emerald-200/80 shadow-xs overflow-hidden flex flex-col">
-            <div class="p-4 sm:p-5 bg-emerald-50/60 border-b border-emerald-100 flex items-center justify-between">
-                <div class="flex items-center gap-2.5">
-                    <span class="p-2 rounded-xl bg-emerald-100 text-emerald-700">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+        <div class="bg-white rounded-2xl border border-emerald-200/80 shadow-xs overflow-hidden flex flex-col justify-between h-full">
+            <div>
+                <div class="p-3.5 sm:p-4 bg-emerald-50/70 border-b border-emerald-100 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <span class="p-1.5 rounded-lg bg-emerald-100 text-emerald-700 shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                        </span>
+                        <div class="min-w-0">
+                            <h2 class="text-xs sm:text-sm font-bold text-emerald-950 uppercase tracking-wider truncate">SISI AKTIVA (ASET)</h2>
+                            <p class="text-[10px] sm:text-[11px] text-emerald-700 truncate">Seluruh kekayaan & sumber daya kas pesantren</p>
+                        </div>
+                    </div>
+                    <span class="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 shrink-0">
+                        Aktiva
                     </span>
-                    <div>
-                        <h2 class="text-sm sm:text-base font-bold text-emerald-950 uppercase tracking-wider">SISI AKTIVA (ASET)</h2>
-                        <p class="text-[11px] text-emerald-700">Seluruh kekayaan & sumber daya kas pesantren</p>
-                    </div>
-                </div>
-                <span class="text-xs font-mono font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
-                    Aktiva
-                </span>
-            </div>
-
-            <div class="p-4 sm:p-5 space-y-5 flex-1">
-                <!-- I. ASET LANCAR (KAS PESANTREN) -->
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-emerald-50/60 border border-emerald-100">
-                        <h3 class="text-xs font-black uppercase text-emerald-900 tracking-wider">I. ASET LANCAR (KAS PESANTREN)</h3>
-                        <span class="text-xs font-bold text-emerald-700">Data Riil Buku Kas</span>
-                    </div>
-
-                    <div class="divide-y divide-slate-100 text-xs sm:text-sm px-1">
-                        @foreach($asetLancar as $al)
-                            <div class="py-3 flex items-center justify-between">
-                                <span class="text-slate-700 font-medium">{{ $al['nama'] }}</span>
-                                <span class="font-mono font-bold text-slate-900">
-                                    {{ $al['nominal'] < 0 ? '-' : '' }}Rp {{ number_format(abs($al['nominal']), 0, ',', '.') }}
-                                </span>
-                            </div>
-                        @endforeach
-                    </div>
-
-                    <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-between text-xs font-bold text-emerald-900">
-                        <span>Jumlah Aset Kas Lancar:</span>
-                        <span class="font-mono font-black text-sm text-emerald-800">
-                            Rp {{ number_format($totalAsetLancar, 0, ',', '.') }}
-                        </span>
-                    </div>
                 </div>
 
-                @if(!empty($asetTetap))
-                <!-- II. ASET TETAP -->
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-emerald-50/50 border border-emerald-100">
-                        <h3 class="text-xs font-black uppercase text-emerald-900 tracking-wider">II. ASET TETAP (INVENTARIS)</h3>
-                        <span class="text-xs font-bold text-emerald-700">Peralatan & Gedung</span>
+                <div class="p-3.5 sm:p-4 space-y-4">
+                    <!-- I. ASET LANCAR (KAS PESANTREN) -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-emerald-50/60 border border-emerald-100">
+                            <h3 class="text-[11px] sm:text-xs font-black uppercase text-emerald-900 tracking-wider">I. ASET LANCAR (KAS PESANTREN)</h3>
+                            <span class="text-[11px] font-bold text-emerald-700">Data Riil Kas</span>
+                        </div>
+
+                        <div class="divide-y divide-slate-100 text-xs sm:text-sm px-1">
+                            @foreach($asetLancar as $al)
+                                <div class="py-2.5 sm:py-3 flex items-center justify-between gap-3">
+                                    <span class="text-slate-700 font-medium leading-snug">{{ $al['nama'] }}</span>
+                                    <span class="font-mono font-bold text-slate-900 whitespace-nowrap">
+                                        {{ $al['nominal'] < 0 ? '-' : '' }}Rp {{ number_format(abs($al['nominal']), 0, ',', '.') }}
+                                    </span>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div class="p-2.5 sm:p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-between text-xs font-bold text-emerald-900">
+                            <span>Jumlah Aset Kas Lancar:</span>
+                            <span class="font-mono font-black text-xs sm:text-sm text-emerald-800 whitespace-nowrap">
+                                Rp {{ number_format($totalAsetLancar, 0, ',', '.') }}
+                            </span>
+                        </div>
                     </div>
 
-                    <div class="divide-y divide-slate-100 text-xs sm:text-sm px-1">
-                        @foreach($asetTetap as $at)
-                            <div class="py-2.5 flex items-center justify-between">
-                                <span class="text-slate-600">{{ $at['nama'] }}</span>
-                                <span class="font-mono font-medium text-slate-500">
-                                    {{ $at['nominal'] > 0 ? 'Rp ' . number_format($at['nominal'], 0, ',', '.') : '-' }}
-                                </span>
-                            </div>
-                        @endforeach
-                    </div>
+                    @if(!empty($asetTetap))
+                    <!-- II. ASET TETAP -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-emerald-50/50 border border-emerald-100">
+                            <h3 class="text-[11px] sm:text-xs font-black uppercase text-emerald-900 tracking-wider">II. ASET TETAP (INVENTARIS)</h3>
+                            <span class="text-[11px] font-bold text-emerald-700">Peralatan & Gedung</span>
+                        </div>
 
-                    <div class="p-3 bg-emerald-50/70 rounded-xl border border-emerald-100 flex items-center justify-between text-xs font-bold text-emerald-900">
-                        <span>Jumlah Aset Tetap:</span>
-                        <span class="font-mono font-black text-sm text-emerald-800">
-                            Rp {{ number_format($totalAsetTetap, 0, ',', '.') }}
-                        </span>
+                        <div class="divide-y divide-slate-100 text-xs sm:text-sm px-1">
+                            @foreach($asetTetap as $at)
+                                <div class="py-2.5 flex items-center justify-between gap-3">
+                                    <span class="text-slate-600 font-medium leading-snug">{{ $at['nama'] }}</span>
+                                    <span class="font-mono font-medium text-slate-500 whitespace-nowrap">
+                                        {{ $at['nominal'] > 0 ? 'Rp ' . number_format($at['nominal'], 0, ',', '.') : '-' }}
+                                    </span>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div class="p-2.5 sm:p-3 bg-emerald-50/70 rounded-xl border border-emerald-100 flex items-center justify-between text-xs font-bold text-emerald-900">
+                            <span>Jumlah Aset Tetap:</span>
+                            <span class="font-mono font-black text-xs sm:text-sm text-emerald-800 whitespace-nowrap">
+                                Rp {{ number_format($totalAsetTetap, 0, ',', '.') }}
+                            </span>
+                        </div>
                     </div>
+                    @endif
                 </div>
-                @endif
             </div>
 
             <!-- TOTAL AKHIR ASET (AKTIVA) -->
-            <div class="p-4 sm:p-5 bg-emerald-50 border-t-2 border-emerald-500 flex items-center justify-between">
+            <div class="p-3 sm:p-3.5 bg-emerald-50 border-t-2 border-emerald-500 flex items-center justify-between gap-2">
                 <div>
                     <span class="text-xs font-black uppercase tracking-wider text-emerald-950 block">TOTAL ASET (AKTIVA):</span>
-                    <span class="text-[11px] text-emerald-700">Saldo Akhir Kas Tersedia (Sinkron Buku Kas)</span>
+                    <span class="text-[10px] sm:text-[11px] text-emerald-700">Saldo Akhir Kas (Sinkron Buku Kas)</span>
                 </div>
                 <div class="text-right">
-                    <span class="font-mono font-black text-xl text-emerald-800">
+                    <span class="font-mono font-black text-base sm:text-lg text-emerald-800 whitespace-nowrap">
                         Rp {{ number_format($totalAset, 0, ',', '.') }}
                     </span>
                 </div>
@@ -265,86 +269,88 @@
         </div>
 
         <!-- ==================== SISI KANAN: KEWAJIBAN & EKUITAS ==================== -->
-        <div class="bg-white rounded-3xl border border-blue-200/80 shadow-xs overflow-hidden flex flex-col">
-            <div class="p-4 sm:p-5 bg-blue-50/70 border-b border-blue-100 flex items-center justify-between">
-                <div class="flex items-center gap-2.5">
-                    <span class="p-2 rounded-xl bg-blue-100 text-blue-700">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+        <div class="bg-white rounded-2xl border border-blue-200/80 shadow-xs overflow-hidden flex flex-col justify-between h-full">
+            <div>
+                <div class="p-3.5 sm:p-4 bg-blue-50/70 border-b border-blue-100 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <span class="p-1.5 rounded-lg bg-blue-100 text-blue-700 shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+                        </span>
+                        <div class="min-w-0">
+                            <h2 class="text-xs sm:text-sm font-bold text-blue-950 uppercase tracking-wider truncate">SISI PASIVA (EKUITAS SALDO DANA)</h2>
+                            <p class="text-[10px] sm:text-[11px] text-blue-700 truncate">Akumulasi saldo awal & hasil laba rugi</p>
+                        </div>
+                    </div>
+                    <span class="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200 shrink-0">
+                        Pasiva
                     </span>
-                    <div>
-                        <h2 class="text-sm sm:text-base font-bold text-blue-950 uppercase tracking-wider">SISI PASIVA (EKUITAS SALDO DANA)</h2>
-                        <p class="text-[11px] text-blue-700">Akumulasi saldo awal & hasil laba rugi kas pesantren</p>
-                    </div>
                 </div>
-                <span class="text-xs font-mono font-bold px-3 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
-                    Pasiva
-                </span>
-            </div>
 
-            <div class="p-4 sm:p-5 space-y-5 flex-1">
-                @if(!empty($kewajiban))
-                <!-- I. KEWAJIBAN (LIABILITAS) -->
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-amber-50/70 border border-amber-100">
-                        <h3 class="text-xs font-black uppercase text-amber-900 tracking-wider">I. KEWAJIBAN (LIABILITAS)</h3>
-                        <span class="text-xs font-bold text-amber-700">Utang Operasional</span>
+                <div class="p-3.5 sm:p-4 space-y-4">
+                    @if(!empty($kewajiban))
+                    <!-- I. KEWAJIBAN (LIABILITAS) -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-amber-50/70 border border-amber-100">
+                            <h3 class="text-[11px] sm:text-xs font-black uppercase text-amber-900 tracking-wider">I. KEWAJIBAN (LIABILITAS)</h3>
+                            <span class="text-[11px] font-bold text-amber-700">Utang Operasional</span>
+                        </div>
+
+                        <div class="divide-y divide-slate-100 text-xs sm:text-sm px-1">
+                            @foreach($kewajiban as $kw)
+                                <div class="py-2.5 flex items-center justify-between gap-3">
+                                    <span class="text-slate-600 font-medium leading-snug">{{ $kw['nama'] }}</span>
+                                    <span class="font-mono font-medium text-slate-500 whitespace-nowrap">
+                                        {{ $kw['nominal'] > 0 ? 'Rp ' . number_format($kw['nominal'], 0, ',', '.') : '-' }}
+                                    </span>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div class="p-2.5 sm:p-3 bg-amber-50/70 rounded-xl border border-amber-100 flex items-center justify-between text-xs font-bold text-amber-900">
+                            <span>Jumlah Kewajiban:</span>
+                            <span class="font-mono font-black text-xs sm:text-sm text-amber-800 whitespace-nowrap">
+                                Rp {{ number_format($totalKewajiban, 0, ',', '.') }}
+                            </span>
+                        </div>
                     </div>
+                    @endif
 
-                    <div class="divide-y divide-slate-100 text-xs sm:text-sm px-1">
-                        @foreach($kewajiban as $kw)
-                            <div class="py-2.5 flex items-center justify-between">
-                                <span class="text-slate-600">{{ $kw['nama'] }}</span>
-                                <span class="font-mono font-medium text-slate-500">
-                                    {{ $kw['nominal'] > 0 ? 'Rp ' . number_format($kw['nominal'], 0, ',', '.') : '-' }}
-                                </span>
-                            </div>
-                        @endforeach
-                    </div>
+                    <!-- EKUITAS DANA (SALDO DANA PESANTREN) -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-blue-50/70 border border-blue-100">
+                            <h3 class="text-[11px] sm:text-xs font-black uppercase text-blue-900 tracking-wider">{{ !empty($kewajiban) ? 'II.' : 'I.' }} EKUITAS DANA (SALDO DANA KAS)</h3>
+                            <span class="text-[11px] font-bold text-blue-700">Sinkron Laba Rugi</span>
+                        </div>
 
-                    <div class="p-3 bg-amber-50/70 rounded-xl border border-amber-100 flex items-center justify-between text-xs font-bold text-amber-900">
-                        <span>Jumlah Kewajiban:</span>
-                        <span class="font-mono font-black text-sm text-amber-800">
-                            Rp {{ number_format($totalKewajiban, 0, ',', '.') }}
-                        </span>
-                    </div>
-                </div>
-                @endif
+                        <div class="divide-y divide-slate-100 text-xs sm:text-sm px-1">
+                            @foreach($ekuitas as $ek)
+                                <div class="py-2.5 sm:py-3 flex items-center justify-between gap-3">
+                                    <span class="text-slate-700 font-medium leading-snug">{{ $ek['nama'] }}</span>
+                                    <span class="font-mono font-bold text-slate-900 whitespace-nowrap">
+                                        {{ $ek['nominal'] < 0 ? '-' : '' }}Rp {{ number_format(abs($ek['nominal']), 0, ',', '.') }}
+                                    </span>
+                                </div>
+                            @endforeach
+                        </div>
 
-                <!-- EKUITAS DANA (SALDO DANA PESANTREN) -->
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-blue-50/70 border border-blue-100">
-                        <h3 class="text-xs font-black uppercase text-blue-900 tracking-wider">{{ !empty($kewajiban) ? 'II.' : 'I.' }} EKUITAS DANA (SALDO DANA KAS)</h3>
-                        <span class="text-xs font-bold text-blue-700">Sinkron Laba Rugi</span>
-                    </div>
-
-                    <div class="divide-y divide-slate-100 text-xs sm:text-sm px-1">
-                        @foreach($ekuitas as $ek)
-                            <div class="py-2.5 flex items-center justify-between">
-                                <span class="text-slate-700 font-medium">{{ $ek['nama'] }}</span>
-                                <span class="font-mono font-bold text-slate-900">
-                                    {{ $ek['nominal'] < 0 ? '-' : '' }}Rp {{ number_format(abs($ek['nominal']), 0, ',', '.') }}
-                                </span>
-                            </div>
-                        @endforeach
-                    </div>
-
-                    <div class="p-3 bg-blue-50 rounded-xl border border-blue-100 flex items-center justify-between text-xs font-bold text-blue-900">
-                        <span>{{ $totalEkuitas >= 0 ? 'Surplus Kas Operasional (Saldo Dana):' : 'Defisit Kas Operasional (Saldo Dana):' }}</span>
-                        <span class="font-mono font-black text-sm text-blue-800">
-                            Rp {{ number_format($totalEkuitas, 0, ',', '.') }}
-                        </span>
+                        <div class="p-2.5 sm:p-3 bg-blue-50 rounded-xl border border-blue-100 flex items-center justify-between text-xs font-bold text-blue-900">
+                            <span>{{ $totalEkuitas >= 0 ? 'Surplus Kas Operasional (Saldo Dana):' : 'Defisit Kas Operasional (Saldo Dana):' }}</span>
+                            <span class="font-mono font-black text-xs sm:text-sm text-blue-800 whitespace-nowrap">
+                                Rp {{ number_format($totalEkuitas, 0, ',', '.') }}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- TOTAL AKHIR KEWAJIBAN & EKUITAS (PASIVA) -->
-            <div class="p-4 sm:p-5 bg-blue-50 border-t-2 border-blue-500 flex items-center justify-between">
+            <div class="p-3 sm:p-3.5 bg-blue-50 border-t-2 border-blue-500 flex items-center justify-between gap-2">
                 <div>
                     <span class="text-xs font-black uppercase tracking-wider text-blue-950 block">TOTAL PASIVA (EKUITAS DANA):</span>
-                    <span class="text-[11px] text-blue-700">Pendapatan + Saldo Periode Lalu - Beban</span>
+                    <span class="text-[10px] sm:text-[11px] text-blue-700">Pendapatan + Saldo Periode Lalu - Beban</span>
                 </div>
                 <div class="text-right">
-                    <span class="font-mono font-black text-xl text-blue-800">
+                    <span class="font-mono font-black text-base sm:text-lg text-blue-800 whitespace-nowrap">
                         Rp {{ number_format($totalPasiva, 0, ',', '.') }}
                     </span>
                 </div>
