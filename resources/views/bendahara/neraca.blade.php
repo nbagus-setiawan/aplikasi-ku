@@ -60,60 +60,104 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- PANEL FILTER PERIODE NERACA (COMPACT & RINGKAS)                           -->
+    <!-- PANEL FILTER PERIODE NERACA (ULTRA RINGKAS 1-BARIS MOBILE & DESKTOP)      -->
     <!-- ========================================================================= -->
-    <div class="bg-white p-2.5 sm:p-3 rounded-2xl border border-slate-200 shadow-xs">
-        <form method="GET" action="{{ route('admin.bendahara.neraca') }}" class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-            <!-- Mode Filter Cepat: Bulanan, Tahunan, Rentang Bebas, Posisi Terkini -->
-            <div class="inline-flex rounded-xl p-1 bg-slate-100 border border-slate-200 w-full sm:w-auto shrink-0">
-                <button type="submit" name="filter_tipe" value="bulan"
-                        class="flex-1 sm:flex-initial px-3 py-1 rounded-lg text-xs font-bold transition text-center {{ $filterTipe === 'bulan' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
-                    Bulanan
-                </button>
-                <button type="submit" name="filter_tipe" value="tahun"
-                        class="flex-1 sm:flex-initial px-3 py-1 rounded-lg text-xs font-bold transition text-center {{ $filterTipe === 'tahun' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
-                    Tahunan
-                </button>
-                <button type="submit" name="filter_tipe" value="kustom"
-                        class="flex-1 sm:flex-initial px-3 py-1 rounded-lg text-xs font-bold transition text-center {{ $filterTipe === 'kustom' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
-                    Rentang Bebas
-                </button>
-                <button type="submit" name="filter_tipe" value="semua"
-                        class="flex-1 sm:flex-initial px-3 py-1 rounded-lg text-xs font-bold transition text-center {{ $filterTipe === 'semua' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
-                    Posisi Terkini
-                </button>
+    <div class="bg-white p-2 sm:p-2.5 rounded-2xl border border-slate-200 shadow-xs">
+        <form method="GET" action="{{ route('admin.bendahara.neraca') }}">
+            <!-- KHUSUS LAYAR MOBILE (sm:hidden): ULTRA RINGKAS 1 BARIS (~36px) -->
+            <div class="sm:hidden flex items-center gap-2">
+                <!-- Dropdown Pilihan Tipe Filter -->
+                <select name="filter_tipe" onchange="this.form.submit()" class="text-xs font-bold rounded-xl border-slate-300 py-1.5 px-2 bg-slate-100 text-slate-800 shrink-0">
+                    <option value="bulan" {{ $filterTipe === 'bulan' ? 'selected' : '' }}>Bulanan</option>
+                    <option value="tahun" {{ $filterTipe === 'tahun' ? 'selected' : '' }}>Tahunan</option>
+                    <option value="kustom" {{ $filterTipe === 'kustom' ? 'selected' : '' }}>Bebas</option>
+                    <option value="semua" {{ $filterTipe === 'semua' ? 'selected' : '' }}>Semua</option>
+                </select>
+
+                <!-- Dropdown Pilihan Nilai / Tanggal Sejajar -->
+                <div class="flex-1 min-w-0">
+                    @if($filterTipe === 'bulan')
+                        <select name="filter_bulan" onchange="this.form.submit()" class="w-full text-xs font-semibold rounded-xl border-slate-300 py-1.5 px-2 bg-white text-slate-800 truncate">
+                            @foreach($bulanTersedia as $b)
+                                <option value="{{ $b['ym'] }}" {{ $filterBulan === $b['ym'] ? 'selected' : '' }}>
+                                    {{ $b['nama_bulan'] }}
+                                </option>
+                            @endforeach
+                        </select>
+                    @elseif($filterTipe === 'tahun')
+                        <select name="filter_tahun" onchange="this.form.submit()" class="w-full text-xs font-semibold rounded-xl border-slate-300 py-1.5 px-2 bg-white text-slate-800">
+                            @foreach($tahunTersedia as $t)
+                                <option value="{{ $t['tahun'] }}" {{ $filterTahun == $t['tahun'] ? 'selected' : '' }}>
+                                    {{ $t['label'] }}
+                                </option>
+                            @endforeach
+                        </select>
+                    @elseif($filterTipe === 'kustom')
+                        <div class="flex items-center gap-1">
+                            <input type="date" name="dari_tanggal" value="{{ $dari }}" class="text-[11px] rounded-lg border-slate-300 py-1 px-1.5 flex-1 min-w-0">
+                            <span class="text-[10px] text-slate-400">-</span>
+                            <input type="date" name="sampai_tanggal" value="{{ $sampai }}" class="text-[11px] rounded-lg border-slate-300 py-1 px-1.5 flex-1 min-w-0">
+                            <button type="submit" class="py-1 px-2 rounded-lg bg-emerald-700 text-white font-bold text-[11px] shrink-0">OK</button>
+                        </div>
+                    @else
+                        <span class="text-xs text-slate-500 italic block truncate py-1 px-1">Posisi Akumulatif</span>
+                    @endif
+                </div>
             </div>
 
-            <!-- Kontrol Dropdown / Tanggal Sejajar -->
-            <div class="flex items-center gap-2 w-full sm:w-auto sm:justify-end">
-                @if($filterTipe === 'bulan')
-                    <select name="filter_bulan" onchange="this.form.submit()" class="w-full sm:w-60 text-xs sm:text-sm font-semibold rounded-xl border-slate-300 py-1.5 px-3 bg-white">
-                        @foreach($bulanTersedia as $b)
-                            <option value="{{ $b['ym'] }}" {{ $filterBulan === $b['ym'] ? 'selected' : '' }}>
-                                {{ $b['nama_bulan'] }}
-                            </option>
-                        @endforeach
-                    </select>
-                @elseif($filterTipe === 'tahun')
-                    <select name="filter_tahun" onchange="this.form.submit()" class="w-full sm:w-48 text-xs sm:text-sm font-semibold rounded-xl border-slate-300 py-1.5 px-3 bg-white">
-                        @foreach($tahunTersedia as $t)
-                            <option value="{{ $t['tahun'] }}" {{ $filterTahun == $t['tahun'] ? 'selected' : '' }}>
-                                {{ $t['label'] }}
-                            </option>
-                        @endforeach
-                    </select>
-                @elseif($filterTipe === 'kustom')
-                    <div class="flex items-center gap-1.5 w-full sm:w-auto">
-                        <input type="date" name="dari_tanggal" value="{{ $dari }}" class="flex-1 sm:flex-initial text-xs rounded-xl border-slate-300 py-1.5 px-2.5">
-                        <span class="text-xs text-slate-400">s/d</span>
-                        <input type="date" name="sampai_tanggal" value="{{ $sampai }}" class="flex-1 sm:flex-initial text-xs rounded-xl border-slate-300 py-1.5 px-2.5">
-                        <button type="submit" class="py-1.5 px-3 rounded-xl bg-emerald-700 text-white font-bold text-xs hover:bg-emerald-800 transition shrink-0">
-                            OK
-                        </button>
-                    </div>
-                @else
-                    <span class="text-xs text-slate-500 py-1 px-2 italic">Posisi akumulatif kas terkini</span>
-                @endif
+            <!-- KHUSUS LAYAR DESKTOP / TABLET (hidden sm:flex) -->
+            <div class="hidden sm:flex sm:items-center justify-between gap-3">
+                <!-- Mode Filter Cepat: Bulanan, Tahunan, Rentang Bebas, Posisi Terkini -->
+                <div class="inline-flex rounded-xl p-1 bg-slate-100 border border-slate-200 shrink-0">
+                    <button type="submit" name="filter_tipe" value="bulan"
+                            class="px-3 py-1 rounded-lg text-xs font-bold transition text-center {{ $filterTipe === 'bulan' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
+                        Bulanan
+                    </button>
+                    <button type="submit" name="filter_tipe" value="tahun"
+                            class="px-3 py-1 rounded-lg text-xs font-bold transition text-center {{ $filterTipe === 'tahun' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
+                        Tahunan
+                    </button>
+                    <button type="submit" name="filter_tipe" value="kustom"
+                            class="px-3 py-1 rounded-lg text-xs font-bold transition text-center {{ $filterTipe === 'kustom' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
+                        Rentang Bebas
+                    </button>
+                    <button type="submit" name="filter_tipe" value="semua"
+                            class="px-3 py-1 rounded-lg text-xs font-bold transition text-center {{ $filterTipe === 'semua' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
+                        Posisi Terkini
+                    </button>
+                </div>
+
+                <!-- Kontrol Dropdown / Tanggal Sejajar Desktop -->
+                <div class="flex items-center gap-2 justify-end">
+                    @if($filterTipe === 'bulan')
+                        <select name="filter_bulan" onchange="this.form.submit()" class="w-60 text-xs sm:text-sm font-semibold rounded-xl border-slate-300 py-1.5 px-3 bg-white">
+                            @foreach($bulanTersedia as $b)
+                                <option value="{{ $b['ym'] }}" {{ $filterBulan === $b['ym'] ? 'selected' : '' }}>
+                                    {{ $b['nama_bulan'] }}
+                                </option>
+                            @endforeach
+                        </select>
+                    @elseif($filterTipe === 'tahun')
+                        <select name="filter_tahun" onchange="this.form.submit()" class="w-48 text-xs sm:text-sm font-semibold rounded-xl border-slate-300 py-1.5 px-3 bg-white">
+                            @foreach($tahunTersedia as $t)
+                                <option value="{{ $t['tahun'] }}" {{ $filterTahun == $t['tahun'] ? 'selected' : '' }}>
+                                    {{ $t['label'] }}
+                                </option>
+                            @endforeach
+                        </select>
+                    @elseif($filterTipe === 'kustom')
+                        <div class="flex items-center gap-1.5">
+                            <input type="date" name="dari_tanggal" value="{{ $dari }}" class="text-xs rounded-xl border-slate-300 py-1.5 px-2.5">
+                            <span class="text-xs text-slate-400">s/d</span>
+                            <input type="date" name="sampai_tanggal" value="{{ $sampai }}" class="text-xs rounded-xl border-slate-300 py-1.5 px-2.5">
+                            <button type="submit" class="py-1.5 px-3 rounded-xl bg-emerald-700 text-white font-bold text-xs hover:bg-emerald-800 transition shrink-0">
+                                OK
+                            </button>
+                        </div>
+                    @else
+                        <span class="text-xs text-slate-500 py-1 px-2 italic">Posisi akumulatif kas terkini</span>
+                    @endif
+                </div>
             </div>
         </form>
     </div>
