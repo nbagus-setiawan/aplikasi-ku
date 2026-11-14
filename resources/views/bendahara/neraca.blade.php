@@ -143,17 +143,42 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- BANNER STATUS KESEIMBANGAN (BALANCE)                                      -->
+    <!-- BANNER STATUS KESEIMBANGAN: MOBILE (md:hidden) & DESKTOP (hidden md:flex) -->
     <!-- ========================================================================= -->
-    <div class="p-4 sm:p-5 rounded-2xl bg-emerald-50 text-emerald-950 border border-emerald-200 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div class="flex items-start sm:items-center gap-3 min-w-0">
-            <span class="p-2 sm:p-2.5 rounded-xl bg-emerald-100 text-emerald-700 shrink-0 border border-emerald-200">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+
+    <!-- 1. TAMPILAN BANNER MOBILE: RINGKAS & PADAT -->
+    <div class="md:hidden p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 shadow-xs space-y-2.5">
+        <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5 min-w-0">
+                <span class="p-1 rounded-lg bg-emerald-100 text-emerald-700 shrink-0">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </span>
+                <span class="text-[11px] font-black uppercase text-emerald-950">STATUS NERACA</span>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-600 text-white shrink-0">SEIMBANG (BALANCE)</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 pt-1 border-t border-emerald-200/70 text-center">
+            <div class="p-2 rounded-xl bg-white/80 border border-emerald-100">
+                <span class="text-[9px] uppercase font-bold text-emerald-800 block truncate">Total Aset (Aktiva)</span>
+                <span class="font-mono font-black text-xs text-emerald-900 block truncate mt-0.5">Rp {{ number_format($totalAset, 0, ',', '.') }}</span>
+            </div>
+            <div class="p-2 rounded-xl bg-white/80 border border-emerald-100">
+                <span class="text-[9px] uppercase font-bold text-emerald-800 block truncate">Kewajiban + Ekuitas</span>
+                <span class="font-mono font-black text-xs text-emerald-900 block truncate mt-0.5">Rp {{ number_format($totalPasiva, 0, ',', '.') }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. TAMPILAN BANNER DESKTOP: LEBAR & INFORMATIF -->
+    <div class="hidden md:flex p-5 rounded-2xl bg-emerald-50 text-emerald-950 border border-emerald-200 shadow-xs items-center justify-between gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+            <span class="p-2.5 rounded-xl bg-emerald-100 text-emerald-700 shrink-0 border border-emerald-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </span>
             <div class="min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
-                    <span class="text-[11px] sm:text-xs font-black tracking-wider text-emerald-900 uppercase">STATUS NERACA:</span>
-                    <span class="px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-black bg-emerald-600 text-white">SEIMBANG (BALANCE)</span>
+                    <span class="text-xs font-black tracking-wider text-emerald-900 uppercase">STATUS NERACA:</span>
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-600 text-white">SEIMBANG (BALANCE)</span>
                 </div>
                 <p class="text-xs text-emerald-800 mt-1 leading-relaxed">
                     Total Aset bernilai sama persis dengan Total Kewajiban ditambah Ekuitas Saldo Dana sesuai persamaan dasar akuntansi.
@@ -161,15 +186,15 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-4 sm:gap-6 self-stretch md:self-auto justify-between md:justify-end pt-3 md:pt-0 border-t md:border-t-0 border-emerald-200">
-            <div class="text-left sm:text-right">
-                <span class="text-[10px] sm:text-[11px] text-emerald-700 block uppercase font-bold">Total Aset (Aktiva)</span>
-                <span class="font-mono font-black text-base sm:text-lg text-emerald-900">Rp {{ number_format($totalAset, 0, ',', '.') }}</span>
-            </div>
-            <span class="text-lg sm:text-xl font-bold text-emerald-600">=</span>
+        <div class="flex items-center gap-6 shrink-0">
             <div class="text-right">
-                <span class="text-[10px] sm:text-[11px] text-emerald-700 block uppercase font-bold">Kewajiban + Ekuitas</span>
-                <span class="font-mono font-black text-base sm:text-lg text-emerald-900">Rp {{ number_format($totalPasiva, 0, ',', '.') }}</span>
+                <span class="text-[11px] text-emerald-700 block uppercase font-bold">Total Aset (Aktiva)</span>
+                <span class="font-mono font-black text-lg text-emerald-900">Rp {{ number_format($totalAset, 0, ',', '.') }}</span>
+            </div>
+            <span class="text-xl font-bold text-emerald-600">=</span>
+            <div class="text-right">
+                <span class="text-[11px] text-emerald-700 block uppercase font-bold">Kewajiban + Ekuitas</span>
+                <span class="font-mono font-black text-lg text-emerald-900">Rp {{ number_format($totalPasiva, 0, ',', '.') }}</span>
             </div>
         </div>
     </div>
@@ -326,7 +351,7 @@
                             @foreach($ekuitas as $ek)
                                 <div class="py-2.5 sm:py-3 flex items-center justify-between gap-3">
                                     <span class="text-slate-700 font-medium leading-snug">{{ $ek['nama'] }}</span>
-                                    <span class="font-mono font-bold text-slate-900 whitespace-nowrap">
+                                    <span class="font-mono font-bold whitespace-nowrap {{ $ek['nominal'] < 0 ? 'text-rose-700' : 'text-slate-900' }}">
                                         {{ $ek['nominal'] < 0 ? '-' : '' }}Rp {{ number_format(abs($ek['nominal']), 0, ',', '.') }}
                                     </span>
                                 </div>
