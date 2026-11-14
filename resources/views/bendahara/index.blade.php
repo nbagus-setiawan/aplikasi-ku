@@ -84,26 +84,28 @@
         </div>
     </div>
 
-    <!-- TAB NAVIGASI SUB-MODUL BENDAHARA (3 TAB LENGKAP) -->
-    <div class="flex items-center gap-2 border-b border-slate-200">
-        <a href="{{ route('admin.bendahara.index') }}"
-           class="px-4 py-3 text-xs sm:text-sm font-bold text-emerald-800 border-b-2 border-emerald-600 flex items-center gap-2">
-            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <span>Buku Kas Umum</span>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Aktif</span>
-        </a>
+    <!-- TAB NAVIGASI SUB-MODUL BENDAHARA (3 TAB LENGKAP - SMOOTH TOUCH SCROLL) -->
+    <div class="overflow-x-auto whitespace-nowrap border-b border-slate-200 -mx-4 px-4 sm:mx-0 sm:px-0" style="scrollbar-width: none; -ms-overflow-style: none;">
+        <div class="flex items-center gap-1 sm:gap-2 min-w-max">
+            <a href="{{ route('admin.bendahara.index') }}"
+               class="px-3.5 sm:px-4 py-3 text-xs sm:text-sm font-bold text-emerald-800 border-b-2 border-emerald-600 flex items-center gap-2 whitespace-nowrap shrink-0">
+                <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Buku Kas Umum</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Aktif</span>
+            </a>
 
-        <a href="{{ route('admin.bendahara.laba-rugi') }}"
-           class="px-4 py-3 text-xs sm:text-sm font-bold text-slate-600 hover:text-emerald-700 border-b-2 border-transparent hover:border-slate-300 transition flex items-center gap-2">
-            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-            <span>Laporan Laba Rugi</span>
-        </a>
+            <a href="{{ route('admin.bendahara.laba-rugi') }}"
+               class="px-3.5 sm:px-4 py-3 text-xs sm:text-sm font-bold text-slate-600 hover:text-emerald-700 border-b-2 border-transparent hover:border-slate-300 transition flex items-center gap-2 whitespace-nowrap shrink-0">
+                <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                <span>Laporan Laba Rugi</span>
+            </a>
 
-        <a href="{{ route('admin.bendahara.neraca') }}"
-           class="px-4 py-3 text-xs sm:text-sm font-bold text-slate-600 hover:text-emerald-700 border-b-2 border-transparent hover:border-slate-300 transition flex items-center gap-2">
-            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
-            <span>Laporan Neraca</span>
-        </a>
+            <a href="{{ route('admin.bendahara.neraca') }}"
+               class="px-3.5 sm:px-4 py-3 text-xs sm:text-sm font-bold text-slate-600 hover:text-emerald-700 border-b-2 border-transparent hover:border-slate-300 transition flex items-center gap-2 whitespace-nowrap shrink-0">
+                <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+                <span>Laporan Neraca</span>
+            </a>
+        </div>
     </div>
 
     <!-- 4 KARTU RINGKASAN AKUNTANSI (DINAMIS TERUPDATE VIA AJAX) -->
@@ -130,7 +132,7 @@
         <!-- 2. Total Penerimaan (Debit) -->
         <div class="col-span-1 bg-gradient-to-br from-emerald-50 via-teal-50/60 to-emerald-100/40 p-3.5 sm:p-5 rounded-2xl shadow-xs border-2 border-emerald-200/90 hover:border-emerald-300 transition flex flex-col justify-between">
             <div class="flex items-center justify-between gap-1">
-                <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-emerald-900 truncate">Penerimaan (Debit)</span>
+                <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wide text-emerald-900 leading-tight">Penerimaan (Debit)</span>
                 <span class="p-1.5 sm:p-2 rounded-xl bg-emerald-600 text-white shadow-xs shrink-0">
                     <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
                 </span>
@@ -147,7 +149,7 @@
         <!-- 3. Total Pengeluaran (Kredit) -->
         <div class="col-span-1 bg-gradient-to-br from-rose-50 via-red-50/60 to-rose-100/40 p-3.5 sm:p-5 rounded-2xl shadow-xs border-2 border-rose-200/90 hover:border-rose-300 transition flex flex-col justify-between">
             <div class="flex items-center justify-between gap-1">
-                <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-rose-900 truncate">Pengeluaran (Kredit)</span>
+                <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wide text-rose-900 leading-tight">Pengeluaran (Kredit)</span>
                 <span class="p-1.5 sm:p-2 rounded-xl bg-rose-600 text-white shadow-xs shrink-0">
                     <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg>
                 </span>
@@ -191,17 +193,17 @@
 
     <!-- 3 JENIS FILTER BERDASARKAN DATA TERCATAT (AJAX SEAMLESS TANPA RELOAD) -->
     <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3.5">
-        <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
-            <div class="flex items-center gap-2">
-                <span class="p-1.5 rounded-lg bg-emerald-100 text-emerald-800">
+        <div class="flex items-center justify-between pb-2.5 border-b border-slate-100 gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+                <span class="p-1.5 rounded-lg bg-emerald-100 text-emerald-800 shrink-0">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
                 </span>
-                <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">3 Pilihan Filter Riwayat Kas</span>
+                <span class="text-xs font-bold text-slate-800 uppercase tracking-wider truncate">Filter Riwayat Kas</span>
             </div>
             
             <button @click="resetFilter()"
                     type="button"
-                    class="text-xs text-rose-600 font-bold hover:underline flex items-center gap-1">
+                    class="text-xs text-rose-600 font-bold hover:underline flex items-center gap-1 shrink-0">
                 <span>Reset Filter</span>
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>

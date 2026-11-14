@@ -36,73 +36,88 @@
     </div>
 
     <!-- TAB NAVIGASI SUB-MODUL BENDAHARA (RESPONSIF TOUCH & DESKTOP) -->
-    <div class="overflow-x-auto scrollbar-none whitespace-nowrap border-b border-slate-200 -mx-4 px-4 sm:mx-0 sm:px-0">
-        <div class="flex items-center gap-2 min-w-max">
+    <div class="overflow-x-auto whitespace-nowrap border-b border-slate-200 -mx-4 px-4 sm:mx-0 sm:px-0" style="scrollbar-width: none; -ms-overflow-style: none;">
+        <div class="flex items-center gap-1 sm:gap-2 min-w-max">
             <a href="{{ route('admin.bendahara.index') }}"
-               class="px-4 py-3 text-xs sm:text-sm font-bold text-slate-600 hover:text-emerald-700 border-b-2 border-transparent hover:border-slate-300 transition flex items-center gap-2">
-                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+               class="px-3.5 sm:px-4 py-3 text-xs sm:text-sm font-bold text-slate-600 hover:text-emerald-700 border-b-2 border-transparent hover:border-slate-300 transition flex items-center gap-2 whitespace-nowrap shrink-0">
+                <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 <span>Buku Kas Umum</span>
             </a>
 
             <a href="{{ route('admin.bendahara.laba-rugi') }}"
-               class="px-4 py-3 text-xs sm:text-sm font-bold text-emerald-800 border-b-2 border-emerald-600 flex items-center gap-2">
-                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+               class="px-3.5 sm:px-4 py-3 text-xs sm:text-sm font-bold text-emerald-800 border-b-2 border-emerald-600 flex items-center gap-2 whitespace-nowrap shrink-0">
+                <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                 <span>Laporan Laba Rugi</span>
                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Aktif</span>
             </a>
 
             <a href="{{ route('admin.bendahara.neraca') }}"
-               class="px-4 py-3 text-xs sm:text-sm font-bold text-slate-600 hover:text-emerald-700 border-b-2 border-transparent hover:border-slate-300 transition flex items-center gap-2">
-                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+               class="px-3.5 sm:px-4 py-3 text-xs sm:text-sm font-bold text-slate-600 hover:text-emerald-700 border-b-2 border-transparent hover:border-slate-300 transition flex items-center gap-2 whitespace-nowrap shrink-0">
+                <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
                 <span>Laporan Neraca</span>
             </a>
         </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- PANEL FILTER PERIODE LAPORAN (ULTRA RINGKAS 1-BARIS MOBILE & DESKTOP)     -->
+    <!-- PANEL FILTER PERIODE LAPORAN (RESPONSIF MOBILE & DESKTOP BEBAS BENTROK)    -->
     <!-- ========================================================================= -->
-    <div class="bg-white p-2 sm:p-2.5 rounded-2xl border border-slate-200 shadow-xs">
+    <div class="bg-white p-2.5 sm:p-3 rounded-2xl border border-slate-200 shadow-xs">
         <form method="GET" action="{{ route('admin.bendahara.laba-rugi') }}">
-            <!-- KHUSUS LAYAR MOBILE (sm:hidden): ULTRA RINGKAS 1 BARIS (~36px) -->
-            <div class="sm:hidden flex items-center gap-2">
-                <!-- Dropdown Pilihan Tipe Filter -->
-                <select name="filter_tipe" onchange="this.form.submit()" class="text-xs font-bold rounded-xl border-slate-300 py-1.5 px-2 bg-slate-100 text-slate-800 shrink-0">
-                    <option value="bulan" {{ $filterTipe === 'bulan' ? 'selected' : '' }}>Bulanan</option>
-                    <option value="tahun" {{ $filterTipe === 'tahun' ? 'selected' : '' }}>Tahunan</option>
-                    <option value="kustom" {{ $filterTipe === 'kustom' ? 'selected' : '' }}>Bebas</option>
-                    <option value="semua" {{ $filterTipe === 'semua' ? 'selected' : '' }}>Semua</option>
-                </select>
-
-                <!-- Dropdown Pilihan Nilai / Tanggal Sejajar -->
-                <div class="flex-1 min-w-0">
-                    @if($filterTipe === 'bulan')
-                        <select name="filter_bulan" onchange="this.form.submit()" class="w-full text-xs font-semibold rounded-xl border-slate-300 py-1.5 px-2 bg-white text-slate-800 truncate">
-                            @foreach($bulanTersedia as $b)
-                                <option value="{{ $b['ym'] }}" {{ $filterBulan === $b['ym'] ? 'selected' : '' }}>
-                                    {{ $b['nama_bulan'] }}
-                                </option>
-                            @endforeach
-                        </select>
-                    @elseif($filterTipe === 'tahun')
-                        <select name="filter_tahun" onchange="this.form.submit()" class="w-full text-xs font-semibold rounded-xl border-slate-300 py-1.5 px-2 bg-white text-slate-800">
-                            @foreach($tahunTersedia as $t)
-                                <option value="{{ $t['tahun'] }}" {{ $filterTahun == $t['tahun'] ? 'selected' : '' }}>
-                                    {{ $t['label'] }}
-                                </option>
-                            @endforeach
-                        </select>
-                    @elseif($filterTipe === 'kustom')
-                        <div class="flex items-center gap-1">
-                            <input type="date" name="dari_tanggal" value="{{ $dari }}" class="text-[11px] rounded-lg border-slate-300 py-1 px-1.5 flex-1 min-w-0">
-                            <span class="text-[10px] text-slate-400">-</span>
-                            <input type="date" name="sampai_tanggal" value="{{ $sampai }}" class="text-[11px] rounded-lg border-slate-300 py-1 px-1.5 flex-1 min-w-0">
-                            <button type="submit" class="py-1 px-2 rounded-lg bg-emerald-700 text-white font-bold text-[11px] shrink-0">OK</button>
+            <!-- KHUSUS LAYAR MOBILE (sm:hidden): RINGKAS & TANGGAL RAPI -->
+            <div class="sm:hidden">
+                @if($filterTipe === 'kustom')
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2">
+                            <select name="filter_tipe" onchange="this.form.submit()" class="w-28 text-xs font-bold rounded-xl border-slate-300 py-1.5 px-2 bg-slate-100 text-slate-800 shrink-0">
+                                <option value="bulan" {{ $filterTipe === 'bulan' ? 'selected' : '' }}>Bulanan</option>
+                                <option value="tahun" {{ $filterTipe === 'tahun' ? 'selected' : '' }}>Tahunan</option>
+                                <option value="kustom" {{ $filterTipe === 'kustom' ? 'selected' : '' }}>Bebas</option>
+                                <option value="semua" {{ $filterTipe === 'semua' ? 'selected' : '' }}>Semua</option>
+                            </select>
+                            <span class="text-xs text-slate-500 font-medium truncate">Tentukan rentang tanggal:</span>
                         </div>
-                    @else
-                        <span class="text-xs text-slate-500 italic block truncate py-1 px-1">Semua Pembukuan</span>
-                    @endif
-                </div>
+                        <div class="flex items-center gap-1.5">
+                            <input type="date" name="dari_tanggal" value="{{ $dari }}" class="flex-1 min-w-0 text-xs rounded-xl border-slate-300 py-1.5 px-2">
+                            <span class="text-xs text-slate-400 shrink-0">s/d</span>
+                            <input type="date" name="sampai_tanggal" value="{{ $sampai }}" class="flex-1 min-w-0 text-xs rounded-xl border-slate-300 py-1.5 px-2">
+                            <button type="submit" class="py-1.5 px-3 rounded-xl bg-emerald-700 text-white font-bold text-xs shrink-0 hover:bg-emerald-800 transition">OK</button>
+                        </div>
+                    </div>
+                @else
+                    <div class="flex items-center gap-2">
+                        <!-- Dropdown Pilihan Tipe Filter -->
+                        <select name="filter_tipe" onchange="this.form.submit()" class="w-28 text-xs font-bold rounded-xl border-slate-300 py-1.5 px-2 bg-slate-100 text-slate-800 shrink-0">
+                            <option value="bulan" {{ $filterTipe === 'bulan' ? 'selected' : '' }}>Bulanan</option>
+                            <option value="tahun" {{ $filterTipe === 'tahun' ? 'selected' : '' }}>Tahunan</option>
+                            <option value="kustom" {{ $filterTipe === 'kustom' ? 'selected' : '' }}>Bebas</option>
+                            <option value="semua" {{ $filterTipe === 'semua' ? 'selected' : '' }}>Semua</option>
+                        </select>
+
+                        <!-- Dropdown Pilihan Nilai Sejajar (Bulanan / Tahunan / Semua) -->
+                        <div class="flex-1 min-w-0">
+                            @if($filterTipe === 'bulan')
+                                <select name="filter_bulan" onchange="this.form.submit()" class="w-full text-xs font-semibold rounded-xl border-slate-300 py-1.5 px-2.5 bg-white text-slate-800 truncate">
+                                    @foreach($bulanTersedia as $b)
+                                        <option value="{{ $b['ym'] }}" {{ $filterBulan === $b['ym'] ? 'selected' : '' }}>
+                                            {{ $b['nama_bulan'] }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            @elseif($filterTipe === 'tahun')
+                                <select name="filter_tahun" onchange="this.form.submit()" class="w-full text-xs font-semibold rounded-xl border-slate-300 py-1.5 px-2.5 bg-white text-slate-800">
+                                    @foreach($tahunTersedia as $t)
+                                        <option value="{{ $t['tahun'] }}" {{ $filterTahun == $t['tahun'] ? 'selected' : '' }}>
+                                            {{ $t['label'] }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            @else
+                                <span class="text-xs text-slate-500 italic block truncate py-1.5 px-2 bg-slate-50 rounded-xl border border-slate-200">Semua Pembukuan</span>
+                            @endif
+                        </div>
+                    </div>
+                @endif
             </div>
 
             <!-- KHUSUS LAYAR DESKTOP / TABLET (hidden sm:flex) -->
@@ -184,20 +199,20 @@
         </div>
 
         <!-- 2 Kolom Mini Sejajar: Penerimaan vs Beban -->
-        <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100">
-            <div class="p-3 rounded-xl bg-emerald-50/70 border border-emerald-100">
-                <span class="text-xs font-bold uppercase tracking-wide text-emerald-800 block truncate">Total Pendapatan (A)</span>
+        <div class="grid grid-cols-2 gap-2.5 pt-3 border-t border-slate-100">
+            <div class="p-2.5 sm:p-3 rounded-xl bg-emerald-50/70 border border-emerald-100">
+                <span class="text-[11px] font-bold uppercase tracking-wide text-emerald-800 block leading-tight">Total Pendapatan (A)</span>
                 <span class="text-xs sm:text-sm font-bold font-mono text-emerald-700 block truncate mt-1">
                     Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
                 </span>
-                <span class="text-xs text-emerald-600 block truncate mt-0.5">Termasuk Saldo Lalu</span>
+                <span class="text-[10px] text-emerald-600 block truncate mt-0.5">Termasuk Saldo Lalu</span>
             </div>
-            <div class="p-3 rounded-xl bg-rose-50/70 border border-rose-100">
-                <span class="text-xs font-bold uppercase tracking-wide text-rose-800 block truncate">Total Beban (B)</span>
+            <div class="p-2.5 sm:p-3 rounded-xl bg-rose-50/70 border border-rose-100">
+                <span class="text-[11px] font-bold uppercase tracking-wide text-rose-800 block leading-tight">Total Beban (B)</span>
                 <span class="text-xs sm:text-sm font-bold font-mono text-rose-700 block truncate mt-1">
                     Rp {{ number_format($totalBeban, 0, ',', '.') }}
                 </span>
-                <span class="text-xs text-rose-600 block truncate mt-0.5">{{ $bebans->count() }} pos pengeluaran</span>
+                <span class="text-[10px] text-rose-600 block truncate mt-0.5">{{ $bebans->count() }} pos pengeluaran</span>
             </div>
         </div>
     </div>
