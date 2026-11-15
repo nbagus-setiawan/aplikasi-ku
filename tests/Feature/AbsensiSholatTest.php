@@ -379,4 +379,34 @@ class AbsensiSholatTest extends TestCase
             $response->assertSee('REKAPITULASI PRESENSI SHOLAT JAMAAH KORLAP')
         );
     }
+
+    public function test_kondisi_presensi_countdown_and_nearest_sholat(): void
+    {
+        // 1. Kondisi jam 05:32 WIB (Subuh tutup 05:30) -> Sholat berikutnya adalah Dzuhur (buka 12:00)
+        $simulatedNow = Carbon::parse('2026-11-16 05:32:00');
+        $kondisi = AbsensiSholatJadwal::getKondisiPresensi($simulatedNow);
+
+        $this->assertEquals('dzuhur', $kondisi['sholat']->nama_sholat);
+        $this->assertFalse($kondisi['is_bisa_absen']);
+        $this->assertEquals('tutup', $kondisi['fase']);
+        $this->assertEquals('2026-11-16 12:00:00', $kondisi['target_waktu']->format('Y-m-d H:i:s'));
+
+        // 2. Kondisi jam 12:15 WIB (Dzuhur buka 12:00, tepat 12:30, tutup 13:00) -> Dzuhur sedang buka (tepat)
+        $simulatedDzuhur = Carbon::parse('2026-11-16 12:15:00');
+        $kondisiDzuhur = AbsensiSholatJadwal::getKondisiPresensi($simulatedDzuhur);
+
+        $this->assertEquals('dzuhur', $kondisiDzuhur['sholat']->nama_sholat);
+        $this->assertTrue($kondisiDzuhur['is_bisa_absen']);
+        $this->assertEquals('tepat', $kondisiDzuhur['fase']);
+        $this->assertEquals('2026-11-16 12:30:00', $kondisiDzuhur['target_waktu']->format('Y-m-d H:i:s'));
+
+        // 3. Kondisi jam 12:45 WIB -> Dzuhur sedang buka (terlambat, menuju tutup 13:00)
+        $simulatedTelat = Carbon::parse('2026-11-16 12:45:00');
+        $kondisiTelat = AbsensiSholatJadwal::getKondisiPresensi($simulatedTelat);
+
+        $this->assertEquals('dzuhur', $kondisiTelat['sholat']->nama_sholat);
+        $this->assertTrue($kondisiTelat['is_bisa_absen']);
+        $this->assertEquals('telat', $kondisiTelat['fase']);
+        $this->assertEquals('2026-11-16 13:00:00', $kondisiTelat['target_waktu']->format('Y-m-d H:i:s'));
+    }
 }

@@ -11,24 +11,30 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         [x-cloak] { display: none !important; }
+        .swal2-popup {
+            border-radius: 1.25rem !important;
+            font-family: inherit !important;
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-900 font-sans antialiased min-h-screen pb-24">
 
     <!-- HEADER ELEGAN MOBILE-FIRST -->
     <header class="bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950 text-white shadow-md border-b border-emerald-800">
-        <div class="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
+        <div class="max-w-2xl mx-auto px-4 py-3.5 flex items-center justify-between gap-3">
             <div class="flex items-center gap-3 min-w-0">
                 <picture class="shrink-0">
                     <source srcset="{{ asset('images/logo-nav.webp') }}" type="image/webp">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-10 h-10 object-contain drop-shadow-md">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-9 h-9 object-contain drop-shadow-md">
                 </picture>
                 <div class="min-w-0">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-300 block">Pondok Pesantren Al-Falah Putra</span>
-                    <h1 class="text-base sm:text-lg font-black tracking-tight text-white truncate">Presensi Korlap Sholat Jamaah</h1>
+                    <h1 class="text-sm sm:text-base font-black tracking-tight text-white truncate">Presensi Korlap Sholat Jamaah</h1>
                 </div>
             </div>
             <div class="text-right shrink-0">
@@ -41,9 +47,9 @@
     <!-- KONTEN UTAMA -->
     <main class="max-w-2xl mx-auto px-3 sm:px-4 py-4 space-y-4" x-data="absensiPublikApp()">
 
-        <!-- NOTIFIKASI SUKSES / ERROR -->
+        <!-- NOTIFIKASI FLASH SUKSES / ERROR -->
         @if (session('success'))
-            <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-900 shadow-sm flex items-start gap-3">
+            <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-900 shadow-xs flex items-start gap-3">
                 <span class="p-1 rounded-full bg-emerald-200 text-emerald-800 shrink-0 mt-0.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                 </span>
@@ -54,7 +60,7 @@
         @endif
 
         @if (session('error'))
-            <div class="p-4 rounded-2xl bg-rose-50 border border-rose-300 text-rose-900 shadow-sm flex items-start gap-3">
+            <div class="p-4 rounded-2xl bg-rose-50 border border-rose-300 text-rose-900 shadow-xs flex items-start gap-3">
                 <span class="p-1 rounded-full bg-rose-200 text-rose-800 shrink-0 mt-0.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
                 </span>
@@ -65,8 +71,8 @@
         @endif
 
         @if ($errors->any())
-            <div class="p-4 rounded-2xl bg-rose-50 border border-rose-300 text-rose-900 shadow-sm text-xs sm:text-sm">
-                <p class="font-bold mb-1">Terjadi kesalahan pada input:</p>
+            <div class="p-4 rounded-2xl bg-rose-50 border border-rose-300 text-rose-900 shadow-xs text-xs sm:text-sm">
+                <p class="font-bold mb-1">Periksa kembali data Anda:</p>
                 <ul class="list-disc pl-5 space-y-0.5">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -75,56 +81,112 @@
             </div>
         @endif
 
-        <!-- 1. PILIHAN WAKTU 5 SHOLAT (TOMBOL PILLS) -->
-        <div class="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 block px-1 mb-2">Pilih Waktu Sholat:</span>
-            <div class="grid grid-cols-5 gap-1.5">
-                @foreach (App\Models\AbsensiSholatJadwal::SHOLAT_LIST as $key => $label)
-                    @php
-                        $jdw = $jadwals->get($key);
-                        $isAktif = ($namaSholat === $key);
-                    @endphp
-                    <a href="{{ route('absensi-sholat.index', ['sholat' => $key]) }}"
-                       class="py-2.5 px-1 rounded-xl text-center transition flex flex-col items-center justify-center {{ $isAktif ? 'bg-emerald-800 text-white shadow-xs font-bold ring-2 ring-emerald-600' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold' }}">
-                        <span class="text-xs sm:text-sm">{{ $label }}</span>
-                        <span class="text-[10px] mt-0.5 font-mono opacity-80 {{ $isAktif ? 'text-emerald-200' : 'text-slate-500' }}">
-                            {{ substr($jdw->jam_buka ?? '00:00', 0, 5) }}
-                        </span>
-                    </a>
-                @endforeach
-            </div>
-        </div>
+        <!-- ============================================================= -->
+        <!-- 1. KARTU FOKUS WAKTU SHOLAT & HITUNGAN MUNDUR (COUNTDOWN)     -->
+        <!-- ============================================================= -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+            <!-- Header Kartu: Status Sholat Aktif -->
+            <div class="p-4 sm:p-5 {{ $isBisaAbsen ? ($fase === 'tepat' ? 'bg-gradient-to-r from-emerald-900 to-teal-900 text-white' : 'bg-gradient-to-r from-amber-900 to-yellow-900 text-white') : 'bg-gradient-to-r from-slate-800 to-slate-900 text-white' }}">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider opacity-80 block">Presensi Waktu Terdekat</span>
+                        <h2 class="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
+                            <span>Sholat {{ ucfirst($namaSholat) }}</span>
+                            @if ($sudahDiabsen)
+                                <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-white/20 text-white border border-white/30 backdrop-blur-xs">
+                                    Sudah Diisi
+                                </span>
+                            @endif
+                        </h2>
+                    </div>
 
-        <!-- 2. KARTU STATUS JAM SHOLAT TERPILIH -->
-        <div class="p-3.5 sm:p-4 rounded-2xl border shadow-xs flex items-center justify-between gap-3 {{ $isBisaAbsen ? ($kategoriWaktuSaatIni === 'tepat_waktu' ? 'bg-emerald-50 border-emerald-200 text-emerald-950' : 'bg-amber-50 border-amber-200 text-amber-950') : 'bg-slate-200/80 border-slate-300 text-slate-700' }}">
-            <div class="flex items-center gap-2.5 min-w-0">
-                <span class="p-2 rounded-xl {{ $isBisaAbsen ? ($kategoriWaktuSaatIni === 'tepat_waktu' ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-white') : 'bg-slate-400 text-white' }} shrink-0 shadow-xs">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                </span>
-                <div class="min-w-0">
-                    <div class="flex items-center gap-1.5 flex-wrap">
-                        <span class="text-xs font-black uppercase tracking-wider">Sholat {{ ucfirst($namaSholat) }}</span>
+                    <!-- Badge Status Buka / Tutup -->
+                    <div>
                         @if ($isBisaAbsen)
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {{ $kategoriWaktuSaatIni === 'tepat_waktu' ? 'bg-emerald-200 text-emerald-900' : 'bg-amber-200 text-amber-900' }}">
-                                {{ $kategoriWaktuSaatIni === 'tepat_waktu' ? 'Tepat Waktu' : 'Terlambat' }}
-                            </span>
+                            @if ($fase === 'tepat')
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-emerald-400 text-emerald-950 shadow-xs">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-900 animate-pulse"></span>
+                                    <span>Tepat Waktu</span>
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-300 text-amber-950 shadow-xs">
+                                    <span class="w-2 h-2 rounded-full bg-amber-900 animate-pulse"></span>
+                                    <span>Terlambat</span>
+                                </span>
+                            @endif
                         @else
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-300 text-slate-800">Ditutup</span>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-rose-500 text-white shadow-xs">
+                                <span class="w-2 h-2 rounded-full bg-white"></span>
+                                <span>Ditutup</span>
+                            </span>
                         @endif
                     </div>
-                    <p class="text-[11px] opacity-80 mt-0.5">
-                        Buka: <strong class="font-mono">{{ substr($sholatTerpilih->jam_buka ?? '00:00', 0, 5) }}</strong> &bull;
-                        Tepat: <strong class="font-mono">{{ substr($sholatTerpilih->jam_tepat ?? '00:00', 0, 5) }}</strong> &bull;
-                        Tutup: <strong class="font-mono">{{ substr($sholatTerpilih->jam_tutup ?? '00:00', 0, 5) }}</strong>
-                    </p>
+                </div>
+
+                <!-- 3 WAKTU PENTING (BUKA, TEPAT, TUTUP) -->
+                <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-white/15 text-center">
+                    <div class="bg-black/20 rounded-xl p-2">
+                        <span class="text-[10px] opacity-75 block font-semibold">1. Jam Buka</span>
+                        <span class="text-xs sm:text-sm font-black font-mono mt-0.5 block">
+                            {{ substr($sholatTerpilih->jam_buka ?? '00:00', 0, 5) }} WIB
+                        </span>
+                    </div>
+                    <div class="bg-black/20 rounded-xl p-2">
+                        <span class="text-[10px] opacity-75 block font-semibold">2. Batas Tepat</span>
+                        <span class="text-xs sm:text-sm font-black font-mono mt-0.5 block">
+                            {{ substr($sholatTerpilih->jam_tepat ?? '00:00', 0, 5) }} WIB
+                        </span>
+                    </div>
+                    <div class="bg-black/20 rounded-xl p-2">
+                        <span class="text-[10px] opacity-75 block font-semibold">3. Jam Tutup</span>
+                        <span class="text-xs sm:text-sm font-black font-mono mt-0.5 block">
+                            {{ substr($sholatTerpilih->jam_tutup ?? '00:00', 0, 5) }} WIB
+                        </span>
+                    </div>
                 </div>
             </div>
 
-            @if ($sudahDiabsen)
-                <span class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-white text-emerald-800 border border-emerald-300 shadow-2xs shrink-0">
-                    Sudah Diisi
-                </span>
-            @endif
+            <!-- BAGIAN COUNTDOWN TIMER DIGITAL REALTIME -->
+            <div class="p-4 bg-slate-50 border-t border-slate-200">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-center sm:text-left">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block">
+                            Hitungan Mundur:
+                        </span>
+                        <p class="text-xs font-extrabold text-slate-800 mt-0.5">
+                            {{ $keteranganFase }}
+                        </p>
+                    </div>
+
+                    <!-- ANGKA HITUNGAN MUNDUR (JAM : MENIT : DETIK) -->
+                    <div class="inline-flex items-center justify-center gap-1.5 font-mono select-none">
+                        <!-- JAM -->
+                        <div class="bg-white border-2 border-slate-300 rounded-xl px-2.5 py-1.5 shadow-xs text-center min-w-[44px]">
+                            <span class="text-base sm:text-lg font-black text-slate-900 block leading-none" x-text="hours">00</span>
+                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mt-0.5 block">Jam</span>
+                        </div>
+                        <span class="text-slate-400 font-black text-lg">:</span>
+                        <!-- MENIT -->
+                        <div class="bg-white border-2 border-slate-300 rounded-xl px-2.5 py-1.5 shadow-xs text-center min-w-[44px]">
+                            <span class="text-base sm:text-lg font-black text-slate-900 block leading-none" x-text="minutes">00</span>
+                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mt-0.5 block">Mnt</span>
+                        </div>
+                        <span class="text-slate-400 font-black text-lg">:</span>
+                        <!-- DETIK -->
+                        <div class="bg-white border-2 border-emerald-600 rounded-xl px-2.5 py-1.5 shadow-xs text-center min-w-[44px]">
+                            <span class="text-base sm:text-lg font-black text-emerald-700 block leading-none" x-text="seconds">00</span>
+                            <span class="text-[9px] font-bold text-emerald-600 uppercase tracking-tighter mt-0.5 block">Dtk</span>
+                        </div>
+                    </div>
+                </div>
+
+                @if (!$isBisaAbsen)
+                    <div class="mt-3 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center gap-2">
+                        <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        <span>{{ $pesanStatus }} Formulir presensi hanya dapat dikirim saat jam sholat dibuka.</span>
+                    </div>
+                @endif
+            </div>
         </div>
 
         @if ($anggotas->isEmpty())
@@ -133,17 +195,17 @@
                 <p class="text-xs text-slate-500">Sekretaris belum menambahkan daftar petugas di menu admin.</p>
             </div>
         @else
-            <!-- FORMULIR PRESENSI KOORDINATOR -->
-            <form method="POST" action="{{ route('absensi-sholat.store') }}" @submit="confirmSubmit($event)" class="space-y-4">
+            <!-- FORMULIR PRESENSI KOORDINATOR HANYA WAKTU SHOLAT INI -->
+            <form id="form-absensi" method="POST" action="{{ route('absensi-sholat.store') }}" @submit="confirmSubmit($event)" class="space-y-4">
                 @csrf
                 <input type="hidden" name="waktu_sholat" value="{{ $namaSholat }}">
 
-                <!-- 3. PILIHAN KOORDINATOR YANG MENGISI -->
+                <!-- 2. PILIHAN KOORDINATOR YANG MENGISI -->
                 <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-xs space-y-2">
                     <label class="block text-xs font-bold text-slate-800 uppercase tracking-wider">
                         1. Nama Koordinator Pengabsen <span class="text-rose-500">*</span>
                     </label>
-                    <select name="koordinator_id" required class="w-full text-xs sm:text-sm font-semibold rounded-xl border-slate-300 py-2.5 px-3 bg-slate-50 focus:bg-white focus:border-emerald-600 focus:ring-emerald-600">
+                    <select id="koordinator_id" name="koordinator_id" {{ !$isBisaAbsen ? 'disabled' : 'required' }} class="w-full text-xs sm:text-sm font-semibold rounded-xl border-slate-300 py-2.5 px-3 bg-slate-50 focus:bg-white focus:border-emerald-600 focus:ring-emerald-600 {{ !$isBisaAbsen ? 'opacity-60 cursor-not-allowed' : '' }}">
                         <option value="">-- Pilih Nama Anda (Koordinator) --</option>
                         @foreach ($koordinators as $k)
                             <option value="{{ $k->id }}" {{ (old('koordinator_id', $koordinatorTerpilihId) == $k->id) ? 'selected' : '' }}>
@@ -156,8 +218,8 @@
                     </p>
                 </div>
 
-                <!-- 4. DAFTAR ANGGOTA KORLAP: DEFAULT HADIR -->
-                <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                <!-- 3. DAFTAR ANGGOTA KORLAP: DEFAULT HADIR -->
+                <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3 {{ !$isBisaAbsen ? 'opacity-70' : '' }}">
                     <div class="flex items-center justify-between pb-2 border-b border-slate-100 gap-2">
                         <div>
                             <h2 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wide">
@@ -167,9 +229,11 @@
                                 Semua otomatis HADIR. Cukup klik nama yang Sakit, Izin, atau Alfa.
                             </p>
                         </div>
-                        <button type="button" @click="resetSemuaHadir()" class="text-[11px] font-bold text-emerald-700 hover:underline shrink-0">
-                            Set Semua Hadir
-                        </button>
+                        @if ($isBisaAbsen)
+                            <button type="button" @click="resetSemuaHadir()" class="text-[11px] font-bold text-emerald-700 hover:underline shrink-0">
+                                Set Semua Hadir
+                            </button>
+                        @endif
                     </div>
 
                     <!-- LIST CARD PETUGAS -->
@@ -195,30 +259,30 @@
                                     <!-- 4 PILIHAN STATUS (RADIO PILLS) -->
                                     <div class="inline-flex rounded-xl p-0.5 bg-slate-100 border border-slate-200 shrink-0">
                                         <!-- HADIR -->
-                                        <label class="cursor-pointer px-2.5 py-1 rounded-lg text-xs font-bold transition text-center"
+                                        <label class="px-2.5 py-1 rounded-lg text-xs font-bold transition text-center {{ $isBisaAbsen ? 'cursor-pointer' : 'cursor-not-allowed opacity-80' }}"
                                                :class="status === 'hadir' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'">
-                                            <input type="radio" name="presensi[{{ $p->id }}][status]" value="hadir" x-model="status" @change="recount()" class="sr-only">
+                                            <input type="radio" name="presensi[{{ $p->id }}][status]" value="hadir" x-model="status" @change="recount()" {{ !$isBisaAbsen ? 'disabled' : '' }} class="sr-only">
                                             <span>Hadir</span>
                                         </label>
 
                                         <!-- SAKIT -->
-                                        <label class="cursor-pointer px-2.5 py-1 rounded-lg text-xs font-bold transition text-center"
+                                        <label class="px-2.5 py-1 rounded-lg text-xs font-bold transition text-center {{ $isBisaAbsen ? 'cursor-pointer' : 'cursor-not-allowed opacity-80' }}"
                                                :class="status === 'sakit' ? 'bg-amber-500 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'">
-                                            <input type="radio" name="presensi[{{ $p->id }}][status]" value="sakit" x-model="status" @change="recount()" class="sr-only">
+                                            <input type="radio" name="presensi[{{ $p->id }}][status]" value="sakit" x-model="status" @change="recount()" {{ !$isBisaAbsen ? 'disabled' : '' }} class="sr-only">
                                             <span>Sakit</span>
                                         </label>
 
                                         <!-- IZIN -->
-                                        <label class="cursor-pointer px-2.5 py-1 rounded-lg text-xs font-bold transition text-center"
+                                        <label class="px-2.5 py-1 rounded-lg text-xs font-bold transition text-center {{ $isBisaAbsen ? 'cursor-pointer' : 'cursor-not-allowed opacity-80' }}"
                                                :class="status === 'izin' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'">
-                                            <input type="radio" name="presensi[{{ $p->id }}][status]" value="izin" x-model="status" @change="recount()" class="sr-only">
+                                            <input type="radio" name="presensi[{{ $p->id }}][status]" value="izin" x-model="status" @change="recount()" {{ !$isBisaAbsen ? 'disabled' : '' }} class="sr-only">
                                             <span>Izin</span>
                                         </label>
 
                                         <!-- ALFA -->
-                                        <label class="cursor-pointer px-2.5 py-1 rounded-lg text-xs font-bold transition text-center"
+                                        <label class="px-2.5 py-1 rounded-lg text-xs font-bold transition text-center {{ $isBisaAbsen ? 'cursor-pointer' : 'cursor-not-allowed opacity-80' }}"
                                                :class="status === 'alfa' ? 'bg-rose-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'">
-                                            <input type="radio" name="presensi[{{ $p->id }}][status]" value="alfa" x-model="status" @change="recount()" class="sr-only">
+                                            <input type="radio" name="presensi[{{ $p->id }}][status]" value="alfa" x-model="status" @change="recount()" {{ !$isBisaAbsen ? 'disabled' : '' }} class="sr-only">
                                             <span>Alfa</span>
                                         </label>
                                     </div>
@@ -230,6 +294,7 @@
                                            name="presensi[{{ $p->id }}][keterangan]"
                                            value="{{ old("presensi.{$p->id}.keterangan", $ketAwal) }}"
                                            placeholder="Tulis alasan izin / sakit..."
+                                           {{ !$isBisaAbsen ? 'disabled' : '' }}
                                            class="w-full text-xs rounded-xl border-slate-300 py-1.5 px-3 bg-slate-50 focus:bg-white focus:border-emerald-600 focus:ring-emerald-600">
                                 </div>
                             </div>
@@ -237,7 +302,7 @@
                     </div>
                 </div>
 
-                <!-- 5. TOMBOL SIMPAN FIXED DI BAWAH (STICKY BOTTOM ACTION BAR) -->
+                <!-- 4. TOMBOL SIMPAN FIXED DI BAWAH (STICKY BOTTOM ACTION BAR) -->
                 <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 py-3 z-40 shadow-lg">
                     <div class="max-w-2xl mx-auto flex items-center justify-between gap-3">
                         <div class="text-[11px] font-semibold text-slate-600 min-w-0">
@@ -250,9 +315,14 @@
 
                         <button type="submit"
                                 @if (!$isBisaAbsen) disabled @endif
-                                class="px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-white transition flex items-center gap-2 shadow-xs shrink-0 {{ $isBisaAbsen ? 'bg-emerald-700 hover:bg-emerald-800' : 'bg-slate-400 cursor-not-allowed' }}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            <span>{{ $sudahDiabsen ? 'Perbarui Presensi' : 'Simpan Presensi ' . ucfirst($namaSholat) }}</span>
+                                class="px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-white transition flex items-center gap-2 shadow-xs shrink-0 {{ $isBisaAbsen ? 'bg-emerald-700 hover:bg-emerald-800' : 'bg-slate-400 cursor-not-allowed opacity-75' }}">
+                            @if ($isBisaAbsen)
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>{{ $sudahDiabsen ? 'Perbarui Presensi' : 'Simpan Presensi ' . ucfirst($namaSholat) }}</span>
+                            @else
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                <span>Presensi Ditutup</span>
+                            @endif
                         </button>
                     </div>
                 </div>
@@ -267,9 +337,19 @@
                 countSakit: 0,
                 countIzin: 0,
                 countAlfa: 0,
+                // Hitungan Mundur (Countdown Timer)
+                targetEpoch: {{ $targetEpochMs }},
+                diffSeconds: 0,
+                hours: '00',
+                minutes: '00',
+                seconds: '00',
+                isExpired: false,
+
                 init() {
                     this.recount();
-                    // Live clock
+                    this.initCountdown();
+
+                    // Live clock header
                     setInterval(() => {
                         const d = new Date();
                         const h = String(d.getHours()).padStart(2, '0');
@@ -278,6 +358,42 @@
                         if (el) el.innerText = h + ':' + m + ' WIB';
                     }, 1000);
                 },
+
+                initCountdown() {
+                    this.updateCountdown();
+                    setInterval(() => {
+                        this.updateCountdown();
+                    }, 1000);
+                },
+
+                updateCountdown() {
+                    const nowMs = Date.now();
+                    const diff = Math.max(0, Math.floor((this.targetEpoch - nowMs) / 1000));
+                    this.diffSeconds = diff;
+
+                    if (diff <= 0) {
+                        this.hours = '00';
+                        this.minutes = '00';
+                        this.seconds = '00';
+                        if (!this.isExpired) {
+                            this.isExpired = true;
+                            // Jika countdown habis (misal batas jam tepat atau jam tutup tercapai), reload otomatis halaman setelah 2 detik
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 2500);
+                        }
+                        return;
+                    }
+
+                    const h = Math.floor(diff / 3600);
+                    const m = Math.floor((diff % 3600) / 60);
+                    const s = diff % 60;
+
+                    this.hours = String(h).padStart(2, '0');
+                    this.minutes = String(m).padStart(2, '0');
+                    this.seconds = String(s).padStart(2, '0');
+                },
+
                 recount() {
                     let h = 0, s = 0, i = 0, a = 0;
                     document.querySelectorAll('input[type="radio"]:checked').forEach(el => {
@@ -291,6 +407,7 @@
                     this.countIzin = i;
                     this.countAlfa = a;
                 },
+
                 resetSemuaHadir() {
                     document.querySelectorAll('input[type="radio"][value="hadir"]').forEach(el => {
                         el.checked = true;
@@ -298,9 +415,72 @@
                     });
                     this.recount();
                 },
+
                 confirmSubmit(e) {
-                    if (!confirm('Yakin ingin menyimpan presensi sholat {{ ucfirst($namaSholat) }} ini?')) {
-                        e.preventDefault();
+                    e.preventDefault();
+                    const form = e.target;
+
+                    // 1. Validasi Koordinator Terpilih
+                    const koordinatorSelect = document.getElementById('koordinator_id');
+                    if (!koordinatorSelect || !koordinatorSelect.value) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Koordinator Belum Dipilih',
+                                text: 'Mohon pilih nama Koordinator Lapangan yang bertugas terlebih dahulu.',
+                                confirmButtonColor: '#047857',
+                                confirmButtonText: 'Baik, Saya Pilih'
+                            });
+                        } else {
+                            alert('Mohon pilih nama Koordinator Lapangan terlebih dahulu.');
+                        }
+                        return;
+                    }
+
+                    const koordinatorNama = koordinatorSelect.options[koordinatorSelect.selectedIndex].text;
+                    const namaSholatCap = "{{ ucfirst($namaSholat) }}";
+
+                    // 2. Pop Up SweetAlert2 Konfirmasi
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: 'Konfirmasi Presensi ' + namaSholatCap,
+                            html: `
+                                <div class="text-left text-xs sm:text-sm space-y-2 p-3 bg-slate-50 rounded-xl border border-slate-200 mt-2">
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-500 font-semibold">Waktu Sholat:</span>
+                                        <strong class="text-slate-900">${namaSholatCap}</strong>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-500 font-semibold">Koordinator:</span>
+                                        <strong class="text-slate-900 truncate max-w-[200px]">${koordinatorNama}</strong>
+                                    </div>
+                                    <div class="pt-2 border-t border-slate-200 flex justify-between font-mono font-bold text-xs">
+                                        <span class="text-emerald-700">H: ${this.countHadir}</span>
+                                        <span class="text-amber-700">S: ${this.countSakit}</span>
+                                        <span class="text-blue-700">I: ${this.countIzin}</span>
+                                        <span class="text-rose-700">A: ${this.countAlfa}</span>
+                                    </div>
+                                </div>
+                                <p class="text-[11px] text-slate-500 mt-3">Apakah seluruh data presensi di atas sudah sesuai dan siap dikirim?</p>
+                            `,
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonColor: '#047857',
+                            cancelButtonColor: '#64748b',
+                            confirmButtonText: 'Ya, Simpan Presensi',
+                            cancelButtonText: 'Batal / Cek Lagi',
+                            reverseButtons: true,
+                            focusConfirm: true
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                form.submit();
+                            }
+                        });
+                    } else {
+                        // Fallback browser confirm jika SweetAlert gagal load
+                        if (confirm(`Simpan presensi sholat ${namaSholatCap}? Hadir: ${this.countHadir}, Sakit: ${this.countSakit}, Izin: ${this.countIzin}, Alfa: ${this.countAlfa}`)) {
+                            form.submit();
+                        }
                     }
                 }
             }

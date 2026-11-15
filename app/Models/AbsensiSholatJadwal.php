@@ -113,7 +113,103 @@ class AbsensiSholatJadwal extends Model
     }
 
     /**
-     * Cek apakah jam saat ini masih dalam rentang boleh absen
+     * Dapatkan kondisi lengkap presensi saat ini (sholat yang aktif atau terdekat berikutnya, fase waktu, dan target countdown)
+     */
+    public static function getKondisiPresensi(?Carbon $now = null): array
+    {
+        $now = $now ?: Carbon::now();
+        $jamSekarang = $now->format('H:i:s');
+        $today = $now->toDateString();
+
+        if (static::count() < 5) {
+            static::inisialisasiDefault();
+        }
+
+        $jadwals = static::all()->keyBy('nama_sholat');
+
+        // 1. Cek jika ada sholat yang dibuka manual secara eksplisit oleh sekretaris
+        $manualOpen = $jadwals->firstWhere('is_buka_manual', true);
+        if ($manualOpen) {
+            $fase = ($jamSekarang <= $manualOpen->jam_tepat) ? 'tepat' : 'telat';
+            $targetWaktu = ($fase === 'tepat')
+                ? Carbon::parse($today . ' ' . $manualOpen->jam_tepat)
+                : Carbon::parse($today . ' ' . $manualOpen->jam_tutup);
+
+            // Jika jam sekarang sudah melampaui jam tutup tapi status manual buka, target 15 menit ke depan
+            if ($now->greaterThan($targetWaktu)) {
+                $targetWaktu = $now->copy()->addMinutes(15);
+            }
+
+            return [
+                'sholat' => $manualOpen,
+                'is_bisa_absen' => true,
+                'fase' => $fase,
+                'target_waktu' => $targetWaktu,
+                'keterangan_fase' => ($fase === 'tepat') ? 'Batas Presensi Tepat Waktu' : 'Form Ditutup Dalam',
+                'pesan_status' => 'Presensi dibuka manual oleh sekretaris.',
+            ];
+        }
+
+        // 2. Cek sholat yang saat ini sedang aktif (jam_buka <= now <= jam_tutup) dan tidak ditutup manual
+        foreach ($jadwals as $j) {
+            if ($j->is_buka_manual === false) {
+                continue; // Ditutup paksa
+            }
+
+            if ($jamSekarang >= $j->jam_buka && $jamSekarang <= $j->jam_tutup) {
+                $fase = ($jamSekarang <= $j->jam_tepat) ? 'tepat' : 'telat';
+                $targetWaktu = ($fase === 'tepat')
+                    ? Carbon::parse($today . ' ' . $j->jam_tepat)
+                    : Carbon::parse($today . ' ' . $j->jam_tutup);
+
+                return [
+                    'sholat' => $j,
+                    'is_bisa_absen' => true,
+                    'fase' => $fase,
+                    'target_waktu' => $targetWaktu,
+                    'keterangan_fase' => ($fase === 'tepat') ? 'Batas Presensi Tepat Waktu' : 'Form Ditutup Dalam',
+                    'pesan_status' => 'Form presensi sholat ' . ucfirst($j->nama_sholat) . ' sedang dibuka.',
+                ];
+            }
+        }
+
+        // 3. Jika tidak ada yang buka saat ini: Cari sholat terdekat berikutnya yang akan datang
+        $sholatKeys = array_keys(self::SHOLAT_LIST);
+        $sholatBerikutnya = null;
+        $targetWaktu = null;
+
+        foreach ($sholatKeys as $key) {
+            $j = $jadwals->get($key);
+            if (!$j || $j->is_buka_manual === false) {
+                continue;
+            }
+
+            if ($j->jam_buka > $jamSekarang) {
+                $sholatBerikutnya = $j;
+                $targetWaktu = Carbon::parse($today . ' ' . $j->jam_buka);
+                break;
+            }
+        }
+
+        // Jika tidak ada lagi sholat hari ini yang jam_buka > now (misal sudah lewat Isya), sholat berikutnya adalah Subuh besok
+        if (!$sholatBerikutnya) {
+            $subuh = $jadwals->get('subuh');
+            $sholatBerikutnya = $subuh;
+            $targetWaktu = Carbon::parse($now->copy()->addDay()->toDateString() . ' ' . ($subuh ? $subuh->jam_buka : '04:30:00'));
+        }
+
+        return [
+            'sholat' => $sholatBerikutnya,
+            'is_bisa_absen' => false,
+            'fase' => 'tutup',
+            'target_waktu' => $targetWaktu,
+            'keterangan_fase' => 'Form Sholat ' . ucfirst($sholatBerikutnya->nama_sholat) . ' Dibuka Dalam',
+            'pesan_status' => 'Presensi sholat saat ini sedang ditutup. Form presensi ' . ucfirst($sholatBerikutnya->nama_sholat) . ' akan dibuka pada pukul ' . substr($sholatBerikutnya->jam_buka, 0, 5) . ' WIB.',
+        ];
+    }
+
+    /**
+     * Cek apakah jam saat ini masih dalam rentang boleh absen untuk jadwal ini
      */
     public function isBisaAbsen(?Carbon $now = null): bool
     {

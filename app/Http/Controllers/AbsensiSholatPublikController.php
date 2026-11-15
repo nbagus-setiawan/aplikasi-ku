@@ -24,23 +24,46 @@ class AbsensiSholatPublikController extends Controller
         // 1. Ambil 5 jadwal sholat
         $jadwals = AbsensiSholatJadwal::all()->keyBy('nama_sholat');
 
-        // 2. Tentukan waktu sholat yang dipilih atau aktif
-        $sholatAktif = AbsensiSholatJadwal::getSholatAktifSaatIni($now);
-        $waktuSholatPilihan = $request->query('sholat');
+        // 2. Dapatkan kondisi presensi saat ini (hanya waktu terdekat/aktif yang tampil)
+        $kondisi = AbsensiSholatJadwal::getKondisiPresensi($now);
+        $sholatTerpilih = $kondisi['sholat'];
+        $isBisaAbsen = $kondisi['is_bisa_absen'];
+        $fase = $kondisi['fase'];
+        $targetWaktu = $kondisi['target_waktu'];
+        $keteranganFase = $kondisi['keterangan_fase'];
+        $pesanStatus = $kondisi['pesan_status'];
 
-        if ($waktuSholatPilihan && in_array($waktuSholatPilihan, array_keys(AbsensiSholatJadwal::SHOLAT_LIST))) {
-            $sholatTerpilih = $jadwals->get($waktuSholatPilihan);
-        } else {
-            $sholatTerpilih = $sholatAktif ?: $jadwals->get('subuh');
+        // Jika ada permintaan eksplisit sholat dari URL
+        if ($request->filled('sholat') && in_array($request->query('sholat'), array_keys(AbsensiSholatJadwal::SHOLAT_LIST))) {
+            $jadwalReq = $jadwals->get($request->query('sholat'));
+            if ($jadwalReq) {
+                $sholatTerpilih = $jadwalReq;
+                $isBisaAbsen = $jadwalReq->isBisaAbsen($now);
+                if ($isBisaAbsen) {
+                    $fase = ($now->format('H:i:s') <= $jadwalReq->jam_tepat) ? 'tepat' : 'telat';
+                    $targetWaktu = ($fase === 'tepat')
+                        ? Carbon::parse($today . ' ' . $jadwalReq->jam_tepat)
+                        : Carbon::parse($today . ' ' . $jadwalReq->jam_tutup);
+                    $keteranganFase = ($fase === 'tepat') ? 'Batas Presensi Tepat Waktu' : 'Form Ditutup Dalam';
+                    $pesanStatus = 'Form presensi sholat ' . ucfirst($jadwalReq->nama_sholat) . ' sedang dibuka.';
+                } else {
+                    $fase = 'tutup';
+                    $targetWaktu = Carbon::parse($today . ' ' . $jadwalReq->jam_buka);
+                    if ($now->greaterThan($targetWaktu)) {
+                        $targetWaktu = Carbon::parse($now->copy()->addDay()->toDateString() . ' ' . $jadwalReq->jam_buka);
+                    }
+                    $keteranganFase = 'Form Sholat ' . ucfirst($jadwalReq->nama_sholat) . ' Dibuka Dalam';
+                    $pesanStatus = 'Presensi sholat ' . ucfirst($jadwalReq->nama_sholat) . ' saat ini sedang ditutup.';
+                }
+            }
         }
 
         $namaSholat = $sholatTerpilih ? $sholatTerpilih->nama_sholat : 'subuh';
-        $isBisaAbsen = $sholatTerpilih ? $sholatTerpilih->isBisaAbsen($now) : false;
         $kategoriWaktuSaatIni = $sholatTerpilih ? $sholatTerpilih->getKategoriWaktu($now) : 'tepat_waktu';
+        $targetEpochMs = $targetWaktu ? ($targetWaktu->timestamp * 1000) : ($now->timestamp * 1000);
 
         // 3. Ambil daftar koordinator dan anggota aktif
         $koordinators = AbsensiPetugas::aktif()->koordinator()->orderBy('nama')->get();
-        // Jika belum ada koordinator khusus, ambil semua petugas aktif sebagai fallback
         if ($koordinators->isEmpty()) {
             $koordinators = AbsensiPetugas::aktif()->orderBy('nama')->get();
         }
@@ -63,6 +86,11 @@ class AbsensiSholatPublikController extends Controller
             'sholatTerpilih',
             'namaSholat',
             'isBisaAbsen',
+            'fase',
+            'targetWaktu',
+            'targetEpochMs',
+            'keteranganFase',
+            'pesanStatus',
             'kategoriWaktuSaatIni',
             'koordinators',
             'anggotas',
