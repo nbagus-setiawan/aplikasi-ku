@@ -435,4 +435,83 @@ class AbsensiSholatTest extends TestCase
         $this->assertEquals('telat', $kondisiTelat['fase']);
         $this->assertEquals('2026-11-16 13:00:00', $kondisiTelat['target_waktu']->format('Y-m-d H:i:s'));
     }
+
+    public function test_otomatis_alfa_ketika_jam_tutup_lewat(): void
+    {
+        $petugas1 = AbsensiPetugas::create([
+            'nama' => 'Petugas Subuh 1',
+            'bagian' => 'anggota',
+            'status' => 'aktif',
+            'jadwal_sholat' => ['subuh'],
+        ]);
+
+        $petugas2 = AbsensiPetugas::create([
+            'nama' => 'Petugas Dzuhur Saja',
+            'bagian' => 'anggota',
+            'status' => 'aktif',
+            'jadwal_sholat' => ['dzuhur'],
+        ]);
+
+        // Simulasikan waktu jam 06:00 WIB (Subuh tutup 05:30 sudah lewat)
+        $simulatedNow = Carbon::today()->setTime(6, 0, 0);
+
+        // Jalankan auto-alfa
+        $totalCreated = AbsensiSholat::autoAlfaPetugasYangBelumAbsen($simulatedNow);
+
+        $this->assertGreaterThanOrEqual(1, $totalCreated);
+
+        // Petugas 1 (jadwal subuh) otomatis dibuatkan Alfa
+        $this->assertDatabaseHas('absensi_sholats', [
+            'petugas_id' => $petugas1->id,
+            'waktu_sholat' => 'subuh',
+            'status' => 'alfa',
+        ]);
+
+        // Petugas 2 (hanya jadwal dzuhur) TIDAK di-alfa untuk subuh
+        $this->assertDatabaseMissing('absensi_sholats', [
+            'petugas_id' => $petugas2->id,
+            'waktu_sholat' => 'subuh',
+        ]);
+    }
+
+    public function test_otomatis_kategori_terlambat_ketika_lewat_jam_tepat(): void
+    {
+        // Set waktu sholat ashar buka manual dengan batas jam tepat di masa lalu
+        AbsensiSholatJadwal::where('nama_sholat', 'ashar')->update([
+            'is_buka_manual' => true,
+            'jam_tepat' => '00:00:01', // Batas tepat sudah lewat
+        ]);
+
+        $koordinator = AbsensiPetugas::create([
+            'nama' => 'Koordinator Ashar',
+            'bagian' => 'koordinator',
+            'status' => 'aktif',
+        ]);
+
+        $anggota = AbsensiPetugas::create([
+            'nama' => 'Anggota Ashar',
+            'bagian' => 'anggota',
+            'status' => 'aktif',
+        ]);
+
+        $response = $this->post('/absensi-sholat', [
+            'waktu_sholat' => 'ashar',
+            'koordinator_id' => $koordinator->id,
+            'presensi' => [
+                $anggota->id => [
+                    'status' => 'hadir',
+                ],
+            ],
+        ]);
+
+        $response->assertRedirect(route('absensi-sholat.index', ['sholat' => 'ashar']));
+
+        // Kehadiran otomatis terkategori 'terlambat' karena melewati batas jam tepat
+        $this->assertDatabaseHas('absensi_sholats', [
+            'petugas_id' => $anggota->id,
+            'waktu_sholat' => 'ashar',
+            'status' => 'hadir',
+            'kategori_waktu' => 'terlambat',
+        ]);
+    }
 }

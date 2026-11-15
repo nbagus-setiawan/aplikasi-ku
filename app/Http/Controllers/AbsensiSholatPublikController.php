@@ -21,6 +21,9 @@ class AbsensiSholatPublikController extends Controller
         $now = Carbon::now();
         $today = $now->toDateString();
 
+        // Otomatis tandai Alfa bagi petugas yang belum absen pada sholat yang telah ditutup hari ini
+        AbsensiSholat::autoAlfaPetugasYangBelumAbsen($now);
+
         // 1. Ambil 5 jadwal sholat
         $jadwals = AbsensiSholatJadwal::all()->keyBy('nama_sholat');
 

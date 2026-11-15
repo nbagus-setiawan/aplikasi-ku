@@ -25,6 +25,10 @@ class AbsensiSholatAdminController extends Controller
 
         // Parameter Tanggal & Bulan
         $now = Carbon::now();
+
+        // Otomatis tandai Alfa bagi petugas yang belum absen pada sholat yang telah ditutup hari ini
+        AbsensiSholat::autoAlfaPetugasYangBelumAbsen($now);
+
         $tanggalTerpilih = $request->query('tanggal', $now->toDateString());
         $bulanTerpilih = $request->query('bulan', $now->format('Y-m'));
 
