@@ -149,6 +149,14 @@
             <span class="truncate text-sm text-white font-medium">Arsip Dokumen</span>
         </a>
 
+        <a href="{{ route('admin.absensi-sholat.index') }}"
+           class="group flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl transition-all duration-150 {{ request()->routeIs('admin.absensi-sholat.*') ? 'bg-white/20 text-white font-bold shadow-xs ring-1 ring-white/30' : 'text-white hover:bg-white/10 hover:text-white font-medium' }}">
+            <svg class="w-5 h-5 shrink-0 text-white" style="width: 22px; height: 22px; min-width: 22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+            <span class="truncate text-sm text-white font-medium">Absensi Korlap</span>
+        </a>
+
         <!-- SECTION 5: KEUANGAN & KAS -->
         <div class="px-3.5 pt-4 pb-1 text-[11px] font-bold uppercase tracking-wider text-white/80">
             Keuangan & Kas

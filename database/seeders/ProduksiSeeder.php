@@ -19,6 +19,7 @@ class ProduksiSeeder extends Seeder
             KategoriSuratSeeder::class,
             TemplateSuratSeeder::class,
             HalamanSeeder::class,
+            AbsensiSholatJadwalSeeder::class,
         ]);
     }
 }

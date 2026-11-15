@@ -17,6 +17,8 @@ use App\Http\Controllers\PublicController;
 use App\Http\Controllers\SantriController;
 use App\Http\Controllers\SantriImportController;
 use App\Http\Controllers\SuratKeluarController;
+use App\Http\Controllers\AbsensiSholatAdminController;
+use App\Http\Controllers\AbsensiSholatPublikController;
 use App\Http\Controllers\SuratMasukController;
 use App\Http\Controllers\SuratUksController;
 use App\Http\Controllers\TandaTanganPublikController;
@@ -48,6 +50,10 @@ Route::get('/verifikasi/{kode}', [VerifikasiPublikController::class, 'show'])->m
 Route::get('/verifikasi/{kode}/unduh', [VerifikasiPublikController::class, 'unduh'])->middleware('throttle:30,1')->name('publik.verifikasi.unduh');
 Route::get('/tanda-tangan/{token}', [TandaTanganPublikController::class, 'show'])->middleware('throttle:30,1')->name('publik.tanda-tangan.show');
 Route::post('/tanda-tangan/{token}', [TandaTanganPublikController::class, 'sign'])->middleware('throttle:15,1')->name('publik.tanda-tangan.sign');
+
+// Rute Publik Langsung: Form Presensi Korlap Sholat Jamaah (Tanpa Login, diakses via tautan koordinator)
+Route::get('/absensi-sholat', [AbsensiSholatPublikController::class, 'index'])->name('absensi-sholat.index');
+Route::post('/absensi-sholat', [AbsensiSholatPublikController::class, 'store'])->name('absensi-sholat.store');
 
 // Rute Pengalihan 301 (Pencegahan & Validasi Bersih Google Search Console)
 Route::redirect('/cetak', '/', 301);
@@ -138,6 +144,15 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::resource('bendahara', BendaharaController::class)
         ->parameters(['bendahara' => 'bendahara'])
         ->names('admin.bendahara');
+
+    // Modul Absensi Korlap Sholat Jamaah
+    Route::get('/absensi-sholat', [AbsensiSholatAdminController::class, 'index'])->name('admin.absensi-sholat.index');
+    Route::put('/absensi-sholat/jadwal', [AbsensiSholatAdminController::class, 'updateJadwal'])->name('admin.absensi-sholat.update-jadwal');
+    Route::post('/absensi-sholat/petugas', [AbsensiSholatAdminController::class, 'storePetugas'])->name('admin.absensi-sholat.petugas.store');
+    Route::put('/absensi-sholat/petugas/{petuga}', [AbsensiSholatAdminController::class, 'updatePetugas'])->name('admin.absensi-sholat.petugas.update');
+    Route::delete('/absensi-sholat/petugas/{petuga}', [AbsensiSholatAdminController::class, 'destroyPetugas'])->name('admin.absensi-sholat.petugas.destroy');
+    Route::put('/absensi-sholat/log/{absensi}', [AbsensiSholatAdminController::class, 'updateStatusLog'])->name('admin.absensi-sholat.log.update');
+    Route::get('/absensi-sholat/cetak-rekap', [AbsensiSholatAdminController::class, 'cetakRekapPdf'])->name('admin.absensi-sholat.cetak-rekap');
 
     // Modul Editor Beranda & Halaman (Fase 5)
     Route::get('/halaman/beranda', [HalamanController::class, 'editBeranda'])->name('admin.halaman.beranda');
