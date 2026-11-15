@@ -268,7 +268,17 @@
             </div>
 
             <!-- CANVAS CHART.JS TERPADU -->
-            <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-xs">
+            <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500 pb-2 border-b border-slate-100">
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="inline-block w-6 border-b-2 border-dashed border-rose-500"></span>
+                        <span class="font-semibold text-slate-700">Garis Putus-Putus Merah:</span> Batas Total Kuota Petugas ({{ $totalPetugas }} Orang)
+                    </span>
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="inline-block w-4 border-b border-dashed border-slate-400"></span>
+                        <span>Garis grid putus-putus menandai batas interval jumlah kehadiran</span>
+                    </span>
+                </div>
                 <div class="h-72 sm:h-96 w-full">
                     <canvas id="unifiedSholatChart"></canvas>
                 </div>
@@ -940,6 +950,18 @@
                             borderWidth: 2.5,
                             tension: 0.3,
                             pointRadius: 3,
+                        },
+                        {
+                            label: 'Batas Total Petugas ({{ $totalPetugas }} Orang)',
+                            data: Array(labels.length).fill({{ (int) $totalPetugas }}),
+                            borderColor: '#dc2626', // Red-600 tegas penanda batas
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            borderDash: [8, 4], // Garis putus-putus penanda batas kuota
+                            pointRadius: 0,
+                            pointHoverRadius: 3,
+                            tension: 0,
+                            fill: false,
                         }
                     ]
                 },
@@ -954,8 +976,8 @@
                         legend: {
                             position: 'top',
                             labels: {
-                                boxWidth: 12,
-                                usePointStyle: true,
+                                boxWidth: 20,
+                                boxHeight: 3,
                                 font: {
                                     family: 'Figtree, sans-serif',
                                     size: 11,
@@ -969,6 +991,9 @@
                                     return 'Tanggal ' + context[0].label + ' {{ $dtBulan->locale('id')->translatedFormat('F Y') }}';
                                 },
                                 label: function(context) {
+                                    if (context.dataset.label.startsWith('Batas Total')) {
+                                        return 'Batas Kuota Petugas: ' + context.parsed.y + ' Orang';
+                                    }
                                     return context.dataset.label + ': ' + context.parsed.y + ' Petugas Hadir';
                                 }
                             }
@@ -981,16 +1006,30 @@
                                 text: 'Tanggal (Hari ke-)',
                                 font: { size: 10, weight: 'bold' }
                             },
-                            grid: { display: false }
+                            grid: {
+                                display: true,
+                                color: 'rgba(226, 232, 240, 0.7)',
+                                borderDash: [3, 4],
+                            }
                         },
                         y: {
                             title: {
                                 display: true,
-                                text: 'Jumlah Petugas Hadir',
+                                text: 'Jumlah Petugas Hadir (Orang)',
                                 font: { size: 10, weight: 'bold' }
                             },
                             beginAtZero: true,
-                            ticks: { precision: 0 }
+                            suggestedMax: {{ max((int)$totalPetugas + 2, 5) }},
+                            ticks: {
+                                stepSize: 1,
+                                precision: 0,
+                                font: { weight: 'bold' }
+                            },
+                            grid: {
+                                display: true,
+                                color: 'rgba(100, 116, 139, 0.25)', // Slate pembatas lembut
+                                borderDash: [6, 6], // Garis putus-putus pembatas jumlah hadir!
+                            }
                         }
                     }
                 }
