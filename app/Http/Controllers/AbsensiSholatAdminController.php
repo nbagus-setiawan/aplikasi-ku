@@ -207,6 +207,9 @@ class AbsensiSholatAdminController extends Controller
                 'pengurus_id' => ['required', 'exists:penguruses,id'],
                 'bagian' => ['required', 'in:koordinator,anggota'],
                 'status' => ['required', 'in:aktif,nonaktif'],
+                'jadwal_sholat' => ['nullable', 'array'],
+                'jadwal_sholat.*' => ['in:subuh,dzuhur,ashar,maghrib,isya'],
+                'keterangan' => ['nullable', 'string', 'max:255'],
             ], [
                 'pengurus_id.required' => 'Pilih data pengurus terlebih dahulu.',
             ]);
@@ -219,6 +222,8 @@ class AbsensiSholatAdminController extends Controller
                 'nama' => ['required', 'string', 'max:150'],
                 'bagian' => ['required', 'in:koordinator,anggota'],
                 'status' => ['required', 'in:aktif,nonaktif'],
+                'jadwal_sholat' => ['nullable', 'array'],
+                'jadwal_sholat.*' => ['in:subuh,dzuhur,ashar,maghrib,isya'],
                 'keterangan' => ['nullable', 'string', 'max:255'],
             ], [
                 'nama.required' => 'Nama petugas wajib diisi.',
@@ -232,6 +237,7 @@ class AbsensiSholatAdminController extends Controller
             'nama' => $nama,
             'bagian' => $request->bagian,
             'status' => $request->status,
+            'jadwal_sholat' => $request->input('jadwal_sholat'),
             'pengurus_id' => $pengurusId,
             'keterangan' => $request->keterangan,
         ]);
@@ -249,10 +255,18 @@ class AbsensiSholatAdminController extends Controller
             'nama' => ['required', 'string', 'max:150'],
             'bagian' => ['required', 'in:koordinator,anggota'],
             'status' => ['required', 'in:aktif,nonaktif'],
+            'jadwal_sholat' => ['nullable', 'array'],
+            'jadwal_sholat.*' => ['in:subuh,dzuhur,ashar,maghrib,isya'],
             'keterangan' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $petuga->update($validated);
+        $petuga->update([
+            'nama' => $validated['nama'],
+            'bagian' => $validated['bagian'],
+            'status' => $validated['status'],
+            'jadwal_sholat' => $request->input('jadwal_sholat'),
+            'keterangan' => $validated['keterangan'] ?? null,
+        ]);
 
         return redirect()->route('admin.absensi-sholat.index', ['tab' => 'petugas'])
             ->with('success', "Data petugas \"{$petuga->nama}\" berhasil diperbarui.");

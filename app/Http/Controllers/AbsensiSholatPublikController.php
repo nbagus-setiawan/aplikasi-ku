@@ -62,13 +62,13 @@ class AbsensiSholatPublikController extends Controller
         $kategoriWaktuSaatIni = $sholatTerpilih ? $sholatTerpilih->getKategoriWaktu($now) : 'tepat_waktu';
         $targetEpochMs = $targetWaktu ? ($targetWaktu->timestamp * 1000) : ($now->timestamp * 1000);
 
-        // 3. Ambil daftar koordinator dan anggota aktif
-        $koordinators = AbsensiPetugas::aktif()->koordinator()->orderBy('nama')->get();
+        // 3. Ambil daftar koordinator dan anggota aktif yang bertugas pada sholat ini
+        $koordinators = AbsensiPetugas::aktif()->koordinator()->untukSholat($namaSholat)->orderBy('nama')->get();
         if ($koordinators->isEmpty()) {
-            $koordinators = AbsensiPetugas::aktif()->orderBy('nama')->get();
+            $koordinators = AbsensiPetugas::aktif()->untukSholat($namaSholat)->orderBy('nama')->get();
         }
 
-        $anggotas = AbsensiPetugas::aktif()->orderBy('nama')->get();
+        $anggotas = AbsensiPetugas::aktif()->untukSholat($namaSholat)->orderBy('nama')->get();
 
         // 4. Cek apakah sudah ada data absen yang tersimpan hari ini untuk sholat ini
         $riwayatHariIni = AbsensiSholat::whereDate('tanggal', $today)

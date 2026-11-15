@@ -86,6 +86,7 @@ class AbsensiSholatTest extends TestCase
             'nama' => 'Muhammad Rizki',
             'bagian' => 'koordinator',
             'status' => 'aktif',
+            'jadwal_sholat' => ['subuh', 'maghrib', 'isya'],
             'keterangan' => 'Korlap Lantai 2',
         ]);
 
@@ -99,6 +100,11 @@ class AbsensiSholatTest extends TestCase
             'keterangan' => 'Korlap Lantai 2',
             'pengurus_id' => null,
         ]);
+
+        $petugas = AbsensiPetugas::where('nama', 'Muhammad Rizki')->first();
+        $this->assertEquals(['subuh', 'maghrib', 'isya'], $petugas->jadwal_sholat);
+        $this->assertTrue($petugas->isBertugasPadaSholat('subuh'));
+        $this->assertFalse($petugas->isBertugasPadaSholat('dzuhur'));
     }
 
     public function test_secretary_can_add_petugas_from_pengurus(): void
@@ -117,6 +123,7 @@ class AbsensiSholatTest extends TestCase
             'pengurus_id' => $pengurus->id,
             'bagian' => 'anggota',
             'status' => 'aktif',
+            'jadwal_sholat' => ['dzuhur', 'ashar'],
         ]);
 
         $response->assertRedirect(route('admin.absensi-sholat.index', ['tab' => 'petugas']));
@@ -127,6 +134,9 @@ class AbsensiSholatTest extends TestCase
             'status' => 'aktif',
             'pengurus_id' => $pengurus->id,
         ]);
+
+        $petugas = AbsensiPetugas::where('nama', 'Ust. Abdurrahman')->first();
+        $this->assertEquals(['dzuhur', 'ashar'], $petugas->jadwal_sholat);
     }
 
     public function test_secretary_can_update_and_delete_petugas(): void
@@ -137,6 +147,7 @@ class AbsensiSholatTest extends TestCase
             'nama' => 'Fulan bin Fulan',
             'bagian' => 'anggota',
             'status' => 'aktif',
+            'jadwal_sholat' => ['subuh'],
         ]);
 
         // Update
@@ -144,6 +155,7 @@ class AbsensiSholatTest extends TestCase
             'nama' => 'Fulan bin Fulan Update',
             'bagian' => 'koordinator',
             'status' => 'nonaktif',
+            'jadwal_sholat' => ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'],
             'keterangan' => 'Pindah tugas',
         ]);
 
@@ -155,6 +167,9 @@ class AbsensiSholatTest extends TestCase
             'bagian' => 'koordinator',
             'status' => 'nonaktif',
         ]);
+
+        $petugas->refresh();
+        $this->assertEquals(['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'], $petugas->jadwal_sholat);
 
         // Delete (Soft Delete)
         $responseDelete = $this->actingAs($user)->delete("/admin/absensi-sholat/petugas/{$petugas->id}");

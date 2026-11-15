@@ -585,6 +585,7 @@
                                 <th class="px-4 py-3">Nama Petugas</th>
                                 <th class="px-4 py-3 text-center">Bagian</th>
                                 <th class="px-4 py-3 text-center">Status</th>
+                                <th class="px-4 py-3">Jadwal Sholat</th>
                                 <th class="px-4 py-3">Sumber Data</th>
                                 <th class="px-4 py-3">Keterangan</th>
                                 <th class="px-4 py-3 text-center w-24">Aksi</th>
@@ -605,13 +606,28 @@
                                             {{ ucfirst($p->status) }}
                                         </span>
                                     </td>
+                                    <td class="px-4 py-3">
+                                        @if (empty($p->jadwal_sholat) || count($p->jadwal_sholat) === 5)
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                                                Semua Sholat
+                                            </span>
+                                        @else
+                                            <div class="flex flex-wrap gap-1">
+                                                @foreach ($p->jadwal_sholat as $js)
+                                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-slate-100 text-slate-700">
+                                                        {{ $js }}
+                                                    </span>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </td>
                                     <td class="px-4 py-3 text-slate-500">
                                         {{ $p->pengurus_id ? 'Tersinkron Pengurus' : 'Input Manual' }}
                                     </td>
                                     <td class="px-4 py-3 text-slate-500 italic">{{ $p->keterangan ?: '-' }}</td>
                                     <td class="px-4 py-3 text-center">
                                         <div class="flex items-center justify-center gap-1.5">
-                                            <button type="button" @click="openEditPetugasModal({{ $p->id }}, '{{ addslashes($p->nama) }}', '{{ $p->bagian }}', '{{ $p->status }}', '{{ addslashes($p->keterangan ?? '') }}')" class="p-1 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-slate-100 transition" title="Edit Petugas">
+                                            <button type="button" @click="openEditPetugasModal({{ $p->id }}, '{{ addslashes($p->nama) }}', '{{ $p->bagian }}', '{{ $p->status }}', '{{ addslashes($p->keterangan ?? '') }}', {{ json_encode($p->jadwal_sholat ?? ['subuh','dzuhur','ashar','maghrib','isya']) }})" class="p-1 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-slate-100 transition" title="Edit Petugas">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                             </button>
 
@@ -627,7 +643,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-4 py-8 text-center text-slate-400 italic">
+                                    <td colspan="8" class="px-4 py-8 text-center text-slate-400 italic">
                                         Belum ada petugas korlap. Klik "Tambah Petugas Korlap" di atas.
                                     </td>
                                 </tr>
@@ -704,6 +720,28 @@
                         </select>
                     </div>
 
+                    <!-- Pilihan Jadwal Piket Sholat (Bisa Pilih Subuh - Isya) -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="block text-xs font-bold text-slate-700 uppercase">Jadwal Piket Sholat</label>
+                            <button type="button" @click="pilihSemuaSholatCreate()" class="text-[11px] font-bold text-emerald-700 hover:underline">
+                                Pilih Semua
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-5 gap-1.5 p-2 bg-slate-50 border border-slate-200 rounded-xl">
+                            @foreach (App\Models\AbsensiSholatJadwal::SHOLAT_LIST as $sholatKey => $sholatLabel)
+                                <label class="flex flex-col items-center justify-center p-2 rounded-lg border text-center cursor-pointer transition text-xs font-bold"
+                                       :class="createJadwals.includes('{{ $sholatKey }}') ? 'bg-emerald-100 border-emerald-500 text-emerald-900 shadow-2xs' : 'bg-white border-slate-200 text-slate-500'">
+                                    <input type="checkbox" name="jadwal_sholat[]" value="{{ $sholatKey }}" x-model="createJadwals" class="sr-only">
+                                    <span>{{ $sholatLabel }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                        <p class="text-[10px] text-slate-500 mt-1 italic">
+                            * Petugas hanya akan muncul di formulir presensi pada waktu sholat yang dipilih di atas.
+                        </p>
+                    </div>
+
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Keterangan / Catatan Tambahan</label>
                         <input type="text" name="keterangan" placeholder="Opsional (misal: Shift Pagi / Kamar B-04)" class="w-full text-xs rounded-xl border-slate-300 py-2 px-3">
@@ -754,6 +792,28 @@
                             <option value="aktif">Aktif</option>
                             <option value="nonaktif">Nonaktif</option>
                         </select>
+                    </div>
+
+                    <!-- Pilihan Jadwal Piket Sholat (Bisa Pilih Subuh - Isya) -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="block text-xs font-bold text-slate-700 uppercase">Jadwal Piket Sholat</label>
+                            <button type="button" @click="pilihSemuaSholatEdit()" class="text-[11px] font-bold text-emerald-700 hover:underline">
+                                Pilih Semua
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-5 gap-1.5 p-2 bg-slate-50 border border-slate-200 rounded-xl">
+                            @foreach (App\Models\AbsensiSholatJadwal::SHOLAT_LIST as $sholatKey => $sholatLabel)
+                                <label class="flex flex-col items-center justify-center p-2 rounded-lg border text-center cursor-pointer transition text-xs font-bold"
+                                       :class="editPetugasData.jadwal_sholat.includes('{{ $sholatKey }}') ? 'bg-emerald-100 border-emerald-500 text-emerald-900 shadow-2xs' : 'bg-white border-slate-200 text-slate-500'">
+                                    <input type="checkbox" name="jadwal_sholat[]" value="{{ $sholatKey }}" x-model="editPetugasData.jadwal_sholat" class="sr-only">
+                                    <span>{{ $sholatLabel }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                        <p class="text-[10px] text-slate-500 mt-1 italic">
+                            * Petugas hanya akan muncul di formulir presensi pada waktu sholat yang dipilih di atas.
+                        </p>
                     </div>
 
                     <div>
@@ -947,7 +1007,8 @@
             modalPetugasEdit: false,
             modalEditStatus: false,
             sumberNama: 'pengurus',
-            editPetugasData: { id: null, nama: '', bagian: 'anggota', status: 'aktif', keterangan: '' },
+            createJadwals: ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'],
+            editPetugasData: { id: null, nama: '', bagian: 'anggota', status: 'aktif', keterangan: '', jadwal_sholat: [] },
             editLogData: { id: null, status: 'hadir', kategori_waktu: 'tepat_waktu', keterangan: '' },
 
             copyLink(url) {
@@ -960,11 +1021,25 @@
             },
             openCreatePetugasModal() {
                 this.sumberNama = 'pengurus';
+                this.createJadwals = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'];
                 this.modalPetugasCreate = true;
             },
-            openEditPetugasModal(id, nama, bagian, status, keterangan) {
-                this.editPetugasData = { id, nama, bagian, status, keterangan };
+            pilihSemuaSholatCreate() {
+                this.createJadwals = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'];
+            },
+            openEditPetugasModal(id, nama, bagian, status, keterangan, jadwalSholat) {
+                this.editPetugasData = {
+                    id: id,
+                    nama: nama,
+                    bagian: bagian,
+                    status: status,
+                    keterangan: keterangan,
+                    jadwal_sholat: (Array.isArray(jadwalSholat) && jadwalSholat.length > 0) ? jadwalSholat : ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya']
+                };
                 this.modalPetugasEdit = true;
+            },
+            pilihSemuaSholatEdit() {
+                this.editPetugasData.jadwal_sholat = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'];
             },
             openEditStatusModal(id, status, kat, ket) {
                 this.editLogData = { id, status, kategori_waktu: kat || 'tepat_waktu', keterangan: ket };

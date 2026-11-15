@@ -16,8 +16,13 @@ class AbsensiPetugas extends Model
         'nama',
         'bagian',
         'status',
+        'jadwal_sholat',
         'pengurus_id',
         'keterangan',
+    ];
+
+    protected $casts = [
+        'jadwal_sholat' => 'array',
     ];
 
     /**
@@ -58,5 +63,37 @@ class AbsensiPetugas extends Model
     public function scopeAnggota($query)
     {
         return $query->where('bagian', 'anggota');
+    }
+
+    /**
+     * Scope petugas yang ditugaskan pada waktu sholat tertentu (atau bertugas di semua sholat jika null)
+     */
+    public function scopeUntukSholat($query, ?string $sholat)
+    {
+        if (!$sholat) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($sholat) {
+            $q->whereNull('jadwal_sholat')
+              ->orWhere('jadwal_sholat', '[]')
+              ->orWhereJsonContains('jadwal_sholat', $sholat);
+        });
+    }
+
+    /**
+     * Cek apakah petugas bertugas pada waktu sholat tertentu
+     */
+    public function isBertugasPadaSholat(?string $sholat): bool
+    {
+        if (!$sholat) {
+            return true;
+        }
+
+        if (empty($this->jadwal_sholat)) {
+            return true; // Default bertugas di semua waktu sholat
+        }
+
+        return in_array($sholat, (array)$this->jadwal_sholat, true);
     }
 }
