@@ -36,12 +36,23 @@ class AbsensiSholatTest extends TestCase
             'status' => 'aktif',
         ]);
 
-        $response = $this->get('/absensi-sholat');
+        // 1. Saat form sedang dibuka (misal dzuhur buka manual)
+        AbsensiSholatJadwal::where('nama_sholat', 'dzuhur')->update([
+            'is_buka_manual' => true,
+        ]);
 
-        $response->assertStatus(200);
-        $response->assertSee('Presensi Korlap Sholat Jamaah');
-        $response->assertSee('Ahmad Zaki');
-        $response->assertSee('Budi Santoso');
+        $responseOpen = $this->get('/absensi-sholat');
+        $responseOpen->assertStatus(200);
+        $responseOpen->assertSee('Presensi Korlap Sholat Jamaah');
+        $responseOpen->assertSee('Ahmad Zaki');
+        $responseOpen->assertSee('Budi Santoso');
+
+        // 2. Saat form sedang ditutup
+        AbsensiSholatJadwal::query()->update(['is_buka_manual' => false]);
+        $responseClosed = $this->get('/absensi-sholat');
+        $responseClosed->assertStatus(200);
+        $responseClosed->assertSee('Presensi Sedang Ditutup');
+        $responseClosed->assertSee('Hitungan Mundur Menuju Buka');
     }
 
     public function test_guest_is_redirected_when_accessing_admin_absensi_sholat(): void
