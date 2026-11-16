@@ -394,6 +394,43 @@ class AbsensiSholatTest extends TestCase
             'kategori_waktu' => 'tepat_waktu',
             'keterangan' => 'Koreksi sekretaris, hadir di shaf depan',
         ]);
+
+        // 2. Sekretaris dapat mengosongkan / menghapus keterangan
+        $responseClear = $this->actingAs($user)->put("/admin/absensi-sholat/log/{$log->id}", [
+            'status' => 'hadir',
+            'kategori_waktu' => 'tepat_waktu',
+            'keterangan' => '',
+        ]);
+        $responseClear->assertRedirect();
+        $this->assertDatabaseHas('absensi_sholats', [
+            'id' => $log->id,
+            'status' => 'hadir',
+            'keterangan' => null,
+        ]);
+
+        // 3. Jika status diubah ke hadir tapi keterangan masih tersisa teks bawaan otomatis alfa, sistem membersihkannya
+        $logAlfa = AbsensiSholat::create([
+            'tanggal' => Carbon::today()->toDateString(),
+            'waktu_sholat' => 'isya',
+            'petugas_id' => $petugas->id,
+            'jam_absen' => '20:00:00',
+            'status' => 'alfa',
+            'kategori_waktu' => null,
+            'keterangan' => 'Otomatis Alfa (Tidak mengisi presensi hingga batas waktu tutup)',
+            'ip_address' => '127.0.0.1',
+        ]);
+
+        $responseUbahHadir = $this->actingAs($user)->put("/admin/absensi-sholat/log/{$logAlfa->id}", [
+            'status' => 'hadir',
+            'kategori_waktu' => 'tepat_waktu',
+            'keterangan' => 'Otomatis Alfa (Tidak mengisi presensi hingga batas waktu tutup)',
+        ]);
+        $responseUbahHadir->assertRedirect();
+        $this->assertDatabaseHas('absensi_sholats', [
+            'id' => $logAlfa->id,
+            'status' => 'hadir',
+            'keterangan' => null,
+        ]);
     }
 
     public function test_secretary_can_print_rekap_pdf(): void

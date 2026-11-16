@@ -316,7 +316,7 @@
                                     <td class="px-4 py-3 text-slate-600">{{ $item->koordinator->nama ?? '-' }}</td>
                                     <td class="px-4 py-3 text-slate-500 italic">{{ $item->keterangan ?: '-' }}</td>
                                     <td class="px-4 py-3 text-center">
-                                        <button type="button" @click="openEditStatusModal({{ $item->id }}, '{{ $item->status }}', '{{ $item->kategori_waktu }}', '{{ addslashes($item->keterangan ?? '') }}')" class="p-1 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-slate-100 transition" title="Koreksi Status">
+                                        <button type="button" @click="openEditStatusModal({{ $item->id }}, {{ \Illuminate\Support\Js::from($item->petugas->nama ?? 'Petugas') }}, {{ \Illuminate\Support\Js::from(ucfirst($item->waktu_sholat)) }}, {{ \Illuminate\Support\Js::from($item->status) }}, {{ \Illuminate\Support\Js::from($item->kategori_waktu) }}, {{ \Illuminate\Support\Js::from($item->keterangan ?? '') }})" class="p-1 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-slate-100 transition" title="Koreksi Status & Keterangan">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                         </button>
                                     </td>
@@ -482,7 +482,7 @@
                                     <td class="px-4 py-3 text-slate-600">{{ $log->koordinator->nama ?? '-' }}</td>
                                     <td class="px-4 py-3 text-slate-500 italic">{{ $log->keterangan ?: '-' }}</td>
                                     <td class="px-4 py-3 text-center">
-                                        <button type="button" @click="openEditStatusModal({{ $log->id }}, '{{ $log->status }}', '{{ $log->kategori_waktu }}', '{{ addslashes($log->keterangan ?? '') }}')" class="p-1 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-slate-100 transition" title="Koreksi Status">
+                                        <button type="button" @click="openEditStatusModal({{ $log->id }}, {{ \Illuminate\Support\Js::from($log->petugas->nama ?? 'Petugas') }}, {{ \Illuminate\Support\Js::from(ucfirst($log->waktu_sholat)) }}, {{ \Illuminate\Support\Js::from($log->status) }}, {{ \Illuminate\Support\Js::from($log->kategori_waktu) }}, {{ \Illuminate\Support\Js::from($log->keterangan ?? '') }})" class="p-1 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-slate-100 transition" title="Koreksi Status & Keterangan">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                         </button>
                                     </td>
@@ -735,7 +735,7 @@
                                     <td class="px-4 py-3 text-slate-500 italic">{{ $p->keterangan ?: '-' }}</td>
                                     <td class="px-4 py-3 text-center">
                                         <div class="flex items-center justify-center gap-1.5">
-                                            <button type="button" @click="openEditPetugasModal({{ $p->id }}, '{{ addslashes($p->nama) }}', '{{ $p->bagian }}', '{{ $p->status }}', '{{ addslashes($p->keterangan ?? '') }}', {{ json_encode($p->jadwal_sholat ?? ['subuh','dzuhur','ashar','maghrib','isya']) }})" class="p-1 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-slate-100 transition" title="Edit Petugas">
+                                            <button type="button" @click="openEditPetugasModal({{ $p->id }}, {{ \Illuminate\Support\Js::from($p->nama) }}, {{ \Illuminate\Support\Js::from($p->bagian) }}, {{ \Illuminate\Support\Js::from($p->status) }}, {{ \Illuminate\Support\Js::from($p->keterangan ?? '') }}, {{ \Illuminate\Support\Js::from($p->jadwal_sholat ?? ['subuh','dzuhur','ashar','maghrib','isya']) }})" class="p-1 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-slate-100 transition" title="Edit Petugas">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                             </button>
 
@@ -1042,7 +1042,14 @@
 
             <div class="inline-block w-full max-w-sm p-5 my-8 text-left bg-white rounded-2xl shadow-xl transform transition-all relative z-10 space-y-3.5">
                 <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
-                    <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide">Koreksi Status Presensi</h3>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide">Koreksi Presensi & Keterangan</h3>
+                        <p class="text-xs text-slate-500 font-medium mt-0.5" x-show="editLogData.nama">
+                            <span class="font-bold text-slate-700" x-text="editLogData.nama"></span>
+                            <span class="text-slate-400">&bull;</span>
+                            <span class="text-emerald-700 font-semibold" x-text="'Sholat ' + editLogData.sholat"></span>
+                        </p>
+                    </div>
                     <button type="button" @click="modalEditStatus = false" class="text-slate-400 hover:text-slate-600">✕</button>
                 </div>
 
@@ -1069,13 +1076,28 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Keterangan / Alasan</label>
-                        <input type="text" name="keterangan" x-model="editLogData.keterangan" class="w-full text-xs rounded-xl border-slate-300 py-2 px-3">
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-xs font-bold text-slate-700 uppercase">Keterangan / Alasan</label>
+                            <button type="button"
+                                    x-show="editLogData.keterangan && editLogData.keterangan.trim() !== ''"
+                                    @click="editLogData.keterangan = ''"
+                                    class="text-[10px] font-bold text-rose-600 hover:underline">
+                                Hapus Keterangan
+                            </button>
+                        </div>
+                        <input type="text"
+                               name="keterangan"
+                               x-model="editLogData.keterangan"
+                               placeholder="Tulis keterangan atau kosongkan jika tidak ada"
+                               class="w-full text-xs rounded-xl border-slate-300 py-2 px-3 focus:ring-emerald-500 focus:border-emerald-500">
+                        <p class="text-[10px] text-slate-400 mt-1 italic">
+                            * Kosongkan kolom ini jika ingin menghapus keterangan lama.
+                        </p>
                     </div>
 
                     <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
                         <button type="button" @click="modalEditStatus = false" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">Batal</button>
-                        <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs transition">Simpan Koreksi</button>
+                        <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs transition">Simpan Perubahan</button>
                     </div>
                 </form>
             </div>
@@ -1307,7 +1329,7 @@
             sumberNama: 'pengurus',
             createJadwals: ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'],
             editPetugasData: { id: null, nama: '', bagian: 'anggota', status: 'aktif', keterangan: '', jadwal_sholat: [] },
-            editLogData: { id: null, status: 'hadir', kategori_waktu: 'tepat_waktu', keterangan: '' },
+            editLogData: { id: null, nama: '', sholat: '', status: 'hadir', kategori_waktu: 'tepat_waktu', keterangan: '' },
 
             // Searchable Pengurus Combobox State
             searchPengurus: '',
@@ -1401,8 +1423,15 @@
             pilihSemuaSholatEdit() {
                 this.editPetugasData.jadwal_sholat = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'];
             },
-            openEditStatusModal(id, status, kat, ket) {
-                this.editLogData = { id, status, kategori_waktu: kat || 'tepat_waktu', keterangan: ket };
+            openEditStatusModal(id, nama, sholat, status, kat, ket) {
+                this.editLogData = {
+                    id: id,
+                    nama: nama || '',
+                    sholat: sholat || '',
+                    status: status || 'hadir',
+                    kategori_waktu: kat || 'tepat_waktu',
+                    keterangan: ket || ''
+                };
                 this.modalEditStatus = true;
             }
         }

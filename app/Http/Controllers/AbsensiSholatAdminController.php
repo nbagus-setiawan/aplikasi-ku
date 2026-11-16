@@ -319,15 +319,24 @@ class AbsensiSholatAdminController extends Controller
             'keterangan' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $katWaktu = ($validated['status'] === 'hadir') ? ($validated['kategori_waktu'] ?? 'tepat_waktu') : null;
+        $status = $validated['status'];
+        $katWaktu = ($status === 'hadir') ? ($validated['kategori_waktu'] ?? 'tepat_waktu') : null;
+
+        // Ambil keterangan baru yang diinput (bisa berupa teks baru atau null jika dikosongkan)
+        $keterangan = $request->filled('keterangan') ? trim((string)$request->input('keterangan')) : null;
+
+        // Jika status diubah menjadi hadir dan keterangan belum diubah atau masih berupa teks bawaan alfa otomatis, bersihkan keterangan
+        if ($status === 'hadir' && $keterangan && (stripos($keterangan, 'Otomatis Alfa') !== false || stripos($keterangan, 'Tidak mengisi presensi') !== false)) {
+            $keterangan = null;
+        }
 
         $absensi->update([
-            'status' => $validated['status'],
+            'status' => $status,
             'kategori_waktu' => $katWaktu,
-            'keterangan' => $validated['keterangan'] ?? $absensi->keterangan,
+            'keterangan' => $keterangan,
         ]);
 
-        return redirect()->back()->with('success', "Status presensi {$absensi->petugas->nama} berhasil diperbarui.");
+        return redirect()->back()->with('success', "Status dan keterangan presensi {$absensi->petugas->nama} berhasil diperbarui.");
     }
 
     /**
