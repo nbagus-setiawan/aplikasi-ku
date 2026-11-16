@@ -39,31 +39,6 @@
             border: 1px solid rgba(255, 255, 255, 0.25) !important;
             backdrop-filter: blur(4px);
         }
-        .btn-status-hadir {
-            background-color: #059669 !important;
-            border-color: #059669 !important;
-            color: #ffffff !important;
-        }
-        .btn-status-sakit {
-            background-color: #d97706 !important;
-            border-color: #d97706 !important;
-            color: #ffffff !important;
-        }
-        .btn-status-izin {
-            background-color: #0284c7 !important;
-            border-color: #0284c7 !important;
-            color: #ffffff !important;
-        }
-        .btn-status-alfa {
-            background-color: #e11d48 !important;
-            border-color: #e11d48 !important;
-            color: #ffffff !important;
-        }
-        .btn-status-idle {
-            background-color: #f8fafc !important;
-            border-color: #e2e8f0 !important;
-            color: #334155 !important;
-        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-900 font-sans antialiased min-h-screen pb-28">
@@ -91,7 +66,7 @@
     </header>
 
     <!-- KONTEN UTAMA -->
-    <main class="max-w-2xl mx-auto px-3.5 sm:px-4 py-4 space-y-4" x-data="absensiPublikApp()">
+    <main class="max-w-2xl mx-auto px-3.5 sm:px-4 py-4 space-y-4" x-data="absensiPublikApp()" @recount-needed="recount()">
 
         <!-- NOTIFIKASI FLASH SUKSES / ERROR -->
         @if (session('success'))
@@ -382,7 +357,7 @@
                         </div>
                     </div>
 
-                    <!-- 3. LIST KARTU PETUGAS (DI MOBILE: TOMBOL DI BAWAH NAMA, KOORDINATOR PALING ATAS) -->
+                    <!-- 3. LIST KARTU PETUGAS (DI MOBILE: TOMBOL DI BAWAH NAMA BERDERET KESAMPING) -->
                     <div class="space-y-2.5">
                         @foreach ($anggotas as $idx => $p)
                             @php
@@ -391,12 +366,21 @@
                                 $ketAwal = $presensiLama ? $presensiLama->keterangan : '';
                                 $isKoordinator = ($p->bagian === 'koordinator');
                             @endphp
-                            <div class="p-3.5 sm:p-4 rounded-2xl bg-white border shadow-xs space-y-2.5 transition"
+                            <div class="p-3 sm:p-3.5 rounded-2xl bg-white border shadow-xs space-y-2 transition"
                                  x-data="{
                                      status: '{{ old("presensi.{$p->id}.status", $statusAwal) }}',
                                      nama: '{{ addslashes($p->nama) }}',
-                                     bagian: '{{ $p->bagian }}'
+                                     bagian: '{{ $p->bagian }}',
+                                     setStatus(val) {
+                                         this.status = val;
+                                         const r = document.getElementById('radio_{{ $p->id }}_' + val);
+                                         if (r) {
+                                             r.checked = true;
+                                         }
+                                         this.$dispatch('recount-needed');
+                                     }
                                  }"
+                                 @reset-all-hadir.window="status = 'hadir'"
                                  x-show="
                                      (!search || nama.toLowerCase().includes(search.toLowerCase())) &&
                                      (filterStatus === 'semua' ||
@@ -410,11 +394,11 @@
                                      'border-slate-200/90': status === 'hadir'
                                  }">
 
-                                <!-- BARIS ATAS: NAMA PETUGAS & BADGE -->
+                                <!-- BARIS ATAS: NAMA PETUGAS & BADGE STATUS -->
                                 <div class="flex items-center justify-between gap-2">
-                                    <div class="flex items-center gap-2.5 min-w-0">
+                                    <div class="flex items-center gap-2 min-w-0">
                                         <!-- Avatar Inisial -->
-                                        <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 text-white shadow-xs {{ $isKoordinator ? 'bg-purple-700' : 'bg-emerald-700' }}"
+                                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-[11px] sm:text-xs shrink-0 text-white shadow-2xs"
                                              style="{{ $isKoordinator ? 'background-color: #7e22ce;' : 'background-color: #047857;' }}">
                                             <span>{{ strtoupper(substr($p->nama, 0, 2)) }}</span>
                                         </div>
@@ -422,66 +406,100 @@
                                         <div class="min-w-0">
                                             <div class="flex items-center gap-1.5 flex-wrap">
                                                 <span class="text-xs font-mono text-slate-400 font-bold">{{ $idx + 1 }}.</span>
-                                                <span class="text-sm font-bold text-slate-900 truncate">{{ $p->nama }}</span>
+                                                <span class="text-xs sm:text-sm font-bold text-slate-900 truncate">{{ $p->nama }}</span>
                                                 @if ($isKoordinator)
-                                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-800 border border-purple-200 shadow-2xs">
-                                                        Koordinator
-                                                    </span>
+                                                    <span class="px-1.5 py-0.2 rounded-md text-[9px] font-black uppercase tracking-wider bg-purple-100 text-purple-800 border border-purple-200">
+                            Koordinator
+                        </span>
                                                 @endif
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Status Text Indikator -->
-                                    <span class="text-[11px] font-bold shrink-0 uppercase tracking-wider font-mono"
+                                    <!-- Status Indikator Text -->
+                                    <span class="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider font-mono px-2 py-0.5 rounded-md"
                                           :class="{
-                                              'text-emerald-700': status === 'hadir',
-                                              'text-amber-600': status === 'sakit',
-                                              'text-sky-600': status === 'izin',
-                                              'text-rose-600': status === 'alfa'
+                                              'bg-emerald-100 text-emerald-800': status === 'hadir',
+                                              'bg-amber-100 text-amber-800': status === 'sakit',
+                                              'bg-sky-100 text-sky-800': status === 'izin',
+                                              'bg-rose-100 text-rose-800': status === 'alfa'
                                           }"
                                           x-text="status.toUpperCase()">
                                     </span>
                                 </div>
 
-                                <!-- BARIS BAWAH: 4 TOMBOL STATUS BESAR & ERGONOMIS DI BAWAH NAMA -->
-                                <div class="grid grid-cols-4 gap-1.5 sm:gap-2 pt-1">
+                                <!-- BARIS BAWAH: 4 PILIHAN STATUS BERDERET KESAMPING (SEGMENTED CONTROL DI BAWAH NAMA) -->
+                                <div class="flex items-center rounded-xl p-1 bg-slate-100 border border-slate-200 select-none w-full">
                                     <!-- HADIR -->
-                                    <label class="cursor-pointer flex items-center justify-center py-2.5 px-2 rounded-xl text-xs font-bold transition select-none text-center min-h-[42px] border"
-                                           :class="status === 'hadir' ? 'btn-status-hadir shadow-xs' : 'btn-status-idle hover:bg-slate-100'">
-                                        <input type="radio" name="presensi[{{ $p->id }}][status]" value="hadir" x-model="status" @change="recount()" class="sr-only">
-                                        <span>Hadir</span>
-                                    </label>
+                                    <button type="button"
+                                            @click="setStatus('hadir')"
+                                            class="flex-1 py-1.5 sm:py-2 px-1 rounded-lg text-xs font-bold transition text-center select-none"
+                                            :class="status === 'hadir' ? 'bg-emerald-600 text-white shadow-xs font-black' : 'text-slate-600 hover:text-slate-900'">
+                                        Hadir
+                                    </button>
+                                    <input type="radio"
+                                           name="presensi[{{ $p->id }}][status]"
+                                           value="hadir"
+                                           id="radio_{{ $p->id }}_hadir"
+                                           {{ old("presensi.{$p->id}.status", $statusAwal) === 'hadir' ? 'checked' : '' }}
+                                           class="sr-only presensi-radio">
 
                                     <!-- SAKIT -->
-                                    <label class="cursor-pointer flex items-center justify-center py-2.5 px-2 rounded-xl text-xs font-bold transition select-none text-center min-h-[42px] border"
-                                           :class="status === 'sakit' ? 'btn-status-sakit shadow-xs' : 'btn-status-idle hover:bg-slate-100'">
-                                        <input type="radio" name="presensi[{{ $p->id }}][status]" value="sakit" x-model="status" @change="recount()" class="sr-only">
-                                        <span>Sakit</span>
-                                    </label>
+                                    <button type="button"
+                                            @click="setStatus('sakit')"
+                                            class="flex-1 py-1.5 sm:py-2 px-1 rounded-lg text-xs font-bold transition text-center select-none"
+                                            :class="status === 'sakit' ? 'bg-amber-500 text-white shadow-xs font-black' : 'text-slate-600 hover:text-slate-900'">
+                                        Sakit
+                                    </button>
+                                    <input type="radio"
+                                           name="presensi[{{ $p->id }}][status]"
+                                           value="sakit"
+                                           id="radio_{{ $p->id }}_sakit"
+                                           {{ old("presensi.{$p->id}.status", $statusAwal) === 'sakit' ? 'checked' : '' }}
+                                           class="sr-only presensi-radio">
 
                                     <!-- IZIN -->
-                                    <label class="cursor-pointer flex items-center justify-center py-2.5 px-2 rounded-xl text-xs font-bold transition select-none text-center min-h-[42px] border"
-                                           :class="status === 'izin' ? 'btn-status-izin shadow-xs' : 'btn-status-idle hover:bg-slate-100'">
-                                        <input type="radio" name="presensi[{{ $p->id }}][status]" value="izin" x-model="status" @change="recount()" class="sr-only">
-                                        <span>Izin</span>
-                                    </label>
+                                    <button type="button"
+                                            @click="setStatus('izin')"
+                                            class="flex-1 py-1.5 sm:py-2 px-1 rounded-lg text-xs font-bold transition text-center select-none"
+                                            :class="status === 'izin' ? 'bg-sky-600 text-white shadow-xs font-black' : 'text-slate-600 hover:text-slate-900'">
+                                        Izin
+                                    </button>
+                                    <input type="radio"
+                                           name="presensi[{{ $p->id }}][status]"
+                                           value="izin"
+                                           id="radio_{{ $p->id }}_izin"
+                                           {{ old("presensi.{$p->id}.status", $statusAwal) === 'izin' ? 'checked' : '' }}
+                                           class="sr-only presensi-radio">
 
                                     <!-- ALFA -->
-                                    <label class="cursor-pointer flex items-center justify-center py-2.5 px-2 rounded-xl text-xs font-bold transition select-none text-center min-h-[42px] border"
-                                           :class="status === 'alfa' ? 'btn-status-alfa shadow-xs' : 'btn-status-idle hover:bg-slate-100'">
-                                        <input type="radio" name="presensi[{{ $p->id }}][status]" value="alfa" x-model="status" @change="recount()" class="sr-only">
-                                        <span>Alfa</span>
-                                    </label>
+                                    <button type="button"
+                                            @click="setStatus('alfa')"
+                                            class="flex-1 py-1.5 sm:py-2 px-1 rounded-lg text-xs font-bold transition text-center select-none"
+                                            :class="status === 'alfa' ? 'bg-rose-600 text-white shadow-xs font-black' : 'text-slate-600 hover:text-slate-900'">
+                                        Alfa
+                                    </button>
+                                    <input type="radio"
+                                           name="presensi[{{ $p->id }}][status]"
+                                           value="alfa"
+                                           id="radio_{{ $p->id }}_alfa"
+                                           {{ old("presensi.{$p->id}.status", $statusAwal) === 'alfa' ? 'checked' : '' }}
+                                           class="sr-only presensi-radio">
                                 </div>
 
-                                <!-- KOLOM KETERANGAN JIKA SAKIT ATAU IZIN -->
-                                <div x-show="status === 'sakit' || status === 'izin'" x-transition class="pt-1">
-                                    <input type="text"
-                                           name="presensi[{{ $p->id }}][keterangan]"
-                                           value="{{ old("presensi.{$p->id}.keterangan", $ketAwal) }}"
-                                           placeholder="Tulis alasan izin / sakit..."
-                                           class="w-full text-xs sm:text-sm rounded-xl border-amber-300 py-2 px-3 bg-amber-50/50 focus:bg-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+                                <!-- KOLOM KETERANGAN JIKA SAKIT ATAU IZIN (MUNCUL OTOMATIS) -->
+                                <div x-show="status === 'sakit' || status === 'izin'" x-cloak class="pt-1">
+                                    <div class="flex items-center gap-2 p-2 rounded-xl bg-amber-50/90 border border-amber-300">
+                                        <span class="text-xs font-bold text-amber-900 shrink-0 flex items-center gap-1">
+                                            <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                            <span x-text="status === 'sakit' ? 'Alasan Sakit:' : 'Keperluan Izin:'"></span>
+                                        </span>
+                                        <input type="text"
+                                               name="presensi[{{ $p->id }}][keterangan]"
+                                               value="{{ old("presensi.{$p->id}.keterangan", $ketAwal) }}"
+                                               :placeholder="status === 'sakit' ? 'Tulis sakit apa / dirawat di mana...' : 'Tulis keperluan izin / alasan pulang...'"
+                                               class="w-full text-xs rounded-lg border-amber-300 py-1.5 px-2.5 bg-white text-slate-800 placeholder-slate-400 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 shadow-2xs">
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
@@ -577,7 +595,7 @@
 
                 recount() {
                     let h = 0, s = 0, i = 0, a = 0;
-                    document.querySelectorAll('input[type="radio"]:checked').forEach(el => {
+                    document.querySelectorAll('.presensi-radio:checked').forEach(el => {
                         if (el.value === 'hadir') h++;
                         else if (el.value === 'sakit') s++;
                         else if (el.value === 'izin') i++;
@@ -590,10 +608,10 @@
                 },
 
                 resetSemuaHadir() {
-                    document.querySelectorAll('input[type="radio"][value="hadir"]').forEach(el => {
+                    document.querySelectorAll('.presensi-radio[value="hadir"]').forEach(el => {
                         el.checked = true;
-                        el.dispatchEvent(new Event('change'));
                     });
+                    window.dispatchEvent(new CustomEvent('reset-all-hadir'));
                     this.recount();
                 },
 
