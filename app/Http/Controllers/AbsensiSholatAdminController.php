@@ -359,7 +359,7 @@ class AbsensiSholatAdminController extends Controller
 
             if (class_exists(\DOMImplementation::class)) {
                 $pdf = Pdf::loadView('absensi_sholat.rekap_pdf', $viewData)
-                    ->setPaper('a4', 'portrait')
+                    ->setPaper('a4', 'landscape')
                     ->setOptions([
                         'isHtml5ParserEnabled' => true,
                         'isRemoteEnabled' => true,
@@ -458,7 +458,7 @@ class AbsensiSholatAdminController extends Controller
 
             if (class_exists(\DOMImplementation::class)) {
                 $pdf = Pdf::loadView('absensi_sholat.harian_pdf', $viewData)
-                    ->setPaper('a4', 'portrait')
+                    ->setPaper('a4', 'landscape')
                     ->setOptions([
                         'isHtml5ParserEnabled' => true,
                         'isRemoteEnabled' => true,

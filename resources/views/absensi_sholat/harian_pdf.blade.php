@@ -2,15 +2,15 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Presensi Sholat Korlap - {{ $labelTanggal }}</title>
+    <title>&#8203;</title>
     <style>
         @page {
-            margin: 1.2cm 1cm 1cm 1cm;
-            size: A4 portrait;
+            margin: 0.8cm 1cm 0.8cm 1cm;
+            size: A4 landscape;
         }
         body {
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 9pt;
+            font-size: 8.5pt;
             color: #1a1a1a;
             line-height: 1.3;
         }
@@ -141,7 +141,9 @@
             <button onclick="window.close()" style="background: #64748b; color: white; border: none; padding: 8px 14px; border-radius: 6px; margin-left: 8px; cursor: pointer; color: white; font-size: 13px;">
                 Tutup
             </button>
-            <p style="font-size: 11px; color: #64748b; margin: 6px 0 0;">Tips: Pilih "Save as PDF" / "Simpan sebagai PDF" pada dialog cetak browser Anda.</p>
+            <p style="font-size: 11px; color: #475569; margin: 6px 0 0;">
+                💡 <strong>Tips Agar Bersih dari Tanggal/Tautan:</strong> Pada dialog cetak browser, buka <em>More settings / Setelan lainnya</em> lalu <strong>hilangkan centang "Headers and footers / Header dan footer"</strong> agar tanggal dan judul tidak muncul di atas dokumen.
+            </p>
         </div>
     @endif
 
