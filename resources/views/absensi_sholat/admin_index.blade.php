@@ -212,7 +212,8 @@
                 @foreach ($ringkasanPerSholat as $key => $r)
                     @php
                         $jdw = $jadwals->get($key);
-                        $persenHadir = ($totalPetugas > 0 && $r['total'] > 0) ? round(($r['hadir_tepat'] + $r['hadir_telat']) / $totalPetugas * 100) : 0;
+                        $totalHadir = $r['hadir_tepat'] + $r['hadir_telat'];
+                        $persenHadir = ($r['total'] > 0) ? round(($totalHadir / $r['total']) * 100) : 0;
                     @endphp
                     <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex flex-col justify-between space-y-3">
                         <div class="flex items-center justify-between border-b border-slate-100 pb-2">
@@ -244,7 +245,12 @@
                         <div class="pt-2 border-t border-slate-100">
                             <div class="flex items-center justify-between text-[11px] mb-1">
                                 <span class="text-slate-500">Tingkat Hadir:</span>
-                                <span class="font-bold font-mono text-slate-800">{{ $persenHadir }}%</span>
+                                <span class="font-bold font-mono text-slate-800">
+                                    {{ $persenHadir }}%
+                                    @if ($r['total'] > 0)
+                                        <span class="text-[10px] font-normal text-slate-400">({{ $totalHadir }}/{{ $r['total'] }})</span>
+                                    @endif
+                                </span>
                             </div>
                             <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
                                 <div class="h-full bg-emerald-600 rounded-full transition-all" style="width: {{ $persenHadir }}%"></div>
