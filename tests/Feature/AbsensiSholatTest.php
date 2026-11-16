@@ -612,9 +612,9 @@ class AbsensiSholatTest extends TestCase
 
         // Memastikan teks pesan WhatsApp mengandung elemen-elemen penting
         $response->assertSee('LAPORAN PRESENSI SHOLAT JAMAAH');
-        $response->assertSee('RINGKASAN 5 WAKTU SHOLAT:');
-        $response->assertSee('SUBUH');
-        $response->assertSee('DZUHUR');
+        $response->assertSee('REKAP KEHADIRAN 5 WAKTU:');
+        $response->assertSee('Subuh');
+        $response->assertSee('Belum dimulai');
         $response->assertSee('M. Zainal', false);
         $response->assertSee('Izin (Sakit perut)', false);
         $response->assertSee('Bagikan Ringkasan ke WhatsApp');

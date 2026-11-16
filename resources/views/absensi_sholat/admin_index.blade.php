@@ -8,41 +8,66 @@
     $tglFormatWa = $tglCarbon->translatedFormat('l, d F Y');
     $tidakHadirList = $presensiHariIni->filter(fn($p) => in_array($p->status, ['sakit', 'izin', 'alfa']));
 
-    $pesanWaText = "*━━━━━━━━━━━━━━━━━━━━━*\n"
-        . "🕌 *LAPORAN PRESENSI SHOLAT JAMAAH*\n"
+    $pesanWaText = "🕌 *LAPORAN PRESENSI SHOLAT JAMAAH*\n"
         . "*PONDOK PESANTREN AL-FALAH PUTRA*\n"
-        . "*━━━━━━━━━━━━━━━━━━━━━*\n"
-        . "📅 *Hari / Tanggal :* " . $tglFormatWa . "\n"
-        . "👥 *Total Petugas   :* " . $totalPetugas . " Orang\n\n"
-        . "📊 *RINGKASAN 5 WAKTU SHOLAT:*\n"
-        . "─────────────────────\n";
+        . "══════════════════════════\n"
+        . "📅 *Hari, Tanggal :* " . $tglFormatWa . "\n"
+        . "👥 *Total Petugas :* " . $totalPetugas . " Orang\n\n"
+        . "📊 *REKAP KEHADIRAN 5 WAKTU:*\n";
 
     foreach ($ringkasanPerSholat as $key => $r) {
+        $namaSholat = $r['nama'];
         $totalHadir = (int)($r['hadir_tepat'] + $r['hadir_telat']);
-        $pesanWaText .= "▫️ *" . strtoupper($r['nama']) . "*\n"
-            . "   • Hadir : " . $totalHadir . " (Tepat: " . $r['hadir_tepat'] . ", Telat: " . $r['hadir_telat'] . ")\n"
-            . "   • Sakit/Izin : " . ($r['sakit'] + $r['izin']) . " | Alfa : " . $r['alfa'] . "\n\n";
+        $totalRecord = (int)($r['total'] ?? 0);
+
+        if ($totalRecord === 0) {
+            $pesanWaText .= "• *" . $namaSholat . "* : ⏳ _Belum dimulai_\n";
+        } else {
+            $detailList = [];
+            $detailList[] = $totalHadir . " Hadir" . ($r['hadir_telat'] > 0 ? " (Tepat: " . $r['hadir_tepat'] . ", Telat: " . $r['hadir_telat'] . ")" : "");
+
+            $absenList = [];
+            if ($r['sakit'] > 0) $absenList[] = $r['sakit'] . " Sakit";
+            if ($r['izin'] > 0) $absenList[] = $r['izin'] . " Izin";
+            if ($r['alfa'] > 0) $absenList[] = $r['alfa'] . " Alfa";
+
+            if (!empty($absenList)) {
+                $detailList[] = implode(', ', $absenList);
+            }
+
+            $pesanWaText .= "• *" . $namaSholat . "* : " . implode(' | ', $detailList) . "\n";
+        }
     }
 
-    $pesanWaText .= "─────────────────────\n"
+    $pesanWaText .= "\n──────────────────────────\n"
         . "⚠️ *CATATAN PETUGAS TIDAK HADIR:*\n";
 
     if ($tidakHadirList->isEmpty()) {
-        $pesanWaText .= "✅ Alhamdulillah seluruh petugas yang terjadwal hadir.\n";
+        $pesanWaText .= "✅ _Alhamdulillah seluruh petugas terjadwal hadir._\n";
     } else {
         foreach ($tidakHadirList as $th) {
             $namaPt = $th->petugas->nama ?? 'Petugas';
             $sholatPt = ucfirst($th->waktu_sholat);
             $statusPt = ucfirst($th->status);
-            $ketPt = $th->keterangan ? " (" . $th->keterangan . ")" : "";
-            $pesanWaText .= "• " . $namaPt . " [" . $sholatPt . "] -> " . $statusPt . $ketPt . "\n";
+
+            // Rapikan keterangan panjang otomatis alfa
+            $ket = trim((string)($th->keterangan ?? ''));
+            if (stripos($ket, 'Otomatis Alfa') !== false || stripos($ket, 'Tidak mengisi presensi') !== false) {
+                $ketTampil = " (Tidak absen)";
+            } elseif ($ket !== '') {
+                $ketTampil = " (" . $ket . ")";
+            } else {
+                $ketTampil = "";
+            }
+
+            $pesanWaText .= "• *" . $namaPt . "* [" . $sholatPt . "] ➔ " . $statusPt . $ketTampil . "\n";
         }
     }
 
-    $pesanWaText .= "\n🌐 *Formulir Presensi :*\n"
+    $pesanWaText .= "\n🔗 *Tautan Presensi Online:*\n"
         . route('absensi-sholat.index') . "\n"
-        . "*━━━━━━━━━━━━━━━━━━━━━*\n"
-        . "_Dicatat otomatis oleh Sistem Administrasi Pondok (SAP)_";
+        . "══════════════════════════\n"
+        . "_Sistem Administrasi Pondok (SAP) Al-Falah Putra_";
 @endphp
 <div class="space-y-6" x-data="absensiAdminApp()">
 
