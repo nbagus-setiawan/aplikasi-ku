@@ -8,9 +8,12 @@
     $tglFormatWa = $tglCarbon->translatedFormat('l, d F Y');
     $tidakHadirList = $presensiHariIni->filter(fn($p) => in_array($p->status, ['sakit', 'izin', 'alfa']));
 
+    // Garis pembatas solid penuh & pas selebar judul di WhatsApp (32 karakter)
+    $garisWa = str_repeat('━', 32);
+
     $pesanWaText = "🕌 *LAPORAN PRESENSI SHOLAT JAMAAH*\n"
         . "*PONDOK PESANTREN AL-FALAH PUTRA*\n"
-        . "══════════════════════════\n"
+        . $garisWa . "\n"
         . "📅 *Hari, Tanggal :* " . $tglFormatWa . "\n"
         . "👥 *Total Petugas :* " . $totalPetugas . " Orang\n\n"
         . "📊 *REKAP KEHADIRAN 5 WAKTU:*\n";
@@ -39,7 +42,7 @@
         }
     }
 
-    $pesanWaText .= "\n──────────────────────────\n"
+    $pesanWaText .= "\n" . $garisWa . "\n"
         . "⚠️ *CATATAN PETUGAS TIDAK HADIR:*\n";
 
     if ($tidakHadirList->isEmpty()) {
@@ -66,7 +69,7 @@
 
     $pesanWaText .= "\n🔗 *Tautan Presensi Online:*\n"
         . route('absensi-sholat.index') . "\n"
-        . "══════════════════════════\n"
+        . $garisWa . "\n"
         . "_Sistem Administrasi Pondok (SAP) Al-Falah Putra_";
 @endphp
 <div class="space-y-6" x-data="absensiAdminApp()">
