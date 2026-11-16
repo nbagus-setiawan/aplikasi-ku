@@ -306,55 +306,19 @@
                         </p>
                     </div>
 
-                    <!-- 2. TOOLBAR PENCARIAN & FILTER PETUGAS JADWAL INI -->
-                    <div class="space-y-2">
-                        <div class="flex items-center justify-between gap-2 px-1">
-                            <div>
-                                <h2 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wide">
-                                    2. Daftar Petugas Sholat {{ ucfirst($namaSholat) }} ({{ $anggotas->count() }} Orang)
-                                </h2>
-                                <p class="text-[11px] text-slate-500">
-                                    Hanya menampilkan petugas yang bertugas pada sholat ini. Koordinator di urutan paling atas.
-                                </p>
-                            </div>
-                            <button type="button" @click="resetSemuaHadir()" class="text-xs font-bold text-emerald-700 hover:text-emerald-800 hover:underline shrink-0 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
-                                Set Semua Hadir
-                            </button>
+                    <!-- 2. DAFTAR PETUGAS JADWAL INI -->
+                    <div class="flex items-center justify-between gap-2 px-1">
+                        <div>
+                            <h2 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wide">
+                                2. Daftar Petugas Sholat {{ ucfirst($namaSholat) }} ({{ $anggotas->count() }} Orang)
+                            </h2>
+                            <p class="text-[11px] text-slate-500">
+                                Hanya menampilkan petugas yang bertugas pada sholat ini. Koordinator di urutan paling atas.
+                            </p>
                         </div>
-
-                        <!-- Search Bar Cepat (Live Filter) -->
-                        <div class="relative">
-                            <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                            <input type="text"
-                                   x-model="search"
-                                   placeholder="Ketik nama petugas untuk mencari cepat..."
-                                   class="w-full text-sm pl-9 pr-8 py-2.5 rounded-xl border border-slate-300 bg-white shadow-xs focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600">
-                            <button type="button" x-show="search" @click="search = ''" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 text-xs font-bold">✕</button>
-                        </div>
-
-                        <!-- Filter Status Tabs -->
-                        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs font-bold select-none">
-                            <button type="button"
-                                     @click="filterStatus = 'semua'"
-                                     class="px-3 py-1.5 rounded-xl transition shrink-0"
-                                     :class="filterStatus === 'semua' ? 'bg-slate-900 text-white shadow-xs' : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'">
-                                Semua ({{ $anggotas->count() }})
-                            </button>
-                            <button type="button"
-                                     @click="filterStatus = 'hadir'"
-                                     class="px-3 py-1.5 rounded-xl transition shrink-0 flex items-center gap-1"
-                                     :class="filterStatus === 'hadir' ? 'bg-emerald-700 text-white shadow-xs' : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'">
-                                <span>Hadir</span>
-                                <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 text-emerald-800" x-text="countHadir">0</span>
-                            </button>
-                            <button type="button"
-                                     @click="filterStatus = 'absen'"
-                                     class="px-3 py-1.5 rounded-xl transition shrink-0 flex items-center gap-1"
-                                     :class="filterStatus === 'absen' ? 'bg-rose-700 text-white shadow-xs' : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'">
-                                <span>Sakit / Izin / Alfa</span>
-                                <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-rose-100 text-rose-800" x-text="countSakit + countIzin + countAlfa">0</span>
-                            </button>
-                        </div>
+                        <button type="button" @click="resetSemuaHadir()" class="text-xs font-bold text-emerald-700 hover:text-emerald-800 hover:underline shrink-0 bg-emerald-50 px-2.5 py-1.5 rounded-xl border border-emerald-200 shadow-2xs">
+                            Set Semua Hadir
+                        </button>
                     </div>
 
                     <!-- 3. LIST KARTU PETUGAS (DI MOBILE: TOMBOL DI BAWAH NAMA BERDERET KESAMPING) -->
@@ -369,8 +333,6 @@
                             <div class="p-3 sm:p-3.5 rounded-2xl bg-white border shadow-xs space-y-2 transition"
                                  x-data="{
                                      status: '{{ old("presensi.{$p->id}.status", $statusAwal) }}',
-                                     nama: '{{ addslashes($p->nama) }}',
-                                     bagian: '{{ $p->bagian }}',
                                      setStatus(val) {
                                          this.status = val;
                                          const r = document.getElementById('radio_{{ $p->id }}_' + val);
@@ -381,12 +343,6 @@
                                      }
                                  }"
                                  @reset-all-hadir.window="status = 'hadir'"
-                                 x-show="
-                                     (!search || nama.toLowerCase().includes(search.toLowerCase())) &&
-                                     (filterStatus === 'semua' ||
-                                      (filterStatus === 'hadir' && status === 'hadir') ||
-                                      (filterStatus === 'absen' && status !== 'hadir'))
-                                 "
                                  :class="{
                                      'border-amber-300 ring-1 ring-amber-300/40 bg-amber-50/20': status === 'sakit',
                                      'border-sky-300 ring-1 ring-sky-300/40 bg-sky-50/20': status === 'izin',
@@ -532,8 +488,6 @@
     <script>
         function absensiPublikApp() {
             return {
-                search: '',
-                filterStatus: 'semua',
                 countHadir: 0,
                 countSakit: 0,
                 countIzin: 0,
