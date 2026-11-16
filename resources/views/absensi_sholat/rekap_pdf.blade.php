@@ -117,9 +117,25 @@
         .ttd-space {
             height: 55px;
         }
+        @media print {
+            .no-print { display: none !important; }
+            body { margin: 0; }
+        }
     </style>
 </head>
 <body>
+    @if(!empty($isHtmlPrint))
+        <div style="background: #f1f5f9; padding: 12px; margin-bottom: 20px; border-radius: 8px; text-align: center; font-family: Arial, sans-serif;" class="no-print">
+            <button onclick="window.print()" style="background: #059669; color: white; border: none; padding: 8px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;">
+                🖨️ Cetak / Simpan ke PDF Sekarang
+            </button>
+            <button onclick="window.close()" style="background: #64748b; color: white; border: none; padding: 8px 14px; border-radius: 6px; margin-left: 8px; cursor: pointer; color: white; font-size: 13px;">
+                Tutup
+            </button>
+            <p style="font-size: 11px; color: #64748b; margin: 6px 0 0;">Tips: Pilih "Save as PDF" / "Simpan sebagai PDF" pada dialog cetak browser Anda.</p>
+        </div>
+    @endif
+
     {{-- Header Kop Surat --}}
     <table class="header-table">
         <tr>

@@ -311,43 +311,179 @@ class AbsensiSholatAdminController extends Controller
     }
 
     /**
-     * Cetak Rekapitulasi Presensi Sholat Bulanan (PDF)
+     * Cetak & Unduh Rekapitulasi Presensi Sholat Bulanan (PDF)
      */
     public function cetakRekapPdf(Request $request)
     {
-        $bulan = $request->query('bulan', Carbon::now()->format('Y-m'));
-        $dtBulan = Carbon::parse($bulan . '-01');
-        $awalBulan = $dtBulan->copy()->startOfMonth()->toDateString();
-        $akhirBulan = $dtBulan->copy()->endOfMonth()->toDateString();
+        try {
+            $bulan = $request->query('bulan', Carbon::now()->format('Y-m'));
+            try {
+                $dtBulan = Carbon::parse($bulan . '-01');
+            } catch (\Throwable) {
+                $dtBulan = Carbon::now()->startOfMonth();
+                $bulan = $dtBulan->format('Y-m');
+            }
 
-        $rekap = $this->hitungRekapBulanan($awalBulan, $akhirBulan);
-        $labelPeriode = $dtBulan->locale('id')->translatedFormat('F Y');
+            $awalBulan = $dtBulan->copy()->startOfMonth()->toDateString();
+            $akhirBulan = $dtBulan->copy()->endOfMonth()->toDateString();
 
-        // Pengaturan Kop
-        $pengaturans = Pengaturan::getAllKeyValues();
-        $logo = null;
-        if (file_exists(public_path('images/logo-pesantren.png'))) {
-            $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/logo-pesantren.png')));
-        } elseif (!empty($pengaturans['logo']) && file_exists(storage_path('app/public/' . $pengaturans['logo']))) {
-            $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(storage_path('app/public/' . $pengaturans['logo'])));
+            $rekap = $this->hitungRekapBulanan($awalBulan, $akhirBulan);
+            $labelPeriode = $dtBulan->locale('id')->translatedFormat('F Y');
+
+            // Pengaturan Kop & Logo
+            $pengaturans = Pengaturan::getAllKeyValues();
+            $logo = null;
+            try {
+                if (file_exists(public_path('images/logo-pesantren.png'))) {
+                    $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/logo-pesantren.png')));
+                } elseif (!empty($pengaturans['logo']) && file_exists(storage_path('app/public/' . $pengaturans['logo']))) {
+                    $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(storage_path('app/public/' . $pengaturans['logo'])));
+                } elseif (file_exists(public_path('images/logo.png'))) {
+                    $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/logo.png')));
+                }
+            } catch (\Throwable) {
+                $logo = null;
+            }
+
+            $viewData = [
+                'rekap' => $rekap,
+                'labelPeriode' => $labelPeriode,
+                'pengaturans' => $pengaturans,
+                'logo' => $logo,
+                'tanggalCetak' => Carbon::now()->locale('id')->translatedFormat('d F Y'),
+                'isHtmlPrint' => false,
+            ];
+
+            $isUnduh = $request->boolean('unduh') || $request->query('unduh') == '1' || $request->query('action') === 'unduh';
+            $filename = 'rekap-absensi-korlap-' . $bulan . '.pdf';
+
+            if (class_exists(\DOMImplementation::class)) {
+                $pdf = Pdf::loadView('absensi_sholat.rekap_pdf', $viewData)
+                    ->setPaper('a4', 'portrait')
+                    ->setOptions([
+                        'isHtml5ParserEnabled' => true,
+                        'isRemoteEnabled' => true,
+                    ]);
+
+                if ($isUnduh) {
+                    return $pdf->download($filename);
+                }
+
+                return $pdf->stream($filename);
+            }
+
+            $viewData['isHtmlPrint'] = true;
+            return response()->view('absensi_sholat.rekap_pdf', $viewData);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Fallback cetak web rekap absensi sholat: ' . $e->getMessage());
+
+            if (isset($viewData)) {
+                $viewData['isHtmlPrint'] = true;
+                return response()->view('absensi_sholat.rekap_pdf', $viewData);
+            }
+
+            return redirect()->route('admin.absensi-sholat.index', ['tab' => 'rekap'])
+                ->with('error', 'Gagal memproses PDF rekap: ' . $e->getMessage());
         }
+    }
 
-        $viewData = [
-            'rekap' => $rekap,
-            'labelPeriode' => $labelPeriode,
-            'pengaturans' => $pengaturans,
-            'logo' => $logo,
-            'tanggalCetak' => Carbon::now()->locale('id')->translatedFormat('d F Y'),
-        ];
+    /**
+     * Cetak & Unduh Presensi Sholat Harian (PDF)
+     */
+    public function cetakHarianPdf(Request $request)
+    {
+        try {
+            $tanggal = $request->query('tanggal', Carbon::now()->toDateString());
+            try {
+                $dtTanggal = Carbon::parse($tanggal);
+            } catch (\Throwable) {
+                $dtTanggal = Carbon::now();
+                $tanggal = $dtTanggal->toDateString();
+            }
 
-        if (class_exists(\DOMImplementation::class)) {
-            $pdf = Pdf::loadView('absensi_sholat.rekap_pdf', $viewData)
-                ->setPaper('a4', 'portrait');
+            // Pastikan auto alfa terpicu jika mencetak hari ini
+            if ($tanggal === Carbon::today()->toDateString()) {
+                AbsensiSholat::autoAlfaPetugasYangBelumAbsen(Carbon::now());
+            }
 
-            return $pdf->stream('rekap-absensi-korlap-' . $bulan . '.pdf');
+            $presensi = AbsensiSholat::with(['petugas', 'koordinator'])
+                ->whereDate('tanggal', $tanggal)
+                ->orderBy('waktu_sholat')
+                ->orderBy('jam_absen')
+                ->get();
+
+            // Ringkasan per sholat
+            $ringkasan = [];
+            foreach (AbsensiSholatJadwal::SHOLAT_LIST as $key => $lbl) {
+                $items = $presensi->where('waktu_sholat', $key);
+                $ringkasan[$key] = [
+                    'nama' => $lbl,
+                    'total' => $items->count(),
+                    'hadir_tepat' => $items->where('status', 'hadir')->where('kategori_waktu', 'tepat_waktu')->count(),
+                    'hadir_telat' => $items->where('status', 'hadir')->where('kategori_waktu', 'terlambat')->count(),
+                    'sakit' => $items->where('status', 'sakit')->count(),
+                    'izin' => $items->where('status', 'izin')->count(),
+                    'alfa' => $items->where('status', 'alfa')->count(),
+                ];
+            }
+
+            $pengaturans = Pengaturan::getAllKeyValues();
+            $logo = null;
+            try {
+                if (file_exists(public_path('images/logo-pesantren.png'))) {
+                    $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/logo-pesantren.png')));
+                } elseif (!empty($pengaturans['logo']) && file_exists(storage_path('app/public/' . $pengaturans['logo']))) {
+                    $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(storage_path('app/public/' . $pengaturans['logo'])));
+                } elseif (file_exists(public_path('images/logo.png'))) {
+                    $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/logo.png')));
+                }
+            } catch (\Throwable) {
+                $logo = null;
+            }
+
+            $viewData = [
+                'tanggal' => $tanggal,
+                'dtTanggal' => $dtTanggal,
+                'labelTanggal' => $dtTanggal->locale('id')->translatedFormat('l, d F Y'),
+                'presensi' => $presensi,
+                'ringkasan' => $ringkasan,
+                'pengaturans' => $pengaturans,
+                'logo' => $logo,
+                'tanggalCetak' => Carbon::now()->locale('id')->translatedFormat('d F Y'),
+                'isHtmlPrint' => false,
+            ];
+
+            $isUnduh = $request->boolean('unduh') || $request->query('unduh') == '1' || $request->query('action') === 'unduh';
+            $filename = 'presensi-sholat-harian-' . $tanggal . '.pdf';
+
+            if (class_exists(\DOMImplementation::class)) {
+                $pdf = Pdf::loadView('absensi_sholat.harian_pdf', $viewData)
+                    ->setPaper('a4', 'portrait')
+                    ->setOptions([
+                        'isHtml5ParserEnabled' => true,
+                        'isRemoteEnabled' => true,
+                    ]);
+
+                if ($isUnduh) {
+                    return $pdf->download($filename);
+                }
+
+                return $pdf->stream($filename);
+            }
+
+            $viewData['isHtmlPrint'] = true;
+            return response()->view('absensi_sholat.harian_pdf', $viewData);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Fallback cetak web harian absensi sholat: ' . $e->getMessage());
+
+            if (isset($viewData)) {
+                $viewData['isHtmlPrint'] = true;
+                return response()->view('absensi_sholat.harian_pdf', $viewData);
+            }
+
+            return redirect()->route('admin.absensi-sholat.index', ['tab' => 'monitoring', 'tanggal' => $tanggal ?? null])
+                ->with('error', 'Gagal memproses PDF harian: ' . $e->getMessage());
         }
-
-        return view('absensi_sholat.rekap_pdf', $viewData);
     }
 
     /**

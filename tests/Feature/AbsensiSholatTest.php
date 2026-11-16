@@ -514,4 +514,60 @@ class AbsensiSholatTest extends TestCase
             'kategori_waktu' => 'terlambat',
         ]);
     }
+
+    public function test_secretary_can_access_cetak_rekap_pdf(): void
+    {
+        $user = User::factory()->create();
+
+        AbsensiPetugas::create([
+            'nama' => 'Petugas Rekap Test',
+            'bagian' => 'anggota',
+            'status' => 'aktif',
+        ]);
+
+        // 1. Pratinjau / Stream
+        $responseStream = $this->actingAs($user)->get('/admin/absensi-sholat/cetak-rekap?bulan=' . date('Y-m'));
+        $responseStream->assertStatus(200);
+        $this->assertStringContainsString('application/pdf', (string) $responseStream->headers->get('Content-Type'));
+
+        // 2. Unduh Langsung (attachment)
+        $responseDownload = $this->actingAs($user)->get('/admin/absensi-sholat/cetak-rekap?bulan=' . date('Y-m') . '&unduh=1');
+        $responseDownload->assertStatus(200);
+        $this->assertStringContainsString('application/pdf', (string) $responseDownload->headers->get('Content-Type'));
+        $this->assertStringContainsString('attachment', (string) $responseDownload->headers->get('Content-Disposition'));
+    }
+
+    public function test_secretary_can_access_cetak_harian_pdf(): void
+    {
+        $user = User::factory()->create();
+
+        $petugas = AbsensiPetugas::create([
+            'nama' => 'Petugas Harian Test',
+            'bagian' => 'anggota',
+            'status' => 'aktif',
+        ]);
+
+        AbsensiSholat::create([
+            'petugas_id' => $petugas->id,
+            'tanggal' => date('Y-m-d'),
+            'waktu_sholat' => 'subuh',
+            'jam_absen' => '04:30:00',
+            'status' => 'hadir',
+            'kategori_waktu' => 'tepat_waktu',
+        ]);
+
+        // 1. Pratinjau / Stream Harian
+        $responseStream = $this->actingAs($user)->get('/admin/absensi-sholat/cetak-harian?tanggal=' . date('Y-m-d'));
+        $responseStream->assertStatus(200);
+        $this->assertStringContainsString('application/pdf', (string) $responseStream->headers->get('Content-Type'));
+
+        // 2. Unduh Langsung Harian
+        $responseDownload = $this->actingAs($user)->get('/admin/absensi-sholat/cetak-harian?tanggal=' . date('Y-m-d') . '&unduh=1');
+        $responseDownload->assertStatus(200);
+        $this->assertStringContainsString('application/pdf', (string) $responseDownload->headers->get('Content-Type'));
+        $this->assertStringContainsString('attachment', (string) $responseDownload->headers->get('Content-Disposition'));
+    }
 }
+
+
+

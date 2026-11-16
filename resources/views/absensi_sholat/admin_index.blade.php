@@ -108,13 +108,30 @@
                     </div>
                 </div>
 
-                <form method="GET" action="{{ route('admin.absensi-sholat.index') }}" class="flex items-center gap-2">
-                    <input type="hidden" name="tab" value="monitoring">
-                    <input type="date" name="tanggal" value="{{ $tanggalTerpilih }}" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 py-1.5 px-3 bg-white font-semibold">
-                    @if ($tanggalTerpilih !== $now->toDateString())
-                        <a href="{{ route('admin.absensi-sholat.index', ['tab' => 'monitoring']) }}" class="text-xs text-emerald-700 font-bold hover:underline">Hari Ini</a>
-                    @endif
-                </form>
+                <div class="flex flex-wrap items-center gap-2">
+                    <form method="GET" action="{{ route('admin.absensi-sholat.index') }}" class="flex items-center gap-2">
+                        <input type="hidden" name="tab" value="monitoring">
+                        <input type="date" name="tanggal" value="{{ $tanggalTerpilih }}" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 py-1.5 px-3 bg-white font-semibold">
+                        @if ($tanggalTerpilih !== $now->toDateString())
+                            <a href="{{ route('admin.absensi-sholat.index', ['tab' => 'monitoring']) }}" class="text-xs text-emerald-700 font-bold hover:underline">Hari Ini</a>
+                        @endif
+                    </form>
+
+                    <a href="{{ route('admin.absensi-sholat.cetak-harian', ['tanggal' => $tanggalTerpilih, 'unduh' => 1]) }}"
+                       download="presensi-sholat-harian-{{ $tanggalTerpilih }}.pdf"
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs transition shrink-0"
+                       title="Unduh presensi harian ke perangkat Anda">
+                        <svg class="w-4 h-4 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        <span>Unduh PDF</span>
+                    </a>
+
+                    <a href="{{ route('admin.absensi-sholat.cetak-harian', ['tanggal' => $tanggalTerpilih]) }}"
+                       target="_blank"
+                       class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-300 transition shrink-0"
+                       title="Buka pratinjau cetak harian">
+                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    </a>
+                </div>
             </div>
 
             <!-- 5 KARTU STATUS REALTIME PER SHOLAT -->
@@ -426,7 +443,7 @@
                     </p>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="flex flex-wrap items-center gap-2">
                     <form method="GET" action="{{ route('admin.absensi-sholat.index') }}" class="flex items-center gap-2">
                         <input type="hidden" name="tab" value="rekap">
                         <select name="bulan" onchange="this.form.submit()" class="text-xs font-semibold rounded-xl border-slate-300 py-1.5 px-3 bg-white">
@@ -436,11 +453,22 @@
                         </select>
                     </form>
 
+                    <!-- Tombol 1: Unduh PDF Langsung ke File -->
+                    <a href="{{ route('admin.absensi-sholat.cetak-rekap', ['bulan' => $bulanTerpilih, 'unduh' => 1]) }}"
+                       download="rekap-absensi-korlap-{{ $bulanTerpilih }}.pdf"
+                       class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs transition shrink-0"
+                       title="Unduh langsung file PDF Rekapitulasi ke perangkat Anda">
+                        <svg class="w-4 h-4 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        <span>Unduh Rekap PDF</span>
+                    </a>
+
+                    <!-- Tombol 2: Pratinjau / Buka di Tab Baru -->
                     <a href="{{ route('admin.absensi-sholat.cetak-rekap', ['bulan' => $bulanTerpilih]) }}"
                        target="_blank"
-                       class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs shadow-xs transition shrink-0">
-                        <svg class="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        <span>Cetak Rekap PDF</span>
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-300 transition shrink-0"
+                       title="Buka pratinjau cetak di tab baru">
+                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        <span>Pratinjau</span>
                     </a>
                 </div>
             </div>

@@ -153,6 +153,8 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::delete('/absensi-sholat/petugas/{petuga}', [AbsensiSholatAdminController::class, 'destroyPetugas'])->name('admin.absensi-sholat.petugas.destroy');
     Route::put('/absensi-sholat/log/{absensi}', [AbsensiSholatAdminController::class, 'updateStatusLog'])->name('admin.absensi-sholat.log.update');
     Route::get('/absensi-sholat/cetak-rekap', [AbsensiSholatAdminController::class, 'cetakRekapPdf'])->name('admin.absensi-sholat.cetak-rekap');
+    Route::get('/absensi-sholat/cetak-harian', [AbsensiSholatAdminController::class, 'cetakHarianPdf'])->name('admin.absensi-sholat.cetak-harian');
+
 
     // Modul Editor Beranda & Halaman (Fase 5)
     Route::get('/halaman/beranda', [HalamanController::class, 'editBeranda'])->name('admin.halaman.beranda');
