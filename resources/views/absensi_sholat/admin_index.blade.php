@@ -707,15 +707,60 @@
                         <input type="hidden" name="sumber_nama" :value="sumberNama">
                     </div>
 
-                    <!-- Input Nama dari Pengurus -->
-                    <div x-show="sumberNama === 'pengurus'">
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pilih Pengurus <span class="text-rose-500">*</span></label>
-                        <select name="pengurus_id" class="w-full text-xs font-semibold rounded-xl border-slate-300 py-2 px-3 bg-white">
-                            <option value="">-- Pilih dari Pengurus Terdaftar --</option>
-                            @foreach ($pengurusList as $pg)
-                                <option value="{{ $pg->id }}">{{ $pg->nama }} ({{ $pg->jabatan ?? 'Pengurus' }})</option>
-                            @endforeach
-                        </select>
+                    <!-- Input Nama dari Pengurus: Searchable Combobox (Bisa Ketik Langsung Muncul Namanya) -->
+                    <div x-show="sumberNama === 'pengurus'" class="relative" @click.away="dropdownPengurusOpen = false">
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
+                            Pilih Pengurus <span class="text-rose-500">*</span>
+                        </label>
+                        
+                        <div class="relative">
+                            <input type="text"
+                                   x-model="searchPengurus"
+                                   @focus="dropdownPengurusOpen = true"
+                                   @input="dropdownPengurusOpen = true; selectedPengurusId = ''"
+                                   placeholder="Ketik untuk mencari nama pengurus..."
+                                   class="w-full text-xs font-semibold rounded-xl border-slate-300 py-2.5 pl-3 pr-8 bg-white focus:ring-emerald-500 focus:border-emerald-500">
+                            
+                            <!-- Tombol Reset / Ikon Search -->
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-2.5">
+                                <template x-if="selectedPengurusId">
+                                    <button type="button" @click="clearPengurus()" class="p-1 rounded text-slate-400 hover:text-rose-600 transition" title="Ganti Pengurus">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </button>
+                                </template>
+                                <template x-if="!selectedPengurusId">
+                                    <svg class="w-3.5 h-3.5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Hidden Input untuk dikirim ke Controller -->
+                        <input type="hidden" name="pengurus_id" :value="selectedPengurusId">
+
+                        <!-- Floating List Hasil Pencarian Pengurus -->
+                        <div x-show="dropdownPengurusOpen"
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             class="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-30 max-h-48 overflow-y-auto divide-y divide-slate-100">
+                            <template x-for="p in filteredPengurus" :key="p.id">
+                                <button type="button"
+                                        @click="selectPengurus(p)"
+                                        class="w-full text-left px-3 py-2 text-xs hover:bg-emerald-50 hover:text-emerald-900 transition flex items-center justify-between group">
+                                    <span class="font-bold text-slate-800 group-hover:text-emerald-800" x-text="p.nama"></span>
+                                    <span class="text-[10px] text-slate-400 group-hover:text-emerald-700 italic ml-2 shrink-0" x-text="p.jabatan"></span>
+                                </button>
+                            </template>
+                            <div x-show="filteredPengurus.length === 0" class="px-3 py-3 text-xs text-slate-400 italic text-center">
+                                Tidak ada pengurus dengan nama "<span class="font-bold text-slate-600" x-text="searchPengurus"></span>"
+                            </div>
+                        </div>
+
+                        <!-- Info Terpilih -->
+                        <div x-show="selectedPengurusId" class="mt-1 flex items-center gap-1.5 text-[11px] text-emerald-700 font-bold">
+                            <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span>Terpilih: <span x-text="selectedPengurusNama" class="underline"></span></span>
+                        </div>
                     </div>
 
                     <!-- Input Nama Manual -->
@@ -742,25 +787,50 @@
                         </select>
                     </div>
 
-                    <!-- Pilihan Jadwal Piket Sholat (Bisa Pilih Subuh - Isya) -->
-                    <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <label class="block text-xs font-bold text-slate-700 uppercase">Jadwal Piket Sholat</label>
-                            <button type="button" @click="pilihSemuaSholatCreate()" class="text-[11px] font-bold text-emerald-700 hover:underline">
-                                Pilih Semua
-                            </button>
-                        </div>
-                        <div class="grid grid-cols-5 gap-1.5 p-2 bg-slate-50 border border-slate-200 rounded-xl">
+                    <!-- Pilihan Jadwal Piket Sholat (Format Dropdown / Drop Saja) -->
+                    <div class="relative" @click.away="dropdownJadwalCreateOpen = false">
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
+                            Jadwal Piket Sholat <span class="text-rose-500">*</span>
+                        </label>
+
+                        <button type="button"
+                                @click="dropdownJadwalCreateOpen = !dropdownJadwalCreateOpen"
+                                class="w-full flex items-center justify-between text-xs font-semibold rounded-xl border border-slate-300 py-2 px-3 bg-white hover:border-slate-400 transition text-left">
+                            <span class="truncate text-slate-800" x-text="getJadwalLabel(createJadwals)"></span>
+                            <div class="flex items-center gap-1.5 shrink-0 ml-2">
+                                <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800"
+                                      x-text="createJadwals.length + ' Sholat'"></span>
+                                <svg class="w-4 h-4 text-slate-400 transition transform" :class="dropdownJadwalCreateOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                        </button>
+
+                        <!-- Menu Dropdown Checklist Sholat -->
+                        <div x-show="dropdownJadwalCreateOpen"
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             class="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-30 p-2 space-y-1">
+                            <div class="flex items-center justify-between pb-1.5 mb-1 border-b border-slate-100 px-1">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">Pilih Waktu Sholat</span>
+                                <div class="flex items-center gap-2">
+                                    <button type="button" @click="pilihSemuaSholatCreate()" class="text-[10px] font-bold text-emerald-700 hover:underline">Pilih Semua</button>
+                                    <span class="text-slate-300">|</span>
+                                    <button type="button" @click="createJadwals = []" class="text-[10px] font-bold text-slate-500 hover:text-rose-600">Kosongkan</button>
+                                </div>
+                            </div>
+
                             @foreach (App\Models\AbsensiSholatJadwal::SHOLAT_LIST as $sholatKey => $sholatLabel)
-                                <label class="flex flex-col items-center justify-center p-2 rounded-lg border text-center cursor-pointer transition text-xs font-bold"
-                                       :class="createJadwals.includes('{{ $sholatKey }}') ? 'bg-emerald-100 border-emerald-500 text-emerald-900 shadow-2xs' : 'bg-white border-slate-200 text-slate-500'">
-                                    <input type="checkbox" name="jadwal_sholat[]" value="{{ $sholatKey }}" x-model="createJadwals" class="sr-only">
-                                    <span>{{ $sholatLabel }}</span>
+                                <label class="flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-emerald-50/60 cursor-pointer text-xs font-semibold text-slate-700 transition">
+                                    <span class="flex items-center gap-2">
+                                        <input type="checkbox" name="jadwal_sholat[]" value="{{ $sholatKey }}" x-model="createJadwals" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+                                        <span>Sholat {{ $sholatLabel }}</span>
+                                    </span>
+                                    <span class="text-[10px] font-mono font-bold uppercase text-slate-400">{{ $sholatKey }}</span>
                                 </label>
                             @endforeach
                         </div>
                         <p class="text-[10px] text-slate-500 mt-1 italic">
-                            * Petugas hanya akan muncul di formulir presensi pada waktu sholat yang dipilih di atas.
+                            * Klik dropdown di atas untuk memilih waktu sholat piket petugas.
                         </p>
                     </div>
 
@@ -816,25 +886,50 @@
                         </select>
                     </div>
 
-                    <!-- Pilihan Jadwal Piket Sholat (Bisa Pilih Subuh - Isya) -->
-                    <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <label class="block text-xs font-bold text-slate-700 uppercase">Jadwal Piket Sholat</label>
-                            <button type="button" @click="pilihSemuaSholatEdit()" class="text-[11px] font-bold text-emerald-700 hover:underline">
-                                Pilih Semua
-                            </button>
-                        </div>
-                        <div class="grid grid-cols-5 gap-1.5 p-2 bg-slate-50 border border-slate-200 rounded-xl">
+                    <!-- Pilihan Jadwal Piket Sholat (Format Dropdown / Drop Saja) -->
+                    <div class="relative" @click.away="dropdownJadwalEditOpen = false">
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
+                            Jadwal Piket Sholat <span class="text-rose-500">*</span>
+                        </label>
+
+                        <button type="button"
+                                @click="dropdownJadwalEditOpen = !dropdownJadwalEditOpen"
+                                class="w-full flex items-center justify-between text-xs font-semibold rounded-xl border border-slate-300 py-2 px-3 bg-white hover:border-slate-400 transition text-left">
+                            <span class="truncate text-slate-800" x-text="getJadwalLabel(editPetugasData.jadwal_sholat)"></span>
+                            <div class="flex items-center gap-1.5 shrink-0 ml-2">
+                                <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800"
+                                      x-text="(editPetugasData.jadwal_sholat ? editPetugasData.jadwal_sholat.length : 0) + ' Sholat'"></span>
+                                <svg class="w-4 h-4 text-slate-400 transition transform" :class="dropdownJadwalEditOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                        </button>
+
+                        <!-- Menu Dropdown Checklist Sholat -->
+                        <div x-show="dropdownJadwalEditOpen"
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             class="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-30 p-2 space-y-1">
+                            <div class="flex items-center justify-between pb-1.5 mb-1 border-b border-slate-100 px-1">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">Pilih Waktu Sholat</span>
+                                <div class="flex items-center gap-2">
+                                    <button type="button" @click="pilihSemuaSholatEdit()" class="text-[10px] font-bold text-emerald-700 hover:underline">Pilih Semua</button>
+                                    <span class="text-slate-300">|</span>
+                                    <button type="button" @click="editPetugasData.jadwal_sholat = []" class="text-[10px] font-bold text-slate-500 hover:text-rose-600">Kosongkan</button>
+                                </div>
+                            </div>
+
                             @foreach (App\Models\AbsensiSholatJadwal::SHOLAT_LIST as $sholatKey => $sholatLabel)
-                                <label class="flex flex-col items-center justify-center p-2 rounded-lg border text-center cursor-pointer transition text-xs font-bold"
-                                       :class="editPetugasData.jadwal_sholat.includes('{{ $sholatKey }}') ? 'bg-emerald-100 border-emerald-500 text-emerald-900 shadow-2xs' : 'bg-white border-slate-200 text-slate-500'">
-                                    <input type="checkbox" name="jadwal_sholat[]" value="{{ $sholatKey }}" x-model="editPetugasData.jadwal_sholat" class="sr-only">
-                                    <span>{{ $sholatLabel }}</span>
+                                <label class="flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-emerald-50/60 cursor-pointer text-xs font-semibold text-slate-700 transition">
+                                    <span class="flex items-center gap-2">
+                                        <input type="checkbox" name="jadwal_sholat[]" value="{{ $sholatKey }}" x-model="editPetugasData.jadwal_sholat" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+                                        <span>Sholat {{ $sholatLabel }}</span>
+                                    </span>
+                                    <span class="text-[10px] font-mono font-bold uppercase text-slate-400">{{ $sholatKey }}</span>
                                 </label>
                             @endforeach
                         </div>
                         <p class="text-[10px] text-slate-500 mt-1 italic">
-                            * Petugas hanya akan muncul di formulir presensi pada waktu sholat yang dipilih di atas.
+                            * Klik dropdown di atas untuk mengubah waktu sholat piket petugas.
                         </p>
                     </div>
 
@@ -1062,6 +1157,46 @@
             editPetugasData: { id: null, nama: '', bagian: 'anggota', status: 'aktif', keterangan: '', jadwal_sholat: [] },
             editLogData: { id: null, status: 'hadir', kategori_waktu: 'tepat_waktu', keterangan: '' },
 
+            // Searchable Pengurus Combobox State
+            searchPengurus: '',
+            selectedPengurusId: '',
+            selectedPengurusNama: '',
+            dropdownPengurusOpen: false,
+            daftarPengurus: @json($pengurusList->map(fn($p) => ['id' => $p->id, 'nama' => $p->nama, 'jabatan' => $p->jabatan ?? 'Pengurus'])),
+
+            // Dropdown Jadwal Sholat Menu State
+            dropdownJadwalCreateOpen: false,
+            dropdownJadwalEditOpen: false,
+
+            get filteredPengurus() {
+                if (!this.searchPengurus || !this.searchPengurus.trim()) {
+                    return this.daftarPengurus;
+                }
+                const q = this.searchPengurus.toLowerCase();
+                return this.daftarPengurus.filter(p =>
+                    p.nama.toLowerCase().includes(q) ||
+                    (p.jabatan && p.jabatan.toLowerCase().includes(q))
+                );
+            },
+            selectPengurus(p) {
+                this.selectedPengurusId = p.id;
+                this.selectedPengurusNama = p.nama + (p.jabatan ? ' (' + p.jabatan + ')' : '');
+                this.searchPengurus = p.nama;
+                this.dropdownPengurusOpen = false;
+            },
+            clearPengurus() {
+                this.selectedPengurusId = '';
+                this.selectedPengurusNama = '';
+                this.searchPengurus = '';
+                this.dropdownPengurusOpen = true;
+            },
+            getJadwalLabel(list) {
+                if (!list || list.length === 0) return '-- Pilih Waktu Sholat --';
+                if (list.length === 5) return 'Semua Sholat (Subuh - Isya)';
+                const namaMap = { subuh: 'Subuh', dzuhur: 'Dzuhur', ashar: 'Ashar', maghrib: 'Maghrib', isya: 'Isya' };
+                return list.map(k => namaMap[k] || k).join(', ');
+            },
+
             copyLink(url) {
                 navigator.clipboard.writeText(url).then(() => {
                     this.copied = true;
@@ -1072,6 +1207,11 @@
             },
             openCreatePetugasModal() {
                 this.sumberNama = 'pengurus';
+                this.searchPengurus = '';
+                this.selectedPengurusId = '';
+                this.selectedPengurusNama = '';
+                this.dropdownPengurusOpen = false;
+                this.dropdownJadwalCreateOpen = false;
                 this.createJadwals = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'];
                 this.modalPetugasCreate = true;
             },
@@ -1079,6 +1219,7 @@
                 this.createJadwals = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'];
             },
             openEditPetugasModal(id, nama, bagian, status, keterangan, jadwalSholat) {
+                this.dropdownJadwalEditOpen = false;
                 this.editPetugasData = {
                     id: id,
                     nama: nama,
