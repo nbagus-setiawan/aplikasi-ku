@@ -3,6 +3,47 @@
 @section('title', 'Absensi Korlap Sholat Jamaah - SAP Al-Falah Putra')
 
 @section('content')
+@php
+    $tglCarbon = Carbon\Carbon::parse($tanggalTerpilih)->locale('id');
+    $tglFormatWa = $tglCarbon->translatedFormat('l, d F Y');
+    $tidakHadirList = $presensiHariIni->filter(fn($p) => in_array($p->status, ['sakit', 'izin', 'alfa']));
+
+    $pesanWaText = "*━━━━━━━━━━━━━━━━━━━━━*\n"
+        . "🕌 *LAPORAN PRESENSI SHOLAT JAMAAH*\n"
+        . "*PONDOK PESANTREN AL-FALAH PUTRA*\n"
+        . "*━━━━━━━━━━━━━━━━━━━━━*\n"
+        . "📅 *Hari / Tanggal :* " . $tglFormatWa . "\n"
+        . "👥 *Total Petugas   :* " . $totalPetugas . " Orang\n\n"
+        . "📊 *RINGKASAN 5 WAKTU SHOLAT:*\n"
+        . "─────────────────────\n";
+
+    foreach ($ringkasanPerSholat as $key => $r) {
+        $totalHadir = (int)($r['hadir_tepat'] + $r['hadir_telat']);
+        $pesanWaText .= "▫️ *" . strtoupper($r['nama']) . "*\n"
+            . "   • Hadir : " . $totalHadir . " (Tepat: " . $r['hadir_tepat'] . ", Telat: " . $r['hadir_telat'] . ")\n"
+            . "   • Sakit/Izin : " . ($r['sakit'] + $r['izin']) . " | Alfa : " . $r['alfa'] . "\n\n";
+    }
+
+    $pesanWaText .= "─────────────────────\n"
+        . "⚠️ *CATATAN PETUGAS TIDAK HADIR:*\n";
+
+    if ($tidakHadirList->isEmpty()) {
+        $pesanWaText .= "✅ Alhamdulillah seluruh petugas yang terjadwal hadir.\n";
+    } else {
+        foreach ($tidakHadirList as $th) {
+            $namaPt = $th->petugas->nama ?? 'Petugas';
+            $sholatPt = ucfirst($th->waktu_sholat);
+            $statusPt = ucfirst($th->status);
+            $ketPt = $th->keterangan ? " (" . $th->keterangan . ")" : "";
+            $pesanWaText .= "• " . $namaPt . " [" . $sholatPt . "] -> " . $statusPt . $ketPt . "\n";
+        }
+    }
+
+    $pesanWaText .= "\n🌐 *Formulir Presensi :*\n"
+        . route('absensi-sholat.index') . "\n"
+        . "*━━━━━━━━━━━━━━━━━━━━━*\n"
+        . "_Dicatat otomatis oleh Sistem Administrasi Pondok (SAP)_";
+@endphp
 <div class="space-y-6" x-data="absensiAdminApp()">
 
     <!-- ========================================================================= -->
@@ -116,6 +157,17 @@
                             <a href="{{ route('admin.absensi-sholat.index', ['tab' => 'monitoring']) }}" class="text-xs text-emerald-700 font-bold hover:underline">Hari Ini</a>
                         @endif
                     </form>
+
+                    <!-- TOMBOL BAGIKAN KE WHATSAPP -->
+                    <button type="button"
+                            @click="openModalBagikanWa()"
+                            class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition shrink-0"
+                            title="Bagikan Ringkasan Presensi Hari Ini ke Grup WhatsApp">
+                        <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.456 5.711 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.411z"/>
+                        </svg>
+                        <span>Bagikan ke WA</span>
+                    </button>
 
                     <a href="{{ route('admin.absensi-sholat.cetak-harian', ['tanggal' => $tanggalTerpilih]) }}"
                        target="_blank"
@@ -995,6 +1047,84 @@
             </div>
         </div>
     </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL 4: BAGIKAN RINGKASAN PRESENSI KE WHATSAPP                           -->
+    <!-- ========================================================================= -->
+    <div x-show="modalBagikanWa" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-modal="true">
+        <div class="min-h-screen px-4 text-center flex items-center justify-center">
+            <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" @click="modalBagikanWa = false"></div>
+
+            <div class="inline-block w-full max-w-lg p-5 my-8 text-left bg-white rounded-2xl shadow-2xl transform transition-all relative z-10 space-y-4 border border-slate-100">
+                <!-- Header Modal -->
+                <div class="flex items-start justify-between pb-3 border-b border-slate-100">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs shrink-0">
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.456 5.711 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.411z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-900">Bagikan Ringkasan ke WhatsApp</h3>
+                            <p class="text-[11px] text-slate-500">Pratinjau pesan untuk grup pengurus / korlap pondok</p>
+                        </div>
+                    </div>
+                    <button type="button" @click="modalBagikanWa = false" class="text-slate-400 hover:text-slate-600 transition p-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                <!-- Bubble Pratinjau Chat WhatsApp -->
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between text-xs px-1">
+                        <span class="font-bold text-slate-700">Teks Pesan WhatsApp (Dapat Diedit):</span>
+                        <span class="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                            Siap Dikirim
+                        </span>
+                    </div>
+
+                    <div class="relative rounded-2xl p-2.5 bg-emerald-50/40 border border-emerald-200">
+                        <textarea x-model="pesanWa"
+                                  rows="13"
+                                  class="w-full text-xs font-mono p-3 rounded-xl border border-emerald-300 bg-white text-slate-800 leading-relaxed focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-inner"
+                                  placeholder="Ketik atau edit isi pesan..."></textarea>
+                    </div>
+
+                    <p class="text-[11px] text-slate-500 italic px-1">
+                        * Anda dapat menambahkan salam atau info tambahan langsung pada kotak teks di atas sebelum dikirim atau disalin.
+                    </p>
+                </div>
+
+                <!-- Footer Aksi -->
+                <div class="pt-3 border-t border-slate-100 flex flex-col-reverse sm:flex-row items-center justify-between gap-2.5">
+                    <button type="button"
+                            @click="modalBagikanWa = false"
+                            class="w-full sm:w-auto px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs transition">
+                        Tutup
+                    </button>
+
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <button type="button"
+                                @click="salinPesanWa()"
+                                class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs transition">
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                            <span x-text="waCopied ? 'Tersalin! ✅' : 'Salin Teks'">Salin Teks</span>
+                        </button>
+
+                        <button type="button"
+                                @click="kirimKeWa()"
+                                class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition">
+                            <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.456 5.711 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.411z"/>
+                            </svg>
+                            <span>Kirim ke WhatsApp</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @if ($activeTab === 'grafik')
@@ -1152,6 +1282,9 @@
             modalPetugasCreate: false,
             modalPetugasEdit: false,
             modalEditStatus: false,
+            modalBagikanWa: false,
+            waCopied: false,
+            pesanWa: @json($pesanWaText ?? ''),
             sumberNama: 'pengurus',
             createJadwals: ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'],
             editPetugasData: { id: null, nama: '', bagian: 'anggota', status: 'aktif', keterangan: '', jadwal_sholat: [] },
@@ -1204,6 +1337,22 @@
                 }).catch(() => {
                     prompt('Salin link berikut:', url);
                 });
+            },
+            openModalBagikanWa() {
+                this.modalBagikanWa = true;
+                this.waCopied = false;
+            },
+            salinPesanWa() {
+                navigator.clipboard.writeText(this.pesanWa).then(() => {
+                    this.waCopied = true;
+                    setTimeout(() => { this.waCopied = false; }, 2500);
+                }).catch(() => {
+                    prompt('Salin pesan berikut:', this.pesanWa);
+                });
+            },
+            kirimKeWa() {
+                const url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(this.pesanWa);
+                window.open(url, '_blank');
             },
             openCreatePetugasModal() {
                 this.sumberNama = 'pengurus';

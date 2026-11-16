@@ -567,6 +567,60 @@ class AbsensiSholatTest extends TestCase
         $this->assertStringContainsString('application/pdf', (string) $responseDownload->headers->get('Content-Type'));
         $this->assertStringContainsString('attachment', (string) $responseDownload->headers->get('Content-Disposition'));
     }
+
+    public function test_secretary_can_view_bagikan_ke_wa_button_and_formatted_message(): void
+    {
+        $user = User::factory()->create();
+
+        $petugas1 = AbsensiPetugas::create([
+            'nama' => 'Ahmad Sholihin',
+            'bagian' => 'koordinator',
+            'status' => 'aktif',
+        ]);
+
+        $petugas2 = AbsensiPetugas::create([
+            'nama' => 'M. Zainal',
+            'bagian' => 'anggota',
+            'status' => 'aktif',
+        ]);
+
+        // Catat 1 hadir dan 1 izin
+        AbsensiSholat::create([
+            'petugas_id' => $petugas1->id,
+            'tanggal' => date('Y-m-d'),
+            'waktu_sholat' => 'subuh',
+            'jam_absen' => '04:30:00',
+            'status' => 'hadir',
+            'kategori_waktu' => 'tepat_waktu',
+        ]);
+
+        AbsensiSholat::create([
+            'petugas_id' => $petugas2->id,
+            'tanggal' => date('Y-m-d'),
+            'waktu_sholat' => 'subuh',
+            'jam_absen' => '04:30:00',
+            'status' => 'izin',
+            'keterangan' => 'Sakit perut',
+        ]);
+
+        $response = $this->actingAs($user)->get('/admin/absensi-sholat?tab=monitoring');
+        $response->assertStatus(200);
+
+        // Memastikan tombol bagikan ke WA muncul
+        $response->assertSee('Bagikan ke WA');
+        $response->assertSee('openModalBagikanWa()', false);
+
+        // Memastikan teks pesan WhatsApp mengandung elemen-elemen penting
+        $response->assertSee('LAPORAN PRESENSI SHOLAT JAMAAH');
+        $response->assertSee('RINGKASAN 5 WAKTU SHOLAT:');
+        $response->assertSee('SUBUH');
+        $response->assertSee('DZUHUR');
+        $response->assertSee('M. Zainal', false);
+        $response->assertSee('Izin (Sakit perut)', false);
+        $response->assertSee('Bagikan Ringkasan ke WhatsApp');
+        $response->assertSee('Kirim ke WhatsApp');
+        $response->assertSee('Salin Teks');
+    }
 }
 
 
