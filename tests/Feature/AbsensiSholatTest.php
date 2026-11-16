@@ -28,12 +28,21 @@ class AbsensiSholatTest extends TestCase
             'nama' => 'Ahmad Zaki',
             'bagian' => 'koordinator',
             'status' => 'aktif',
+            'jadwal_sholat' => ['dzuhur'],
         ]);
 
         $anggota = AbsensiPetugas::create([
             'nama' => 'Budi Santoso',
             'bagian' => 'anggota',
             'status' => 'aktif',
+            'jadwal_sholat' => ['dzuhur'],
+        ]);
+
+        $petugasLainSubuh = AbsensiPetugas::create([
+            'nama' => 'Petugas Khusus Subuh',
+            'bagian' => 'anggota',
+            'status' => 'aktif',
+            'jadwal_sholat' => ['subuh'],
         ]);
 
         // 1. Saat form sedang dibuka (misal dzuhur buka manual)
@@ -44,15 +53,25 @@ class AbsensiSholatTest extends TestCase
         $responseOpen = $this->get('/absensi-sholat');
         $responseOpen->assertStatus(200);
         $responseOpen->assertSee('Presensi Korlap Sholat Jamaah');
-        $responseOpen->assertSee('Ahmad Zaki');
-        $responseOpen->assertSee('Budi Santoso');
+        $responseOpen->assertSee('sticky top-0 z-40', false); // Header sticky tidak ikut ter-scroll
+        $responseOpen->assertSee('Ahmad Zaki'); // Koordinator muncul
+        $responseOpen->assertSee('Budi Santoso'); // Anggota jadwal dzuhur muncul
+        $responseOpen->assertDontSee('Petugas Khusus Subuh'); // Petugas jadwal lain TIDAK muncul!
+
+        // Pastikan koordinator berada di atas anggota
+        $content = $responseOpen->getContent();
+        $posKoordinator = strpos($content, 'Ahmad Zaki');
+        $posAnggota = strpos($content, 'Budi Santoso');
+        $this->assertTrue($posKoordinator < $posAnggota, 'Koordinator harus berada sebelum anggota di daftar.');
 
         // 2. Saat form sedang ditutup
         AbsensiSholatJadwal::query()->update(['is_buka_manual' => false]);
         $responseClosed = $this->get('/absensi-sholat');
         $responseClosed->assertStatus(200);
-        $responseClosed->assertSee('Presensi Sedang Ditutup');
-        $responseClosed->assertSee('Hitungan Mundur Menuju Buka');
+        $responseClosed->assertSee('Presensi Sholat Sedang Ditutup');
+        $responseClosed->assertSee('Jam');
+        $responseClosed->assertSee('Menit');
+        $responseClosed->assertSee('Detik');
     }
 
     public function test_guest_is_redirected_when_accessing_admin_absensi_sholat(): void

@@ -68,10 +68,18 @@ class AbsensiSholatPublikController extends Controller
         // 3. Ambil daftar koordinator dan anggota aktif yang bertugas pada sholat ini
         $koordinators = AbsensiPetugas::aktif()->koordinator()->untukSholat($namaSholat)->orderBy('nama')->get();
         if ($koordinators->isEmpty()) {
-            $koordinators = AbsensiPetugas::aktif()->untukSholat($namaSholat)->orderBy('nama')->get();
+            $koordinators = AbsensiPetugas::aktif()->koordinator()->orderBy('nama')->get();
+            if ($koordinators->isEmpty()) {
+                $koordinators = AbsensiPetugas::aktif()->orderBy('nama')->get();
+            }
         }
 
-        $anggotas = AbsensiPetugas::aktif()->untukSholat($namaSholat)->orderBy('nama')->get();
+        // Daftar petugas sholat ini: Koordinator selalu berada di paling atas!
+        $anggotas = AbsensiPetugas::aktif()
+            ->untukSholat($namaSholat)
+            ->orderByRaw("CASE WHEN bagian = 'koordinator' THEN 0 ELSE 1 END")
+            ->orderBy('nama')
+            ->get();
 
         // 4. Cek apakah sudah ada data absen yang tersimpan hari ini untuk sholat ini
         $riwayatHariIni = AbsensiSholat::whereDate('tanggal', $today)

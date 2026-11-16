@@ -66,7 +66,7 @@ class AbsensiPetugas extends Model
     }
 
     /**
-     * Scope petugas yang ditugaskan pada waktu sholat tertentu (atau bertugas di semua sholat jika null)
+     * Scope petugas yang ditugaskan pada waktu sholat tertentu
      */
     public function scopeUntukSholat($query, ?string $sholat)
     {
@@ -75,9 +75,8 @@ class AbsensiPetugas extends Model
         }
 
         return $query->where(function ($q) use ($sholat) {
-            $q->whereNull('jadwal_sholat')
-              ->orWhere('jadwal_sholat', '[]')
-              ->orWhereJsonContains('jadwal_sholat', $sholat);
+            $q->whereJsonContains('jadwal_sholat', $sholat)
+              ->orWhere('jadwal_sholat', 'like', '%"' . $sholat . '"%');
         });
     }
 
@@ -87,11 +86,11 @@ class AbsensiPetugas extends Model
     public function isBertugasPadaSholat(?string $sholat): bool
     {
         if (!$sholat) {
-            return true;
+            return false;
         }
 
-        if (empty($this->jadwal_sholat)) {
-            return true; // Default bertugas di semua waktu sholat
+        if (empty($this->jadwal_sholat) || !is_array($this->jadwal_sholat)) {
+            return false;
         }
 
         return in_array($sholat, (array)$this->jadwal_sholat, true);
