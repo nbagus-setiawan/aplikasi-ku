@@ -146,6 +146,25 @@ class AbsensiSholatAdminController extends Controller
             ];
         }
 
+        // Hitung batas maksimal skala grafik berdasarkan jumlah petugas per sholat
+        $maxPetugasPerSholat = 0;
+        foreach (AbsensiSholatJadwal::SHOLAT_LIST as $k => $lbl) {
+            $jml = AbsensiPetugas::aktif()->untukSholat($k)->count();
+            if ($jml > $maxPetugasPerSholat) {
+                $maxPetugasPerSholat = $jml;
+            }
+        }
+
+        $maxHadirBulanIni = 0;
+        foreach ($chartDatasets as $dataset) {
+            $maxVal = !empty($dataset) ? max($dataset) : 0;
+            if ($maxVal > $maxHadirBulanIni) {
+                $maxHadirBulanIni = $maxVal;
+            }
+        }
+
+        $suggestedMaxY = max($maxHadirBulanIni + 1, $maxPetugasPerSholat, 5);
+
         return view('absensi_sholat.admin_index', compact(
             'activeTab',
             'now',
@@ -161,6 +180,7 @@ class AbsensiSholatAdminController extends Controller
             'ringkasanPerSholat',
             'chartLabels',
             'chartDatasets',
+            'suggestedMaxY',
             'logs',
             'rekapBulanan',
             'bulanOptions'

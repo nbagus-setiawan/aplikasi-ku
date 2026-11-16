@@ -360,13 +360,13 @@
             <!-- CANVAS CHART.JS TERPADU -->
             <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
                 <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500 pb-2 border-b border-slate-100">
-                    <span class="inline-flex items-center gap-1.5">
-                        <span class="inline-block w-6 border-b-2 border-dashed border-rose-500"></span>
-                        <span class="font-semibold text-slate-700">Garis Putus-Putus Merah:</span> Batas Total Kuota Petugas ({{ $totalPetugas }} Orang)
+                    <span class="inline-flex items-center gap-1.5 font-medium text-slate-700">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                        <span>Jumlah kehadiran dihitung <strong>per waktu sholat</strong> sesuai jadwal piket masing-masing</span>
                     </span>
                     <span class="inline-flex items-center gap-1.5">
                         <span class="inline-block w-4 border-b border-dashed border-slate-400"></span>
-                        <span>Garis grid putus-putus menandai batas interval jumlah kehadiran</span>
+                        <span>Garis grid putus-putus menandai interval jumlah kehadiran</span>
                     </span>
                 </div>
                 <div class="h-72 sm:h-96 w-full">
@@ -1215,18 +1215,6 @@
                             borderWidth: 2.5,
                             tension: 0.3,
                             pointRadius: 3,
-                        },
-                        {
-                            label: 'Batas Total Petugas ({{ $totalPetugas }} Orang)',
-                            data: Array(labels.length).fill({{ (int) $totalPetugas }}),
-                            borderColor: '#dc2626', // Red-600 tegas penanda batas
-                            backgroundColor: 'transparent',
-                            borderWidth: 2,
-                            borderDash: [8, 4], // Garis putus-putus penanda batas kuota
-                            pointRadius: 0,
-                            pointHoverRadius: 3,
-                            tension: 0,
-                            fill: false,
                         }
                     ]
                 },
@@ -1256,9 +1244,6 @@
                                     return 'Tanggal ' + context[0].label + ' {{ $dtBulan->locale('id')->translatedFormat('F Y') }}';
                                 },
                                 label: function(context) {
-                                    if (context.dataset.label.startsWith('Batas Total')) {
-                                        return 'Batas Kuota Petugas: ' + context.parsed.y + ' Orang';
-                                    }
                                     return context.dataset.label + ': ' + context.parsed.y + ' Petugas Hadir';
                                 }
                             }
@@ -1284,7 +1269,7 @@
                                 font: { size: 10, weight: 'bold' }
                             },
                             beginAtZero: true,
-                            suggestedMax: {{ max((int)$totalPetugas + 2, 5) }},
+                            suggestedMax: {{ $suggestedMaxY ?? 10 }},
                             ticks: {
                                 stepSize: 1,
                                 precision: 0,
