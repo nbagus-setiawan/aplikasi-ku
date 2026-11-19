@@ -677,6 +677,40 @@ class AbsensiSholatTest extends TestCase
         $response->assertSee('Kirim ke WhatsApp');
         $response->assertSee('Salin Teks');
     }
+
+    public function test_past_date_unrecorded_prayers_automatically_generated_as_alfa(): void
+    {
+        $user = User::factory()->create();
+
+        $petugasIsya = AbsensiPetugas::create([
+            'nama' => 'Petugas Isya Kemarin',
+            'bagian' => 'anggota',
+            'status' => 'aktif',
+            'jadwal_sholat' => ['isya'],
+        ]);
+
+        $yesterday = Carbon::yesterday()->toDateString();
+
+        // Sebelum dibuka, belum ada data presensi isya kemarin
+        $this->assertEquals(0, AbsensiSholat::whereDate('tanggal', $yesterday)->where('waktu_sholat', 'isya')->count());
+
+        // Saat admin membuka monitoring tanggal kemarin
+        $response = $this->actingAs($user)->get("/admin/absensi-sholat?tab=monitoring&tanggal={$yesterday}");
+        $response->assertStatus(200);
+
+        // Sistem secara otomatis menandai Alfa petugas yang belum absen pada sholat lampau
+        $this->assertEquals(1, AbsensiSholat::whereDate('tanggal', $yesterday)->where('waktu_sholat', 'isya')->count());
+
+        $this->assertEquals(1, AbsensiSholat::whereDate('tanggal', $yesterday)
+            ->where('waktu_sholat', 'isya')
+            ->where('petugas_id', $petugasIsya->id)
+            ->where('status', 'alfa')
+            ->count());
+
+        // Response menampilkan nama petugas dan status Alfa
+        $response->assertSee('Petugas Isya Kemarin');
+        $response->assertSee('Alfa');
+    }
 }
 
 

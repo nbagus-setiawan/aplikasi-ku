@@ -218,9 +218,27 @@
                     <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex flex-col justify-between space-y-3">
                         <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                             <span class="text-xs font-black uppercase tracking-wider text-slate-900">{{ $r['nama'] }}</span>
-                            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full {{ $r['total'] > 0 ? 'bg-emerald-100 text-emerald-800 font-bold' : 'bg-slate-100 text-slate-500' }}">
-                                {{ $r['total'] > 0 ? 'Terisi' : 'Kosong' }}
-                            </span>
+                            @if ($r['total'] > 0)
+                                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">
+                                    Terisi
+                                </span>
+                            @elseif ($tanggalTerpilih > $now->toDateString())
+                                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 font-medium">
+                                    Mendatang
+                                </span>
+                            @elseif ($tanggalTerpilih === $now->toDateString() && $now->format('H:i:s') < ($jdw?->jam_buka ?? '00:00:00') && !$jdw?->is_buka_manual)
+                                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-semibold border border-amber-200">
+                                    Belum Mulai
+                                </span>
+                            @elseif ($tanggalTerpilih === $now->toDateString() && ($jdw?->is_buka_manual === true || ($now->format('H:i:s') >= ($jdw?->jam_buka ?? '00:00:00') && $now->format('H:i:s') <= ($jdw?->jam_tutup ?? '23:59:59'))))
+                                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold animate-pulse">
+                                    Sedang Buka
+                                </span>
+                            @else
+                                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 font-semibold border border-rose-200">
+                                    Belum Diabsen
+                                </span>
+                            @endif
                         </div>
 
                         <div class="space-y-1.5">

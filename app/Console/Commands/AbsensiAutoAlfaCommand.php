@@ -32,6 +32,10 @@ class AbsensiAutoAlfaCommand extends Command
 
         $total = AbsensiSholat::autoAlfaPetugasYangBelumAbsen($now);
 
+        // Periksa juga hari kemarin jika ada sholat malam yang belum tertutup
+        $yesterday = $now->copy()->subDay();
+        $total += AbsensiSholat::autoAlfaPetugasYangBelumAbsen($yesterday);
+
         if ($total > 0) {
             $this->info("Berhasil mencatat {$total} petugas sebagai Alfa otomatis.");
         } else {

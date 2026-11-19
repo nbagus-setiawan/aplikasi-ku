@@ -82,7 +82,8 @@ class AbsensiSholat extends Model
     public static function autoAlfaPetugasYangBelumAbsen(?\Carbon\Carbon $now = null): int
     {
         $now = $now ?: \Carbon\Carbon::now();
-        $today = $now->toDateString();
+        $targetDate = $now->toDateString();
+        $isPastDate = $targetDate < \Carbon\Carbon::now()->toDateString();
         $jamSekarang = $now->format('H:i:s');
 
         AbsensiSholatJadwal::inisialisasiDefault();
@@ -92,9 +93,14 @@ class AbsensiSholat extends Model
 
         foreach ($jadwals as $namaSholat => $j) {
             // Waktu sholat dianggap ditutup jika:
-            // 1. Ditutup manual (is_buka_manual === false)
-            // 2. ATAU jam sekarang sudah melewati jam_tutup dan tidak dibuka manual (is_buka_manual !== true)
-            $isTutup = ($j->is_buka_manual === false) || ($j->is_buka_manual !== true && $jamSekarang > $j->jam_tutup);
+            // 1. Tanggal lampau (semua sholat pada hari yang sudah lewat otomatis sudah ditutup)
+            // 2. Ditutup manual (is_buka_manual === false)
+            // 3. ATAU jam sekarang sudah melewati jam_tutup dan tidak dibuka manual (is_buka_manual !== true)
+            if ($isPastDate) {
+                $isTutup = true;
+            } else {
+                $isTutup = ($j->is_buka_manual === false) || ($j->is_buka_manual !== true && $jamSekarang > $j->jam_tutup);
+            }
 
             if (!$isTutup) {
                 continue;
@@ -106,8 +112,8 @@ class AbsensiSholat extends Model
                 continue;
             }
 
-            // Ambil ID petugas yang sudah punya catatan presensi sholat ini pada hari ini
-            $sudahAbsenIds = static::whereDate('tanggal', $today)
+            // Ambil ID petugas yang sudah punya catatan presensi sholat ini pada tanggal target
+            $sudahAbsenIds = static::whereDate('tanggal', $targetDate)
                 ->where('waktu_sholat', $namaSholat)
                 ->pluck('petugas_id')
                 ->all();
@@ -116,7 +122,7 @@ class AbsensiSholat extends Model
 
             foreach ($belumAbsen as $p) {
                 static::create([
-                    'tanggal' => $today,
+                    'tanggal' => $targetDate,
                     'waktu_sholat' => $namaSholat,
                     'petugas_id' => $p->id,
                     'koordinator_id' => null,

@@ -32,6 +32,16 @@ class AbsensiSholatAdminController extends Controller
         $tanggalTerpilih = $request->query('tanggal', $now->toDateString());
         $bulanTerpilih = $request->query('bulan', $now->format('Y-m'));
 
+        // Jika tanggal terpilih adalah tanggal lampau (kemarin dsb), pastikan sholat yang belum tercatat ditandai Alfa otomatis agar sekretaris bisa melihat dan mengoreksinya
+        if ($tanggalTerpilih < $now->toDateString()) {
+            try {
+                $dtTerpilih = Carbon::parse($tanggalTerpilih);
+                AbsensiSholat::autoAlfaPetugasYangBelumAbsen($dtTerpilih);
+            } catch (\Throwable) {
+                // Abaikan jika format tanggal tidak valid
+            }
+        }
+
         try {
             $dtBulan = Carbon::parse($bulanTerpilih . '-01');
         } catch (\Throwable) {
@@ -430,9 +440,11 @@ class AbsensiSholatAdminController extends Controller
                 $tanggal = $dtTanggal->toDateString();
             }
 
-            // Pastikan auto alfa terpicu jika mencetak hari ini
+            // Pastikan auto alfa terpicu jika mencetak hari ini atau tanggal lampau
             if ($tanggal === Carbon::today()->toDateString()) {
                 AbsensiSholat::autoAlfaPetugasYangBelumAbsen(Carbon::now());
+            } elseif ($tanggal < Carbon::today()->toDateString()) {
+                AbsensiSholat::autoAlfaPetugasYangBelumAbsen($dtTanggal);
             }
 
             $presensi = AbsensiSholat::with(['petugas', 'koordinator'])
